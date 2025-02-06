@@ -1,4 +1,4 @@
-package com.spring.app.board.controller;
+package com.spring.app.mail.controller;
 
 import java.util.List;
 import java.util.Map;
@@ -16,8 +16,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 // === #22. 컨트롤러 선언 === //
 @Controller
-@RequestMapping(value="/board/*")
-public class BoardController {
+@RequestMapping(value="/mail/*")
+public class MailController {
 	
 	@Autowired // Type 에 따라 알아서 Bean 을 주입해준다.
 	private BoardService service;

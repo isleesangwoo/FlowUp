@@ -1,0 +1,13 @@
+#section_Container {
+    position: relative;
+    z-index: -1;
+    width: 100%;
+    height: 100vh;
+    background-color: var(--whiteColor);
+}
+
+#top_header_container {
+    width: 100%;
+    height: var(--size60);
+    background-color: var(--baseColor1);
+}
