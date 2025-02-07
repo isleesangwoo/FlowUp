@@ -1,4 +1,4 @@
-package com.spring.app.board.service;
+package com.spring.app.draft.service;
 
 
 import java.util.List;
@@ -7,16 +7,16 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.spring.app.board.model.BoardDAO;
+import com.spring.app.draft.model.DraftDAO;
 
 
 // === 서비스 선언 === //
 // 트랜잭션 처리를 담당하는 곳, 업무를 처리하는 곳, 비지니스(Business)단
 @Service
-public class BoardService_imple implements BoardService {
+public class DraftService_imple implements DraftService {
 	
 	@Autowired
-	private BoardDAO dao;
+	private DraftDAO dao;
 
 	@Override
 	public List<Map<String, String>> test() {

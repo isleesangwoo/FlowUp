@@ -138,25 +138,25 @@
                               <a href="#"><i class="fa-solid fa-house"></i><span>홈</span></a>
                           </li>
                           <li>
-                              <a href="#"><i class="fa-regular fa-envelope"></i><span>메일</span></a>
+                              <a href="<%= ctxPath%>/mail/"><i class="fa-regular fa-envelope"></i><span>메일</span></a>
                           </li>
                           <li>
-                              <a href="#"><i class="fa-solid fa-file-contract"></i><span>예약</span></a>
+                              <a href="<%= ctxPath%>/board/"><i class="fa-solid fa-file-contract"></i><span>예약</span></a>
                           </li>
                           <li>
                               <a href="#"><i class="fa-regular fa-file"></i><span>자료실</span></a>
                           </li>
                           <li>
-                              <a href="#"><i class="fa-solid fa-file-invoice-dollar"></i><span>전자결제</span></a>
+                              <a href="<%= ctxPath%>/draft/"><i class="fa-solid fa-file-invoice-dollar"></i><span>전자결제</span></a>
                           </li>
                           <li>
-                              <a href="#"><i class="fa-regular fa-credit-card"></i><span>근태관리</span></a>
+                              <a href="<%= ctxPath%>/commute/"><i class="fa-regular fa-credit-card"></i><span>근태관리</span></a>
                           </li>
                           <li>
                               <a href="<%= ctxPath%>/board/"><i class="fa-regular fa-comments"></i><span>게시판</span></a>
                           </li>
                           <li>
-                              <a href="#"><i class="fa-regular fa-calendar-days"></i><span>캘린더</span></a>
+                              <a href="<%= ctxPath%>/calendar/"><i class="fa-regular fa-calendar-days"></i><span>캘린더</span></a>
                           </li>
                           <li>
                               <a href="#"><i class="fa-regular fa-folder"></i><span>조직도</span></a>

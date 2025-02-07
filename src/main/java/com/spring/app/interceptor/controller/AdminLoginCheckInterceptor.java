@@ -3,7 +3,7 @@ package com.spring.app.interceptor.controller;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import com.spring.app.member.domain.MemberVO;
+import com.spring.app.employee.domain.EmployeeVO;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
@@ -55,9 +55,9 @@ public class AdminLoginCheckInterceptor implements HandlerInterceptor {
 
 		// 로그인 여부 검사
 		HttpSession session = request.getSession();
-		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 
-		if (loginuser == null || (loginuser != null && loginuser.getGradelevel() < 10)) {
+		if (loginuser == null || (loginuser != null)) {
 			// 로그인이 되지 않았거나 로그인 되어진 사용자의 등급이 10 미만 이라면
 			String message = "관리자 등급으로 로그인 하세요(인터셉터활용)~~~";
 
