@@ -16,6 +16,7 @@
 			<td>${test.no}</td>
 			<td>${test.name}</td>
 			<td>${test.writeday}</td>
+			<td>안농하세오 메일입니다.</td>
 		</tr>
 		</table>
 		</c:forEach>
