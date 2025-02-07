@@ -40,7 +40,6 @@
       <link href="<%=ctxPath%>/css/main-section.css" rel="stylesheet">
 
       <!-- js -->
-      <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
       <script src="<%=ctxPath%>/js/util.js"></script>
       <script src="<%=ctxPath%>/js/header.js"></script>
 
@@ -165,48 +164,7 @@
                       </ul>
                   </div>
 
-                  <div id="goToWork">
-                      <div>
-                          <div id="workTitle">근태관리</div>
-                          <div id="clock">Loading...</div> 
-                          <!-- $('#clock').text(); 찍으면 현재 시간 나옵니다! ex) 2025-01-31 (금) 0:00:49 -->
-                          <!-- 출근, 퇴근 클릭시 해당 엘리먼트 이용하면 될듯 합니다! -->
-                          <div id="clock-contants">
-                              <div id="total-hour">
-                                  <div id="hour-gauge">
-                                      <div>
-                                          <span id="gauge-title" title="주간 근무시간입니다.">20<b>h</b> 29<b>m</b></span>
-                                          <div id="gauge-container">
-                                              <div id="gauge">
-                                                  <div id="gauge-percent"></div> 
-                                                  <!-- 주마다 시간을 모두 합산해 n/52 한 백분율 값을 gauge-percent의 width로 %를 주세요 -->
-                                                  <!-- 현재는 임의로 30%를 지정했습니다. -->
-                                              </div>
-                                              <div class="gauge-bar"></div>
-                                              <div class="max-time">최대 52h</div>
-                                              <div class="min-time">최소 40h</div>
-                                          </div>
-                                      </div>
-                                      <div>
-                                          <div class="hour-check">
-                                              <span>출근시간</span>
-                                              <span>09:00:00</span> <!-- 출근시간과 퇴근시간을 기록해주세요 -->
-                                          </div>
-                                          <div class="hour-check">
-                                              <span>퇴근시간</span>
-                                              <span>18:00:00</span>  <!-- 출근시간과 퇴근시간을 기록해주세요 -->
-                                          </div>
-                                      </div>
-                                  </div>
-                              </div>
-                              <div>
-                                  <span>출근</span> <!-- 해당버튼 클릭시 출근시간이 input태그의 value값에 들어가게 해주세요 -->
-                                  <span>퇴근</span> <!-- 해당버튼 클릭시 퇴근시간이 input태그의 value값에 들어가게 해주세요 -->
-                                  <!-- 출근시간과 퇴근시간의 차에 시급을 곱한 값이 일당입니다. -->
-                              </div>
-                          </div>
-                      </div>
-                  </div>
+                  
 
               </header>
           </div>
@@ -217,7 +175,7 @@
 
                   </div>
               </div>
-              <section>
+              <section style="width: 500px">
                   
               </section>
           </div>
