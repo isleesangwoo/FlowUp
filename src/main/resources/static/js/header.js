@@ -97,7 +97,7 @@ $(document).ready(()=>{
 
             $('#header_container').css({
                 'width': 'var(--size60)',
-                'padding': 'var(--size24) 4px'
+                'padding': 'var(--size24) 4px',
             });
 
             $('.side_btn').css({
@@ -110,6 +110,10 @@ $(document).ready(()=>{
 
             $('#header_ikon_box li a span').css({
                 'display': 'none'
+            });
+
+            $('#header_ikon_box li a i').css({
+                'width': 'auto'
             });
 
             $('#header_ikon_box li').css({
@@ -147,6 +151,10 @@ $(document).ready(()=>{
 
             $('#header_ikon_box li a span').css({
                 'display': ''
+            });
+
+            $('#header_ikon_box li a i').css({
+                'width': ''
             });
 
             $('#header_ikon_box li').css({
