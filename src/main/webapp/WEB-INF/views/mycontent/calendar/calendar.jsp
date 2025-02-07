@@ -8,7 +8,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-	<h1>캘린더</h1>
+	<h1>캘린더(강이훈)</h1>
 	<c:if test="${not empty requestScope.testList}">
 		<c:forEach var="test" items="${requestScope.testList}">
 		<table>
@@ -23,5 +23,7 @@
 	<c:if test="${empty requestScope.testList}">
        <h1>데이터가 없습니다.</h1>
     </c:if>
+    <hr>
+    파이팅 해보자구~~~~ 2훈
 </body>
 </html>
