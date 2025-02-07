@@ -23,5 +23,7 @@
 	<c:if test="${empty requestScope.testList}">
        <h1>데이터가 없습니다.</h1>
     </c:if>
+    
+    <div>이사웅</div>
 </body>
 </html>
