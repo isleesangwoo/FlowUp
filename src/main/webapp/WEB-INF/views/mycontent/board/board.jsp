@@ -1,13 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@include file="../../header/header.jsp" %>
 <!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
 <title>게시판 홈</title>
-
-<%@include file="../../header/header.jsp" %>
 <script type="text/javascript">
 $(document).ready(function () {
 	
@@ -62,7 +61,7 @@ padding: 10px;
 			
 <%-- 		<c:forEach var="test" items="${requestScope.testList}"> --%>
 				<div id="boardGroup">
-					:: 추가된 게시판이 들어올 곳 ::
+					(예) 전사게시판  <a href="<%=ctxPath%>/board/updateBoardView" id="upateBoard">변경*</a>
 				</div>
 <%-- 		</c:forEach> --%>
 	

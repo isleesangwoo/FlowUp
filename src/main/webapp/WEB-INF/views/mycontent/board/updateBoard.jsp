@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>게시판 생성</title>
+<title>게시판 수정</title>
 <script type="text/javascript">
 $(document).ready(function () {
 	
@@ -22,8 +22,12 @@ $(document).ready(function () {
 		}
 	});
 	
-	$(document).on("click", "#addBoardGroup", function(){ // 생성 버튼 클릭 이벤트
- 		goAddBoardGroup(); // 게시판 생성하기
+	$(document).on("click", "#updateBoardGroup", function(){ // 수정 버튼 클릭 이벤트
+		goUpadteBoardGroup(); // 게시판 수정하기
+	});
+	
+	$(document).on("click", "#deleteBoardGroup", function(){ // 삭제 버튼 클릭 이벤트
+		goDeleteBoardGroup(); // 게시판 삭제(status 변경)하기
 	});
 	
 	
@@ -33,21 +37,26 @@ $(document).ready(function () {
 //Function
 
 // 게시판 생성하기
-function goAddBoardGroup(){
-	const frm = document.addBoardGroup;
+function goUpadteBoardGroup(){
+	const frm = document.updateBoardGroup;
     frm.method = "POST";
-    frm.action = "<%= ctxPath%>/board/addBoard";
+    frm.action = "<%= ctxPath%>/board/updateBoard";
     frm.submit();  
-}
+}	
 
-		
-		
+// 게시판 삭제(status 변경)하기
+function goDeleteBoardGroup(){
+	const frm = document.deleteBoardGroup;
+    frm.method = "POST";
+    frm.action = "<%= ctxPath%>/board/deleteBoard";
+    frm.submit();  
+}	
 </script>
 </head>
 <body>
-게시판 생성 페이지
 
-<form name="addBoardGroup">
+게시판 수정 페이지
+<form name="updateBoardGroup">
 
 	<table>
 	<tr>
@@ -96,11 +105,17 @@ function goAddBoardGroup(){
 			운영자(생성자)
 		</td>
 		<td>
-			<input type="text" name="createdBy" value=""/>
+			<input type="text" name="createdBy" value="게시판을 생성한 자의 이름을 넣을 것" readonly/>
 		</td>
 	</tr>
 	</table>
-	<button type="button" id="addBoardGroup">생성</button> <button type="button">취소</button>
+	<button type="button" id="updateBoardGroup">수정</button> 
 </form>
+
+<form name="deleteBoardGroup">
+	<input type="text" name="boardNo" value="" placeholder="삭제될 게시판그룹번호">
+	<button type="button" id="deleteBoardGroup" >게시판 삭제</button>
+</form>
+
 </body>
 </html>

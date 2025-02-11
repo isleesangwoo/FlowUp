@@ -24,6 +24,20 @@ public class BoardService_imple implements BoardService {
 		int n = dao.addBoard();
 		return n;
 	}
+	
+	// 게시판 수정하기
+	@Override
+	public int updateBoard() throws Exception {
+		int n = dao.updateBoard();
+		return n;
+	}
+
+	// 게시판삭제하기(status 값변경)
+	@Override
+	public int deleteBoard() {
+		int n = dao.deleteBoard();
+		return n;
+	}
 
 	
 }

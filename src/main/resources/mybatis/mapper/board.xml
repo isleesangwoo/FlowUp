@@ -8,10 +8,26 @@
 
 <!-- 게시판 생성하기 
 <insert id="addBoard">
- insert into tbl_board (boardNo,boardName,boardDesc,isPublic,createdBy) 
- values(#{boardSeq.nextval(),#{boardName},#{boardDesc},#{isPublic},#{createdBy})
+	insert into tbl_board (boardNo,boardName,boardDesc,isPublic,createdBy) 
+	values(#{boardSeq.nextval(),#{boardName},#{boardDesc},#{isPublic},#{createdBy})
 </insert>
 -->
+
+<!-- 게시판 수정하기 
+<update id="updateBoard">
+	update tbl_board set boardName = #{}, boardDesc = #{}, isPublic = #{}
+	where boardNo = #{}
+</update>
+-->
+
+<!-- 게시판삭제하기(status 값변경) 
+<update id="deleteBoard">
+	update tbl_board set status=0
+	where boardNo = #{}
+</update>
+-->
+
+
 </mapper>
 
 
