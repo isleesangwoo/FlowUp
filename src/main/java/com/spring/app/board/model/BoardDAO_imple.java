@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
+import com.spring.app.board.domain.BoardVO;
+
 //=== Repository(DAO) 선언 === //
 @Repository
 public class BoardDAO_imple implements BoardDAO {
@@ -16,13 +18,13 @@ public class BoardDAO_imple implements BoardDAO {
 	@Qualifier("sqlsession")
 	private SqlSessionTemplate sqlsession;
 
-
+	// 게시판 생성하기
 	@Override
-	public List<Map<String, String>> test() {
-		List<Map<String, String>> testList = sqlsession.selectList("board.test");
-		return testList;
+	public int addBoard() throws Exception{
+		int n = sqlsession.insert("board.addBoard");
+		return n;
 	}
-	
+
 	
 	
 	
