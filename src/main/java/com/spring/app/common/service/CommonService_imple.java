@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.app.board.model.BoardDAO;
+import com.spring.app.common.model.CommonDAO;
 
 
 // === #23. 서비스 선언 === //
@@ -16,7 +17,7 @@ import com.spring.app.board.model.BoardDAO;
 public class CommonService_imple implements CommonService {
 	
 	@Autowired
-	private BoardDAO dao;
+	private CommonDAO dao;
 
 	
 
