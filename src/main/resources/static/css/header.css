@@ -18,17 +18,23 @@
 :root{
     --size2  : clamp(2px, 0.1042vw, 200px);
     --size8  : clamp(6px, 0.4167vw, 200px);
+    --size10 : clamp(10px, 0.5208vw, 200px);
     --size12 : clamp(10px, 0.6250vw, 200px);
     --size14 : clamp(12px, 0.7292vw, 200px);
     --size15 : clamp(14px, 0.7813vw, 200px);
     --size16 : clamp(16px, 0.8333vw, 200px);
     --size18 : clamp(17px, 0.9375vw, 200px);
     --size20 : clamp(18px, 1.0417vw, 200px);
+    --size22 : clamp(22px, 1.1458vw, 200px);
     --size24 : clamp(24px, 1.2500vw, 200px);
     
     --size30 : clamp(28px, 1.5625vw, 200px);
     --size32 : clamp(30px, 1.6667vw, 200px);
+    --size36 : clamp(36px, 1.8750vw, 200px);
+    --size38 : clamp(38px, 1.9792vw, 200px);    
     --size40 : clamp(36px, 2.0833vw, 200px);
+    --size44 : clamp(44px, 2.2917vw, 200px);
+    --size48 : clamp(40px, 2.5000vw, 200px);
     --size52 : clamp(48px, 2.7083vw, 200px);
     --size60 : clamp(50px, 3.1250vw, 200px);
     --size65 : clamp(60px, 3.3854vw, 200px);
@@ -37,6 +43,7 @@
     --size100 : clamp(80px, 5.2083vw, 2000px);
     --size120 : clamp(100px, 6.2500vw, 2000px);
     --size200 : clamp(200px, 10.4167vw, 2000px);
+    --size250 : clamp(250px, 13.0208vw, 2000px);
     --size300 : clamp(300px, 15.6250vw, 2000px);
     --size400 : clamp(380px, 20.8333vw, 2000px);
     --size500 : clamp(500px, 26.0417vw, 2000px);
@@ -65,12 +72,12 @@ ul {
     position: fixed;
     top: 0px;
     left: 0px;
-    z-index: 0;
+    z-index: 2;
     box-sizing: border-box;
     padding: var(--size40) var(--size8);
     width: var(--size200);
     height: 100vh;
-    border-right: 1px solid #eee;
+    border-right: 1px solid #dadce0;
     background-color: var(--baseColor1);
     transition: all 0.5s;
 }
@@ -82,6 +89,7 @@ header:nth-child(1) {
 
 .side_btn{
     position: absolute;
+    display: flex;
     top: var(--size40);
     left: calc(var(--size200) - var(--size8));
     width: var(--size24);
@@ -91,6 +99,12 @@ header:nth-child(1) {
     cursor: pointer;
     transition: all 0.5s;
 }
+
+.side_btn > i {
+    margin: auto;
+    transition: all 0.5s;
+}
+
 
 #logo_img {
     width: var(--size65);
@@ -163,7 +177,7 @@ header:nth-child(1) {
 
 .alarm {
     position: absolute;
-    z-index: 2;
+    z-index: 3;
     width: var(--size300);
     height: 0px;
     font-size: var(--size16);
@@ -308,6 +322,9 @@ header:nth-child(1) {
 
 
 #header_ikon_box li a {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
     text-decoration: none;
     color: #000;
 }
@@ -317,3 +334,142 @@ header:nth-child(1) {
     width: var(--size40);
 }
 
+#goToWork {
+    display: none;
+    position: absolute;
+    bottom: 0px;
+    width: 100%;
+    height: auto;
+    background-color: var(--whiteColor);
+    border-radius: var(--size20);
+    box-sizing: border-box;
+    padding: var(--size16);
+    color: #000;
+}
+
+#goToWork > div {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+#workTitle {
+    font-size: var(--size16);
+    margin-bottom: var(--size12);
+}
+
+#clock {
+    font-size: var(--size14);
+    color: var(--pointColor);
+    opacity: 0.9;
+}
+
+#gauge-title {
+    font-size: var(--size24);
+    line-height: var(--size40);
+}
+
+#gauge-title b {
+    font-size: var(--size16);
+    margin-left: var(--size2);
+    letter-spacing: 0;  
+}
+
+#gauge {
+    position: relative;
+    width: 100%;
+    height: var(--size12);
+    background-color: #eee;
+    border-radius: var(--size12);
+    overflow: hidden;
+}
+
+#gauge-percent {
+    width: 30%;
+    height: 100%;
+    background-color: var(--keyColor);
+}
+
+#clock-contants > div:nth-child(2) {
+
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+#clock-contants > div:nth-child(2) span {
+    display: inline-block;
+    width: 46%;
+    height: var(--size40);
+    line-height: var(--size40);
+    text-align: center;
+    color: var(--keyColor);
+    box-sizing: initial;
+    border: 1px solid var(--keyColor);
+    border-radius: var(--size8);
+    font-size: var(--size16);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+#clock-contants > div:nth-child(2) span:hover {
+    color: var(--whiteColor);
+    background-color: var(--keyColor);
+}
+
+#total-hour {
+    position: relative;
+    box-sizing: border-box;
+    padding: var(--size12) 0px;
+    margin-bottom: var(--size40);
+}
+
+#total-hour::before {
+    content: "";
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    background-color: var(--pointColor);
+    width: 100%;
+    height: 0.5px;
+}
+
+#hour-gauge {
+    font-size: var(--size14);
+    color: var(--keyColor);
+}
+
+#hour-gauge > div:nth-child(1) {
+    margin-bottom: var(--size40);
+}
+
+#gauge-container {
+    position: relative;
+}
+
+.gauge-bar {
+    position: absolute;
+    top: 0px;
+    left: calc(40 / 52 * 100% - 20px);
+    width: var(--size2);
+    height: 100%;
+    background-color: red;
+}
+
+.max-time {
+    position: absolute;
+    right: 0px;
+    top: calc(-1 * var(--size20) );
+    color: #5a5a5a;
+}
+
+.min-time {
+    position: absolute;
+    top: var(--size20);
+    left: calc(40 / 52 * 100% - var(--size30) );
+}
+
+.hour-check {
+    display: flex;
+    justify-content: space-between;
+}

@@ -1,4 +1,4 @@
-package com.spring.app.draft.model;
+package com.spring.app.document.model;
 
 import java.util.List;
 import java.util.Map;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 //=== Repository(DAO) 선언 === //
 @Repository
-public class DraftDAO_imple implements DraftDAO {
+public class DocumentDAO_imple implements DocumentDAO {
 
 	@Autowired
 	@Qualifier("sqlsession")

@@ -22,6 +22,8 @@ public class EmployeeVO {
      private String status;             // 재직상태(1: 재직)
      private String lastDate;           // 퇴직일
      private String reasonForLeaving;   // 퇴직사유
+     private String birth;				// 생년월일
+     private String profileImg;			// 프로필 사진
 	
      
      
@@ -172,6 +174,22 @@ public class EmployeeVO {
 	
 	public void setReasonForLeaving(String reasonForLeaving) {
 		this.reasonForLeaving = reasonForLeaving;
+	}
+
+	public String getBirth() {
+		return birth;
+	}
+
+	public void setBirth(String birth) {
+		this.birth = birth;
+	}
+
+	public String getProfileImg() {
+		return profileImg;
+	}
+
+	public void setProfileImg(String profileImg) {
+		this.profileImg = profileImg;
 	}
      
      

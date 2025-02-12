@@ -1,9 +1,9 @@
-package com.spring.app.draft.service;
+package com.spring.app.document.service;
 
 import java.util.List;
 import java.util.Map;
 
-public interface DraftService {
+public interface DocumentService {
 
 	List<Map<String, String>> test();
 

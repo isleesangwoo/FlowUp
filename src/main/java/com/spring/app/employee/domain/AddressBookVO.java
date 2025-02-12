@@ -14,6 +14,7 @@ public class AddressBookVO {
 	private String phoneNo;         // 휴대전화
 	private String directCal;       // 내선번호
 	private String companyAddress;  //회사주소
+	private String profileImg;
 	
 	//////////////////////////////////////////////////
 	
@@ -111,5 +112,14 @@ public class AddressBookVO {
 	public void setCompanyAddress(String companyAddress) {
 		this.companyAddress = companyAddress;
 	}
+
+	public String getProfileImg() {
+		return profileImg;
+	}
+
+	public void setProfileImg(String profileImg) {
+		this.profileImg = profileImg;
+	}
+	
 	
 }

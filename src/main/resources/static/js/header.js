@@ -89,15 +89,54 @@ $(document).ready(()=>{
 
 
     // ========== 해더 들어갔다 나왔다 기능 ========== //
+    $('#header_container').css({
+        'width': 'var(--size60)',
+        'padding': 'var(--size24) 4px',
+    });
+
+    $('.side_btn').css({
+        'left': 'calc(var(--size60) - 4px)'
+    })
+
+    $('#logo_box').css({
+        'justify-content': 'center'
+    });
+
+    $('#header_ikon_box li a span').css({
+        'display': 'none'
+    });
+
+    $('#header_ikon_box li a i').css({
+        'width': 'auto'
+    });
+
+    $('#header_ikon_box li').css({
+        'text-align': 'center',
+        'justify-content': 'center'
+    });
+
+    $('#goToWork').css({
+        'display': 'none'
+    });
+
+    $('.bell').css({
+        'display': 'none'
+    });
+
+    $('#header_ikon_container').css({
+        'height': '100%',
+        'overflow-y': 'none'
+    });
+    
     let header_cnt = 0;
     
     $('.side_btn').click(e=>{
         header_cnt++;
-        if(header_cnt%2 == 1){
+        if(header_cnt%2 == 0){
 
             $('#header_container').css({
                 'width': 'var(--size60)',
-                'padding': 'var(--size24) 4px'
+                'padding': 'var(--size24) 4px',
             });
 
             $('.side_btn').css({
@@ -110,6 +149,10 @@ $(document).ready(()=>{
 
             $('#header_ikon_box li a span').css({
                 'display': 'none'
+            });
+
+            $('#header_ikon_box li a i').css({
+                'width': 'auto'
             });
 
             $('#header_ikon_box li').css({
@@ -130,6 +173,9 @@ $(document).ready(()=>{
                 'overflow-y': 'none'
             });
 
+            $('.side_btn > i').css({
+                'transform': 'rotate(360deg)'
+            });
         }
         else {
             $('#header_container').css({
@@ -149,6 +195,10 @@ $(document).ready(()=>{
                 'display': ''
             });
 
+            $('#header_ikon_box li a i').css({
+                'width': ''
+            });
+
             $('#header_ikon_box li').css({
                 'text-align': '',
                 'justify-content': ''
@@ -165,6 +215,11 @@ $(document).ready(()=>{
             $('#header_ikon_container').css({
                 'height': ''
             });
+
+            $('.side_btn > i').css({
+                'transform': 'rotate(180deg)'
+            });
+
         }
     });
 
