@@ -39,7 +39,7 @@ public class CommuteController {
 		EmployeeVO loginuser = new EmployeeVO();
 		loginuser.setEmployeeNo("100010");
 		loginuser.setFK_positionNo("1");
-		loginuser.setFK_teamSeq("1");
+		loginuser.setFK_teamNo("1");
 		loginuser.setName("윤영주");
 		loginuser.setSecurityLevel("10");
 		loginuser.setEmail("mechanicon@naver.com");

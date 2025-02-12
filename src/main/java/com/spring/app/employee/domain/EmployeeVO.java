@@ -5,10 +5,10 @@ public class EmployeeVO {
 
 	 private String employeeNo;         // 사번
 	 private String FK_positionNo;      // 직급번호
-     private String FK_teamSeq;         // 팀번호
+     private String FK_teamNo;         // 팀번호
      private String passwd;             // 비밀번호
      private String name;               // 이름
-     private String securityLevlel;     // 보안등급 // 0 < level <10
+     private String securityLevel;     // 보안등급 // 0 < level <10
      private String email;              // 이메일
      private String mobile;             // 전화번호
      private String directCal;          // 내선번호
@@ -24,8 +24,10 @@ public class EmployeeVO {
      private String reasonForLeaving;   // 퇴직사유
      private String birth;				// 생년월일
      private String profileImg;			// 프로필 사진
+     private int lastChangePwd;		// 마지막 비밀번호 변경일
+     private String motive;				// 동기
 	
-     
+     private boolean requireLastChangePwd = false; 
      
     /////////////////////////////////////////
     
@@ -46,11 +48,11 @@ public class EmployeeVO {
 		FK_positionNo = fK_positionNo;
 	}
 	
-	public String getFK_teamSeq() {
-		return FK_teamSeq;
+	public String getFK_teamNo() {
+		return FK_teamNo;
 	}
-	public void setFK_teamSeq(String fK_teamSeq) {
-		FK_teamSeq = fK_teamSeq;
+	public void setFK_teamNo(String fK_teamNo) {
+		FK_teamNo = fK_teamNo;
 	}
 	
 	public String getPasswd() {
@@ -69,12 +71,12 @@ public class EmployeeVO {
 		this.name = name;
 	}
 	
-	public String getSecurityLevlel() {
-		return securityLevlel;
+	public String getSecurityLevel() {
+		return securityLevel;
 	}
 	
-	public void setSecurityLevlel(String securityLevlel) {
-		this.securityLevlel = securityLevlel;
+	public void setSecurityLevel(String securityLevel) {
+		this.securityLevel = securityLevel;
 	}
 	
 	public String getEmail() {
@@ -191,6 +193,34 @@ public class EmployeeVO {
 	public void setProfileImg(String profileImg) {
 		this.profileImg = profileImg;
 	}
+
+	public int getLastChangePwd() {
+		return lastChangePwd;
+	}
+
+	public void setLastChangePwd(int lastChangePwd) {
+		this.lastChangePwd = lastChangePwd;
+	}
+
+	public boolean isRequireLastChangePwd() {
+		return requireLastChangePwd;
+	}
+
+	public void setRequireLastChangePwd(boolean requireLastChangePwd) {
+		this.requireLastChangePwd = requireLastChangePwd;
+	}
+
+	public String getMotive() {
+		return motive;
+	}
+
+	public void setMotive(String motive) {
+		this.motive = motive;
+	}
+	
+	
+	
+	
      
      
 	
