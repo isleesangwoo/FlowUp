@@ -18,18 +18,22 @@
 :root{
     --size2  : clamp(2px, 0.1042vw, 200px);
     --size8  : clamp(6px, 0.4167vw, 200px);
+    --size10 : clamp(10px, 0.5208vw, 200px);
     --size12 : clamp(10px, 0.6250vw, 200px);
     --size14 : clamp(12px, 0.7292vw, 200px);
     --size15 : clamp(14px, 0.7813vw, 200px);
     --size16 : clamp(16px, 0.8333vw, 200px);
     --size18 : clamp(17px, 0.9375vw, 200px);
     --size20 : clamp(18px, 1.0417vw, 200px);
+    --size22 : clamp(22px, 1.1458vw, 200px);
     --size24 : clamp(24px, 1.2500vw, 200px);
     
     --size30 : clamp(28px, 1.5625vw, 200px);
     --size32 : clamp(30px, 1.6667vw, 200px);
     --size36 : clamp(36px, 1.8750vw, 200px);
+    --size38 : clamp(38px, 1.9792vw, 200px);    
     --size40 : clamp(36px, 2.0833vw, 200px);
+    --size44 : clamp(44px, 2.2917vw, 200px);
     --size48 : clamp(40px, 2.5000vw, 200px);
     --size52 : clamp(48px, 2.7083vw, 200px);
     --size60 : clamp(50px, 3.1250vw, 200px);
@@ -39,6 +43,7 @@
     --size100 : clamp(80px, 5.2083vw, 2000px);
     --size120 : clamp(100px, 6.2500vw, 2000px);
     --size200 : clamp(200px, 10.4167vw, 2000px);
+    --size250 : clamp(250px, 13.0208vw, 2000px);
     --size300 : clamp(300px, 15.6250vw, 2000px);
     --size400 : clamp(380px, 20.8333vw, 2000px);
     --size500 : clamp(500px, 26.0417vw, 2000px);
@@ -72,7 +77,7 @@ ul {
     padding: var(--size40) var(--size8);
     width: var(--size200);
     height: 100vh;
-    border-right: 1px solid #eee;
+    border-right: 1px solid #dadce0;
     background-color: var(--baseColor1);
     transition: all 0.5s;
 }
@@ -99,6 +104,7 @@ header:nth-child(1) {
     margin: auto;
     transition: all 0.5s;
 }
+
 
 #logo_img {
     width: var(--size65);
