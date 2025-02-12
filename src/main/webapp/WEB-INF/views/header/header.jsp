@@ -53,10 +53,12 @@
     <div id="container">
         <div id="header_container">
             <header>
-                <div class="side_btn">오</div>
+                <div class="side_btn">
+					<i class="fa-solid fa-angle-right"></i>
+				</div>
                 <div id="logo_box">
                     <span>
-                        <img id="logo_img" src="./images/LOGO/LOGO.png" /> 
+                        <img id="logo_img" src="<%=ctxPath%>/images/logo/logo.png" /> 
                         <div id="logo_title">FLOW UP</div>
                     </span>
                     <span class="bell">
@@ -188,7 +190,7 @@
             </div>
             <!-- top header -->
 
-            <section style="width: 100%; height: calc( 100% - var(--size60))">
+            <section id="main_section">
                 
 
     
