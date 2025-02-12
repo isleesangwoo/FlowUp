@@ -34,9 +34,9 @@ $(document).ready(function () {
 }); // end of $(document).ready(function () {}---------
 
 
-//Function
+// === Function === //
 
-// 게시판 생성하기
+// 게시판 수정하기
 function goUpadteBoardGroup(){
 	const frm = document.updateBoardGroup;
     frm.method = "POST";

@@ -39,22 +39,22 @@ public class BoardController {
 		
 		////////////////////////////////////////////
 		EmployeeVO evo = new EmployeeVO();
-        evo.setEmployeeNo("100010");
-        evo.setFK_positionNo("1");
-        evo.setFK_teamSeq("1");
-        evo.setName("이상우");
-        evo.setSecurityLevlel("10");
-        evo.setEmail("giyf1208@naver.com");
-        evo.setMobile("01012345678");
-        evo.setDirectCal("01012345678");
-        evo.setBank("국민은행");
-        evo.setAccount("12341234215074");
-        evo.setMaritalStatus("1");
-        evo.setDisability("1");
-        evo.setEmploymentType("1");
-        evo.setRegisterDate("2025-02-11");
-        evo.setSalary("30000000");
-        evo.setStatus("1");
+        evo.setEmployeeNo("100010");  		//사원번호
+        evo.setFK_positionNo("1"); 			//직급번호
+        evo.setFK_teamNo("1"); 			//팀번호
+        evo.setName("이상우"); 				//사원명
+        evo.setSecurityLevel("10"); 		//보안등급
+        evo.setEmail("giyf1208@naver.com"); //이메일
+        evo.setMobile("01012345678"); 		//폰번호
+        evo.setDirectCal("01012345678"); 	//내선번호
+        evo.setBank("국민은행"); 				//은행
+        evo.setAccount("12341234215074"); 	//계좌
+        evo.setMaritalStatus("1"); 			//결혼 유무
+        evo.setDisability("1"); 			//장애여부
+        evo.setEmploymentType("1"); 		//채용구분
+        evo.setRegisterDate("2025-02-11"); 	//입사일
+        evo.setSalary("30000000");			//기본급
+        evo.setStatus("1");					//재직상타
       
         HttpSession session = request.getSession();
         session.setAttribute("loginuser", evo);
