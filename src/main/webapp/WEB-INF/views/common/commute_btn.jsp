@@ -114,7 +114,8 @@
 	}
 	
 	#gauge-percent {
-	    width: 30%;
+	    /*width: calc(52 / 52 * 100%);*/
+	    width: 0%;
 	    height: 100%;
 	    background-color: var(--keyColor);
 	}
@@ -126,7 +127,7 @@
 	    justify-content: space-between;
 	}
 	
-	#clock-contants > div:nth-child(2) span {
+	#clock-contants > div:nth-child(2) button {
 	    display: inline-block;
 	    width: 46%;
 	    height: var(--size40);
@@ -141,10 +142,12 @@
 	    transition: all 0.3s;
 	}
 	
-	#clock-contants > div:nth-child(2) span:hover {
+	#clock-contants > div:nth-child(2) button:hover {
 	    color: var(--whiteColor);
 	    background-color: var(--keyColor);
 	}
+	
+	
 	
 	#total-hour {
 	    position: relative;
@@ -232,8 +235,222 @@
 	    // 페이지 로드 시에도 시계 업데이트
 	    updateClock();
 	    // ========== 시간을 알려주는 메소드 ========== //
-	});
+	    
+	    // 금일 근태정보 조회 및 버튼 활성화/비활성화
+	    getTodayWorkInfo();
+	    
+	    // 근무 상태 버튼 클릭시 열림
+	    $('#btn_status').click(e=>{
+	    	// alert($('#btn_list > li'))
+	    	$('#btn_status_list').slideToggle();
+	    });
+	    
+	    // 근무상태 하위 탭 클릭시
+	    $('#btn_status_list > li').click(e=>{
+	    	
+	    	const status = $(e.target).text();
+	    	
+	    	$('#btn_status').html(status);
+	    	$('#btn_status_list').slideToggle();
+	    	
+	    	
+	    	let n_status = "0" ;
+	    	
+	    	if(status == "내근") {
+	    		n_status = "2"
+	    	}
+	    	else if(status == "외근") {
+	    		n_status = "3"
+	    	}
+			else if(status == "파견") {
+				n_status = "4" 		
+			}
+			else if(status == "출장") {
+				n_status = "5"
+			}
+	    	
+	    	$.ajax({
+				url:"<%= ctxPath%>/commute/statusChange",
+				type:"post",
+				data:{"fk_employeeNo":"${sessionScope.loginuser.employeeNo}"
+					, "status":n_status},
+				dataType:"json",
+				success:function(json) {
+					
+					
+					
+				},
+				error: function(request, status, error){
+		        	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		        }
+			});
+	    	
+	    	
+	    });
+
+	    
+	    
+	    // 출근 버튼 클릭시
+	    $("#startWork").click(function(e) {
+	    	
+	    	$.ajax({
+				url:"<%= ctxPath%>/commute/workStart",
+				type:"post",
+				async:false,
+				data:{"fk_employeeNo":"${sessionScope.loginuser.employeeNo}"},
+				dataType:"json",
+				success:function(json) {
+
+					if(json.n == 1) { // 정상 출근
+						alert("출근처리 되었습니다.");
+					} 
+					else { // 에러
+						alert("퇴근처리 실패");
+					}
+					
+					
+					
+				},
+				error: function(request, status, error){
+		        	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		        }
+			});
+	    	
+	    	getTodayWorkInfo();
+	    	
+	    });
+	    
+	    // 퇴근 버튼 클릭시
+	    $("#endWork").click(function(e) {
+	    	
+	    	if(confirm("정말로 퇴근하시겠습니까?")) {
+	    		
+	    		$.ajax({
+					url:"<%= ctxPath%>/commute/workEnd",
+					type:"post",
+					async:false,
+					data:{"fk_employeeNo":"${sessionScope.loginuser.employeeNo}"},
+					dataType:"json",
+					success:function(json) {
+
+						if(json.n == 1) { // 정상 퇴근
+							alert("퇴근처리 되었습니다.");
+						}
+						else {
+							alert("퇴근처리 실패");
+						}
+						
+					},
+					error: function(request, status, error){
+			        	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			        }
+				});
+	    		
+	    		getTodayWorkInfo();
+	    		
+	    	} // confirm
+	    });
+	  
+	    
+	  
+	
+	    
+	    
+			    
+	    
+	    
+	    
+	    
+	    
+	}); // ready
+	
+	
+	// 금일 근태정보 조회 및 버튼 활성화/비활성화 함수
+	function getTodayWorkInfo() {
+		
+		$.ajax({
+			url:"<%= ctxPath%>/commute/getTodayWorkInfo",
+			type:"get",
+			async:false,
+			data:{"fk_employeeNo":"${sessionScope.loginuser.employeeNo}"},
+			dataType:"json",
+			success:function(json) {
+				
+				console.log("~~확인용 n => " + json.n);
+				
+				const todayStartTime = json.startTime;
+				const todayEndTime = json.endTime;
+				
+				if(json.n == 0) { // 아직 출근안함 
+					$("#startWork").attr("disabled", false);// 출근버튼 활성화
+					$("#endWork").attr("disabled", true);   // 퇴근버튼 비활성화
+				}
+				else if(json.n == 1) { // 이미 출근
+					$("#startWork").attr("disabled", true); // 출근버튼 비활성화
+					$("#endWork").attr("disabled", false);  // 퇴근버튼 활성화	
+				}
+				else if(json.n == 2){ // 이미 퇴근
+					$("#startWork").attr("disabled", true); // 출근버튼 비활성화
+					$("#endWork").attr("disabled", true);   // 퇴근버튼 비활성화	
+					$('#btn_status').html("업무종료");
+				}
+				else { // 에러
+					console.log("오늘자 근태정보 조회 해오는거 에러~~");
+				}
+				
+				$("#todayStartTime").html(todayStartTime);
+				$("#todayEndTime").html(todayEndTime);
+				
+				$("span#workTime_hour").html(json.workTime_hour);
+				$("span#workTime_min").html(json.workTime_min);
+				
+				if(json.status == "1") {
+					$('#btn_status').html("휴가");
+				}
+				else if(json.status == "2") {
+					$('#btn_status').html("내근");
+				}
+				else if(json.status == "3") {
+					$('#btn_status').html("외근");
+				}
+				else if(json.status == "4") {
+					$('#btn_status').html("파견");
+				}
+				else if(json.status == "5") {
+					$('#btn_status').html("출장");
+				}
+				else if(json.status == "6") {
+					$('#btn_status').html("업무종료");
+				}
+				
+				
+				$("#gauge-percent").css({ 
+					'width':`calc( ( \${json.workTime_hour} + \${json.workTime_min} / 60 ) / 52 * 100% )`
+				});
+				
+				
+			},
+			error: function(request, status, error){
+		        alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		    }
+		});
+		
+	}// function getTodayWorkInfo()
+	
+	
+
+	
+	
+	
+	
+	
 </script>
+
+
+
+
+
+
 <div id="goToWork">
      <div>
          <div id="workTitle">근태관리</div>
@@ -244,7 +461,7 @@
             <div id="total-hour">
                 <div id="hour-gauge">
                     <div>
-                        <span id="gauge-title" title="주간 근무시간입니다.">20<b>h</b> 29<b>m</b></span>
+                        <span id="gauge-title" title="주간 근무시간입니다."><span id="workTime_hour">00</span><b>h</b> <span id="workTime_min">00</span><b>m</b></span>
                         <div id="gauge-container">
                             <div id="gauge">
                                 <div id="gauge-percent"></div> 
@@ -253,25 +470,35 @@
                             </div>
                             <div class="gauge-bar"></div>
                             <div class="max-time">최대 52h</div>
-                            <div class="min-time">최소 40h</div>
+                            <div class="min-time">40h</div>
                         </div>
                     </div>
                     <div>
                         <div class="hour-check">
                             <span>출근시간</span>
-                            <span>09:00:00</span> <!-- 출근시간과 퇴근시간을 기록해주세요 -->
+                            <span id="todayStartTime">-</span> <!-- 출근시간과 퇴근시간을 기록해주세요 -->
                         </div>
                         <div class="hour-check">
                             <span>퇴근시간</span>
-                            <span>18:00:00</span>  <!-- 출근시간과 퇴근시간을 기록해주세요 -->
+                            <span id="todayEndTime">-</span>  <!-- 출근시간과 퇴근시간을 기록해주세요 -->
                         </div>
                     </div>
                 </div>
             </div>
             <div>
-                <span>출근</span> <!-- 해당버튼 클릭시 출근시간이 input태그의 value값에 들어가게 해주세요 -->
-                <span>퇴근</span> <!-- 해당버튼 클릭시 퇴근시간이 input태그의 value값에 들어가게 해주세요 -->
+                <button type="button" id="startWork">출근</button> <!-- 해당버튼 클릭시 출근시간이 input태그의 value값에 들어가게 해주세요 -->
+                <button type="button" id="endWork">퇴근</button> <!-- 해당버튼 클릭시 퇴근시간이 input태그의 value값에 들어가게 해주세요 -->
                 <!-- 출근시간과 퇴근시간의 차에 시급을 곱한 값이 일당입니다. -->
+            </div>
+            <div>
+            	<div id="btn_status">업무시작전</div>
+            	<ul id="btn_status_list" style="list-style: none; display: none;">
+            		<li>내근</li>
+            		<li>외근</li>
+            		<li>파견</li>
+            		<li>출장</li>
+            	</ul>
+
             </div>
         </div>
     </div>
