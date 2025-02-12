@@ -115,3 +115,9 @@ CREATE table tbl_expense_detail
 
 drop table tbl_draft_expense purge;
 select * from tab;
+
+select (Endtime - starttime)*24
+from tbl_commute;
+
+select *
+from tbl_commute;
