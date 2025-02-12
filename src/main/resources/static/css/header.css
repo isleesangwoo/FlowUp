@@ -84,6 +84,7 @@ header:nth-child(1) {
 
 .side_btn{
     position: absolute;
+    display: flex;
     top: var(--size40);
     left: calc(var(--size200) - var(--size8));
     width: var(--size24);
@@ -91,6 +92,11 @@ header:nth-child(1) {
     background-color: var(--baseColor1);
     border-radius: 0px 8px 8px 0px;
     cursor: pointer;
+    transition: all 0.5s;
+}
+
+.side_btn > i {
+    margin: auto;
     transition: all 0.5s;
 }
 
