@@ -1,53 +1,48 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
 <%@include file="../../header/header.jsp" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>게시판 생성</title>
-<script type="text/javascript">
-$(document).ready(function () {
-	
-	// 처음에는 부서 선택 박스를 숨깁니다.
-	$("#selectDepartment").hide(); 
-	
-	// 공개 범위 라디오 버튼에 change 이벤트 핸들러 추가
-	$("input[name='isPublic']").change(function() {
-		// 선택된 값이 부서별 공개(isPublicDepart)일 때
-		if ($(".isPublic:checked").val() == "0") {
-			$("#selectDepartment").show();  // 부서 선택 박스를 표시
-		} else {
-			$("#selectDepartment").hide();  // 부서 선택 박스를 숨김
-		}
-	});
-	
-	$(document).on("click", "#addBoardGroup", function(){ // 생성 버튼 클릭 이벤트
- 		goAddBoardGroup(); // 게시판 생성하기
-	});
-	
-	
-}); // end of $(document).ready(function () {}---------
 
+<%-- 각자 페이지에 해당되는 css 연결 --%>
+<link href="<%=ctxPath%>/css/board/addBoard.css" rel="stylesheet"> 
 
-//Function
+<%-- 각자 페이지에 해당되는 js 연결 --%>
+<script src="<%=ctxPath%>/js/board/addBoard.js"></script>
 
-// 게시판 생성하기
-function goAddBoardGroup(){
-	const frm = document.addBoardGroup;
-    frm.method = "POST";
-    frm.action = "<%= ctxPath%>/board/addBoard";
-    frm.submit();  
-}
+<!-- 왼쪽 사이드바 -->
+    <div id="left_bar">
 
-		
-		
-</script>
-</head>
-<body>
-게시판 생성 페이지
+        <!-- === 글작성 버튼 === -->
+        <button id="writePostBtn">
+            <i class="fa-solid fa-plus"></i>
+            <span id="goWrite">글쓰기</span>
+        </button>
+        <!-- === 글작성 버튼 === -->
 
-<form name="addBoardGroup">
+        <div class="board_menu_container">
+            <ul>
+                <li>
+                    <a href="#">게시판 목록</a>
+                </li>
+                <li>
+                	<a href="#">예)부서게시판</a>&nbsp&nbsp&nbsp<a href="<%=ctxPath%>/board/updateBoardView" id="upateBoard">설정*</a>
+                </li>
+            	<li>
+            		<a href="<%=ctxPath%>/board/addBoardView" id="addBoard">게시판 생성하기+</a>
+            	</li>
+            </ul>
+        </div>
+    </div>
+    <!-- 왼쪽 사이드바 -->
+    
+   <!-- 오른쪽 바 -->
+    <div id="right_bar">
+        <div id="right_title_box">
+            <span id="right_title">게시판 생성</span>
+		</div>
+		<%-- 이곳에 각 해당되는 뷰 페이지를 작성 끝 --%>
+        
+        <form name="addBoardGroup">
 
 	<table>
 	<tr>
@@ -102,5 +97,11 @@ function goAddBoardGroup(){
 	</table>
 	<button type="button" id="addBoardGroup">생성</button> <button type="button">취소</button>
 </form>
-</body>
-</html>
+    </div>
+    <!-- 오른쪽 바 -->
+
+
+
+
+
+<jsp:include page="../../footer/footer.jsp" /> 
