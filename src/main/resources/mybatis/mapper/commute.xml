@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ==== mapper 기본설정 ==== -->
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
+<mapper namespace="commute">
+   
+   	<resultMap type="HashMap" id="commutevo">
+   		<result property="no" column="no" javaType="String" />
+   		<result property="name" column="name" javaType="String" />
+   		<result property="writeday" column="writeday" javaType="String" />
+   	</resultMap>
+ 	<select id="test" resultMap="commutevo">
+ 	 	select no, name, to_char(writeday, 'yyyy-mm-dd') AS writeday
+ 	 	from spring_exam
+   	</select>
+   
+   	<select id="getTodayWorkInfo" parameterType="String" resultType="CommuteVO">
+   		select commuteNo, FK_employeeNo, nvl(to_char(startTime, 'yyyy-mm-dd hh24:mi:ss'), '-') as startTime, nvl(to_char(endTime, 'yyyy-mm-dd hh24:mi:ss'), '-') as endTime, status, rest, overTimeYN
+   		from tbl_commute
+   		where fk_employeeNo = #{fk_employeeNo} and (starttime BETWEEN trunc(sysdate) and trunc(sysdate)+0.9999)
+   	</select>
+   
+   	<insert id="insertWorkStart" parameterType="String">
+   		insert into tbl_commute(commuteNo, FK_employeeNo, startTime, status, rest, overTimeYN)
+   		values(commuteSeq.nextval, #{fk_employeeNo}, sysdate, 2, 0, 0)
+   	</insert>
+   	
+   	<update id="updateStartTime" parameterType="String">
+   		update tbl_commute set startTime = sysdate, status = 2
+   		where fk_employeeNo = #{fk_employeeNo} and (starttime BETWEEN trunc(sysdate) and trunc(sysdate)+0.9999)
+   	</update>
+   	
+   	<update id="updateEndTime" parameterType="String">
+   		update tbl_commute set endTime = sysdate, status = 6
+   		where fk_employeeNo = #{fk_employeeNo} and (starttime BETWEEN trunc(sysdate) and trunc(sysdate)+0.9999)
+   	</update>
+   	
+   	<update id="statusChange" parameterType="HashMap">
+   		update tbl_commute set status = #{status}
+   		where fk_employeeNo = #{fk_employeeNo} and (starttime BETWEEN trunc(sysdate) and trunc(sysdate)+0.9999)
+   	</update>
+   	
+   	<resultMap type="HashMap" id="ThisWeekWorkTimeMap">
+   		<result property="workTime" column="workTime" javaType="String" />
+   	</resultMap>
+   	<select id="getThisWeekWorkTime" parameterType="String" resultMap="ThisWeekWorkTimeMap">
+   		select to_char( nvl( round(endTime - startTime , 8), 0) ) as workTime
+		from tbl_commute
+		where fk_employeeNo = #{fk_employeeNo} and startTime BETWEEN TRUNC(sysdate, 'iw') and TRUNC(sysdate, 'iw')+6.99999
+   	</select>
+   	
+</mapper>
+
+
+
+
+
+
+
+
+
