@@ -190,7 +190,7 @@
             </div>
             <!-- top header -->
 
-            <section>
+            <section id="main_section">
                 
 
     
