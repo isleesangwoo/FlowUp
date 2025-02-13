@@ -119,6 +119,31 @@
 	display: flex;
 	align-items: center;
     box-sizing: border-box;
+    width: 100%;
+    padding: var(--size18) var(--size24) var(--size18) var(--size24);
+}
+
+#modal_bar{
+    width: 100%;
+    height: auto;
+    border: 0px solid red;
+}
+
+#modal_title_box {
+    box-sizing: border-box;
+    padding: var(--size24) var(--size24) var(--size18) var(--size24);
+    border-bottom: 1px solid #c8c8c8;
+}
+
+#modal_title {
+    font-size: var(--size22);
+}
+
+#modal_content_box {
+	display: flex;
+	align-items: center;
+    box-sizing: border-box;
+    width: 100%;
     padding: var(--size18) var(--size24) var(--size18) var(--size24);
 }
 
@@ -128,6 +153,14 @@
 
 #mailTitle {
 	font-size: var(--size16);
+}
+
+#sendDate {
+	font-size: var(--size12);
+}
+
+#fileSize {
+	font-size: var(--size12);
 }
 
 #right_info {

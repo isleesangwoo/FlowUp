@@ -21,10 +21,38 @@
     <div id="modal" class="modal_bg">
     </div>
     <div class="modal_container">
-
-        메일 작성 하는 곳
-        <!-- 여기에 메일작성 폼을 만들어주세요!! -->
-
+    
+	    <!-- 모달 창 -->
+	    <div id="modal_bar">
+	        <div id="modal_title_box">
+	            <span id="modal_title">메일쓰기</span>
+	            </span>
+	
+	            <!-- 메일 작성 공간 -->
+	            <div id="modal_menu_container">
+	                <span>
+	                    <a href="#">
+	                    	<i class="fa-regular fa-paper-plane"></i>
+	                        <span>보내기</span>
+	                    </a>
+	                </span>
+	                
+	                <span>
+	                    <a href="#">
+	                    	<i class="fa-regular fa-floppy-disk"></i>
+	                        <span>임시저장</span>
+	                    </a>
+	                </span>
+	                <span>
+	                    <a href="#">
+	                    	<i class="fa-regular fa-eye"></i>
+	                        <span>미리보기</span>
+	                    </a>
+	                </span>
+	
+	            </div>
+	        </div>
+	    </div>
     </div>
     <!-- 메일작성 폼 -->
 
@@ -76,33 +104,33 @@
                 <input id="mailListAllCheck" type="checkbox" />
                 <span>
                     <a href="#">
-                        <span>답장</span>
                         <i class="fa-solid fa-share"></i>
+                        <span>답장</span>
                     </a>
                 </span>
                 
                 <span>
                     <a href="#">
+                    	<i class="fa-regular fa-trash-can"></i>
                         <span>삭제</span>
-                        <i class="fa-regular fa-trash-can"></i>
                     </a>
                 </span>
                 <span>
                     <a href="#">
+                    	<i class="fa-solid fa-tags"></i>
                         <span>태그</span>
-                        <i class="fa-solid fa-tags"></i>
                     </a>
                 </span>
                 <span>
                     <a href="#">
+                    	<i class="fa-regular fa-envelope-open"></i>
                         <span>읽음</span>
-                        <i class="fa-regular fa-envelope-open"></i>
                     </a>
                 </span>
                 <span>
                     <a href="#">
+                    	<i class="fa-solid fa-arrow-up-right-from-square"></i>
                         <span>메일이동</span>
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
                     </a>
                 </span>
 
@@ -146,16 +174,18 @@
         
         <div id="right_content_box">
         	
-        		<input id="mailOneCheck" type="checkbox" />
+       		<input id="mailOneCheck" type="checkbox" />
         	
-        	<span id="action">
-        		<i class="fa-regular fa-star"></i>
-        		<i class="fa-regular fa-envelope"></i>
-        		<i class="fa-solid fa-paperclip"></i>
-        		<span id="mailName">이름</span>
-        		<span id="mailTitle">메일 있는 곳</span>
-        		
-        	</span>
+	        	<span id="action">
+	        		<i class="fa-regular fa-star"></i>
+	        		<i class="fa-regular fa-envelope"></i>
+	        		<i class="fa-solid fa-paperclip"></i>
+	        		<span id="mailName">이름</span>
+	        		<span id="mailTitle">메일 있는 곳</span>
+	        		<span id="sendDate">14:11</span>
+	        		<span id="fileSize">67.1KB</span>
+	        	</span>
+        	
         </div>
         
         
