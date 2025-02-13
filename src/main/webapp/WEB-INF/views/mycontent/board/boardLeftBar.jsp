@@ -1,5 +1,9 @@
-
-/* // include 할 boardLeftBar.jsp 생성 전 
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%
+   String ctxpath = request.getContextPath();
+%>
+<style>
 #main_section {
     display: flex;
     box-sizing: border-box;
@@ -56,7 +60,7 @@
 .board_menu_container > ul > li:hover {
     background-color: var(--baseColor1);
 }
-*/
+
 
 
 /* 현재 페이지에 이렇게 넣어주세요! */
@@ -70,22 +74,29 @@
     color: #056ac9;
 }
 /* 현재 페이지에 이렇게 넣어주세요! */
+</style>
+<!-- 왼쪽 사이드바 -->
+  <div id="left_bar">
 
+      <!-- === 글작성 버튼 === -->
+      <button id="writePostBtn">
+          <i class="fa-solid fa-plus"></i>
+          <span id="goWrite">글쓰기</span>
+      </button>
+      <!-- === 글작성 버튼 === -->
 
-
-
-#right_bar{
-    width: 100%;
-    height: auto;
-    border: 0px solid red;
-}
-
-#right_title_box {
-    box-sizing: border-box;
-    padding: var(--size24) var(--size24) var(--size18) var(--size24);
-    border-bottom: 1px solid #c8c8c8;
-}
-
-#right_title {
-    font-size: var(--size22);
-}
+      <div class="board_menu_container">
+          <ul>
+              <li>
+                  <a href="#">게시판 목록</a>
+              </li>
+              <li>
+              	<a href="#">예)부서게시판</a>&nbsp&nbsp&nbsp<a href="<%=ctxpath%>/board/updateBoardView" id="upateBoard">설정*</a>
+              </li>
+          	<li>
+          		<a href="<%=ctxpath%>/board/addBoardView" id="addBoard">게시판 생성하기+</a>
+          	</li>
+          </ul>
+      </div>
+  </div>
+ <!-- 왼쪽 사이드바 -->

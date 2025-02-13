@@ -1,11 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@include file="../../header/header.jsp" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>게시판 수정</title>
+<%@include file="./boardLeftBar.jsp" %>
 <script type="text/javascript">
 $(document).ready(function () {
 	
@@ -117,5 +113,5 @@ function goDeleteBoardGroup(){
 	<button type="button" id="deleteBoardGroup" >게시판 삭제</button>
 </form>
 
-</body>
-</html>
+
+<jsp:include page="../../footer/footer.jsp" /> 

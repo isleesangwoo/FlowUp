@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
     
 <%@include file="../../header/header.jsp" %>
+<%@include file="./boardLeftBar.jsp" %>
 
 <%-- 각자 페이지에 해당되는 css 연결 --%>
 <link href="<%=ctxPath%>/css/board/addBoard.css" rel="stylesheet"> 
@@ -9,31 +10,8 @@
 <%-- 각자 페이지에 해당되는 js 연결 --%>
 <script src="<%=ctxPath%>/js/board/addBoard.js"></script>
 
-<!-- 왼쪽 사이드바 -->
-    <div id="left_bar">
 
-        <!-- === 글작성 버튼 === -->
-        <button id="writePostBtn">
-            <i class="fa-solid fa-plus"></i>
-            <span id="goWrite">글쓰기</span>
-        </button>
-        <!-- === 글작성 버튼 === -->
 
-        <div class="board_menu_container">
-            <ul>
-                <li>
-                    <a href="#">게시판 목록</a>
-                </li>
-                <li>
-                	<a href="#">예)부서게시판</a>&nbsp&nbsp&nbsp<a href="<%=ctxPath%>/board/updateBoardView" id="upateBoard">설정*</a>
-                </li>
-            	<li>
-            		<a href="<%=ctxPath%>/board/addBoardView" id="addBoard">게시판 생성하기+</a>
-            	</li>
-            </ul>
-        </div>
-    </div>
-    <!-- 왼쪽 사이드바 -->
     
    <!-- 오른쪽 바 -->
     <div id="right_bar">

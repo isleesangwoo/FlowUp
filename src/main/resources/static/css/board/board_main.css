@@ -1,4 +1,4 @@
-
+/* 
 #main_section {
     display: flex;
     box-sizing: border-box;
@@ -59,7 +59,7 @@
 
 
 
-/* 현재 페이지에 이렇게 넣어주세요! */
+현재 페이지에 이렇게 넣어주세요!
 .board_menu_container > ul li:nth-child(1){
     background-color: #dae8f8 !important;
     color: #056ac9;
@@ -69,6 +69,7 @@
 .board_menu_container > ul li:nth-child(1) > a {
     color: #056ac9;
 }
+*/
 /* 현재 페이지에 이렇게 넣어주세요! */
 
 
@@ -220,7 +221,6 @@
 /* 게시글 보여주는 요소 시작 */
 #postContainer{
 	width: 100%;
-	height:100%;
 	border: solid 1px red;
 	display:flex;
 }
@@ -278,8 +278,9 @@
 }
 #postOfBoardGroup_post{
 	padding: 3px 18px;
+	display: flex; 
+	justify-content:space-between;
 }
-
 
 
 
