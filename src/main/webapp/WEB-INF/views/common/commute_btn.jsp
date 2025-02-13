@@ -5,10 +5,9 @@
    String ctxPath = request.getContextPath();
    //     /myspring 
 %>      
-<%-- Optional JavaScript --%>
-<script type="text/javascript" src="<%=ctxPath%>/js/jquery-3.7.1.min.js"></script>
-<script type="text/javascript" src="<%=ctxPath%>/bootstrap-4.6.2-dist/js/bootstrap.bundle.min.js" ></script>
-  
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <style>
 	* {
 	    font-family: "Noto Sans KR", sans-serif;
@@ -241,9 +240,19 @@
 	    
 	    // 근무 상태 버튼 클릭시 열림
 	    $('#btn_status').click(e=>{
-	    	// alert($('#btn_list > li'))
 	    	$('#btn_status_list').slideToggle();
 	    });
+	    
+	 	// (내)근태 관리 버튼 클릭시 열림
+	    $('#btn_myCommute').click(e=>{
+	    	$('#btn_myCommute_list').slideToggle();
+	    });
+	 	
+		// 부서 근태 관리 버튼 클릭시 열림
+	    $('#btn_depCommute').click(e=>{
+	    	$('#btn_depCommute_list').slideToggle();
+	    });
+	    
 	    
 	    // 근무상태 하위 탭 클릭시
 	    $('#btn_status_list > li').click(e=>{
@@ -490,16 +499,41 @@
                 <button type="button" id="endWork">퇴근</button> <!-- 해당버튼 클릭시 퇴근시간이 input태그의 value값에 들어가게 해주세요 -->
                 <!-- 출근시간과 퇴근시간의 차에 시급을 곱한 값이 일당입니다. -->
             </div>
-            <div>
-            	<div id="btn_status">업무시작전</div>
-            	<ul id="btn_status_list" style="list-style: none; display: none;">
-            		<li>내근</li>
-            		<li>외근</li>
-            		<li>파견</li>
-            		<li>출장</li>
+            <div style="margin-top:5px;">
+            	<div id="btn_status" style="font-size:14pt; font-weigt:bold; border:solid 1px #21255b; text-align:center;">업무시작전</div>
+            	<ul id="btn_status_list" style="list-style: none; display: none; text-align:center;">
+            		<li style="border:solid 1px #21255b; margin-top:2px;">내근</li>
+            		<li style="border:solid 1px #21255b; margin-top:2px;">외근</li>
+            		<li style="border:solid 1px #21255b; margin-top:2px;">파견</li>
+            		<li style="border:solid 1px #21255b; margin-top:2px;">출장</li>
             	</ul>
-
             </div>
+            
+            <br><br>
+            
+            <div>
+	         	<div id="btn_myCommute" style="font-size:14pt; font-weigt:bold;">근태관리</div>
+	            <ul id="btn_myCommute_list" style="list-style: none; display: none;">
+            		<li>&nbsp;&nbsp;&nbsp;내 근태 현황</li>
+            		<li>&nbsp;&nbsp;&nbsp;내 연차 내역</li>
+            	</ul>
+            </div>
+            
+            <div>
+	         	<div id="btn_depCommute" style="font-size:14pt; font-weigt:bold;">부서 근태관리</div>
+	         	
+	            <ul id="btn_depCommute_list" style="list-style: none; display: none;">
+	            
+	            	<li>
+            		<li>&nbsp;&nbsp;&nbsp;부서 근태현황</li>
+            		<li>&nbsp;&nbsp;&nbsp;부서 근태통계</li>
+            		
+            		
+            	</ul>
+            	
+            	
+            </div>
+            
         </div>
     </div>
 </div>

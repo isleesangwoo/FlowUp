@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.spring.app.commute.domain.CommuteVO;
 import com.spring.app.commute.model.CommuteDAO;
+import com.spring.app.employee.domain.DepartmentVO;
 
 @Service
 public class CommuteService_imple implements CommuteService {
@@ -55,6 +56,12 @@ public class CommuteService_imple implements CommuteService {
 	public List<Map<String, String>> getThisWeekWorkTime(String fk_employeeNo) {
 		List<Map<String, String>> mapList = dao.getThisWeekWorkTime(fk_employeeNo);
 		return mapList;
+	}
+
+	@Override
+	public List<DepartmentVO> getDepInfo() {
+		List<DepartmentVO> dvoList = dao.getDepInfo();
+		return dvoList;
 	}
 
 

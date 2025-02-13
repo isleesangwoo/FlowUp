@@ -51,6 +51,10 @@
 		where fk_employeeNo = #{fk_employeeNo} and startTime BETWEEN TRUNC(sysdate, 'iw') and TRUNC(sysdate, 'iw')+6.99999
    	</select>
    	
+   	<select id="getDepInfo" resultType="DepartmentVO">
+   		select departmentNo, FK_managerNo, departmentName
+   		from tbl_department
+   	</select>
 </mapper>
 
 

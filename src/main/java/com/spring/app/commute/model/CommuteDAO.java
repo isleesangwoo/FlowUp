@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.spring.app.commute.domain.CommuteVO;
+import com.spring.app.employee.domain.DepartmentVO;
 
 public interface CommuteDAO {
 
@@ -22,6 +23,8 @@ public interface CommuteDAO {
 	int statusChange(Map<String, String> paramap);
 
 	List<Map<String, String>> getThisWeekWorkTime(String fk_employeeNo);
+
+	List<DepartmentVO> getDepInfo();
 
 
 

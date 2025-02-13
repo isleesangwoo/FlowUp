@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.spring.app.commute.domain.CommuteVO;
+import com.spring.app.employee.domain.DepartmentVO;
 
 @Repository
 public class CommuteDAO_imple implements CommuteDAO {
@@ -55,6 +56,12 @@ public class CommuteDAO_imple implements CommuteDAO {
 	public List<Map<String, String>> getThisWeekWorkTime(String fk_employeeNo) {
 		List<Map<String, String>> mapList = sqlsession.selectList("commute.getThisWeekWorkTime", fk_employeeNo);
 		return mapList;
+	}
+
+	@Override
+	public List<DepartmentVO> getDepInfo() {
+		List<DepartmentVO> dvoList = sqlsession.selectList("commute.getDepInfo");
+		return dvoList; 
 	}
 
 

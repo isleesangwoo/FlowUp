@@ -115,9 +115,6 @@ $(document).ready(()=>{
         'justify-content': 'center'
     });
 
-    $('#goToWork').css({
-        'display': 'none'
-    });
 
     $('.bell').css({
         'display': 'none'
@@ -160,9 +157,6 @@ $(document).ready(()=>{
                 'justify-content': 'center'
             });
 
-            $('#goToWork').css({
-                'display': 'none'
-            });
 
             $('.bell').css({
                 'display': 'none'
@@ -204,9 +198,6 @@ $(document).ready(()=>{
                 'justify-content': ''
             });
 
-            $('#goToWork').css({
-                'display': ''
-            });
 
             $('.bell').css({
                 'display': ''
