@@ -20,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.app.commute.domain.CommuteVO;
 import com.spring.app.commute.service.CommuteService;
+import com.spring.app.employee.domain.DepartmentVO;
 import com.spring.app.employee.domain.EmployeeVO;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,31 +35,46 @@ public class CommuteController {
 	private CommuteService service;
 
 	@GetMapping("")
-	public ModelAndView commute(ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView commute(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
-		EmployeeVO loginuser = new EmployeeVO();
-		loginuser.setEmployeeNo("100010");
-		loginuser.setFK_positionNo("1");
-		loginuser.setFK_teamNo("1");
-		loginuser.setName("윤영주");
-		loginuser.setSecurityLevel("10");
-		loginuser.setEmail("mechanicon@naver.com");
-		loginuser.setMobile("01082487243");
-		loginuser.setDirectCal("01082487243");
-		loginuser.setBank("국민은행");
-		loginuser.setAccount("43340201215074");
-		loginuser.setMaritalStatus("1");
-		loginuser.setDisability("1");
-		loginuser.setEmploymentType("1");
-		loginuser.setRegisterDate("2025-02-11");
-		loginuser.setSalary("30000000");
-		loginuser.setStatus("1");
+		// 더미 로그인 정보
+		EmployeeVO evo = new EmployeeVO();
+		evo.setEmployeeNo("100010");
+		evo.setFK_positionNo("1");
+		evo.setFK_teamNo("1");
+		evo.setName("윤영주");
+		evo.setSecurityLevel("10");
+		evo.setEmail("mechanicon@naver.com");
+		evo.setMobile("01082487243");
+		evo.setDirectCal("01082487243");
+		evo.setBank("국민은행");
+		evo.setAccount("43340201215074");
+		evo.setMaritalStatus("1");
+		evo.setDisability("1");
+		evo.setEmploymentType("1");
+		evo.setRegisterDate("2025-02-11");
+		evo.setSalary("30000000");
+		evo.setStatus("1");
 		
 		HttpSession session = request.getSession();
-		session.setAttribute("loginuser", loginuser);
+		session.setAttribute("loginuser", evo);
+		
+		////////////////////////////////////////////////////
+		
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		List<DepartmentVO> dvoList = null;
+		
+		if(loginuser.getSecurityLevel() == "10") {
+			
+			dvoList = service.getDepInfo(); // 모든 부서 리스트 조회
+			
+		}
+		
+		mav.addObject(dvoList);
 		
 		mav.setViewName("mycontent/commute/commute");
-			
+		
 		return mav;
 	}
 	
@@ -107,8 +123,6 @@ public class CommuteController {
 		}
 		
 		// 주간 근무시간 구하기
-
-		// 이번주 근무시간 초회
 		int n_workTime_sec = 0;
 		int workTime_hour = 0;
 		int workTime_min = 0;
@@ -124,6 +138,8 @@ public class CommuteController {
 
 			n_workTime_sec += (int) (n_workTime_day * 24 * 60 * 60);
 
+			System.out.println("~~ 확인용 n_workTime_sec : " + n_workTime_sec);
+			
 		}
 
 		workTime_hour = (n_workTime_sec / 60 / 60);

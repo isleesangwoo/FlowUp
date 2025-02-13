@@ -1,46 +1,40 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
-	<div style="display:flex;">
+
+
+<jsp:include page="../../header/header.jsp" /> 
+
+<div style="display:flex;">
 	
-		<div style="width: 20%; height:100vh; border-right: solid 1px #000;">
-			<jsp:include page="../../common/commute_btn.jsp" /> 
-		</div>
+	<div style="width: var(--size250);; height:100vh; border-right: solid 1px #000;">
+		<jsp:include page="../../common/commute_btn.jsp" /> 
+	</div>
 	
-		<div>
-			<h1>근태</h1>
+	<div>
+		<h1>근태</h1>
 		<c:if test="${not empty requestScope.testList}">
+	
 			<c:forEach var="test" items="${requestScope.testList}">
-			<table>
-			<tr>
-				<td>${test.no}</td>
-				<td>${test.name}</td>
-				<td>${test.writeday}</td>
-			</tr>
-			</table>
+				<table>
+					<tr>
+						<td>${test.no}</td>
+						<td>${test.name}</td>
+						<td>${test.writeday}</td>
+					</tr>
+				</table>
 			</c:forEach>
 		</c:if>
+		
 		<c:if test="${empty requestScope.testList}">
 	    	<h1>데이터가 없습니다.</h1>
-	    </c:if>
+		</c:if>
 	    
     </div>
 	
-	
-	
-	</div>
-	
+</div>
 	
 	
 	
 	
-	
-</body>
-</html>
+<jsp:include page="../../footer/footer.jsp" /> 
