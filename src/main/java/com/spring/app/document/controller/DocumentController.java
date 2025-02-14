@@ -24,10 +24,18 @@ public class DocumentController {
 	@GetMapping("")
 	public ModelAndView board(ModelAndView mav) {
 		
-		List<Map<String, String>> testList = service.test();
+//		List<Map<String, String>> testList = service.test();
+//		mav.addObject("testList", testList);
 		
-		mav.addObject("testList", testList);
 		mav.setViewName("mycontent/document/document");
+		
+		return mav;
+	}
+	
+	@GetMapping("annual")
+	public ModelAndView annual(ModelAndView mav) {
+		
+		mav.setViewName("mycontent/document/annual");
 		
 		return mav;
 	}
