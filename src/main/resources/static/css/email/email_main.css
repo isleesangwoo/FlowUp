@@ -1,4 +1,8 @@
 
+:root{
+	--size4  : clamp(4px, 0.2083vw, 200px);
+}
+
 #main_section {
     display: flex;
     box-sizing: border-box;
@@ -111,6 +115,54 @@
     font-size: var(--size22);
 }
 
+#right_content_box {
+	display: flex;
+	align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--size18) var(--size24) var(--size18) var(--size24);
+}
+
+#modal_bar{
+    width: 100%;
+    height: auto;
+    border: 0px solid red;
+}
+
+#modal_title_box {
+    box-sizing: border-box;
+    padding: var(--size24) var(--size24) var(--size18) var(--size24);
+    border-bottom: 1px solid #c8c8c8;
+}
+
+#modal_title {
+    font-size: var(--size22);
+}
+
+#modal_content_box {
+	display: flex;
+	align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--size18) var(--size24) var(--size18) var(--size24);
+}
+
+#mailName {
+	font-size: var(--size14);
+}
+
+#mailTitle {
+	font-size: var(--size16);
+}
+
+#sendDate {
+	font-size: var(--size12);
+}
+
+#fileSize {
+	font-size: var(--size12);
+}
+
 #right_info {
     color: #999;
     font-size: var(--size12);
@@ -157,6 +209,23 @@
 }
 
 #mailListAllCheck:checked {
+    border-color: #2985db;
+    background-color: #2985db;
+}
+
+#mailOneCheck {
+    appearance: none; /* 기본(네이티브) 모양을 제거 */
+    box-sizing: border-box;
+    background-clip: content-box;
+    padding: calc(var(--size2) + var(--size2));
+    width: var(--size20);
+    height: var(--size20);
+    border: 1px solid gray;
+    cursor: pointer;
+    margin-right: var(--size12);
+}
+
+#mailOneCheck:checked {
     border-color: #2985db;
     background-color: #2985db;
 }

@@ -59,7 +59,6 @@
                 <div id="logo_box">
                     <span>
                         <img id="logo_img" src="<%=ctxPath%>/images/logo/logo.png" /> 
-                        <div id="logo_title">FLOW UP</div>
                     </span>
                     <span class="bell">
                         <i class="fa-regular fa-bell far"></i>
@@ -154,7 +153,7 @@
                               <a href="<%= ctxPath%>/calendar/"><i class="fa-regular fa-calendar-days"></i><span>캘린더</span></a>
                           </li>
                           <li>
-                              <a href="#"><i class="fa-regular fa-folder"></i><span>조직도</span></a>
+                              <a href="<%= ctxPath%>/organization/"><i class="fa-regular fa-folder"></i><span>조직도</span></a>
                           </li>
                           
                       </ul>
