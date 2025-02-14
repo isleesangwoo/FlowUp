@@ -1,27 +1,121 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<%
+   String ctxPath = request.getContextPath();
+   //     /myspring 
+%>      
+    
+
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+   <meta charset="UTF-8">
+   <%-- 직접 만든 css --%>
+   <link href="<%=ctxPath%>/css/employeeCss/login.css" rel="stylesheet">
+   <%-- Optional JavaScript --%>
+   <script type="text/javascript" src="<%=ctxPath%>/js/jquery-3.7.1.min.js"></script>
+   
+   
+   <script type="text/javascript">
+    
+    $(document).ready(function(){
+	    	/* $("div.errorMsg").hide(); */
+	    	
+	    	 const func_Login = function(){
+	   		  
+	   		  const userid = $("input#userid").val();
+	   		  const pwd = $("input#pwd").val();
+	   		  
+	   		  if(userid.trim() == "") {
+	   			  alert("아이디를 입력하세요!!");
+	   			  $("input#userid").val("");
+	   			  $("input#userid").focus();
+	   			  return; // 종료
+	   		  }
+	   		  
+	   		  if(pwd.trim() == "") {
+	   			  alert("비밀번호를 입력하세요!!");
+	   			  $("input#pwd").val("");
+	   			  $("input#pwd").focus();
+	   			  return; // 종료
+	   		  }
+	   		  
+	   		  /* const frm = document.loginFrm; */
+	   	  };
+	   	  
+	   	  
+	   	  $("button#loginBtn").click(function(){
+	   		  func_Login();
+	   	  });
+	   	  
+	   	  
+	   	  $("input:password[id='pwd']").keydown(function(e){
+	   			if(e.keyCode == 13) { // 엔터를 했을 경우
+	   				func_Login();
+	   			}  
+	   	  });
+    	
+    }); // end of $(document).ready(function(){})
+    
+    function func_login(){
+    	
+    	const frm = doucment.loginFrm;
+    	
+    	frm.action = "<%= ctxPath%>/employee/login";
+		frm.method = "post";
+	  	frm.submit();
+    	
+    	
+    }// end of  function func_login(){}-----------------
+    
+    </script>
+   
+    <title>loginpage</title>
+
 </head>
 <body>
-	<h1>로그인</h1>
-	<c:if test="${not empty requestScope.testList}">
-		<c:forEach var="test" items="${requestScope.testList}">
-		<table>
-		<tr>
-			<td>${test.no}</td>
-			<td>${test.name}</td>
-			<td>${test.writeday}</td>
-		</tr>
-		</table>
-		</c:forEach>
-	</c:if>
-	<c:if test="${empty requestScope.testList}">
-       <h1>데이터가 없습니다.</h1>
-    </c:if>
+
+    <div class="container">
+        <!-- 로고 -->
+        <div class="logo">
+            <h2>LOGO</h2>
+        </div>
+
+        <!-- 로그인 폼 -->
+        <form name="loginFrm">
+            <!-- 아이디 -->
+            <div class="inputDiv">
+                <input type="text" class="loginId loginInput" name="id" id="userid" placeholder="아이디">
+                
+                <!-- <div class="errorMsg">
+                    <span class="loginErrorId">!아이디가 틀렸습니다 올바른 아이디를 입력해주세요</span>
+                </div> -->
+               
+            </div>
+
+            <!-- 비밀번호 -->
+            <div class="inputDiv">
+                <input type="password" class="loginPasswd loginInput" name="passwd" id="pwd" placeholder="비밀번호">
+              <!-- div class="errorMsg">
+                <span class="loginErrorPwd">!비밀번호가 틀렸습니다 올바른 비밀번호를 입력해주세요</span>
+              </div> -->
+               
+            </div>
+
+            <!-- 로그인 버튼 -->
+            <div>
+                <input type="button" class="loginBtn loginInput" name="loginBtn" value="로그인">
+            </div>
+
+            <!-- 아이디/비밀번호 찾기-->
+            
+        </form>
+        <div class="findTagDiv">
+            <a href="#" class="findPwd">비밀번호찾기</a>
+        </div>
+    </div>
+    
 </body>
 </html>
