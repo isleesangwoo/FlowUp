@@ -16,135 +16,133 @@
 <%-- 각자 페이지에 해당되는 js 연결 --%>
 <script src="<%=ctxPath%>/js/email/email.js"></script>
 
-	<%-- 이곳에 각 해당되는 뷰 페이지를 작성해주세요 --%>
-	<!-- 메일작성 폼 -->
-    <div id="modal" class="modal_bg">
-    </div>
-    <div class="modal_container">
+<script type="text/javascript">
 
-        <!-- 여기에 메일작성 폼을 만들어주세요!! -->
-        <!-- 여기에 메일작성 폼을 만들어주세요!! -->
-        <!-- 여기에 메일작성 폼을 만들어주세요!! -->
 
-    </div>
-    <!-- 메일작성 폼 -->
+$(document).ready(function(){
+	
+
+
+//==== 풀캘린더와 관련된 소스코드 시작(화면이 로드되면 캘린더 전체 화면 보이게 해줌) ==== //
+var calendarEl = document.getElementById('calendar');
+    
+var calendar = new FullCalendar.Calendar(calendarEl, {
+ // === 구글캘린더를 이용하여 대한민국 공휴일 표시하기 시작 === //
+    
+	googleCalendarApiKey : "AIzaSyASM5hq3PTF2dNRmliR_rXpjqNqC-6aPbQ",
+    eventSources :[ 
+        {
+        //  googleCalendarId : '대한민국의 휴일 캘린더 통합 캘린더 ID'
+            googleCalendarId : 'ko.south_korea#holiday@group.v.calendar.google.com'
+          , color: 'white'   // 옵션임! 옵션참고 사이트 https://fullcalendar.io/docs/event-source-object
+          , textColor: 'red' // 옵션임! 옵션참고 사이트 https://fullcalendar.io/docs/event-source-object 
+        } 
+    ],
+ // === 구글캘린더를 이용하여 대한민국 공휴일 표시하기 끝 === //
+
+    initialView: 'dayGridMonth',
+    locale: 'ko',
+    selectable: true,
+    editable: false,
+    headerToolbar: {
+    	  left: 'dayGridMonth dayGridWeek dayGridDay',
+          center: 'title',
+          right: 'prev,next today'
+    },
+    dayMaxEventRows: true, // for all non-TimeGrid views
+    views: {
+      timeGrid: {
+        dayMaxEventRows: 3 // adjust to 6 only for timeGridWeek/timeGridDay
+      }
+    },
+	
+    // ===================== DB 와 연동하는 법 시작 ===================== //
+	events:function(info, successCallback, failureCallback) {
+
+    	 
+    
+    }, // end of events:function(info, successCallback, failureCallback) {}---------
+    // ===================== DB 와 연동하는 법 끝 ===================== //
+    
+	// 풀캘린더에서 날짜 클릭할 때 발생하는 이벤트(일정 등록창으로 넘어간다)
+    dateClick: function(info) {
+  	 // alert('클릭한 Date: ' + info.dateStr); // 클릭한 Date: 2021-11-20
+  	    $(".fc-day").css('background','none'); // 현재 날짜 배경색 없애기
+  	    info.dayEl.style.backgroundColor = '#b1b8cd'; // 클릭한 날짜의 배경색 지정하기
+  	    $("form > input[name=chooseDate]").val(info.dateStr);
+  	    
+  	    var frm = document.dateFrm;
+  	    frm.method="POST";
+  	    frm.action="<%= ctxPath%>/schedule/insertSchedule";
+  	    frm.submit();
+  	  },
+  	  
+  	 // === 사내캘린더, 내캘린더, 공유받은캘린더의 체크박스에 체크유무에 따라 일정을 보여주거나 일정을 숨기게 하는 것이다. === 
+	 eventDidMount: function (arg) {
+            var arr_calendar_checkbox = document.querySelectorAll("input.calendar_checkbox"); 
+            // 사내캘린더, 내캘린더, 공유받은캘린더 에서의 모든 체크박스임
+            
+            arr_calendar_checkbox.forEach(function(item) { // item 이 사내캘린더, 내캘린더, 공유받은캘린더 에서의 모든 체크박스 중 하나인 체크박스임
+	              if (item.checked) { 
+	            	// 사내캘린더, 내캘린더, 공유받은캘린더 에서의 체크박스중 체크박스에 체크를 한 경우 라면
+	                
+	            	if (arg.event.extendedProps.cid === item.value) { // item.value 가 체크박스의 value 값이다.
+	                	// console.log("일정을 보여주는 cid : "  + arg.event.extendedProps.cid);
+	                	// console.log("일정을 보여주는 체크박스의 value값(item.value) : " + item.value);
+	                    
+	                	arg.el.style.display = "block"; // 풀캘린더에서 일정을 보여준다.
+	                }
+	              } 
+	              
+	              else { 
+	            	// 사내캘린더, 내캘린더, 공유받은캘린더 에서의 체크박스중 체크박스에 체크를 해제한 경우 라면
+	                
+	            	if (arg.event.extendedProps.cid === item.value) {
+	            		// console.log("일정을 숨기는 cid : "  + arg.event.extendedProps.cid);
+	                	// console.log("일정을 숨기는 체크박스의 value값(item.value) : " + item.value);
+	                	
+	            		arg.el.style.display = "none"; // 풀캘린더에서 일정을  숨긴다.
+	                }
+	              }
+            });// end of arr_calendar_checkbox.forEach(function(item) {})------------
+      }
+});
+
+calendar.render();  // 풀캘린더 보여주기
+
 
 	
-	<!-- 왼쪽 사이드바 -->
-    <div id="left_bar">
 
-        <!-- === 메일 작성 버튼 === -->
-        <button id="goMail">
-            <i class="fa-solid fa-plus"></i>
-            <span>메일쓰기</span>
-        </button>
-        <!-- === 메일 작성 버튼 === -->
+	
+})
 
-        <div class="mail_menu_container">
-            <ul>
-                <li>
-                    <a href="#">받은메일함</a>
-                    <span class="mail_cnt">5</span> <!-- 콤마처리 해주세요 -->
-                </li>
-                <li><a href="#">보낸메일함</a></li>
-                <li><a href="#">임시보관함</a></li>
-                <li><a href="#">태그메일함</a></li>
-                <li><a href="#">중요메일함</a></li>
-                <li><a href="#">휴지통</a></li>
-            </ul>
-        </div>
-    </div>
-    <!-- 왼쪽 사이드바 -->
+
+</script>
+
+
+
+	<%-- 이곳에 각 해당되는 뷰 페이지를 작성해주세요 --%>
+	
+	<jsp:include page="./calendar_bar.jsp" /> 
 
     <!-- 오른쪽 바 -->
     <div id="right_bar">
         <div id="right_title_box">
-            <span id="right_title">Inbox</span>
-            <span id="right_info">
-                <span>
-                    All
-                    <span class="right_info_cnt">66</span> <!-- 전체 메일의 개수를 띄워주세요! -->
-                </span>
-                <span>/</span>
-                <span>
-                    Unread
-                    <span class="right_info_cnt">10</span> <!-- 읽은 메일의 개수를 띄워주세요! -->
-                </span>
-            </span>
+            <span id="right_title">Calendar</span>
+            
 
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
-            <div id="right_menu_container">
-                <input id="mailListAllCheck" type="checkbox" />
-                <span>
-                    <a href="#">
-                        <span>답장</span>
-                        <i class="fa-solid fa-share"></i>
-                    </a>
-                </span>
-                
-                <span>
-                    <a href="#">
-                        <span>삭제</span>
-                        <i class="fa-regular fa-trash-can"></i>
-                    </a>
-                </span>
-                <span>
-                    <a href="#">
-                        <span>태그</span>
-                        <i class="fa-solid fa-tags"></i>
-                    </a>
-                </span>
-                <span>
-                    <a href="#">
-                        <span>읽음</span>
-                        <i class="fa-regular fa-envelope-open"></i>
-                    </a>
-                </span>
-                <span>
-                    <a href="#">
-                        <span>메일이동</span>
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    </a>
-                </span>
-
-                <span id="reBtn_box">
-                    <span>
-                        <span id="sort_btn" title="정렬"> <!-- 정렬 버튼입니다! -->
-                            <i class="fa-solid fa-arrow-down-short-wide"></i>
-                            <ul>
-                                <li class="list_title">정렬순서</li>
-                                <!-- 각 li 태그 마다 ajax 보내주세요 -->
-                                <li>제목</li> 
-                                <li>받은날짜</li>
-                                <li>크기</li>
-
-                                <li class="list_title">빠른검색</li>
-                                <li>중요메일</li>
-                                <li>안읽은 메일</li>
-                                <li>읽은 메일</li>
-                                <li>오늘온 메일</li>
-                                <li>어제온 메일</li>
-                                <!-- 각 li 태그 마다 ajax 보내주세요 -->
-                            </ul>
-                        </span>
-                        <span id="re_btn" title="새로고침">
-                            <i class="fa-solid fa-rotate-right"></i>
-                        </span>
-                        <span id="sortCnt_btn">
-                            <span>20</span>
-                            <i class="fa-solid fa-angle-right"></i>
-                            <ul>
-                                <li>5</li>
-                                <li>10</li>
-                                <li>20</li>
-                            </ul>
-                        </span>
-                    </span>
-                </span>
-            </div>
+            
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
         </div>
         
+
+		
+
+		<%-- 풀캘린더가 보여지는 엘리먼트  --%>
+		<div id="calendar"></div>
+
+
     </div>
     <!-- 오른쪽 바 -->
 	<%-- 이곳에 각 해당되는 뷰 페이지를 작성해주세요 --%>
