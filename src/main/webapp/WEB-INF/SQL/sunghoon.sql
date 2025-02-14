@@ -1,9 +1,10 @@
-CREATE table tbl_documentType
-(documentCode   number          not null
-,documentType   NVARCHAR2(20)   not null
-,constraint PK_docType_documentCode primary key(documentCode)
-);
+-- CREATE table tbl_documentType
+-- (documentCode   number          not null
+-- ,documentType   NVARCHAR2(20)   not null
+-- ,constraint PK_docType_documentCode primary key(documentCode)
+-- );
 -- Table TBL_DOCUMENTTYPE이(가) 생성되었습니다.
+-- Table TBL_DOCUMENTTYPE이(가) 삭제되었습니다.
 
 insert into tbl_documentType(documentCode, documentType) values (1, '휴가신청');
 insert into tbl_documentType(documentCode, documentType) values (2, '업무기안');
@@ -26,14 +27,15 @@ CREATE table tbl_document
 );
 -- Table TBL_DOCUMENT이(가) 생성되었습니다.
 
-CREATE table tbl_document_temp
-(documentTempNo number      not null
-,fk_documentNo  number      not null
-,writeDate      Date        not null
-,constraint     PK_document_temp_docTempNo primary key(documentTempNo)
-,constraint     fk_doc_temp_documentNo foreign key(fk_documentNo) references tbl_document(documentNo) on delete cascade
-);
+-- CREATE table tbl_document_temp
+-- (documentTempNo number      not null
+-- ,fk_documentNo  number      not null
+-- ,writeDate      Date        not null
+-- ,constraint     PK_document_temp_docTempNo primary key(documentTempNo)
+-- ,constraint     fk_doc_temp_documentNo foreign key(fk_documentNo) references tbl_document(documentNo) on delete cascade
+-- );
 -- Table TBL_DOCUMENT_TEMP이(가) 생성되었습니다.
+-- Table TBL_DOCUMENT_TEMP이(가) 삭제되었습니다.
 
 CREATE table tbl_document_attach
 (documentAttachNo   number          not null
@@ -113,7 +115,7 @@ CREATE table tbl_expense_detail
 );
 -- Table TBL_EXPENSE_DETAIL이(가) 생성되었습니다.
 
-drop table tbl_draft_expense purge;
+drop table tbl_document_temp purge;
 select * from tab;
 
 select (Endtime - starttime)*24

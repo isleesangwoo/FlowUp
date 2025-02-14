@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.spring.app.commute.domain.CommuteVO;
+import com.spring.app.employee.domain.DepartmentVO;
 
 public interface CommuteService {
 	
@@ -24,6 +25,10 @@ public interface CommuteService {
 
 	// 이번주 근무시간 조회하는 메소드 select
 	List<Map<String, String>> getThisWeekWorkTime(String fk_employeeNo);
+
+	// 모든 부서정보 조회 select 
+	List<DepartmentVO> getDepInfo();
+
 
 
 	
