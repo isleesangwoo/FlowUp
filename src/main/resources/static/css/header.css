@@ -335,9 +335,6 @@ header:nth-child(1) {
 }
 
 #goToWork {
-    display: none;
-    position: absolute;
-    bottom: 0px;
     width: 100%;
     height: auto;
     background-color: var(--whiteColor);

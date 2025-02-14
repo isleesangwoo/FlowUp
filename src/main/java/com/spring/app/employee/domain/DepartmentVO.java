@@ -2,9 +2,9 @@ package com.spring.app.employee.domain;
 
 public class DepartmentVO {
 	
-	private String departmentNo;      // 부서번호
-	private String FK_managerNo;      // 부서장사번
-	private String teamName;          // 부서명
+	private String departmentNo;      	// 부서번호
+	private String FK_managerNo;      	// 부서장사번
+	private String departmentName;   	// 부서명
 	
 	
 	///////////////////////////////////////////////
@@ -25,14 +25,16 @@ public class DepartmentVO {
 	public void setFK_managerNo(String fK_managerNo) {
 		FK_managerNo = fK_managerNo;
 	}
-	
-	public String getTeamName() {
-		return teamName;
+
+	public String getDepartmentName() {
+		return departmentName;
+	}
+
+	public void setDepartmentName(String departmentName) {
+		this.departmentName = departmentName;
 	}
 	
-	public void setTeamName(String teamName) {
-		this.teamName = teamName;
-	}
+	
 	
 	
 

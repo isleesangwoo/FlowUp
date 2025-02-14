@@ -10,7 +10,7 @@
 
 #left_bar {
     position: sticky;
-    top: var(--size60);
+    top: 0px;
     width: var(--size250);;
     height: 100vh;
     background-color: #eff4fc;
