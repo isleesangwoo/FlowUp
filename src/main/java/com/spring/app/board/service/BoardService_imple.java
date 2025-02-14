@@ -18,10 +18,25 @@ public class BoardService_imple implements BoardService {
 	@Autowired
 	private BoardDAO dao;
 
+	// 게시판 생성하기
 	@Override
-	public List<Map<String, String>> test() {
-		List<Map<String, String>> testList = dao.test();
-		return testList;
+	public int addBoard() throws Exception {
+		int n = dao.addBoard();
+		return n;
+	}
+	
+	// 게시판 수정하기
+	@Override
+	public int updateBoard() throws Exception {
+		int n = dao.updateBoard();
+		return n;
+	}
+
+	// 게시판삭제하기(status 값변경)
+	@Override
+	public int deleteBoard() {
+		int n = dao.deleteBoard();
+		return n;
 	}
 
 	
