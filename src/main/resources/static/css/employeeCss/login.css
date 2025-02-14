@@ -1,0 +1,60 @@
+@charset "utf-8";
+
+.container{
+    margin: 10% auto;
+    text-align: center;
+    width: 30%;
+    padding: 3%;
+
+    /* border: 1px rgb(199, 199, 199) solid; */
+}
+
+.logo{
+    margin-bottom: 50px;
+}
+
+.loginInput{
+    width: 70%;
+    height: 45px;
+    margin: 6px 0;
+    border-radius: 5px;
+    border:1px solid rgb(197, 197, 197);
+}
+
+.loginBtn{
+    color: white;
+    border: none;
+    background-color:#0d6efd;
+}
+
+.loginBtn:hover{
+	background-color:#0d6efd;
+    cursor: pointer;
+}
+
+.inputDiv{
+    margin-bottom: 15px;
+}
+.findTagDiv{
+    margin-top: 20px;
+    width: 85%;
+    /* border: 1px solid red; */
+    height: 30px;
+}
+.findPwd{
+    font-size: 12pt;
+    float: right;
+    text-decoration: none;
+    color: rgba(112, 112, 112, 1);
+}
+
+.errorMsg{
+    display: flex;
+    /* border: 1px gray solid; */
+}
+
+.loginErrorId,.loginErrorPwd{
+    margin-left:  15%;
+    color: rgb(226, 38, 38);
+    font-size: 10pt;
+}
