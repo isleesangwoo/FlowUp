@@ -26,8 +26,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 						 ,"com.spring.app.commute.model"
 						 ,"com.spring.app.document.model"
 						 ,"com.spring.app.employee.model"
-						 ,"com.spring.app.mail.model"
-						 }, sqlSessionFactoryRef="sqlSessionFactory_final") 
+						 ,"com.spring.app.mail.model"}, sqlSessionFactoryRef="sqlSessionFactory") 
 public class Datasource_finalorauser3_Configuration {
 
 	@Value("${mybatis.mapper-locations}")  // *.yml 파일에 있는 설정값을 가지고 온 것으로서 mapper 파일의 위치를 알려주는 것이다.
@@ -35,7 +34,7 @@ public class Datasource_finalorauser3_Configuration {
 	
  //	@Bean(name = "dataSource")  와  @Bean @Qualifier("dataSource") 은 같은 것이다.  
 	@Bean
-	@Qualifier("dataSource_final")
+	@Qualifier("dataSource")
     @ConfigurationProperties(prefix = "spring.datasource-finalorauser3")
     @Primary
     public DataSource dataSource(){
@@ -57,9 +56,9 @@ public class Datasource_finalorauser3_Configuration {
 	
  // @Bean(name = "sqlSessionFactory") 또는 
     @Bean
-    @Qualifier("sqlSessionFactory_final")
+    @Qualifier("sqlSessionFactory")
     @Primary
-    public SqlSessionFactory sqlSessionFactory(@Qualifier("dataSource_final") DataSource dataSource, ApplicationContext applicationContext) throws Exception{ 
+    public SqlSessionFactory sqlSessionFactory(@Qualifier("dataSource") DataSource dataSource, ApplicationContext applicationContext) throws Exception{ 
         SqlSessionFactoryBean sqlSessionFactoryBean = new SqlSessionFactoryBean();
         sqlSessionFactoryBean.setDataSource(dataSource);
         sqlSessionFactoryBean.setConfigLocation(applicationContext.getResource("classpath:mybatis/mybatis-config.xml")); 
@@ -71,9 +70,9 @@ public class Datasource_finalorauser3_Configuration {
 
  // @Bean(name = "sqlsession") 또는 
     @Bean
-    @Qualifier("sqlsession_final")
+    @Qualifier("sqlsession")
     @Primary
-    public SqlSessionTemplate sqlSessionTemplate(@Qualifier("sqlSessionFactory_final") SqlSessionFactory sqlSessionFactory) {
+    public SqlSessionTemplate sqlSessionTemplate(@Qualifier("sqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
     /*
