@@ -8,33 +8,20 @@
 <div style="display:flex;">
 	
 	<div style="width: var(--size250);; height:100vh; border-right: solid 1px #000;">
+	
 		<jsp:include page="../../common/commute_btn.jsp" /> 
+		
 	</div>
 	
-	<div>
-		<h1>근태</h1>
-		<c:if test="${not empty requestScope.testList}">
 	
-			<c:forEach var="test" items="${requestScope.testList}">
-				<table>
-					<tr>
-						<td>${test.no}</td>
-						<td>${test.name}</td>
-						<td>${test.writeday}</td>
-					</tr>
-				</table>
-			</c:forEach>
-		</c:if>
+	<div style="width:100%; padding:50px;">
+	
+		<h1 style="text-align:center; width:100%;">근태페이지</h1>
 		
-		<c:if test="${empty requestScope.testList}">
-	    	<h1>데이터가 없습니다.</h1>
-		</c:if>
-	    
     </div>
 	
+	
+	
 </div>
-	
-	
-	
-	
+
 <jsp:include page="../../footer/footer.jsp" /> 

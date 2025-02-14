@@ -210,6 +210,8 @@
 <script type="text/javascript">
 	$(document).ready(()=>{
 	
+		
+		
 	    // ========== 시간을 알려주는 메소드 ========== //
 	    function updateClock() {
 	        const now = new Date();
@@ -361,9 +363,19 @@
 	    });
 	  
 	    
+	    $("div.deptCommuteTable").click(e=>{
+	    	
+	    	const $btn = $(e.target);
+	    	
+	    });
 	  
 	
-	    
+ 		$("div.deptCommuteCart").click(e=>{
+	    	
+	    	const $btn = $(e.target);
+	    	
+	    	
+	    });
 	    
 			    
 	    
@@ -387,8 +399,8 @@
 				
 				console.log("~~확인용 n => " + json.n);
 				
-				const todayStartTime = json.startTime;
-				const todayEndTime = json.endTime;
+				const todayStartTime = (json.startTime).substring(11);
+				const todayEndTime = (json.endTime).substring(11);
 				
 				if(json.n == 0) { // 아직 출근안함 
 					$("#startWork").attr("disabled", false);// 출근버튼 활성화
@@ -499,37 +511,63 @@
                 <button type="button" id="endWork">퇴근</button> <!-- 해당버튼 클릭시 퇴근시간이 input태그의 value값에 들어가게 해주세요 -->
                 <!-- 출근시간과 퇴근시간의 차에 시급을 곱한 값이 일당입니다. -->
             </div>
-            <div style="margin-top:5px;">
-            	<div id="btn_status" style="font-size:14pt; font-weigt:bold; border:solid 1px #21255b; text-align:center;">업무시작전</div>
-            	<ul id="btn_status_list" style="list-style: none; display: none; text-align:center;">
-            		<li style="border:solid 1px #21255b; margin-top:2px;">내근</li>
-            		<li style="border:solid 1px #21255b; margin-top:2px;">외근</li>
-            		<li style="border:solid 1px #21255b; margin-top:2px;">파견</li>
-            		<li style="border:solid 1px #21255b; margin-top:2px;">출장</li>
+            
+            <div style="margin-top:6px;">
+            
+            	<div id="btn_status" style="font-size:14pt; font-weigt:bold; border:solid 1px #21255b; text-align:center; border-radius: 6px; margin-bottom:3px; height:35px;">업무시작전</div>
+            	
+            	<ul id="btn_status_list" style="list-style: none; display: none; text-align:center; border:solid 1px #21255b; border-radius: 6px; ">
+            		<li style="margin-top:3px; margin-bottom:3px;">내근</li>
+            		<li style="margin-top:3px; margin-bottom:3px;">외근</li>
+            		<li style="margin-top:3px; margin-bottom:3px;">파견</li>
+            		<li style="margin-top:3px; margin-bottom:3px;">출장</li>
             	</ul>
             </div>
             
-            <br><br>
+            <br>
             
             <div>
 	         	<div id="btn_myCommute" style="font-size:14pt; font-weigt:bold;">근태관리</div>
-	            <ul id="btn_myCommute_list" style="list-style: none; display: none;">
-            		<li>&nbsp;&nbsp;&nbsp;내 근태 현황</li>
-            		<li>&nbsp;&nbsp;&nbsp;내 연차 내역</li>
-            	</ul>
+	            <div id="btn_myCommute_list" style="list-style: none; display: none;">
+            		<div>&nbsp;&nbsp;&nbsp;내 근태 현황</div>
+            		<div>&nbsp;&nbsp;&nbsp;내 연차 내역</div>
+            	</div>
             </div>
             
-            <div>
+            <div style="margin-top:5px;">
 	         	<div id="btn_depCommute" style="font-size:14pt; font-weigt:bold;">부서 근태관리</div>
 	         	
-	            <ul id="btn_depCommute_list" style="list-style: none; display: none;">
+	            <div id="btn_depCommute_list" style="list-style: none; display: none;">
 	            
-	            	<li>
-            		<li>&nbsp;&nbsp;&nbsp;부서 근태현황</li>
-            		<li>&nbsp;&nbsp;&nbsp;부서 근태통계</li>
+	            	<c:if test="${sessionScope.loginuser.securityLevel == '10'}">
+	            	
+	            		<c:forEach items="${requestScope.dvoList}" var="dvo">
+	            			
+		            		<div style="margin-bottom:10px;">
+		            			<div>${dvo.departmentName}</div>
+			            		<div class="deptCommuteTable">&nbsp;&nbsp;&nbsp;부서 근태현황</div>
+			            		<div class="deptCommuteCart">&nbsp;&nbsp;&nbsp;부서 근태통계</div>
+			            		<input type="hidden" value="${dvo.departmentNo}" />
+		            		</div>
+		            		
+		            		
+	            		</c:forEach>
+		            	
+            		</c:if>
+            		
+            		<c:if test="${sessionScope.loginuser.securityLevel != '10'}">
+	            		
+	            		<div>
+			            	<div>내 부서이름</div>
+			            	<div class="deptCommuteTable">&nbsp;&nbsp;&nbsp;부서 근태현황</div>
+			            	<div class="deptCommuteCart">&nbsp;&nbsp;&nbsp;부서 근태통계</div>
+			            	<input type="hidden" value="" />
+	            		</div>
+	            		
+            		</c:if>
             		
             		
-            	</ul>
+            	</div>
             	
             	
             </div>

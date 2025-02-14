@@ -3,9 +3,12 @@ package com.spring.app.commute.model;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Mapper;
+
 import com.spring.app.commute.domain.CommuteVO;
 import com.spring.app.employee.domain.DepartmentVO;
 
+@Mapper
 public interface CommuteDAO {
 
 	// 오늘자 근태 조회 select
