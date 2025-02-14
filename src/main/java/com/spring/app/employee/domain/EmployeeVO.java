@@ -24,8 +24,9 @@ public class EmployeeVO {
      private String reasonForLeaving;   // 퇴직사유
      private String birth;				// 생년월일
      private String profileImg;			// 프로필 사진
-     private int lastChangePwd;		// 마지막 비밀번호 변경일
+     private int    lastChangePwd;		// 마지막 비밀번호 변경일
      private String motive;				// 동기
+     private String departmentNo;		//부서번호
 	
      private boolean requireLastChangePwd = false; 
      
@@ -216,6 +217,14 @@ public class EmployeeVO {
 
 	public void setMotive(String motive) {
 		this.motive = motive;
+	}
+
+	public String getDepartmentNo() {
+		return departmentNo;
+	}
+
+	public void setDepartmentNo(String departmentNo) {
+		this.departmentNo = departmentNo;
 	}
 	
 	

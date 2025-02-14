@@ -62,14 +62,15 @@ create table tbl_employee(
      constraint CK_tbl_employee_status check (status in (0,1))
  );
  
-create sequence FK_teamSeq
-start with 1
+create sequence employeeNo 
+start with 100001
 increment by 1
 nomaxvalue
 nominvalue
 nocycle
 nocache;
 
+commit;
 ----------------------------------------
 -- 직급 테이블
 create table tbl_position(
@@ -77,6 +78,14 @@ create table tbl_position(
     positionName    nvarchar2(10)    not null, --직급명
     constraint PK_tbl_position_positionNo primary key (positionNo)
 );
+
+create sequence posiotionNo  
+start with 100001
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
 ----------------------------------------
 -- 부서 테이블
 create table tbl_department(
@@ -86,6 +95,14 @@ create table tbl_department(
     constraint PK_tbl_department_departmentNo primary key (department),
     constraint FK_tbl_team_FK_managerNo foreign key (FK_managerNo) references tbl_employee(employeeNo)
 );
+
+create sequence departmentNo 
+start with 100001
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
 
 ----------------------------------------
 -- 팀 테이블
@@ -99,9 +116,11 @@ create table tbl_team(
     constraint FK_tbl_team_FK_departmentNo foreign key (FK_departmentNo) references tbl_department(departmentNo)
 );
 
+select * from tbl_team;
 
-create sequence teamSeq
-start with 1
+
+create sequence teamNo
+start with 100001
 increment by 1
 nomaxvalue
 nominvalue
@@ -125,6 +144,16 @@ create  table tbl_addressBook(
     constraint PK_tbl_addressBook_addressBookNo primary key (addressBook),
     constraint FK_tbl_addressBook_employeeNo foreign key (FK_employeeNo) references tbl_employee(employeeNo)
 );
+
+
+create sequence ADRSBNO
+start with 100001
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
 -----------------------------------------
 -- 그룹 테이블
 create table tbl_group(
@@ -135,6 +164,106 @@ create table tbl_group(
     constraint PK_tbl_group_groupNo primary key (groupNo),
     constraint FK_tbl_group_FK_addressBookNo foreign key (FK_addressBookNo) references tbl_addressBook(addressBookNo)
 );
+
+create sequence groupNo 
+start with 100001
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+
+commit;
+
+
+
+----------------------------------------------------------------------------------------------------
+
+
+ALTER TABLE tbl_employee
+DROP CONSTRAINT FK_teamSeq;
+commit;
+
+select  * from tbl_employee;
+
+-- 로그인 sql 문
+
+--
+
+
+select employeeNo, FK_positionNo, PASSWD,NAME, SECURITYLEVEL,email, mobile, directCal , bank, account, maritalstatus,
+       disability,employmenttype,registerdate,salary,status,motive
+from tbl_employee 
+where employeeNo = 100011 and passwd = 'qwer1234$' and status = 1;
+
+insert into tbl_employee(employeeNo, FK_positionNo,FK_teamNo, PASSWD,NAME, securityLevel,email, mobile, directCal , bank, account, maritalstatus,
+                         disability,employmenttype,registerdate,salary,status,motive)
+                 values(employeeNo.nextval,1,1,'qwer1234$','이지혜',10,'banana5092@naver.com',01099998888,2110001111,'농협',3010270414861,1,1,1,sysdate,30000000,1,'동기');
+commit;
+delete from tbl_employee where employeeNo = 100008;
+
+
+alter table tbl_employee add profileImg varchar2(50);
+commit;
+
+
+alter table tbl_employee add birth date;
+commit;
+
+SELECT * FROM tbl_employee WHERE status = 1;
+
+
+
+select * 
+from  tbl_team;
+
+desc tbl_team;
+desc tbl_department;
+
+alter table tbl_department rename column  TEAMNAME TO departmentname;
+commit;
+
+-- join X 로그인
+
+select employeeNo, FK_positionNo, passwd, name, securitylevel, email, mobile, directcal, bank, account, maritalstatus,
+ disability,employmenttype,registerdate,salary,status,motive
+from tbl_employee
+where employeeNo = 100011 and passwd = 'qwer1234$' and status = 1;
+
+
+
+-- JOIN LOGIN
+select employeeNo, FK_positionNo, PASSWD,NAME, SECURITYLEVEL,email, mobile, directCal , bank, account, maritalstatus,
+       disability,employmenttype,registerdate,salary,status,motive,  
+       T.fk_departmentno
+from tbl_employee E left join tbl_team T
+on E.fk_teamno = T.teamno
+where employeeNo = 100011 and passwd = 'qwer1234$' and status = 1;
+
+
+desc tbl_team;
+
+ALTER TABLE tbl_team DROP foreign key FK_TBL_TEAM_FK_EMPLOYEENO;
+
+
+
+alter table tbl_employee add constraint FK_positionNo foreign key(FK_positionNo) references tbl_position(posiotionNo);
+commit;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
