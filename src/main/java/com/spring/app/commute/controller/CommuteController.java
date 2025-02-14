@@ -4,6 +4,7 @@ package com.spring.app.commute.controller;
 import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -63,15 +64,22 @@ public class CommuteController {
 		
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
-		List<DepartmentVO> dvoList = null;
+		List<DepartmentVO> dvoList = new ArrayList<>();;
 		
 		if(loginuser.getSecurityLevel() == "10") {
 			
 			dvoList = service.getDepInfo(); // 모든 부서 리스트 조회
 			
 		}
+
 		
-		mav.addObject(dvoList);
+		for(DepartmentVO dvo : dvoList) {
+			System.out.println(dvo.getDepartmentName());
+		}
+		
+		
+		
+		mav.addObject("dvoList", dvoList);
 		
 		mav.setViewName("mycontent/commute/commute");
 		
