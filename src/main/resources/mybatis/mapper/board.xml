@@ -4,28 +4,66 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
-<mapper namespace="com/spring/app/board/model/BoardDAO">
+<mapper namespace="com.spring.app.board.model.BoardDAO">
 
-<!-- 게시판 생성하기 
-<insert id="addBoard">
+<!--  생성된 게시판 LeftBar에 나열하기 (출력) -->
+<select id="selectBoardList" resultType="BoardVO">
+select boardNo, boardName, boardDesc, isPublic, createdBy, createdAt, status
+from tbl_board
+WHERE status = 1
+ORDER BY createdAt DESC
+</select>
+
+<!-- 게시판 생성하기 -->
+<insert id="addBoard" parameterType="BoardVO">
 	insert into tbl_board (boardNo,boardName,boardDesc,isPublic,createdBy) 
-	values(#{boardSeq.nextval(),#{boardName},#{boardDesc},#{isPublic},#{createdBy})
+	values(boardSeq.nextval,#{boardName},#{boardDesc},#{isPublic},#{createdBy})
 </insert>
--->
 
-<!-- 게시판 수정하기 
-<update id="updateBoard">
-	update tbl_board set boardName = #{}, boardDesc = #{}, isPublic = #{}
-	where boardNo = #{}
+<!-- 게시판 생성의 공개여부 부서 설정 시 부서 워드 검색(부서 검색)  -->
+<select id="addBoardSearchDept" parameterType="map" resultType="map">
+	select DEPARTMENTNAME,DEPARTMENTNO
+	from tbl_department
+	where departmentname like '%'||#{searchWord}||'%'
+</select>
+
+<!-- 게시판 생성의 공개여부 부서 설정 시 부서 전체 검색(부서 검색) -->
+<select id="addBoardSearchAllDept" resultType="map">
+	select DEPARTMENTNAME,DEPARTMENTNO
+	from tbl_department
+</select>
+
+
+<!-- 게시판 수정하기 -->
+<update id="updateBoard" parameterType="BoardVO">
+	update tbl_board set boardName = #{boardName}, boardDesc = #{boardDesc}, isPublic = #{isPublic}
+	where boardNo = #{boardNo}
 </update>
--->
 
-<!-- 게시판삭제하기(status 값변경) 
-<update id="deleteBoard">
+
+<!--  수정할 input 요소에 기존값을 뿌려주기 위함. -->
+<select id="getBoardDetailByNo" parameterType="String" resultType="BoardVO">
+	select boardno, boardname, boarddesc, ispublic, createdby
+	from tbl_board
+	where boardNo = #{boardNo}
+</select>
+
+
+<!-- 게시판삭제(비활성화)하기(status 값변경)-->
+<update id="disableBoard" parameterType="String">
 	update tbl_board set status=0
-	where boardNo = #{}
+	where boardNo = #{boardNo}
 </update>
--->
+
+<!-- 글쓰기 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기 -->
+<select id="getAccessibleBoardList"  parameterType="String" resultType="map">
+	SELECT to_char(b.boardNo) AS boardNo , b.boardName
+	FROM tbl_board b
+	LEFT JOIN tbl_board_department bd ON b.boardNo = bd.fk_boardNo
+	WHERE b.isPublic = 1 and status = 1 
+   OR bd.fk_departmentNo = (SELECT fk_departmentNo FROM tbl_employee WHERE employeeNo = 100013)
+</select>
+
 
 
 </mapper>

@@ -46,7 +46,7 @@ $(document).ready(()=>{
 		   
 		   else {
 				   $.ajax({
-					   url: ctxPath + "/board/addBoardSearchDept",
+					   url: ctxPath + "/board/addBoardSearchDept", // 해당부서 검색과 부서 전체조회 add(게시판 추가)에서 쓰던 것을 그대로 써도 됨.
 					   type:"get",
 					   data:{
 							"searchWord":$("input[name='searchWord']").val()
@@ -113,8 +113,8 @@ $(document).ready(()=>{
 		}
 	});
 	
-	$(document).on("click", "#addBoardGroup", function(){ // 생성 버튼 클릭 이벤트
- 		goAddBoardGroup(); // 게시판 생성하기
+	$(document).on("click", "#updateBoardGroup", function(){ // 생성 버튼 클릭 이벤트
+ 		goUpdateBoardGroup(); // 게시판 수정하기
 	});
 	
 
@@ -133,7 +133,7 @@ $(document).ready(()=>{
 // ===== 부서 전체 조회하기(부서공개라디오 클릭 시) ===== //
 function goSearchAllDept(){
 	$.ajax({ //게시판 생성의 공개여부 부서 설정 시 부서 전체 검색(부서 검색)
-		   url: ctxPath + "/board/addBoardSearchAllDept",
+		   url: ctxPath + "/board/addBoardSearchAllDept", // 해당부서 검색과 부서 전체조회 add(게시판 추가)에서 쓰던 것을 그대로 써도 됨.
 		   type:"get",
 		   dataType:"json",
 		   success:function(json){
@@ -169,10 +169,10 @@ function goSearchAllDept(){
 	   });
 } 
 
-// ===== 게시판 생성하기 ===== //
-function goAddBoardGroup(){
-	const frm = document.addBoardGroup;
+// ===== 게시판 수정하기 ===== //
+function goUpdateBoardGroup(){
+	const frm = document.updateBoardGroup;
     frm.method = "POST";
-    frm.action = ctxPath + "/board/addBoard";
+    frm.action = ctxPath + "/board/updateBoard";
     frm.submit();  
 }

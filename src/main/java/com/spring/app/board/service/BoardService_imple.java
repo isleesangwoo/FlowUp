@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.app.board.domain.BoardVO;
 import com.spring.app.board.model.BoardDAO;
 
 
@@ -20,24 +21,60 @@ public class BoardService_imple implements BoardService {
 
 	// 게시판 생성하기
 	@Override
-	public int addBoard() throws Exception {
-		int n = dao.addBoard();
+	public int addBoard(BoardVO boardvo) throws Exception {
+		int n = dao.addBoard(boardvo);
 		return n;
 	}
 	
 	// 게시판 수정하기
 	@Override
-	public int updateBoard() throws Exception {
-		int n = dao.updateBoard();
+	public int updateBoard(BoardVO boardvo) throws Exception {
+		int n = dao.updateBoard(boardvo);
 		return n;
 	}
 
-	// 게시판삭제하기(status 값변경)
+	// 게시판삭제(비활성화)하기(status 값변경)
 	@Override
-	public int deleteBoard() {
-		int n = dao.deleteBoard();
+	public int disableBoard(String boardNo) {
+		int n = dao.disableBoard(boardNo);
 		return n;
 	}
+
+	//게시판 생성의 공개여부 부서 설정 시 해당 부서 키워드검색(부서 검색)
+	@Override
+	public List<Map<String, String>> addBoardSearchDept(Map<String, String> paraMap) {
+		List<Map<String, String>> wordList = dao.addBoardSearchDept(paraMap);
+		return wordList;
+	}
+
+	//게시판 생성의 공개여부 부서 설정 시 부서 전체 검색(부서 검색)
+	@Override
+	public List<Map<String, String>> addBoardSearchAllDept() {
+		List<Map<String, String>> wordList = dao.addBoardSearchAllDept();
+		return wordList;
+	}
+
+	// 생성된 게시판 LeftBar에 나열하기 (출력)
+	@Override
+	public List<BoardVO> selectBoardList() {
+		List<BoardVO> boardList = dao.selectBoardList();
+		return boardList;
+	}
+
+	// 수정할 input 요소에 기존값을 뿌려주기 위함.
+	@Override
+	public BoardVO getBoardDetailByNo(String boardNo) {
+		BoardVO boardvo = dao.getBoardDetailByNo(boardNo);
+		return boardvo;
+	}
+
+	// 글쓰기 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기
+	@Override
+	public List<Map<String, String>> getAccessibleBoardList(String employeeNo) {
+		List<Map<String, String>> boardList = dao.getAccessibleBoardList(employeeNo);
+		return boardList;
+	}
+
 
 	
 }

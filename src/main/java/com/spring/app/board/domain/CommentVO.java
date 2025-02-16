@@ -4,10 +4,10 @@ public class CommentVO {
 
 	private String commentNo; 
 	private String fk_postNo; 		   // 해당 댓글이 속한 게시글 번호
-	private String fk_employeeNo;      // 댓글 작성자
-	private String name;              
-	private String content;            
-	private String regDate;             
+	private String fk_employeeNo;      // 댓글 작성자사번
+	private String name;               // 작성자 이름
+	private String content;            // 댓글내용
+	private String regDate;            // 작성일자 
 	private String status;             // 삭제여부 1 활성화 0 삭제
 	private String groupNo;            // 댓글 그룹 번호 (원댓글/대댓글을 묶는 값)
 	private String fk_commentNo;       // 부모 댓글 번호 (대댓글일 경우 부모 댓글 번호, 댓글이면 0)

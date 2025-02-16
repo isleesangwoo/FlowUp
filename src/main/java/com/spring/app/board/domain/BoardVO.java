@@ -9,7 +9,7 @@ public class BoardVO {
 	private String isPublic;    // 공개 여부 (1: 공개, 0: 부서별)
 	private String createdBy;   // 게시판 생성자(관리자)
 	private String createdAt;   // 게시판 생성일
-	private String status;          // 게시판 활성/비활성화(삭제) :: 1 활성화 0 비활성화
+	private String status;      // 게시판 활성/비활성화(삭제) :: 1 활성화 0 비활성화
 	
 	
 	
