@@ -25,6 +25,15 @@ CREATE table tbl_document
 ,constraint     fk_tbl_document_employeeNo foreign key(fk_emloyeeNo) references tbl_employee(employeeNo) on delete cascade
 ,constraint     fk_tbl_document_documentCode foreign key(fk_documentCode) references tbl_documentType(documentCode) on delete set null
 );
+
+create sequence seq_document
+start with 100001
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
 -- Table TBL_DOCUMENT이(가) 생성되었습니다.
 
 -- CREATE table tbl_document_temp
