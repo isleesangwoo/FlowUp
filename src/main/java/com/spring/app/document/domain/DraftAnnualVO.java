@@ -8,7 +8,7 @@ public class DraftAnnualVO {
 	private String reason;		// 사유
 	private String startDate;	// 시작 날짜
 	private String endDate;		// 끝 날짜
-	private String type;		// 연차 종류
+	private String annualType;	// 연차 종류
 	
 	public String getDocumentNo() {
 		return documentNo;
@@ -40,10 +40,11 @@ public class DraftAnnualVO {
 	public void setEndDate(String endDate) {
 		this.endDate = endDate;
 	}
-	public String getType() {
-		return type;
+	public String getAnnualType() {
+		return annualType;
 	}
-	public void setType(String type) {
-		this.type = type;
+	public void setAnnualType(String annualType) {
+		this.annualType = annualType;
 	}
+	
 }

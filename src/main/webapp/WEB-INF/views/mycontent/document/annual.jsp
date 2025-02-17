@@ -34,9 +34,11 @@
 	// 사용연차 개수 계산하기
 	function calAnnualAmount(){
 		
-		if($("select[name='type']").val() != "연차") {
+		if($("select[name='annualType']").val() != "1") {
 			// 반차일 경우
-			$("input[name='endDate']").val("").hide(); // 종료일 선택을 숨기고 초기화
+			
+			$("input[name='endDate']").val($("input[name='startDate']").val());
+			$("input[name='endDate']").hide(); // 종료일 선택을 숨기고 초기화
 			
 			if($("input[name='startDate']").val() != ""){
 				$("input[name='useAmount']").val(0.5);	// 신청 연차에 값 넣어주기
@@ -74,7 +76,25 @@
 		
 	} // end of function calAnnualAmount(){}------------------------
 	
+	// 휴가신청서 결재요청
 	function annualDraft(){
+		
+		if($("input[name='subject']").val() == "") {
+			alert("제목을 입력하세요!")
+			return;
+		}
+		if($("input[name='reason']").val() == "") {
+			alert("휴가사유를 입력하세요!");
+			return;
+		}
+		if($("input[name='startDate']").val() == "") {
+			alert("연차 시작일을 입력하세요!");
+			return;
+		}
+		if($("input[name='endDate']").val() == "") {
+			alert("연차 종료일을 입력하세요!");
+			return;
+		}
 		
 		const queryString = $("form[name='annualDraftForm']").serialize();
 		console.log(queryString);
@@ -87,10 +107,11 @@
 			success:function(json){
 				console.log(JSON.stringify(json));
 				if(json.n == "1"){
-					alert("good");
+					alert("결재 요청이 완료되었습니다.");
+					location.href="<%= ctxPath%>/document/";
 				}
 				else {
-					alert("bad");
+					alert("결재 요청이 실패되었습니다.");
 				}
 			},
 			error: function(request, status, error){
@@ -99,7 +120,14 @@
 		}); // end of $.ajax({})----------------
 		
 		
-	} // end of function annualDraft(){}-----------------------
+	} // end of function annualDraft(){}---------------------------------------------
+	
+	// 결재정보 수정
+	function editApprover(){
+		
+		alert("결재정보");
+		
+	} // end of function editApprover(){}---------------------------------------------
 	
 </script>
 
@@ -109,7 +137,7 @@
 		<button onclick="annualDraft()">결재요청</button>
 		<button>임시저장</button>
 		<button>미리보기</button>
-		<button>결재 정보</button>
+		<button onclick="editApprover()">결재 정보</button>
 		
 		<div style="border: solid 1px gray">
 			<form name="annualDraftForm">
@@ -138,20 +166,28 @@
 				<table class="mt-5">
 					<tbody>
 						<tr>
+							<td>제목</td>
+							<td><input type="text" name="subject" /></td>
+						</tr>
+						<tr>
 							<td>휴가 종류</td>
 							<td>
-								<select name="type" onchange="calAnnualAmount()">
-									<option>연차</option>
-									<option>오전반차</option>
-									<option>오후반차</option>
+								<select name="annualType" onchange="calAnnualAmount()">
+									<option value="1">연차</option>
+									<option value="2">오전반차</option>
+									<option value="3">오후반차</option>
 								</select>
 							</td>
 						</tr>
 						<tr>
+							<td>사유</td>
+							<td><input type="text" name="reason" /></td>
+						</tr>
+						<tr>
 							<td>기간 및 일시</td>
 							<td>
-								<input type="date" name="startDate" onchange="calAnnualAmount()" />
-								<input type="date" name="endDate" onchange="calAnnualAmount()" />
+								<input type="date" name="startDate" onchange="calAnnualAmount()" onkeydown="return false" />
+								<input type="date" name="endDate" onchange="calAnnualAmount()" onkeydown="return false" />
 							</td>
 						</tr>
 						<tr>

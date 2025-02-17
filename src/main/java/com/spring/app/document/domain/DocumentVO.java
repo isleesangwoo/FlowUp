@@ -9,7 +9,7 @@ public class DocumentVO {
 	private String status;			// 승인여부
 	private String securityLevel;	// 보안등급
 	private String temp;			// 임시저장여부
-	private String type;			// 양식이름
+	private String documentType;	// 양식이름
 	
 	public String getDocumentNo() {
 		return documentNo;
@@ -53,10 +53,10 @@ public class DocumentVO {
 	public void setTemp(String temp) {
 		this.temp = temp;
 	}
-	public String getType() {
-		return type;
+	public String getDocumentType() {
+		return documentType;
 	}
-	public void setType(String type) {
-		this.type = type;
+	public void setDocumentType(String documentType) {
+		this.documentType = documentType;
 	}
 }
