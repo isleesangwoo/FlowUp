@@ -38,27 +38,9 @@ public class CommuteController {
 	@GetMapping("")
 	public ModelAndView commute(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
-		// 더미 로그인 정보
-		EmployeeVO evo = new EmployeeVO();
-		evo.setEmployeeNo("100010");
-		evo.setFK_positionNo("1");
-		evo.setFK_teamNo("1");
-		evo.setName("윤영주");
-		evo.setSecurityLevel("10");
-		evo.setEmail("mechanicon@naver.com");
-		evo.setMobile("01082487243");
-		evo.setDirectCal("01082487243");
-		evo.setBank("국민은행");
-		evo.setAccount("43340201215074");
-		evo.setMaritalStatus("1");
-		evo.setDisability("1");
-		evo.setEmploymentType("1");
-		evo.setRegisterDate("2025-02-11");
-		evo.setSalary("30000000");
-		evo.setStatus("1");
-		
+
 		HttpSession session = request.getSession();
-		session.setAttribute("loginuser", evo);
+		
 		
 		////////////////////////////////////////////////////
 		
