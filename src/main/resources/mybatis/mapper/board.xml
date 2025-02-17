@@ -64,6 +64,12 @@ ORDER BY createdAt DESC
    OR bd.fk_departmentNo = (SELECT fk_departmentNo FROM tbl_employee WHERE employeeNo = 100013)
 </select>
 
+<!-- 게시글 등록하기 -->
+<select id="addPost" resultType="int">
+insert into tbl_board (fk_boardNo,fk_employeeNo,name,subject,content,allowComments,isNotice,noticeEndDate) 
+values(#{fk_boardNo},#{fk_employeeNo},#{name},#{subject},#{content},#{allowComments},#{isNotice},#{noticeEndDate})
+</select>
+
 
 
 </mapper>

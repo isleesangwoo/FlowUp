@@ -74,6 +74,13 @@ public class BoardService_imple implements BoardService {
 		List<Map<String, String>> boardList = dao.getAccessibleBoardList(employeeNo);
 		return boardList;
 	}
+	
+	// 게시글 등록하기
+	@Override
+	public int addPost() {
+		int n = dao.addPost(); 
+		return n;
+	}
 
 
 	

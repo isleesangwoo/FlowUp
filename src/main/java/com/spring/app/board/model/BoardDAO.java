@@ -34,5 +34,8 @@ public interface BoardDAO {
 	// 글쓰기 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기
 	List<Map<String, String>> getAccessibleBoardList(String employeeNo);
 
+	// 게시글 등록하기
+	int addPost();
+
 
 }

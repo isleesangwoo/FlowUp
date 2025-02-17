@@ -4,11 +4,7 @@
 <%
    String ctxpath = request.getContextPath();
 %>
-<%-- <script type="text/javascript" src="<%=ctxpath%>/js/jquery-3.7.1.min.js"></script> --%>
 <style>
-
-
-
 /* === 모달 시작 === */
 .modal_bg{
     display: none;
@@ -23,6 +19,7 @@
 
 .modal_container{
     position: fixed;
+    
     top: 0px;
     right: 0px;
     width: 0%;
@@ -30,6 +27,12 @@
     z-index: 11;
     background-color: #fff;
     transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+#modal_title {
+    font-size: var(--size24);
+    padding-bottom: var(--size12);
+    display: block;
 }
 /* === 모달 끝 === */
 
@@ -133,6 +136,28 @@
 var ctxPath = "<%= request.getContextPath() %>";
 
 $(document).ready(function() {
+	
+	$("#isNoticeElmt").hide(); // 공지사항 등록 미체크시 hide 상태
+	
+	
+	
+ 	//console.log("테스트"+$("input[name='isnotice']").is(':checked'));
+	
+	
+	
+	// === 공지로 등록 체크박스 클릭 시 === //
+	 $(document).on("change", "input[name='isnotice']", function(e) {
+	 	
+		 if($("input[name='isnotice']").is(':checked') == true){ // 체크박스에 체크가 되었을 경우
+			$("#isNoticeElmt").show();
+		 }
+		 else{ // 체크가 안되었을 경우
+			$("#isNoticeElmt").hide();
+		 }
+		 
+	 }); // end of $(document).on("click", "#disableBoardIcon", function() {} --------------
+
+	
 	
 	 
 	// === 게시판 목록 boardLeftBar에 나열하기 === //
@@ -240,7 +265,7 @@ $(document).ready(function() {
     nhn.husky.EZCreator.createInIFrame({
         oAppRef: obj,
         elPlaceHolder: "content",
-        sSkinURI: ctxPath + "/smarteditor/SmartEditor2Skin.html",
+        sSkinURI: "<%= ctxpath%>/smarteditor/SmartEditor2Skin.html",
         htParams : {
             // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
             bUseToolbar : true,            
@@ -252,10 +277,79 @@ $(document).ready(function() {
     });
 	<%--  ==== 스마트 에디터 구현 끝 ==== --%>
 	
-	// === 게시글 등록 버튼 클릭 시 === // 
-	$(document).on("click", "#addPostBtn", function(e){
-		goaddPost();
+	
+	// === datepicker 시작 === //
+    $("input#datepicker").datepicker({
+        dateFormat: 'yy-mm-dd'  //Input Display Format 변경
+       ,showOtherMonths: true   //빈 공간에 현재월의 앞뒤월의 날짜를 표시
+       ,showMonthAfterYear:true //년도 먼저 나오고, 뒤에 월 표시
+       ,changeYear: true        //콤보박스에서 년 선택 가능
+       ,changeMonth: true       //콤보박스에서 월 선택 가능                
+   //  ,showOn: "both"          //button:버튼을 표시하고,버튼을 눌러야만 달력 표시됨. both:버튼을 표시하고,버튼을 누르거나 input을 클릭하면 달력 표시됨.  
+   //  ,buttonImage: "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" //버튼 이미지 경로
+   //  ,buttonImageOnly: true   //기본 버튼의 회색 부분을 없애고, 이미지만 보이게 함
+   //  ,buttonText: "선택"       //버튼에 마우스 갖다 댔을 때 표시되는 텍스트                
+       ,yearSuffix: "년"         //달력의 년도 부분 뒤에 붙는 텍스트
+       ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'] //달력의 월 부분 텍스트
+       ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] //달력의 월 부분 Tooltip 텍스트
+       ,dayNamesMin: ['일','월','화','수','목','금','토'] //달력의 요일 부분 텍스트
+       ,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 부분 Tooltip 텍스트
+   //  ,minDate: "-1M" //최소 선택일자(-1D:하루전, -1M:한달전, -1Y:일년전)
+   //  ,maxDate: "+1M" //최대 선택일자(+1D:하루후, +1M:한달후, +1Y:일년후)                
+   });
+
+   // 초기값을 오늘 날짜로 설정
+	$('input#datepicker').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후) 
+
+   // === 전체 datepicker 옵션 일괄 설정하기 ===  
+   //     한번의 설정으로 $("input#fromDate"), $('input#toDate')의 옵션을 모두 설정할 수 있다.
+    $(function() {
+        //모든 datepicker에 대한 공통 옵션 설정
+        $.datepicker.setDefaults({
+             dateFormat: 'yy-mm-dd' //Input Display Format 변경
+            ,showOtherMonths: true //빈 공간에 현재월의 앞뒤월의 날짜를 표시
+            ,showMonthAfterYear:true //년도 먼저 나오고, 뒤에 월 표시
+            ,changeYear: true //콤보박스에서 년 선택 가능
+            ,changeMonth: true //콤보박스에서 월 선택 가능                
+         // ,showOn: "both" //button:버튼을 표시하고,버튼을 눌러야만 달력 표시됨. both:버튼을 표시하고,버튼을 누르거나 input을 클릭하면 달력 표시됨.  
+         // ,buttonImage: "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" //버튼 이미지 경로
+         // ,buttonImageOnly: true //기본 버튼의 회색 부분을 없애고, 이미지만 보이게 함
+         // ,buttonText: "선택" //버튼에 마우스 갖다 댔을 때 표시되는 텍스트                
+            ,yearSuffix: "년" //달력의 년도 부분 뒤에 붙는 텍스트
+            ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'] //달력의 월 부분 텍스트
+            ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] //달력의 월 부분 Tooltip 텍스트
+            ,dayNamesMin: ['일','월','화','수','목','금','토'] //달력의 요일 부분 텍스트
+            ,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 부분 Tooltip 텍스트
+         // ,minDate: "-1M" //최소 선택일자(-1D:하루전, -1M:한달전, -1Y:일년전)
+         // ,maxDate: "+1M" //최대 선택일자(+1D:하루후, -1M:한달후, -1Y:일년후)                    
+        });
+ 
+        // input을 datepicker로 선언
+        $("input#fromDate").datepicker();                    
+        $("input#toDate").datepicker();
+        
+        // From의 초기값을 오늘 날짜로 설정
+        $('input#fromDate').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
+        
+        // To의 초기값을 3일후로 설정
+        $('input#toDate').datepicker('setDate', '+3D'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
+     });
+
+    ////////////////////////////////////////////////////////////////////
+    
+    $("input#datepicker").bind("keyup", e => {
+        $(e.target).val("").next().show();
+    }); // 공지사항 등록일에 키보드로 입력하는 경우 
+    
+ 	// === datepicker 끝 === //
+	
+ 	
+ 	// === 게시글 등록 버튼 클릭 시 === // 
+	$(document).on("click", "#addPostBtn", function(){
+		goaddPost(obj);
 	});
+	
+	
     
 }); // end of $(document).ready(function() {})----------------------
     
@@ -273,10 +367,15 @@ $(document).ready(function() {
 	        dataType: "json",
 	        success: function(json) {
 	            let options = `<option value="">게시판 선택</option>`; // 기본 옵션
+	            let inputTag;
 	            $.each(json, function(index, board) {
-	                options += `<option value='${board.boardno}'>`+board.boardname+`</option>`;
+	                options += `<option value='\${board.boardno}'>`+board.boardname+`</option>`;
+	                inputTag += `<input type="text" name="fk_boardno" value='\${board.boardno}'/>`;
+	                
+	                
 	            });
-	            $("select[name='selectBoardGroup']").html(options);
+	            $("select[name='selectBoardGroup']").html(options);inputTag
+	            $("#inputTag").html(inputTag);
 	        },
 	        error: function(xhr, status, error) {
 	            console.error("게시판 목록 불러오기 실패:", error);
@@ -287,17 +386,18 @@ $(document).ready(function() {
 	}// end of function getAccessBoardList(){}------------------
 	
 	// === 글 등록하기 함수 === // 
-	function goaddPost(){
-	
-		<%-- === 스마트 에디터 구현 시작 === --%>
+	function goaddPost(obj){
+		
+	   <%-- === 스마트 에디터 구현 시작 === --%>
 	   // id가 content인 textarea에 에디터에서 대입
        obj.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
-	  <%-- === 스마트 에디터 구현 끝 === --%>
+	   <%-- === 스마트 에디터 구현 끝 === --%>
 	  
-	  // === 글제목 유효성 검사 === 
+	  
+	  // === 글제목 유효성 검사 === //
       const subject = $("input:text[name='subject']").val().trim();	  
       if(subject == "") {
-    	  alert("글제목을 입력하세요!!");
+    	  alert("글제목을 입력해주세요.");
     	  $("input:text[name='subject']").val("");
     	  return; // 종료
       }	
@@ -328,17 +428,11 @@ $(document).ready(function() {
       // alert(content_val);
      
       if(content_val.trim().length == 0) {
-    	  alert("글내용을 입력하세요!!");
+    	  alert("글 내용을 입력해주세요.");
     	  return; // 종료
       }
       
       
-      // === 글암호 유효성 검사 === 
-      const pw = $("input:password[name='pw']").val();	  
-      if(pw == "") {
-    	  alert("글암호를 입력하세요!!");
-    	  return; // 종료
-      }	  
     	  
       // 폼(form)을 전송(submit)
       const frm = document.addPostFrm;
@@ -353,12 +447,6 @@ $(document).ready(function() {
 
 
 <style>
-#madal_title{
-	display : inline-block;
-	font-size:22pt;
-	
-	border: solid 1px red;
-}
 
 #uploadFile{
 	width : 100%;
@@ -372,60 +460,69 @@ $(document).ready(function() {
     <div id="modal" class="modal_bg">
     </div>
     <div class="modal_container">
-        <!-- 여기에 글작성 폼을 만들어주세요!! -->
-		<span id="madal_title">글쓰기</span>
-		
-		<div id="modal_content_page">
-			<form name="addPostFrm" enctype="multipart/form-data">
-				<span>To.</span>
-				<select name="selectBoardGroup">
-				</select>
-				<hr>
-				
-				<table>
-					<tr>
-						<td>제목</td>
-						<td><input type="text" name="subject"></td>
-					</tr>
-					<tr>
-						<td>파일첨부</td>
-						<td>
-							<div id="uploadFile">
-								<p>이 곳에 파일을 드래그 하세요. 또는</p>
-								<span class="btn_file">
-									<span class="txt">파일선택</span>
-									<input type="file" name="file" title="파일선택" multiple="" accept="undefined">
-								</span>
-							</div>
-						</td>
-					</tr>
-					<tr>
-					     <td>내 용</td>
-					     <td style="width: 767px; border: solid 1px red;">
-					 	    <textarea name="content" id="content" rows="10" cols="100" style="width:766px; height:412px;"></textarea>
-					     </td>
-				  	</tr>
-				  	<tr>
-				  		<td>댓글작성</td>
-				  		<td>
-				  			<input type="radio" id="allowYes" name="allowcomments" value="1">
-							<label for="allowYes" style="margin:0;">허용</label>
-							
-							<input type="radio" id="allowNo" name="allowcomments" value="0">
-							<label for="allowNo" style="margin:0;">허용하지 않음</label>
-				  		</td>
-				  	</tr>
-				  	<tr>
-				  		<td>공지로 등록</td>
-				  		<td>
-				  			<input type="checkbox" id="isnotice" name="isnotice">
-							<label for="isnotice" style="margin:0;">공지로 등록</label>
-				  		</td>
-				  	</tr>
-				</table>
-				
-				<button type="button" id="addPostBtn">등록</button><button type="button">취소</button>
-			</form>
+	    <div style="padding: var(--size22);">
+	        <!-- 여기에 글작성 폼을 만들어주세요!! -->
+			<span id="modal_title">글쓰기</span>
+			
+			<div id="modal_content_page">
+				<form name="addPostFrm" enctype="multipart/form-data">
+					<span>To.</span>
+					<select name="selectBoardGroup">
+					</select>
+					<div id="inputTag"></div>
+					<hr>
+					
+					<table>
+						<tr>
+							<td>제목</td>
+							<td><input type="text" name="subject"></td>
+						</tr>
+						<tr>
+							<td>파일첨부</td>
+							<td>
+								<div id="uploadFile">
+									<p>이 곳에 파일을 드래그 하세요. 또는</p>
+									<span class="btn_file">
+										<span class="txt">파일선택</span>
+										<input type="file" name="file" title="파일선택" multiple="" accept="undefined">
+									</span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+						     <td>내 용</td>
+						     <td style="width: 767px; border: solid 1px red;">
+						 	    <textarea name="content" id="content" rows="10" cols="100" style="width:766px; height:412px;"></textarea>
+						     </td>
+					  	</tr>
+					  	<tr>
+					  		<td>댓글작성</td>
+					  		<td>
+					  			<input type="radio" id="allowYes" name="allowcomments" value="1" checked>
+								<label for="allowYes" style="margin:0;" >허용</label>
+								
+								<input type="radio" id="allowNo" name="allowcomments" value="0">
+								<label for="allowNo" style="margin:0;">허용하지 않음</label>
+					  		</td>
+					  	</tr>
+					  	<tr>
+					  		<td>공지로 등록</td>
+					  		<td>
+					  			<input type="checkbox" id="isnotice" name="isnotice">
+								<label for="isnotice" style="margin:0;">공지로 등록</label>
+								
+								<div id="isNoticeElmt"> <!-- 미체크시 hide 상태임 -->
+									<input type="text" name="startNotice" id="datepicker" maxlength="10" autocomplete='off' size="4"/> 
+									-
+									<input type="text" name="endNotice" id="toDate" maxlength="10" autocomplete='off' size="4"/>
+								</div> 
+					  		</td>
+					  	</tr>
+					</table>
+					
+					<button type="button" id="addPostBtn">등록</button><button type="reset">취소</button>
+				</form>
+			</div>
 		</div>
     </div> <!-- end of <div class="modal_container"> -->
     <!-- 글작성 폼 -->
