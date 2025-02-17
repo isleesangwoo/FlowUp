@@ -12,8 +12,8 @@
 	</select>
 
 	<insert id="insertDocument" parameterType="HashMap">
-		insert into tbl_document(DOCUMENTNO, FK_EMLOYEENO, SUBJECT, DRAFTDATE, DOCUMENTTYPE)
-		values(#{documentNo}, #{fk_emloyeeNo}, #{subject}, sysdate, #{documentType})
+		insert into tbl_document(DOCUMENTNO, FK_EMLOYEENO, SUBJECT, DRAFTDATE, TEMP, DOCUMENTTYPE)
+		values(#{documentNo}, #{fk_emloyeeNo}, #{subject}, sysdate, #{temp}, #{documentType})
 	</insert>
 	<insert id="insertAnnualDraft" parameterType="HashMap">
 		insert into tbl_draft_annual(DOCUMENTNO, USEAMOUNT, REASON, STARTDATE, ENDDATE, ANNUALTYPE)

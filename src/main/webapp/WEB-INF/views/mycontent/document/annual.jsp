@@ -38,7 +38,7 @@
 			// 반차일 경우
 			
 			$("input[name='endDate']").val($("input[name='startDate']").val());
-			$("input[name='endDate']").hide(); // 종료일 선택을 숨기고 초기화
+			$("input[name='endDate']").hide(); // 종료일 선택을 숨기기
 			
 			if($("input[name='startDate']").val() != ""){
 				$("input[name='useAmount']").val(0.5);	// 신청 연차에 값 넣어주기
@@ -76,22 +76,23 @@
 		
 	} // end of function calAnnualAmount(){}------------------------
 	
-	// 휴가신청서 결재요청
+	
+	// 휴가신청서 결재요청하기
 	function annualDraft(){
 		
-		if($("input[name='subject']").val() == "") {
+		if($("input[name='subject']").val().trim() == "") {	// 제목을 입력하지 않았을 경우
 			alert("제목을 입력하세요!")
 			return;
 		}
-		if($("input[name='reason']").val() == "") {
+		if($("input[name='reason']").val().trim() == "") {	// 휴가사유를 입력하지 않았을 경우
 			alert("휴가사유를 입력하세요!");
 			return;
 		}
-		if($("input[name='startDate']").val() == "") {
+		if($("input[name='startDate']").val() == "" || $("input[name='startDate']").val() == "0000-00-00") {// 연차 시작일을 입력하지 않았을 경우
 			alert("연차 시작일을 입력하세요!");
 			return;
 		}
-		if($("input[name='endDate']").val() == "") {
+		if($("input[name='endDate']").val() == "" || $("input[name='endDate']").val() == "0000-00-00") {	// 연차 종료일을 입력하지 않았을 경우
 			alert("연차 종료일을 입력하세요!");
 			return;
 		}
@@ -122,12 +123,42 @@
 		
 	} // end of function annualDraft(){}---------------------------------------------
 	
-	// 결재정보 수정
+	
+	// 결재정보 수정하기
 	function editApprover(){
 		
 		alert("결재정보");
 		
 	} // end of function editApprover(){}---------------------------------------------
+	
+	
+	// 임시저장하기
+	function saveTemp(){
+		
+		const queryString = $("form[name='annualDraftForm']").serialize();
+		console.log(queryString);
+			
+		$.ajax({
+			url:"<%= ctxPath%>/document/saveTemp",
+			data:queryString,
+			type:"post",
+			dataType:"json",
+			success:function(json){
+				console.log(JSON.stringify(json));
+				if(json.n == "1"){
+					alert("임시 저장이 완료되었습니다.");
+					location.href="<%= ctxPath%>/document/";
+				}
+				else {
+					alert("임시 저장이 실패되었습니다.");
+				}
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		}); // end of $.ajax({})----------------
+		
+	} // end of function annualTemp(){}-----------------------------------------------
 	
 </script>
 
@@ -135,22 +166,24 @@
 	<div>
 		<h1>휴가신청서</h1>
 		<button onclick="annualDraft()">결재요청</button>
-		<button>임시저장</button>
+		<button onclick="saveTemp()">임시저장</button>
 		<button>미리보기</button>
 		<button onclick="editApprover()">결재 정보</button>
 		
 		<div style="border: solid 1px gray">
 			<form name="annualDraftForm">
+				<input type="hidden" name="documentType" value="휴가신청서" />
+				<input type="hidden" name="temp" value="0" />
 				<h1 style="text-align: center">연차신청서</h1>
 				<table>
 					<tbody>
 						<tr>
 							<td>기안자</td>
-							<td>김상훈</td>
+							<td>${sessionScope.loginuser.name}</td>
 						</tr>
 						<tr>
 							<td>기안부서</td>
-							<td>다우그룹</td>
+							<td>${sessionScope.loginuser.departmentName}</td>
 						</tr>
 						<tr>
 							<td>기안일</td>
@@ -167,7 +200,7 @@
 					<tbody>
 						<tr>
 							<td>제목</td>
-							<td><input type="text" name="subject" /></td>
+							<td><input type="text" name="subject" value=" "/></td>
 						</tr>
 						<tr>
 							<td>휴가 종류</td>
@@ -181,13 +214,13 @@
 						</tr>
 						<tr>
 							<td>사유</td>
-							<td><input type="text" name="reason" /></td>
+							<td><input type="text" name="reason" value=" " /></td>
 						</tr>
 						<tr>
 							<td>기간 및 일시</td>
 							<td>
 								<input type="date" name="startDate" onchange="calAnnualAmount()" onkeydown="return false" />
-								<input type="date" name="endDate" onchange="calAnnualAmount()" onkeydown="return false" />
+								<input type="date" name="endDate"   onchange="calAnnualAmount()" onkeydown="return false" />
 							</td>
 						</tr>
 						<tr>

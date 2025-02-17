@@ -55,18 +55,50 @@ public class DocumentController {
 	public Map<String, String> annualDraft(@RequestParam Map<String, String> paraMap, HttpServletRequest request) {
 		
 		HttpSession session = request.getSession();
-		
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
-		paraMap.put("documentType", "휴가신청서");
 		if(loginuser != null) {
-			
 			paraMap.put("fk_emloyeeNo", loginuser.getEmployeeNo());
-			
 		}
 		else {
 			paraMap.put("fk_emloyeeNo", "100014");
 		}
+		
+		int n = service.annualDraft(paraMap);
+		
+		Map<String, String> map = new HashMap<>();
+		
+		map.put("n", String.valueOf(n));
+		
+		return map;
+	}
+	
+	
+	// 임시저장하기
+	@PostMapping("saveTemp")
+	@ResponseBody
+	public Map<String, String> saveTemp(@RequestParam Map<String, String> paraMap, HttpServletRequest request){
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		if(loginuser != null) {
+			paraMap.put("fk_emloyeeNo", loginuser.getEmployeeNo());
+		}
+		else {
+			paraMap.put("fk_emloyeeNo", "100014");
+		}
+		
+		if("휴가신청서".equals(paraMap.get("documentType"))) {
+			if("".equals(paraMap.get("startDate"))) {
+				paraMap.put("startDate", "1111-11-11");
+			}
+			if("".equals(paraMap.get("endDate"))) {
+				paraMap.put("endDate", "1111-11-11");
+			}
+		}
+		
+		paraMap.put("temp", "1");
 		
 		int n = service.annualDraft(paraMap);
 		
