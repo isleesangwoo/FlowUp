@@ -50,6 +50,8 @@ public class DocumentController {
 		
 		System.out.println(paraMap.get("useAmount"));
 		
+		paraMap.put("fk_emloyeeno", null);
+		
 		Map<String, String> map = new HashMap<>();
 		
 		map.put("n", "1");

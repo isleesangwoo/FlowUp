@@ -131,4 +131,13 @@ select (Endtime - starttime)*24
 from tbl_commute;
 
 select *
-from tbl_commute;
+from tbl_commute
+where commuteno != 100010;
+
+select employeeNo.nextval
+from dual;
+
+insert into tbl_employee(employeeNo, FK_positionNo, FK_teamNo, PASSWD, NAME
+                       , securityLevel, email, mobile, directCal, bank, account
+                       , registerdate, salary ,status, motive)
+values(employeeNo.nextval,1,1,'qwer1234$','이지혜',10,'banana5092@naver.com',01099998888,2110001111,'농협',3010270414861,1,1,1,sysdate,30000000,1,'동기');
