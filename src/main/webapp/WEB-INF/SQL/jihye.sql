@@ -197,7 +197,7 @@ select employeeNo, FK_positionNo, PASSWD,NAME, SECURITYLEVEL,email, mobile, dire
 from tbl_employee 
 where employeeNo = 100011 and passwd = 'qwer1234$' and status = 1;
 
-insert into tbl_employee(employeeNo, FK_positionNo,FK_teamNo, PASSWD,NAME, securityLevel,email, mobile, directCal , bank, account, maritalstatus,
+insert into tbl_employee(employeeNo, FK_positionNo,FK_teamNo, PASSWD, NAME, securityLevel,email, mobile, directCal , bank, account, maritalstatus,
                          disability,employmenttype,registerdate,salary,status,motive)
                  values(employeeNo.nextval,1,1,'qwer1234$','이지혜',10,'banana5092@naver.com',01099998888,2110001111,'농협',3010270414861,1,1,1,sysdate,30000000,1,'동기');
 commit;
@@ -252,13 +252,26 @@ alter table tbl_employee add constraint FK_positionNo foreign key(FK_positionNo)
 commit;
 
 
+desc tbl_employee;
+
+select *
+from tbl_employee;
 
 
+desc tbl_department;
 
 
-
-
-
+-- 로그인 쿼리
+SELECT E.EMPLOYEENO, E.passwd, E.FK_POSITIONNO, E.FK_TEAMNO, E.Name, 
+       E.SECURITYLEVEL, E.Email, E.Bank, E.Mobile, E.directcall, 
+       E.account, E.registerdate, E.Status, E.REASONFORLEAVING, 
+       E.lastDate, E.MOTIVE, E.PROFILEIMG, E.Address, E.birth, 
+       E.FK_DEPARTMENTNO , D.departmentname
+FROM tbl_employee E 
+LEFT JOIN tbl_department D ON E.FK_DEPARTMENTNO = D.DEPARTMENTNO
+WHERE E.employeeNo = 100011 
+AND E.passwd = 'qwer1234$' 
+AND E.status = 1;
 
 
 
