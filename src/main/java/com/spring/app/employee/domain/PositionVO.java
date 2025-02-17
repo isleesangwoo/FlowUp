@@ -4,6 +4,7 @@ public class PositionVO {
 
 	private String posiotionNo;     // 직급번호
 	private String positionName;    // 직급명
+	private String salary; 			// 기본급
 	
 	//////////////////////////////////////////////
 	
@@ -22,5 +23,16 @@ public class PositionVO {
 	public void setPositionName(String positionName) {
 		this.positionName = positionName;
 	}
+
+	public String getSalary() {
+		return salary;
+	}
+
+	public void setSalary(String salary) {
+		this.salary = salary;
+	}
+	
+	
+	
 	
 }

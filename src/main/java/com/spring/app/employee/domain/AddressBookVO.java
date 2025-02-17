@@ -14,7 +14,7 @@ public class AddressBookVO {
 	private String phoneNo;         // 휴대전화
 	private String directCal;       // 내선번호
 	private String companyAddress;  //회사주소
-	private String profileImg;
+	private String profileImg;		// 프로필 이미지
 	
 	//////////////////////////////////////////////////
 	
