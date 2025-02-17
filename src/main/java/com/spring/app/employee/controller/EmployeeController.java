@@ -2,7 +2,6 @@ package com.spring.app.employee.controller;
 
 
 
-import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +12,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.app.employee.domain.EmployeeVO;
 import com.spring.app.employee.service.EmployeeService;
 
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 
 //=== 컨트롤러 선언 === //
@@ -35,7 +35,7 @@ public class EmployeeController {
 		return mav;
 	}
 	
-	
+/*	
 	// === #ljh2. 로그인 처리하기 === //
 	@PostMapping("login")
 	public Map<String,Integer> login(HttpServletRequest request, @RequestParam Map<String,String>paraMap, 
@@ -55,7 +55,40 @@ public class EmployeeController {
 
 		return resultMap;
 	}
+*/
 	
+	// === #ljh2-1. 로그인 처리하기 === //
+	
+	@PostMapping("login")
+	public ModelAndView login (HttpServletRequest request, @RequestParam Map<String,String>paraMap) {
+		
+		ModelAndView mav = new ModelAndView();
+		
+		//클라이언트 ip 가져오기
+		String clientIp = request.getRemoteAddr();
+		paraMap.put("clientIp", clientIp);
+
+		EmployeeVO loginuser = service.login(paraMap);
+		
+		 
+		if(loginuser != null ) { // 로그인 유저가 null 이 아닐때 
+			
+			HttpSession session = request.getSession();
+			session.setAttribute("loginuser", loginuser); //로그인 유저 세션에 저장
+			
+			mav.setViewName("redirect:/index"); // 로그인이 성공했을 때 메인페이지로 이동
+		}
+		
+		else {
+			
+			mav.addObject("message", "아이디 또는 비밀번호가 틀렸습니다");
+			mav.addObject("loc", "javaScript:history.back()");
+			mav.setViewName("msg"); // 실패 시 메시지 페이지로 이동
+			
+		}
+		
+		return mav;
+	}
 	
 	
 }
