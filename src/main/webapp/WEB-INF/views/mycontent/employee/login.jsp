@@ -18,59 +18,46 @@
    <script type="text/javascript" src="<%=ctxPath%>/js/jquery-3.7.1.min.js"></script>
    
    
-   <script type="text/javascript">
-    
+<script type="text/javascript">
     $(document).ready(function(){
-	    	/* $("div.errorMsg").hide(); */
-	    	
-	    	 const func_Login = function(){
-	   		  
-	   		  const userid = $("input#userid").val();
-	   		  const pwd = $("input#pwd").val();
-	   		  
-	   		  if(userid.trim() == "") {
-	   			  alert("아이디를 입력하세요!!");
-	   			  $("input#userid").val("");
-	   			  $("input#userid").focus();
-	   			  return; // 종료
-	   		  }
-	   		  
-	   		  if(pwd.trim() == "") {
-	   			  alert("비밀번호를 입력하세요!!");
-	   			  $("input#pwd").val("");
-	   			  $("input#pwd").focus();
-	   			  return; // 종료
-	   		  }
-	   		  
-	   		  /* const frm = document.loginFrm; */
-	   	  };
-	   	  
-	   	  
-	   	  $("button#loginBtn").click(function(){
-	   		  func_Login();
-	   	  });
-	   	  
-	   	  
-	   	  $("input:password[id='pwd']").keydown(function(e){
-	   			if(e.keyCode == 13) { // 엔터를 했을 경우
-	   				func_Login();
-	   			}  
-	   	  });
-    	
+        /* $("div.errorMsg").hide(); */
+        
+        const func_Login = function(){
+            const userid = $("input#userid").val();
+            const pwd = $("input#pwd").val();
+            
+            if(userid.trim() == "") {
+                alert("아이디를 입력하세요!!");
+                $("input#userid").val("");
+                $("input#userid").focus();
+                return; // 종료
+            }
+            
+            if(pwd.trim() == "") {
+                alert("비밀번호를 입력하세요!!");
+                $("input#pwd").val("");
+                $("input#pwd").focus();
+                return; // 종료
+            }
+
+            // 로그인 폼 제출
+            const frm = document.loginFrm;
+            frm.action = "<%= ctxPath%>/employee/login";
+            frm.method = "post";
+            frm.submit();
+        };
+        
+        // 엔터키로도 로그인 처리
+        $("input:password[id='pwd']").keydown(function(e){
+            if(e.keyCode == 13) { // 엔터를 했을 경우
+                func_Login();
+            }
+        });
     }); // end of $(document).ready(function(){})
+
+   
     
-    function func_login(){
-    	
-    	const frm = doucment.loginFrm;
-    	
-    	frm.action = "<%= ctxPath%>/employee/login";
-		frm.method = "post";
-	  	frm.submit();
-    	
-    	
-    }// end of  function func_login(){}-----------------
-    
-    </script>
+</script>
    
     <title>loginpage</title>
 
@@ -106,7 +93,7 @@
 
             <!-- 로그인 버튼 -->
             <div>
-                <input type="button" class="loginBtn loginInput" name="loginBtn" value="로그인">
+                <button type="button" class="loginBtn loginInput" id="loginBtn" onclick="func_Login()">로그인</button>
             </div>
 
             <!-- 아이디/비밀번호 찾기-->
