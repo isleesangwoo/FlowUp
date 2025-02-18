@@ -6,6 +6,7 @@ public class SalaryVO {
 	private String overtimePay;		// 야근수당
 	private String incentive;		// 인센티브
 	private String paymentDate;		// 지급일자
+	private String salary;			// 기본급
 	
 	
 	
@@ -38,7 +39,12 @@ public class SalaryVO {
 	public void setPaymentDate(String paymentDate) {
 		this.paymentDate = paymentDate;
 	}
-	
+	public String getSalary() {
+		return salary;
+	}
+	public void setSalary(String salary) {
+		this.salary = salary;
+	}
 	
 	
 	
