@@ -87,6 +87,8 @@
 	
 	            </div>
 	        </div>
+	        
+	        
 	    <div id="writeArea">
 	    
 			  <table id="writeAreaTable">
@@ -105,7 +107,7 @@
 			    <!-- 참조 -->
 			    <tr>
 			      <th>참조</th>
-			      <td colspan="2">
+			      <td id="mailWriteReference" colspan="2">
 			        <input type="text" placeholder="참조 이메일 입력" style="width: 300px;" />
 			        <button type="button">최근 주소</button>
 			        <button type="button">주소록</button>
@@ -115,9 +117,8 @@
 			    <!-- 제목 -->
 			    <tr>
 			      <th>제목</th>
-			      <td colspan="2">
-			        <input type="text" placeholder="메일 제목" style="width: 300px;" />
-			        <label><input type="checkbox" /> 중요</label>
+			      <td id="mailWriteTitle" colspan="2">
+			        <input id="mailWriteTitleBox" type="text" placeholder="메일 제목" style="width: 100vh;" />
 			      </td>
 			    </tr>
 			    
@@ -165,7 +166,7 @@
 
 	
 	<!-- 왼쪽 사이드바 -->
-    <div id="left_bar">
+    <div id="left_bar" >
 
         <!-- === 메일 작성 버튼 === -->
         <button id="goMail">
@@ -191,7 +192,7 @@
     <!-- 왼쪽 사이드바 -->
 
     <!-- 오른쪽 바 -->
-    <div id="right_bar">
+    <div id="right_bar" style="overflow-y: auto;">
         <div id="right_title_box">
             <span id="right_title">Inbox</span>
             <span id="right_info">
@@ -241,6 +242,7 @@
                     </a>
                 </span>
 
+
                 <span id="reBtn_box">
                     <span>
                         <span id="sort_btn" title="정렬"> <!-- 정렬 버튼입니다! -->
@@ -280,31 +282,24 @@
         </div>
         
 	   <table id="mailTable">
-	       <thead>
-	           <tr>
-	               <th>선택</th>
-	               <th>보낸사람</th>
-	               <th>메일 제목</th>
-	               <th>받은 시간</th>
-	               <th>파일 크기</th>
-	           </tr>
-	       </thead>
 	       <tbody>
 	           <c:forEach var="i" begin="1" end="20">
-	               <tr>
-	                   <td>
-	                      <input type="checkbox" id="mailOneCheck" />
-	                   </td>
-	                   <td>                    
-	                      <i class="fa-regular fa-star"></i>
-	                    <i class="fa-regular fa-envelope"></i>
-	                    <i class="fa-solid fa-paperclip"></i>
-	                 </td>
-	                   <td id="mailName">이름${i}</td>
-	                   <td id="mailTitle">메일 제목 ${i}</td>
-	                   <td id="sendDate">14:11</td>
-	                   <td id="fileSize">67.1KB</td>
-	               </tr>
+	               <tr class="mailReadTitle">
+	                   	<td>
+                      		<input type="checkbox" id="mailOneCheck" />
+	                   	</td>
+	                   	<td>                    
+                      		<i class="fa-regular fa-star"></i>
+	                    	<i class="fa-regular fa-envelope"></i>
+	                    	<i class="fa-solid fa-paperclip"></i>
+	                 	</td>
+                   		<td id="mailName">이름${i}</td>
+                   		<td id="mailTitle">메일 제목 ${i}</td>
+					    <td id="right-content">
+					        <span id="sendDate">14:11</span>
+					        <span id="fileSize">67.1KB</span>
+					    </td>
+	               		</tr>
 	           </c:forEach>
 	       </tbody>
 	   </table>

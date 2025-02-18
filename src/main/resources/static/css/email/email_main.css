@@ -3,6 +3,10 @@
 	--size4  : clamp(4px, 0.2083vw, 200px);
 }
 
+#rigth_bar {
+	overflow-y: scroll;
+}
+
 button {
 	border: 0;
 	background-color: transparent;
@@ -99,13 +103,6 @@ button {
 
 
 /* 현재 페이지에 이렇게 넣어주세요! */
-/*
-.mail_menu_container > ul li:nth-child(1){
-    background-color: #dae8f8 !important;
-    color: #056ac9;
-    font-weight: 600;
-}
-*/
 
 .mail_menu_container > ul li:nth-child(1) > a {
     color: #056ac9;
@@ -180,7 +177,6 @@ button {
 
 #modal_menu_container span {
    color: black;
-   padding-right: var(--size12);
    padding-top: var(--size12);
 }
 
@@ -203,11 +199,6 @@ button {
 #content {
 	padding: var(--size24);
 }
-
-#smartedit {
-	padding: 7px;
-}
-
 
 /* 테이블 전체 폭 사용 */
 .mail-form-table {
@@ -250,15 +241,16 @@ button {
 .file-btn-group button {
   margin-right: 8px;
   padding: 6px 12px;
-  background-color: #2985db;
-  border: 1px solid #056ac9;
+  background-color: transparent;
+  border: 1px solid #ddd;
   border-radius: 4px;
-  color: #fff;
+  color: black;
   cursor: pointer;
   font-size: 14px;
 }
+
 .file-btn-group button:hover {
-  background-color: #056ac9;
+  border: 1px solid black;
 }
 
 /* 용량 표시를 오른쪽 끝으로 */
@@ -266,15 +258,6 @@ button {
   margin-left: auto;
   font-size: 13px;
   color: #333;
-}
-
-/* 드래그앤드롭 영역 */
-.file-drag-drop-zone {
-  border: 2px dashed #ddd;
-  padding: 20px;
-  text-align: center;
-  margin-bottom: 10px;
-  color: #666;
 }
 
 /* 파일 목록 */
@@ -292,8 +275,8 @@ button {
 
 
 #writeArea{
-	display: block;
-	border: 1px solid red;	
+	/* display: block; */
+	padding: var(--size22);
 }
 
 /* 파일첨부 공간 */
@@ -304,11 +287,23 @@ button {
 }
 
 #writeAreaTable th {
-  width: 80px; /* 혹은 적절한 고정 너비 */
+  width: 100px; /* 고정 너비 */
 }
 
 #writeAreaTable td {
   width: auto; /* 남은 공간은 td가 차지하게 함 */
+}
+
+#mailWriteReference {
+	padding-left: 10px;
+}
+
+#mailWriteTitle {
+	padding-left: 10px;
+}
+
+#mailWriteTitleBox {
+	width: 100%;
 }
 
 /* 파일첨부 영역 전체 */
@@ -319,28 +314,6 @@ button {
   overflow-y: auto;
   font-size: 14px;
   color: #333;
-}
-
-/* 버튼 그룹 */
-.file-btn-group {
-	display: flex;
-	align-items: center;
-	margin-bottom: 10px;
-}
-
-/* 자료실, 모두삭제 버튼들 */
-.file-btn-group button {
-  margin-right: 8px;
-  padding: 6px 12px;
-  background-color: #2985db;
-  border: 1px solid #056ac9;
-  border-radius: 4px;
-  color: #fff;
-  cursor: pointer;
-  font-size: 14px;
-}
-.file-btn-group button:hover {
-  background-color: #056ac9;
 }
 
 /* 파일 사이즈 안내 문구 */
@@ -408,11 +381,11 @@ button {
 }
 
 #sendDate {
-	font-size: var(--size12);
+	font-size: var(--size14);
 }
 
 #fileSize {
-	font-size: var(--size12);
+	font-size: var(--size14);
 }
 
 #right_info {
@@ -481,6 +454,51 @@ button {
     border-color: #2985db;
     background-color: #2985db;
 }
+
+
+/* 메일 목록 */
+#mailTable {
+	width: 100%;
+}
+
+/* 메일함 메일 제목 */
+.mailReadTitle {
+	height: 40px;
+	vertical-align: middle;
+	table-layout: fixed;
+	width: 100%;
+}
+.mailReadTitle:hover {
+	background-color: rgba(242, 247, 253, 0.5);
+}
+
+.mailReadTitle i,
+#sendDate,
+#fileSize {
+	color: #bbb;
+}
+
+.mailReadTitle td {
+	box-sizing: border-box;
+	padding: 2px 8px;
+	display: inline-flex;
+    width: 150px;
+    align-items: center;
+}
+
+
+.mailReadTitle td:first-child {
+	width: 100px;
+	height: 40px;
+	/* display: flex; */
+	align-items: center;
+	padding-left: var(--size24);
+}
+
+.mailReadTitle td:nth-child(2) i:nth-child(2) {
+	margin: 0 8px;
+}
+
 
 #reBtn_box {
     margin-left: auto;
@@ -581,6 +599,7 @@ button {
     z-index: 11;
     background-color: #fff;
     transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+    border: 1px solid #aaa;
 }
 
 
@@ -598,3 +617,33 @@ button {
 #modal_bar::-webkit-scrollbar-track{
     background-color: rgba(0,0,0,0);
 }
+
+#rigth_bar::-webkit-scrollbar{
+    width: var(--size2);
+}
+  
+
+#rigth_bar::-webkit-scrollbar-thumb{
+    background-color: rgb(0, 0, 0);
+    border-radius: var(--size12); 
+}
+  
+
+#rigth_bar::-webkit-scrollbar-track{
+    background-color: rgba(0,0,0,0);
+}
+
+
+/* .mailReadTitle:nth-child(even) {
+	background-color: rgba(242, 247, 253, 0.5);
+} */
+
+
+#right-content {
+	margin-left: auto;
+    display: flex;
+    gap: 40px; /* 간격 조정 */
+}
+
+
+
