@@ -357,7 +357,7 @@ $(document).ready(function() {
     
 	//////////Function Declare //////////
 	
-	// === 글쓰기 버튼 클릭 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기=== //
+	// === 글쓰기 버튼 클릭 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기 === //
 	function getAccessBoardList(){
 		
 		$.ajax({
@@ -374,7 +374,7 @@ $(document).ready(function() {
 	                
 	                
 	            });
-	            $("select[name='selectBoardGroup']").html(options);inputTag
+	            $("select[name='fk_boardNo']").html(options);
 	            $("#inputTag").html(inputTag);
 	        },
 	        error: function(xhr, status, error) {
@@ -467,7 +467,7 @@ $(document).ready(function() {
 			<div id="modal_content_page">
 				<form name="addPostFrm" enctype="multipart/form-data">
 					<span>To.</span>
-					<select name="selectBoardGroup">
+					<select name="fk_boardNo">
 					</select>
 					<div id="inputTag"></div>
 					<hr>
@@ -498,10 +498,10 @@ $(document).ready(function() {
 					  	<tr>
 					  		<td>댓글작성</td>
 					  		<td>
-					  			<input type="radio" id="allowYes" name="allowcomments" value="1" checked>
+					  			<input type="radio" id="allowYes" name="allowComments" value="1" checked>
 								<label for="allowYes" style="margin:0;" >허용</label>
 								
-								<input type="radio" id="allowNo" name="allowcomments" value="0">
+								<input type="radio" id="allowNo" name="allowComments" value="0">
 								<label for="allowNo" style="margin:0;">허용하지 않음</label>
 					  		</td>
 					  	</tr>
@@ -514,7 +514,7 @@ $(document).ready(function() {
 								<div id="isNoticeElmt"> <!-- 미체크시 hide 상태임 -->
 									<input type="text" name="startNotice" id="datepicker" maxlength="10" autocomplete='off' size="4"/> 
 									-
-									<input type="text" name="endNotice" id="toDate" maxlength="10" autocomplete='off' size="4"/>
+									<input type="text" name="noticeEndDate" id="toDate" maxlength="10" autocomplete='off' size="4"/>
 								</div> 
 					  		</td>
 					  	</tr>

@@ -214,9 +214,16 @@ public class BoardController {
   @PostMapping("addPost")
   public PostVO addPost(PostVO postvo) { // 게시판그룹의 번호를 알아와야함.
 	
-	  System.out.println("postvo.getContent() : " + postvo.getContent());
-	  System.out.println("postvo.getFk_boardNo() : " + postvo.getFk_boardNo());
-	  System.out.println("postvo.getFk_employeeNo() : " + postvo.getFk_employeeNo());
+	  System.out.println("postvo.getFk_boardNo() 게시판 번호: " + postvo.getFk_boardNo());
+	  System.out.println("postvo.getSubject() 글제목 : " + postvo.getSubject());
+	  System.out.println("postvo.getContent() 글내용: " + postvo.getContent());
+	  System.out.println("postvo.getFk_employeeNo() 100013으로 고정값 줌. : " + postvo.getFk_employeeNo());
+	  System.out.println("postvo.getIsNotice() : " + postvo.getIsNotice());
+	  System.out.println("postvo.getName() 이상우로 고정값을 줌. : " + postvo.getName());
+	  System.out.println("postvo.getNoticeEndDate() : " + postvo.getNoticeEndDate());
+	  System.out.println("postvo.getAllowComments() : " + postvo.getAllowComments());
+	  
+	  
 	  
 	  int n = service.addPost(); 
 	
