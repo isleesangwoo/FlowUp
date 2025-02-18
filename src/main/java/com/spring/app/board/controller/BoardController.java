@@ -212,7 +212,7 @@ public class BoardController {
 	
   // 게시글 등록하기
   @PostMapping("addPost")
-  public PostVO addPost(PostVO postvo) { // 게시판그룹의 번호를 알아와야함.
+  public String addPost(PostVO postvo) {
 	
 	  System.out.println("postvo.getFk_boardNo() 게시판 번호: " + postvo.getFk_boardNo());
 	  System.out.println("postvo.getSubject() 글제목 : " + postvo.getSubject());
@@ -225,10 +225,16 @@ public class BoardController {
 	  
 	  
 	  
-	  int n = service.addPost(); 
+	  int n = service.addPost(postvo); 
+	  
+	  if(n>0) {
+		  System.out.println("게시글 등록이 완료되었습니다!");
+	  }
+	  else {
+		  System.out.println("게시글 등록이 실패되었습니다");
+	  }
 	
-	
-	  return null;
+	  return "redirect:/board/board";
   }
 	
 	

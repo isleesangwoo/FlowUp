@@ -508,7 +508,7 @@ $(document).ready(function() {
 					  	<tr>
 					  		<td>공지로 등록</td>
 					  		<td>
-					  			<input type="checkbox" id="isnotice" name="isnotice">
+					  			<input type="checkbox" id="isnotice" name="isNotice" value=1>
 								<label for="isnotice" style="margin:0;">공지로 등록</label>
 								
 								<div id="isNoticeElmt"> <!-- 미체크시 hide 상태임 -->

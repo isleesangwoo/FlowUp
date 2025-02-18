@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.app.board.domain.BoardVO;
+import com.spring.app.board.domain.PostVO;
 import com.spring.app.board.model.BoardDAO;
 
 
@@ -77,8 +78,8 @@ public class BoardService_imple implements BoardService {
 	
 	// 게시글 등록하기
 	@Override
-	public int addPost() {
-		int n = dao.addPost(); 
+	public int addPost(PostVO postvo) {
+		int n = dao.addPost(postvo); 
 		return n;
 	}
 

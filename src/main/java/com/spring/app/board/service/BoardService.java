@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.spring.app.board.domain.BoardVO;
+import com.spring.app.board.domain.PostVO;
 
 public interface BoardService {
 	
@@ -33,7 +34,7 @@ public interface BoardService {
 	List<Map<String, String>> getAccessibleBoardList(String employeeNo);
 
 	// 게시글 등록하기
-	int addPost();
+	int addPost(PostVO postvo);
 	
 	
 	

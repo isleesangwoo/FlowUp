@@ -65,16 +65,29 @@ ORDER BY createdAt DESC
 </select>
 
 <!-- 게시글 등록하기 -->
-<select id="addPost" resultType="int">
-	insert into tbl_post (postNo,fk_boardNo,fk_employeeNo,name,subject,content,allowComments,isNotice,noticeEndDate) 
-	values(postSeq.nextval,#{fk_boardNo},100013,'이상우',to_char(#{subject}),to_char(#{content}),#{allowComments},#{isNotice},#{noticeEndDate})
-</select>
+<insert id="addPost" parameterType="PostVO">
+	
+	<if test="isNotice == 1">
+		insert into tbl_post (postNo,fk_boardNo,fk_employeeNo,name,subject,content,allowComments,isNotice,noticeEndDate) 
+		values(postSeq.nextval,#{fk_boardNo},100013,'이상우',#{subject},#{content},#{allowComments},#{isNotice},to_date(#{noticeEndDate}, 'YYYY-MM-DD'))
+	</if>
+		insert into tbl_post (postNo,fk_boardNo,fk_employeeNo,name,subject,content,allowComments) 
+		values(postSeq.nextval,#{fk_boardNo},100013,'이상우',#{subject},#{content},#{allowComments})
+	
+	
+</insert>
 
-insert into tbl_post (postNo, fk_boardNo, fk_employeeNo, name, subject, content, allowComments, isNotice, noticeEndDate) 
-values (postSeq.nextval, 100035, 100013, '이상우', 'sql로 직접 넣음', '글내용직접넣음', '1', '1', TO_DATE('2025-02-21', 'YYYY-MM-DD'));
+<!-- insert into tbl_post (postNo, fk_boardNo, fk_employeeNo, name, subject, content, allowComments, isNotice, noticeEndDate)  -->
+<!-- values (postSeq.nextval, 100035, 100013, '이상우', '5번째 직접넣기', '글내용직접넣음', 1, 1, to_date('2025-02-21', 'YYYY-MM-DD')) -->
 
 
+<!-- 
+공지를 체크 == 1값이 넘어옴 
+isNotice의 값이 1이라면 noticeEndDate 값을 삽입
 
+공지를 체크하지 않았다면 == defalut 값임.
+noticeEndDate 값을 " " 공백으로 설정		
+-->
 </mapper>
 
 
