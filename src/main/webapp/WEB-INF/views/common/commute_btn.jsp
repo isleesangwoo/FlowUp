@@ -147,6 +147,12 @@
 	}
 	
 	
+	#clock-contants > div:nth-child(2) button:visited {
+	    color: yellow;
+	    background-color: red;
+	    pointer-event:none;
+	}
+	
 	
 	#total-hour {
 	    position: relative;
@@ -242,7 +248,13 @@
 	    
 	    // 근무 상태 버튼 클릭시 열림
 	    $('#btn_status').click(e=>{
-	    	$('#btn_status_list').slideToggle();
+	    	
+	    	const btn_status = $(e.target).text();
+	    	
+	    	if(btn_status != '업무종료') {
+	    		$('#btn_status_list').slideToggle();
+	    	}
+	    
 	    });
 	    
 	 	// (내)근태 관리 버튼 클릭시 열림
@@ -256,6 +268,7 @@
 	    });
 	    
 	    
+		
 	    // 근무상태 하위 탭 클릭시
 	    $('#btn_status_list > li').click(e=>{
 	    	
@@ -319,8 +332,6 @@
 						alert("퇴근처리 실패");
 					}
 					
-					
-					
 				},
 				error: function(request, status, error){
 		        	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -362,26 +373,40 @@
 	    	} // confirm
 	    });
 	  
+    
 	    
-	    $("div.deptCommuteTable").click(e=>{
+	    $("#myCommuteTable").click(e=>{
 	    	
-	    	const $btn = $(e.target);
-	    	
-	    });
-	  
-	
- 		$("div.deptCommuteCart").click(e=>{
-	    	
-	    	const $btn = $(e.target);
 	    	
 	    	
 	    });
 	    
-			    
-	    
-	    
-	    
-	    
+		$("#myCommuteTable").click(e=>{
+	    	
+			
+			
+	    });
+ 		
+		$("div.deptCommuteTable").click(e=>{
+		    	
+			const $btn = $(e.target);
+		    	
+		});
+		  
+		
+	 	$("div.deptCommuteCart").click(e=>{
+		    	
+			const $btn = $(e.target);
+		    	
+		});
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
 	    
 	}); // ready
 	
@@ -467,11 +492,6 @@
 	
 </script>
 
-
-
-
-
-
 <div id="goToWork">
      <div>
          <div id="workTitle">근태관리</div>
@@ -529,8 +549,8 @@
             <div>
 	         	<div id="btn_myCommute" style="font-size:14pt; font-weigt:bold;">근태관리</div>
 	            <div id="btn_myCommute_list" style="list-style: none; display: none;">
-            		<div>&nbsp;&nbsp;&nbsp;내 근태 현황</div>
-            		<div>&nbsp;&nbsp;&nbsp;내 연차 내역</div>
+            		<div id="myCommuteTable">&nbsp;&nbsp;&nbsp;내 근태 현황</div>
+            		<div id="myCommuteChart">&nbsp;&nbsp;&nbsp;내 연차 내역</div>
             	</div>
             </div>
             

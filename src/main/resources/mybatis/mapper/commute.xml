@@ -44,6 +44,7 @@
    	<select id="getDepInfo" resultType="DepartmentVO">
    		select departmentNo, FK_managerNo, departmentName
    		from tbl_department
+   		where departmentNo != 100000
    	</select>
 </mapper>
 
