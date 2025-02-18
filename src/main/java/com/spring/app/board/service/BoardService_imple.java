@@ -83,6 +83,25 @@ public class BoardService_imple implements BoardService {
 		return n;
 	}
 
+	// 게시판 메인 페이지에 뿌려줄 모든 게시글 조회
+	@Override
+	public List<PostVO> selectAllPost(Map<String, String> paraMap) {
+		List<PostVO> postAllList = dao.selectAllPost(paraMap);
+		return postAllList;
+	}
+
+	@Override
+	public int getTotalCount() {
+		int totalCount = dao.getTotalCount();
+		return totalCount;
+	}
+
+//	@Override
+//	public List<PostVO> postList_withPaging() {
+//		List<PostVO> postList = dao.postList_withPaging();
+//		return postList;
+//	}
+
 
 	
 }

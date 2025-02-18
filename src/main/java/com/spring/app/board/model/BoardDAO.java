@@ -38,5 +38,12 @@ public interface BoardDAO {
 	// 게시글 등록하기
 	int addPost(PostVO postvo);
 
+	// 게시판 메인 페이지에 뿌려줄 모든 게시글 조회
+	List<PostVO> selectAllPost(Map<String, String> paraMap);
+
+	int getTotalCount();
+
+	//List<PostVO> postList_withPaging();
+
 
 }

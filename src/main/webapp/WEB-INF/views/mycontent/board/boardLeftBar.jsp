@@ -137,6 +137,10 @@ var ctxPath = "<%= request.getContextPath() %>";
 
 $(document).ready(function() {
 	
+	
+   // === 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기=== //
+   getAccessBoardList();
+   
 	$("#isNoticeElmt").hide(); // 공지사항 등록 미체크시 hide 상태
 	
 	
@@ -146,9 +150,9 @@ $(document).ready(function() {
 	
 	
 	// === 공지로 등록 체크박스 클릭 시 === //
-	 $(document).on("change", "input[name='isnotice']", function(e) {
+	 $(document).on("change", "input[name='isNotice']", function(e) {
 	 	
-		 if($("input[name='isnotice']").is(':checked') == true){ // 체크박스에 체크가 되었을 경우
+		 if($("input[name='isNotice']").is(':checked') == true){ // 체크박스에 체크가 되었을 경우
 			$("#isNoticeElmt").show();
 		 }
 		 else{ // 체크가 안되었을 경우
@@ -251,10 +255,7 @@ $(document).ready(function() {
     // ========= 글쓰기버튼 토글 ========= //
     
     
-    // === 글쓰기 버튼 클릭 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기=== //
-    $(document).on("click", "#goWrite", function() {
-    	getAccessBoardList();
-    });
+    
     
     
     <%--  ==== 스마트 에디터 구현 시작 ==== --%>
@@ -285,24 +286,24 @@ $(document).ready(function() {
        ,showMonthAfterYear:true //년도 먼저 나오고, 뒤에 월 표시
        ,changeYear: true        //콤보박스에서 년 선택 가능
        ,changeMonth: true       //콤보박스에서 월 선택 가능                
-   //  ,showOn: "both"          //button:버튼을 표시하고,버튼을 눌러야만 달력 표시됨. both:버튼을 표시하고,버튼을 누르거나 input을 클릭하면 달력 표시됨.  
-   //  ,buttonImage: "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" //버튼 이미지 경로
-   //  ,buttonImageOnly: true   //기본 버튼의 회색 부분을 없애고, 이미지만 보이게 함
-   //  ,buttonText: "선택"       //버튼에 마우스 갖다 댔을 때 표시되는 텍스트                
-       ,yearSuffix: "년"         //달력의 년도 부분 뒤에 붙는 텍스트
-       ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'] //달력의 월 부분 텍스트
-       ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] //달력의 월 부분 Tooltip 텍스트
-       ,dayNamesMin: ['일','월','화','수','목','금','토'] //달력의 요일 부분 텍스트
-       ,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 부분 Tooltip 텍스트
-   //  ,minDate: "-1M" //최소 선택일자(-1D:하루전, -1M:한달전, -1Y:일년전)
-   //  ,maxDate: "+1M" //최대 선택일자(+1D:하루후, +1M:한달후, +1Y:일년후)                
-   });
+	   //  ,showOn: "both"          //button:버튼을 표시하고,버튼을 눌러야만 달력 표시됨. both:버튼을 표시하고,버튼을 누르거나 input을 클릭하면 달력 표시됨.  
+	   //  ,buttonImage: "http://jqueryui.com/resources/demos/datepicker/images/calendar.gif" //버튼 이미지 경로
+	   //  ,buttonImageOnly: true   //기본 버튼의 회색 부분을 없애고, 이미지만 보이게 함
+	   //  ,buttonText: "선택"       //버튼에 마우스 갖다 댔을 때 표시되는 텍스트                
+	       ,yearSuffix: "년"         //달력의 년도 부분 뒤에 붙는 텍스트
+	       ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'] //달력의 월 부분 텍스트
+	       ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] //달력의 월 부분 Tooltip 텍스트
+	       ,dayNamesMin: ['일','월','화','수','목','금','토'] //달력의 요일 부분 텍스트
+	       ,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 부분 Tooltip 텍스트
+	   //  ,minDate: "-1M" //최소 선택일자(-1D:하루전, -1M:한달전, -1Y:일년전)
+	   //  ,maxDate: "+1M" //최대 선택일자(+1D:하루후, +1M:한달후, +1Y:일년후)                
+	   });
 
-   // 초기값을 오늘 날짜로 설정
+    // 초기값을 오늘 날짜로 설정
 	$('input#datepicker').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후) 
 
-   // === 전체 datepicker 옵션 일괄 설정하기 ===  
-   //     한번의 설정으로 $("input#fromDate"), $('input#toDate')의 옵션을 모두 설정할 수 있다.
+    // === 전체 datepicker 옵션 일괄 설정하기 ===  
+    //     한번의 설정으로 $("input#fromDate"), $('input#toDate')의 옵션을 모두 설정할 수 있다.
     $(function() {
         //모든 datepicker에 대한 공통 옵션 설정
         $.datepicker.setDefaults({
@@ -366,16 +367,13 @@ $(document).ready(function() {
 	        data: { "employeeNo": "100013" }, // 로그인된 직원의 사원번호를 내가 임의로 입력해줌 추후 변경 해야함.
 	        dataType: "json",
 	        success: function(json) {
-	            let options = `<option value="">게시판 선택</option>`; // 기본 옵션
-	            let inputTag;
+	            let options = `<option value="" disabled selected>게시판 선택</option>`; // 기본 옵션
 	            $.each(json, function(index, board) {
 	                options += `<option value='\${board.boardno}'>`+board.boardname+`</option>`;
-	                inputTag += `<input type="text" name="fk_boardno" value='\${board.boardno}'/>`;
 	                
 	                
 	            });
 	            $("select[name='fk_boardNo']").html(options);
-	            $("#inputTag").html(inputTag);
 	        },
 	        error: function(xhr, status, error) {
 	            console.error("게시판 목록 불러오기 실패:", error);
@@ -387,6 +385,11 @@ $(document).ready(function() {
 	
 	// === 글 등록하기 함수 === // 
 	function goaddPost(obj){
+
+		if($("select[name='fk_boardNo']").val() == null){
+			alert("게시판을 선택해주세요.");
+			return;
+		}
 		
 	   <%-- === 스마트 에디터 구현 시작 === --%>
 	   // id가 content인 textarea에 에디터에서 대입
@@ -469,7 +472,6 @@ $(document).ready(function() {
 					<span>To.</span>
 					<select name="fk_boardNo">
 					</select>
-					<div id="inputTag"></div>
 					<hr>
 					
 					<table>
