@@ -2,116 +2,85 @@
     pageEncoding="UTF-8"%>
 <%@include file="../../header/header.jsp" %>
 <%@include file="./boardLeftBar.jsp" %>
-<script type="text/javascript">
-$(document).ready(function () {
-	
-	// 처음에는 부서 선택 박스를 숨깁니다.
-	$("#selectDepartment").hide(); 
-	
-	// 공개 범위 라디오 버튼에 change 이벤트 핸들러 추가
-	$("input[name='isPublic']").change(function() {
-		// 선택된 값이 부서별 공개(isPublicDepart)일 때
-		if ($(".isPublic:checked").val() == "0") {
-			$("#selectDepartment").show();  // 부서 선택 박스를 표시
-		} else {
-			$("#selectDepartment").hide();  // 부서 선택 박스를 숨김
-		}
-	});
-	
-	$(document).on("click", "#updateBoardGroup", function(){ // 수정 버튼 클릭 이벤트
-		goUpadteBoardGroup(); // 게시판 수정하기
-	});
-	
-	$(document).on("click", "#deleteBoardGroup", function(){ // 삭제 버튼 클릭 이벤트
-		goDeleteBoardGroup(); // 게시판 삭제(status 변경)하기
-	});
-	
-	
-}); // end of $(document).ready(function () {}---------
 
+<%-- 각자 페이지에 해당되는 css 연결 --%>
+<link href="<%=ctxPath%>/css/board/updateBoard.css" rel="stylesheet"> 
 
-// === Function === //
+<%-- 각자 페이지에 해당되는 js 연결 --%>
+<script src="<%=ctxPath%>/js/board/updateBoard.js"></script>
 
-// 게시판 수정하기
-function goUpadteBoardGroup(){
-	const frm = document.updateBoardGroup;
-    frm.method = "POST";
-    frm.action = "<%= ctxPath%>/board/updateBoard";
-    frm.submit();  
-}	
-
-// 게시판 삭제(status 변경)하기
-function goDeleteBoardGroup(){
-	const frm = document.deleteBoardGroup;
-    frm.method = "POST";
-    frm.action = "<%= ctxPath%>/board/deleteBoard";
-    frm.submit();  
-}	
-</script>
-</head>
-<body>
-
-게시판 수정 페이지
-<form name="updateBoardGroup">
-
-	<table>
-	<tr>
-		<td>
-			제목
-		</td>
-		<td>
-			<input type="text" name="boardName"/>
-		</td>
-	</tr>
+<!-- 오른쪽 바 -->
+    <div id="right_bar">
+        <div id="right_title_box">
+            <span id="right_title">게시판 수정</span>
+		</div>
 	
-	<tr>
-		<td>
-			설명
-		</td>
-		<td>
-			<input type="text" name="boardDesc"/>
-		</td>
-	</tr>
 	
-	<tr>
-		<td>
-			공개 범위 설정
-		</td>
-		<td>
-			부서별 공개 <input type="radio" name="isPublic" value="0" class="isPublic" /> <!-- 부서별 -->
-			전체공개 <input type="radio" name="isPublic" value="1" class="isPublic"/> <!-- 전체공개 -->
-			
-			<div id="selectDepartment">
-				<div style="border:solid 1px red;">
-					<p>공유부서 선택</p>
-					<div >
-					<!-- 부서들 나열 -->
-					영업부서<br>
-					인사부서<br>
-					.<br>
-					.<br>
-					</div>
+        <div id="updateBoardGroupFrmTag">
+		    <form name="updateBoardGroup">
+				<input type="hidden" name="boardNo" value="${boardvo.boardNo}"/>
+				<table>
+					<tr>
+						<td class="columnTitle">
+							제목  
+						</td>
+						<td style="width: 90%;">
+							<input type="text" value='${boardvo.boardName}' name="boardName"  class="w_max"/>
+						</td>
+					</tr>
+					
+					<tr>
+						<td class="columnTitle">
+							설명
+						</td>
+						<td>
+							<input type="text" value='${boardvo.boardDesc}' name="boardDesc" class="w_max"/>
+						</td>
+					</tr>
+					
+					<tr>
+					    <td class="columnTitle">공개 범위 설정</td>
+					    <td>
+					        <div class="radio-container">
+							    <label>
+							        <input type="radio" name="isPublic" value="0" class="isPublic"
+							        <c:if test="${boardvo.isPublic eq '0'}"> checked</c:if> /> 부서별 공개
+							    </label>
+							    <label>
+							        <input type="radio" name="isPublic" value="1" class="isPublic"
+							        <c:if test="${boardvo.isPublic eq '1'}"> checked</c:if> /> 전체공개
+							    </label>
+							</div>
+					    </td>
+					</tr>
+					<tr>
+						<td class="columnTitle">
+							운영자(생성자)
+						</td>
+						<td>
+							<input type="text" name="createdBy" value="${boardvo.createdBy}"  class="w_max" readonly/>
+						</td>
+					</tr>
+				</table>
+				<div id="updateBoardGroupFrmButtonTag">
+					<button type="button" id="updateBoardGroup">수정</button> 
 				</div>
-			</div>
-		</td>
-	</tr>
-	
-	<tr>
-		<td>
-			운영자(생성자)
-		</td>
-		<td>
-			<input type="text" name="createdBy" value="게시판을 생성한 자의 이름을 넣을 것" readonly/>
-		</td>
-	</tr>
-	</table>
-	<button type="button" id="updateBoardGroup">수정</button> 
-</form>
+			</form>
+			
+			<div id="isPublicDept">
+				<form name="searchFrm" style="margin-top: 20px;">
+					<p>부서선택하기</p>
+					<input type="text" name="searchWord" size="50" autocomplete="off" placeholder="부서를 검색하세요." />
+					<input type="text" style="display: none;"/> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>
+				</form>		  
+				<div id="displayList"  style="border:solid 1px gray; border-top:0px; height:100px; margin-top:-1px; margin-bottom:30px; overflow:auto;">
+				</div>
+			</div>      
+							
+		</div>
+    </div>
+    <!-- 오른쪽 바 -->
 
-<form name="deleteBoardGroup">
-	<input type="text" name="boardNo" value="" placeholder="삭제될 게시판그룹번호">
-	<button type="button" id="deleteBoardGroup" >게시판 삭제</button>
-</form>
 
 
 <jsp:include page="../../footer/footer.jsp" /> 

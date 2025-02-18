@@ -27,26 +27,11 @@ $(document).ready(()=>{
     // ========= 정렬 인원수 버튼 토글 ========= //
 
 
-    // ========= 메일버튼 토글 ========= //
-
-    $('#writePostBtn').click(e=>{
-
-        $('#modal').fadeIn();
-        $('.modal_container').css({
-            'width': '70%'
-        })
-  
-    }) // end of $('#writePostBtn').click(e=>{})-----------
-
-    $('.modal_bg:not(.modal_container)').click(e=>{
-
-        $('#modal').fadeOut();
-        $('.modal_container').css({
-            'width': '0%'
-        })
-
-    })
-    // ========= 메일버튼 토글 ========= //
+    
+	
+	
+	
+	
 
 
 }) // end of $(document).ready(()=>{})---------
