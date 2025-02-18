@@ -58,7 +58,7 @@
 				</div>
                 <div id="logo_box">
                     <span>
-                        <img id="logo_img" src="<%=ctxPath%>/images/logo/logo.png" /> 
+                        <img id="logo_img" src="<%=ctxPath%>/images/logo/logo1.png" /> 
                     </span>
                     <span class="bell">
                         <i class="fa-regular fa-bell far"></i>
@@ -135,7 +135,7 @@
                               <a href="<%= ctxPath%>/mail/"><i class="fa-regular fa-envelope"></i><span>메일</span></a>
                           </li>
                           <li>
-                              <a href="<%= ctxPath%>/board/"><i class="fa-solid fa-file-contract"></i><span>예약</span></a>
+                              <a href="<%= ctxPath%>/reservation/"><i class="fa-solid fa-file-contract"></i><span>예약</span></a>
                           </li>
                           <li>
                               <a href="#"><i class="fa-regular fa-file"></i><span>자료실</span></a>
