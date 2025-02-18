@@ -17,7 +17,7 @@
        padding: 0px;
    }
    
-   *::before {
+   *::before { 
        margin: 0px;
        padding: 0px;
    }
