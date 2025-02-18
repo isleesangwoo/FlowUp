@@ -149,7 +149,7 @@
     	background-color: yellow;
     	cursor: pointer;
     }
-   /*  
+ 
     .openDiv {
     	display:block;
     }
@@ -157,7 +157,7 @@
     .closeDiv {
     	display:none;
     }
-     */
+
     
 </style>
 
@@ -165,95 +165,98 @@
     $(document).ready(() => {
     	
         // ====================== 날짜 리모컨 기능 생성 ====================== //
-        
-        let today = new Date();
         const currentDate = new Date(); 
+        const currentDate_year = currentDate.getFullYear();
+        const currentDate_month = String(currentDate.getMonth()+1).padStart(2, '0');  
+        
+        
+        const select_month_first_day = new Date(currentDate_year,currentDate_month-1,1);
+        
         
         // 이전 버튼 클릭 시
         $('#prev').click(() => {
-            today.setMonth(today.getMonth() - 1);
-            updateDate(today);
+        	select_month_first_day.setMonth(select_month_first_day.getMonth() - 1);
+            week_div(select_month_first_day);
             
         });
 
         // 다음 버튼 클릭 시
         $('#next').click(() => {
-            today.setMonth(today.getMonth() + 1);
-            updateDate(today);
+        	select_month_first_day.setMonth(select_month_first_day.getMonth() + 1);
+            week_div(select_month_first_day);
         });
 
         // 오늘 버튼 클릭 시
         $('#now').click(() => {
-            today = new Date(currentDate); // 저장된 currentDate 날짜로 복구
-            updateDate(today);
+        	select_month_first_day = new Date(currentDate); // 저장된 currentDate 날짜로 복구
+            week_div(select_month_first_day);
         });
 
        
-        // 페이지 로드 시 현재 날짜 표시
-        updateDate(today);
+        // 페이지 로드 시 현재 날짜 및 테이표시
+        week_div(select_month_first_day);
         // ====================== 날짜 리모컨 기능 생성 ====================== //
-
-        
+ 
         $('div.oneday').hide();
         
      	
+     	// 주차 버튼 클릭시 열림
+     	$(document).on('click', 'div.weekBig',e=>{
      	
-        
+     		if($(e.target).next().css('display') == 'none') {
+     			$(e.target).parent().parent().find("div.weekbro").css({"display":"none"});
+     			$(e.target).next().css({"display":""});
+     			$(e.target).parent().parent().find("div.daybro").css({"display":"none"});
+	 		}
+	 		else {
+	 			$(e.target).parent().parent().find("div.weekbro").css({"display":"none"});
+	 		}
+	 		
+     		
+     		
+     	});
+     	
+     	
+     	
+     	// 일자 버튼 클릭시 열림
+     	$(document).on('click', 'div.dayBig',e=>{
+     		
+     		if($(e.target).next().css('display') == 'none') {
+     			$(e.target).next().css({"display":""});
+     			
+	 		}
+	 		else {
+	 			$(e.target).next().css({"display":"none"});
+	 		}
+    	
+     	});
         
         
         
         
     }); // end of $(document).ready(() => {})-------------
 
-    // 날짜 업데이트 함수
-    function updateDate(today) {
-		
-    	const currentDate = new Date(); 
-    	
-        const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
-    	
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, '0'); 
-        const day = String(today.getDate()).padStart(2, '0');
-        const dayOfWeek = daysOfWeek[today.getDay()]; 
-
-        const timeString = `\${year}-\${month}`;
-        $('#today').text(timeString);
-        
-        week_div(today);
-
-        // ====================== table tr 생성 ====================== //
-    
    
-        //-- DB 연동시 foreach로 바꿀것 --//
-        
-    // ====================== table tr 생성 ====================== //
-
-    } // end of function updateDate()------------
-    
-
-    
-   
-    
-    
     function week_div(today) {
 
     	const year = today.getFullYear();
     	let month = String(today.getMonth()+1).padStart(2, '0');  		// 오늘(선택일)의 월
 
+    	console.log(month);
     	
-    	const date = String(today.getDate()).padStart(2, '0');			// 오늘(선택일)의 일
+    	const day = String(today.getDate()).padStart(2, '0');			// 오늘(선택일)의 일
     	const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];		//
     	const dayOfWeek = daysOfWeek[today.getDay()]; 					// 오늘(선택일)의 요일
+ 
+    	const end = new Date(year, month, 0);
     	
-
-    	const start = new Date(year,month-1,1);							// 이번달 1일
-    	
-    	const start_dayOfWeek = daysOfWeek[start.getDay()]; 			// 이번달 1일의 
-    	
-    	const end = new Date(year,month,0);
     	const end_day = Number(String(end.getDate()));
 
+    	const timeString = `\${year}-\${month}`;
+    	
+    	
+        $('#today').text(timeString);
+    	
  
     	let weekNo = 1;
     	
@@ -271,26 +274,27 @@
     		}
     		
     		const i_today = new Date(year,month-1, i_day);
-    	
+
     		const i_month = String(i_today.getMonth()+1).padStart(2, '0'); 
     		const i_date = String(i_today.getDate()).padStart(2, '0');
     		const i_dayOfWeek = daysOfWeek[i_today.getDay()]; 
+    	
     		
     		if(i == 1 || i_dayOfWeek == '월') {
     			html += `<div>
-    						<div class="week" style="width:100px; font-size:14pt;">\${weekNo} 주차</div>
+    						<div class="weekBig" style="width:100px; font-size:14pt;">\${weekNo} 주차</div>
     						<div class="weekbro" style="display:none;">`;			// 주차 적는 div
     		}
     		
-    		html += `<div class="day" style="width:200px;">&nbsp;&nbsp;&nbsp;\${i_month}월 \${i_date}일 (\${i_dayOfWeek})</div>		
+    		html += `<div class="dayBig" style="width:200px;">&nbsp;&nbsp;&nbsp;\${i_month}월 \${i_date}일 (\${i_dayOfWeek})</div>		
  
     				<div class="daybro" style="display:none; padding:0 10px;">													
     		    		<table border="1" class="time_table_back_form" id="timeTable">			
     		    			<thead>`;															
     					
-    		for(let j=0; j<24; j++) {
+    		for(let j=1; j<=24; j++) {
     	        		
-    	    	let hour = j + 1;
+    	    	let hour = j;
     	    			
     	    	if(hour < 10 ) {
     	    		hour = `0\${j}`;
@@ -314,9 +318,7 @@
         		
         	}
         	
-        	html += `</tbody>																	
-				</table>																		
-			</div>`; 																			// 테이블 감싸는 div 끝
+        	html += `</tbody></table></div>`; 																			// 테이블 감싸는 div 끝
 				
     		if(i_dayOfWeek == '일') {
     			html += `</div></div>`;														// 주차 감싸는 div 끝
@@ -330,31 +332,6 @@
     	
     	$("div#vieww").html(html);
     	
-    	
-    	// 일자 버튼 클릭시 열림
-     	$(document).on('click', 'div.day',e=>{
-     		
-     		
-     		$(e.target).next().slideToggle();
-     		
-     	});
-	  
-     	
-	 	// 주차 버튼 클릭시 열림
-     	$(document).on('click', 'div.week',e=>{
-     	
-     		if($(e.target).next().css('display') == 'none') {
-     			$(e.target).parent().parent().find("div.weekbro").css({"display":"none"});
-     			$(e.target).next().css({"display":""});
-     			$(e.target).parent().parent().find("div.daybro").css({"display":"none"});
-	 		}
-	 		else {
-	 			$(e.target).parent().parent().find("div.weekbro").css({"display":"none"});
-	 		}
-     		
-
- 
-     	});
     	
     	
     	
@@ -412,17 +389,11 @@
     		
     		<div id=vieww>
     		
-    		
 			</div>
-			
 			
 		</div>
 		
-		
-		
 	</div>
-	
-	
 	
 </div>
 
