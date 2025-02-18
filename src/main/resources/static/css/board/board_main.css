@@ -194,30 +194,6 @@
 }
 
 
-/* === 모달 시작 === */
-.modal_bg{
-    display: none;
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    width: 100vw;
-    height: 100vh;
-    z-index: 10;
-    background-color: rgba(0,0,0,0.2);
-}
-
-.modal_container{
-    position: fixed;
-    top: 0px;
-    right: 0px;
-    width: 0%;
-    height: 100vh;
-    z-index: 11;
-    background-color: #fff;
-    transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
-}
-/* === 모달 끝 === */
-
 /* 게시글 보여주는 요소 시작 */
 #postContainer{
 	width: 100%;

@@ -10,20 +10,14 @@
 <%-- 각자 페이지에 해당되는 css 연결 --%>
 <link href="<%=ctxPath%>/css/board/board_main.css" rel="stylesheet"> 
 
+<script>
+	var ctxPath = "<%= request.getContextPath() %>";
+</script>
 <%-- 각자 페이지에 해당되는 js 연결 --%>
 <script src="<%=ctxPath%>/js/board/board.js"></script>
 
 	<%-- 이곳에 각 해당되는 뷰 페이지를 작성해주세요 --%>
-	<!-- 글작성 폼 -->
-    <div id="modal" class="modal_bg">
-    </div>
-    <div class="modal_container">
-        <!-- 여기에 글작성 폼을 만들어주세요!! -->
-        <!-- 여기에 글작성 폼을 만들어주세요!! -->
-        <!-- 여기에 글작성 폼을 만들어주세요!! -->
-
-    </div>
-    <!-- 글작성 폼 -->
+	
 
     <!-- 오른쪽 바 -->
     <div id="right_bar">

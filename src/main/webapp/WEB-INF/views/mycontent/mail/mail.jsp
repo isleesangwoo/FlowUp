@@ -16,6 +16,36 @@
 <%-- 각자 페이지에 해당되는 js 연결 --%>
 <script src="<%=ctxPath%>/js/email/email.js"></script>
 
+<script type="text/javascript">
+
+  $(document).ready(function(){  
+	  
+	  <%--  ==== 스마트 에디터 구현 시작 ==== --%>
+		//전역변수
+	    var obj = [];
+	    
+	    //스마트에디터 프레임생성
+	    nhn.husky.EZCreator.createInIFrame({
+	        oAppRef: obj,
+	        elPlaceHolder: "content",
+	        sSkinURI: "<%= ctxPath%>/smarteditor/SmartEditor2Skin.html",
+	        htParams : {
+	            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseToolbar : true,            
+	            // 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseVerticalResizer : true,    
+	            // 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseModeChanger : true,
+	        }
+	    });
+	  <%--  ==== 스마트 에디터 구현 끝 ==== --%>
+	  
+	  
+	  
+	});// end of $(document).ready(function(){})-----------
+	
+</script>	
+
 	<%-- 이곳에 각 해당되는 뷰 페이지를 작성해주세요 --%>
 	<!-- 메일작성 폼 -->
     <div id="modal" class="modal_bg">
@@ -23,35 +53,112 @@
     <div class="modal_container">
     
 	    <!-- 모달 창 -->
-	    <div id="modal_bar">
+	    <div id="modal_bar" style="overflow-y: auto;">
 	        <div id="modal_title_box">
 	            <span id="modal_title">메일쓰기</span>
-	            </span>
 	
 	            <!-- 메일 작성 공간 -->
 	            <div id="modal_menu_container">
 	                <span>
 	                    <a href="#">
 	                    	<i class="fa-regular fa-paper-plane"></i>
-	                        <span>보내기</span>
+	                    	<button type="button" id="btnWrite">
+	                    		<span>보내기</span>
+	                    	</button>
 	                    </a>
 	                </span>
 	                
 	                <span>
 	                    <a href="#">
 	                    	<i class="fa-regular fa-floppy-disk"></i>
-	                        <span>임시저장</span>
+	                    	<button type="button" id="btnSave">
+	                        	<span>임시저장</span>
+	                        </button>
 	                    </a>
 	                </span>
 	                <span>
 	                    <a href="#">
 	                    	<i class="fa-regular fa-eye"></i>
-	                        <span>미리보기</span>
+	                    	<button type="button" id="btnSpoiler">
+	                        	<span>미리보기</span>
+	                        </button>
 	                    </a>
 	                </span>
 	
 	            </div>
 	        </div>
+	    <div id="writeArea">
+	    
+			  <table id="writeAreaTable">
+			    <!-- 받는사람 -->
+			    <tr>
+			      <th>받는사람</th>
+			      <td colspan="2">
+			        <label><input type="checkbox" /> 내게쓰기</label>
+			        <label><input type="checkbox" /> 받는사람 알림받기</label>
+			        <input type="text" placeholder="받는사람 이메일 입력" style="width: 300px;" />
+			        <button type="button">최근 주소</button>
+			        <button type="button">주소록</button>
+			      </td>
+			    </tr>
+			    
+			    <!-- 참조 -->
+			    <tr>
+			      <th>참조</th>
+			      <td colspan="2">
+			        <input type="text" placeholder="참조 이메일 입력" style="width: 300px;" />
+			        <button type="button">최근 주소</button>
+			        <button type="button">주소록</button>
+			      </td>
+			    </tr>
+			    
+			    <!-- 제목 -->
+			    <tr>
+			      <th>제목</th>
+			      <td colspan="2">
+			        <input type="text" placeholder="메일 제목" style="width: 300px;" />
+			        <label><input type="checkbox" /> 중요</label>
+			      </td>
+			    </tr>
+			    
+			    <!-- 파일첨부 -->
+			    <tr>
+			      <th>파일첨부</th>
+			      <td colspan="2">
+			        <!-- 파일첨부 영역 (기존과 동일) -->
+			        <div class="file-upload-area">
+			          <div class="file-btn-group">
+			            <input type="file" id="fileInput" multiple style="display: none;" />
+			            <button type="button" id="btnFileSelect">파일선택</button>
+			            <button type="button" id="btnFileArchive">자료실</button>
+			            <button type="button" id="btnFileDeleteAll">모두삭제</button>
+			            
+			            <span class="file-limit-info">
+			              일반 (0Byte / 20MB), 대용량 (0Byte / 500.0MB)
+			            </span>
+			          </div>
+			          
+			          <div class="file-drag-drop-zone" id="dragDropZone">
+			            여기에 첨부 파일을 끌어오세요.
+			            <br />
+			            또는 
+			            <button type="button" class="inline-file-btn" id="btnFileSelect2">파일선택</button>
+			          </div>
+			          <ul class="file-list" id="fileList"></ul>
+			        </div>
+			      </td>
+			    </tr>
+			  </table>
+	        
+	    	<div id="smartedit">
+	    		<textarea style="width: 100%; height: 612px; padding: var(--size24);" id="content"></textarea>
+		    </div>
+	
+	   		<div style="margin: 20px;">
+	            <button type="button" id="btnReservationMail">예약메일</button>
+	        </div>
+        </div>
+
 	    </div>
     </div>
     <!-- 메일작성 폼 -->
@@ -172,21 +279,35 @@
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
         </div>
         
-        <div id="right_content_box">
-        	
-       		<input id="mailOneCheck" type="checkbox" />
-        	
-	        	<span id="action">
-	        		<i class="fa-regular fa-star"></i>
-	        		<i class="fa-regular fa-envelope"></i>
-	        		<i class="fa-solid fa-paperclip"></i>
-	        		<span id="mailName">이름</span>
-	        		<span id="mailTitle">메일 있는 곳</span>
-	        		<span id="sendDate">14:11</span>
-	        		<span id="fileSize">67.1KB</span>
-	        	</span>
-        	
-        </div>
+	   <table id="mailTable">
+	       <thead>
+	           <tr>
+	               <th>선택</th>
+	               <th>보낸사람</th>
+	               <th>메일 제목</th>
+	               <th>받은 시간</th>
+	               <th>파일 크기</th>
+	           </tr>
+	       </thead>
+	       <tbody>
+	           <c:forEach var="i" begin="1" end="20">
+	               <tr>
+	                   <td>
+	                      <input type="checkbox" id="mailOneCheck" />
+	                   </td>
+	                   <td>                    
+	                      <i class="fa-regular fa-star"></i>
+	                    <i class="fa-regular fa-envelope"></i>
+	                    <i class="fa-solid fa-paperclip"></i>
+	                 </td>
+	                   <td id="mailName">이름${i}</td>
+	                   <td id="mailTitle">메일 제목 ${i}</td>
+	                   <td id="sendDate">14:11</td>
+	                   <td id="fileSize">67.1KB</td>
+	               </tr>
+	           </c:forEach>
+	       </tbody>
+	   </table>
         
         
     </div>
