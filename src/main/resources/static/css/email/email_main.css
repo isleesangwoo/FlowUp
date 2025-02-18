@@ -3,6 +3,11 @@
 	--size4  : clamp(4px, 0.2083vw, 200px);
 }
 
+button {
+	border: 0;
+	background-color: transparent;
+}
+
 #main_section {
     display: flex;
     box-sizing: border-box;
@@ -48,6 +53,7 @@
     height: auto;
 }
 
+/* 기본 스타일 (모든 li 요소에 적용) */
 .mail_menu_container > ul li {
     width: 100%;
     height: var(--size38);
@@ -58,6 +64,27 @@
     align-items: center;
     box-sizing: border-box;
     padding-left: var(--size10);
+}
+
+/* 기본으로 선택된 받은메일함 스타일 */
+.mail_menu_container > ul li.default-active {
+    background-color: #dae8f8 !important;
+    color: #056ac9;
+    font-weight: 600;
+}
+.mail_menu_container > ul li.default-active > a {
+    color: #056ac9;
+}
+
+/* 클릭 시 적용되는 스타일 */
+.mail_menu_container > ul li.active-menu-item {
+    background-color: #dae8f8 !important;
+    color: #056ac9;
+    font-weight: 600;
+}
+
+.mail_menu_container > ul li.active-menu-item > a {
+    color: #056ac9;
 }
 
 .mail_menu_container > ul > li > a {
@@ -72,11 +99,13 @@
 
 
 /* 현재 페이지에 이렇게 넣어주세요! */
+/*
 .mail_menu_container > ul li:nth-child(1){
     background-color: #dae8f8 !important;
     color: #056ac9;
     font-weight: 600;
 }
+*/
 
 .mail_menu_container > ul li:nth-child(1) > a {
     color: #056ac9;
@@ -125,18 +154,241 @@
 
 #modal_bar{
     width: 100%;
-    height: auto;
+    height: 100vh;
     border: 0px solid red;
 }
 
 #modal_title_box {
     box-sizing: border-box;
-    padding: var(--size24) var(--size24) var(--size18) var(--size24);
     border-bottom: 1px solid #c8c8c8;
+    padding: var(--size24) var(--size24) var(--size18) var(--size24);
 }
 
 #modal_title {
     font-size: var(--size22);
+    padding-bottom: var(--size12);
+    display: block;
+}
+
+#modal_content_box {
+   display: flex;
+   align-items: center;
+    box-sizing: border-box;
+    width: 100%;
+    padding: var(--size18) var(--size24) var(--size18) var(--size24);
+}
+
+#modal_menu_container span {
+   color: black;
+   padding-right: var(--size12);
+   padding-top: var(--size12);
+}
+
+#modal_menu_container span a {
+   text-decoration-line: none;
+   color: black;
+}
+
+#modal_menu_container a {
+	text-decoration-line: none;
+	color: black;
+	padding-right: var(--size12);
+}
+
+#modal_mail_write {
+	box-sizing: border-box;
+	padding: var(--size24);
+}
+
+#content {
+	padding: var(--size24);
+}
+
+#smartedit {
+	padding: 7px;
+}
+
+
+/* 테이블 전체 폭 사용 */
+.mail-form-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed; /* th 너비 고정 시 유리 */
+}
+
+/* th, td 기본 패딩 등 */
+.mail-form-table th,
+.mail-form-table td {
+  padding: 8px;
+  vertical-align: middle;
+  border-bottom: 1px solid #ddd; /* 구분선 (옵션) */
+}
+
+/* th 고정 너비 (예: 80px 정도) */
+.mail-form-table th {
+  width: 80px;
+  text-align: left;
+}
+
+/* 파일 첨부 영역 */
+.file-upload-area {
+  position: relative;
+  padding: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 14px;
+  color: #333;
+}
+
+/* 버튼 + 용량 문구 한 줄 배치 */
+.file-btn-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.file-btn-group button {
+  margin-right: 8px;
+  padding: 6px 12px;
+  background-color: #2985db;
+  border: 1px solid #056ac9;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+.file-btn-group button:hover {
+  background-color: #056ac9;
+}
+
+/* 용량 표시를 오른쪽 끝으로 */
+.file-limit-info {
+  margin-left: auto;
+  font-size: 13px;
+  color: #333;
+}
+
+/* 드래그앤드롭 영역 */
+.file-drag-drop-zone {
+  border: 2px dashed #ddd;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 10px;
+  color: #666;
+}
+
+/* 파일 목록 */
+.file-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.file-list li {
+  margin: 5px 0;
+  padding: 3px 5px;
+  background-color: #f1f1f1;
+  border-radius: 4px;
+}
+
+
+#writeArea{
+	display: block;
+	border: 1px solid red;	
+}
+
+/* 파일첨부 공간 */
+#writeAreaTable {
+  width: 100%;
+  border-collapse: collapse; /* 셀 경계 겹치기(옵션) */
+  table-layout: fixed;       /* 열 너비를 균일하게 처리(옵션) */
+}
+
+#writeAreaTable th {
+  width: 80px; /* 혹은 적절한 고정 너비 */
+}
+
+#writeAreaTable td {
+  width: auto; /* 남은 공간은 td가 차지하게 함 */
+}
+
+/* 파일첨부 영역 전체 */
+.file-upload-area {
+  position: relative;
+  padding: 10px;
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 14px;
+  color: #333;
+}
+
+/* 버튼 그룹 */
+.file-btn-group {
+	display: flex;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+/* 자료실, 모두삭제 버튼들 */
+.file-btn-group button {
+  margin-right: 8px;
+  padding: 6px 12px;
+  background-color: #2985db;
+  border: 1px solid #056ac9;
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 14px;
+}
+.file-btn-group button:hover {
+  background-color: #056ac9;
+}
+
+/* 파일 사이즈 안내 문구 */
+.file-limit-info {
+  margin-left: auto;
+  font-size: 13px;
+  color: #333;
+}
+
+/* 드래그앤드롭 영역 */
+.file-drag-drop-zone {
+  border: 2px dashed #ddd;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 10px;
+  color: #666;
+}
+.file-drag-drop-zone:hover {
+  background-color: #f9f9f9;
+  width: 100%;
+}
+/* 드래그 중 배경 효과는 JS에서 ondragover 시 스타일 변경 */
+
+/* 업로드된 파일 목록 */
+.file-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.file-list li {
+  margin: 5px 0;
+  padding: 3px 5px;
+  background-color: #f1f1f1;
+  border-radius: 4px;
+}
+
+
+#fileTitle{
+	padding-left: var(--size24);
+}
+
+#fileArea {
+	position: relative;
+    overflow-y: auto;
+    padding: 8px 0;
+    box-sizing: border-box;
+    max-height: 300px;
+    font-size: 13px;
 }
 
 #modal_content_box {
@@ -329,4 +581,20 @@
     z-index: 11;
     background-color: #fff;
     transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+
+#modal_bar::-webkit-scrollbar{
+    width: var(--size2);
+}
+  
+
+#modal_bar::-webkit-scrollbar-thumb{
+    background-color: rgb(0, 0, 0);
+    border-radius: var(--size12); 
+}
+  
+
+#modal_bar::-webkit-scrollbar-track{
+    background-color: rgba(0,0,0,0);
 }

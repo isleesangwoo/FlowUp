@@ -6,17 +6,21 @@
 <!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="com.spring.app.document.model.DocumentDAO">
 
-   <resultMap type="HashMap" id="test_map">
-   		<result property="no" column="no" javaType="String" />
-   		<result property="name" column="name" javaType="String" />
-   		<result property="writeday" column="writeday" javaType="String" />
-   </resultMap>
-   <select id="test" resultMap="test_map">
- 	 select no, name, to_char(writeday, 'yyyy-mm-dd') AS writeday
- 	 from spring_exam
-   </select>
-   
 
+	<select id="getSeqDocument" resultType="String">
+		select seq_document.nextval from dual
+	</select>
+
+	<insert id="insertDocument" parameterType="HashMap">
+		insert into tbl_document(DOCUMENTNO, FK_EMLOYEENO, SUBJECT, DRAFTDATE, TEMP, DOCUMENTTYPE)
+		values(#{documentNo}, #{fk_emloyeeNo}, #{subject}, sysdate, #{temp}, #{documentType})
+	</insert>
+	<insert id="insertAnnualDraft" parameterType="HashMap">
+		insert into tbl_draft_annual(DOCUMENTNO, USEAMOUNT, REASON, STARTDATE, ENDDATE, ANNUALTYPE)
+		values(#{documentNo}, #{useAmount}, #{reason}, to_date(#{startDate}, 'yyyy-MM-dd'), to_date(#{endDate}, 'yyyy-MM-dd'), #{annualType})
+	</insert>
+	
+	
 </mapper>
 
 
