@@ -1,5 +1,5 @@
 $(document).ready(()=>{
-	
+   
     // ========= 정렬버튼 토글 ========= //
     $('#sort_btn').click(e=>{
 
@@ -48,5 +48,19 @@ $(document).ready(()=>{
     })
     // ========= 메일버튼 토글 ========= //
 
+   $(document).ready(function() {
+       let $menuItems = $('.mail_menu_container > ul li');
+
+       // 페이지 로드 시 첫 번째 메뉴(받은메일함)에 default-active 클래스 추가
+       $menuItems.first().addClass('default-active');
+
+       $menuItems.click(function() {
+           // 모든 메뉴에서 active-menu-item과 default-active 클래스 제거
+           $menuItems.removeClass('active-menu-item default-active');
+
+           // 클릭된 메뉴에 active-menu-item 클래스 추가
+           $(this).addClass('active-menu-item');
+       });
+   });
 
 }) // end of $(document).ready(()=>{})---------

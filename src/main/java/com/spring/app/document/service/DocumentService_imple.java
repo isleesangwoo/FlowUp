@@ -1,7 +1,8 @@
 package com.spring.app.document.service;
 
 
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,13 +17,30 @@ import com.spring.app.document.model.DocumentDAO;
 public class DocumentService_imple implements DocumentService {
 	
 	@Autowired
-	private DocumentDAO dao;
+	private DocumentDAO mapper_dao; // mapper 인터페이스
 	
 
+	// 휴가신청서 결재 요청
 	@Override
-	public List<Map<String, String>> test() {
-		List<Map<String, String>> testList = dao.test();
-		return testList;
+	public int annualDraft(Map<String, String> paraMap) {
+		
+		// 채번하기
+		String seq_document = mapper_dao.getSeqDocument();
+		
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-");
+		
+		String documentNo = sdf.format(date) + seq_document;
+		
+		paraMap.put("documentNo", documentNo);
+		
+		int n = mapper_dao.insertDocument(paraMap);
+		int m = 0;
+		if(n==1) {
+			m = mapper_dao.insertAnnualDraft(paraMap);
+		}
+		
+		return n*m;
 	}
 
 	

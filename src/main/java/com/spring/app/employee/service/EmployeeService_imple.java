@@ -1,6 +1,6 @@
 package com.spring.app.employee.service;
 
-import java.io.IOException;
+
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
 
@@ -53,7 +53,7 @@ public class EmployeeService_imple implements EmployeeService {
 		if (loginuser != null) {
 			result = 1;
 
-			if (loginuser.getLastChangePwd() >= 3) { // 비밀번호 변경일이 3개월이 지났다면
+			if (Integer.parseInt(loginuser.getLastPweChange()) >= 3) { // 비밀번호 변경일이 3개월이 지났다면
 				loginuser.setRequireLastChangePwd(true);
 			}
 
@@ -123,4 +123,23 @@ public class EmployeeService_imple implements EmployeeService {
 
 		return result;
 	}
+
+	
+	
+	////////////////////////////////////////////////////////////////////////////
+	
+	
+	
+	
+	
+	// === #ljh3-1. 로그인 처리하기 === //
+	@Override
+	public EmployeeVO login(Map<String, String> paraMap) {
+	  
+		EmployeeVO loginuser = dao.getLoginEmployee(paraMap);
+	
+	    return loginuser;
+	}
+
+	
 }
