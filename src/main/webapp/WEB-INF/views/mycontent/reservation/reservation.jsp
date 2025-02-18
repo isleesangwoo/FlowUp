@@ -5,7 +5,6 @@
 
 
 <%@include file="../../header/header.jsp" %>
-<%@include file="./reservationLeftBar.jsp" %>
  
 <%-- 각자 페이지에 해당되는 css 연결 --%>
 <link href="<%=ctxPath%>/css/reservation/reservation_main.css" rel="stylesheet"> 
@@ -20,37 +19,89 @@
     <div class="modal_container">
 
 		<div style="padding: var(--size24)">
-			<form name="addPostFrm" enctype="multipart/form-data">
-			               <span>To.</span>
-			               <select name="selectBoardGroup">
-							 <option value="0">회의실</option>
-							 <option value="1">비품</option>
-			               </select>
-			               <hr>
-			               
-			               <table>
-			                  <tr style="height:40px;">
-			                     <td>대분류명</td>
-			                     <td><input type="text" name="title"></td> <%-- 대분류명 자리 --%>
-			                  </tr>
-			                  <tr>
-			                       <td>이용안내</td>
-			                       <td style="width: 100%;">
-			                          <textarea name="content" id="content" rows="10" cols="100" style="width:100%; height:412px;"></textarea>
-			                       </td>
-			                   </tr>
-			                   
-			               </table>
-			               
-			               <button type="button" id="addPostBtn">등록</button><button type="reset">취소</button>
-			            </form>
+			<form name="addReserFrm" enctype="multipart/form-data">
+               <span>To.</span>
+               <select name="classification">
+				 <option value="0">회의실</option>
+				 <option value="1">비품</option>
+               </select>
+               <hr>
+               
+               <table>
+                  <tr style="height:40px;">
+                     <td>대분류명</td>
+                     <td><input type="text" name="assetTitle"></td> <%-- 대분류명 자리 --%>
+                  </tr>
+                  <tr>
+                       <td>이용안내</td>
+                       <td style="width: 100%;">
+                          <textarea name="assetInfo" id="assetInfo" rows="10" cols="100" style="width:100%; height:412px;"></textarea>
+                       </td>
+                   </tr>
+                   
+               </table>
+               
+               <button type="button" id="addReserBtn">등록</button><button type="reset">취소</button>
+            </form>
 		</div>
 		
 
     </div>
     <!-- 글작성 폼 -->
 	
-	
+	<!-- 왼쪽 사이드바 -->
+	  <div id="left_bar">
+
+	      <!-- === 글작성 버튼 === -->
+	      <button id="writePostBtn">
+	          <i class="fa-solid fa-plus"></i>
+	          <span id="goWrite">자산추가</span>
+	      </button>
+	      <!-- === 글작성 버튼 === -->
+
+	      <div class="board_menu_container">
+	          <ul>
+				<%-- 대분류에가 있는 경우 --%>
+				<c:if test="${not empty requestScope.assetList}">
+					<c:forEach var="assetMap" items="${requestScope.assetList}">
+						<li>
+		                    <div>
+								<div class="assetTitleBtn">${assetMap.assetTitle}</div> <!-- 대분류 명 -->
+								
+								<%-- 대분류에 대한 상세 자산이 있는 경우 --%>
+								<c:if test="${not empty requestScope.assetDetailList}">
+									<div class="assetDetailList" style="display:none;">
+										<c:forEach var="assetDetailMap" items="${requestScope.assetDetailList}">
+											<div>${assetDetailMap.assetName}</div> <!-- 상세 명 -->
+										</c:forEach>
+									</div>
+								</c:if>
+								<%-- 대분류에 대한 상세 자산이 있는 경우 --%>
+								<%-- 대분류에 대한 상세 자산이 없는 경우 --%>
+								<c:if test="${empty requestScope.assetDetailList}">
+									<div class="assetDetailList" style="display:none;">
+										<div>등록된 상세명이 없습니다.</div>
+									</div>
+								</c:if>
+								<%-- 대분류에 대한 상세 자산이 없는 경우 --%>
+							</div>
+							
+							
+		                </li>
+					</c:forEach>
+	            </c:if>
+				<%-- 대분류에가 있는 경우 --%>
+				<%-- 대분류에가 없는 경우 --%>
+	            <c:if test="${empty requestScope.assetList}">
+					<li>
+	                    <div>등록된 자산이 없습니다.</div>
+	                </li>
+				</c:if>
+				<%-- 대분류에가 없는 경우 --%>
+	          </ul>
+	      </div>
+	  </div>
+	 <!-- 왼쪽 사이드바 -->
 
 
     <!-- 오른쪽 바 -->
@@ -122,6 +173,8 @@
 <script>
 	$(document).ready(function(){  
 		  
+		
+		
 		  <%--  ==== 스마트 에디터 구현 시작 ==== --%>
 			//전역변수
 		    var obj = [];
@@ -129,7 +182,7 @@
 		    //스마트에디터 프레임생성
 		    nhn.husky.EZCreator.createInIFrame({
 		        oAppRef: obj,
-		        elPlaceHolder: "content",
+		        elPlaceHolder: "assetInfo",
 		        sSkinURI: "<%= ctxPath%>/smarteditor/SmartEditor2Skin.html",
 		        htParams : {
 		            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
@@ -143,72 +196,58 @@
 		  <%--  ==== 스마트 에디터 구현 끝 ==== --%>
 		  
 		  
-		  // 수정완료 버튼
-		  $("button#btnUpdate").click(function(){
+		  // ================ 대분류 등록버튼 ================ //
+		  $("button#addReserBtn").click(function(){
 			  
 			  <%-- === 스마트 에디터 구현 시작 === --%>
 			   // id가 content인 textarea에 에디터에서 대입
-		       obj.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+		       obj.getById["assetInfo"].exec("UPDATE_CONTENTS_FIELD", []);
 			  <%-- === 스마트 에디터 구현 끝 === --%>
 			  
 			  // === 글제목 유효성 검사 === 
-		      const subject = $("input:text[name='subject']").val().trim();	  
+		      const subject = $("input:text[name='assetTitle']").val().trim();	  
 		      if(subject == "") {
-		    	  alert("글제목을 입력하세요!!");
-		    	  $("input:text[name='subject']").val("");
+		    	  alert("대분류명을 입력하세요!!");
+		    	  $("input:text[name='assetTitle']").val("");
 		    	  return; // 종료
 		      }	
 			  
 			  // === 글내용 유효성 검사(스마트 에디터를 사용할 경우) ===
-			  let content_val = $("textarea[name='content']").val().trim();
+			  let content_val = $("textarea[name='assetInfo']").val().trim();
 			  
-		  //  alert(content_val);  // content 에 공백만 여러개를 입력하여 쓰기할 경우 알아보는 것.
-		  //  <p>&nbsp; &nbsp; &nbsp; &nbsp;</p> 이라고 나온다.
-		  
 		      content_val = content_val.replace(/&nbsp;/gi, "");  // 공백(&nbsp;)을 "" 으로 변환
-		      /*    
-			         대상문자열.replace(/찾을 문자열/gi, "변경할 문자열");
-				   ==> 여기서 꼭 알아야 될 점은 나누기(/)표시안에 넣는 찾을 문자열의 따옴표는 없어야 한다는 점입니다. 
-				               그리고 뒤의 gi는 다음을 의미합니다.
-				
-				   g : 전체 모든 문자열을 변경 global
-				   i : 영문 대소문자를 무시, 모두 일치하는 패턴 검색 ignore
-		      */
-		   // alert(content_val);
-		   // <p>                                      </p>
-		   
+
 		      content_val = content_val.substring(content_val.indexOf("<p>")+3);
-		   // alert(content_val);
-			  //                                       </p>
 			  
 		      content_val = content_val.substring(0, content_val.indexOf("</p>"));
-		   // alert(content_val);
 		     
 		      if(content_val.trim().length == 0) {
-		    	  alert("글내용을 입력하세요!!");
+		    	  alert("소개내용을 입력하세요!!");
 		    	  return; // 종료
 		      }
 		      
-		      
-		      // === 글암호 유효성 검사 === 
-		      const pw = $("input:password[name='pw']").val();	  
-		      if(pw == "") {
-		    	  alert("글암호를 입력하세요!!");
-		    	  return; // 종료
-		      }	
-		      else {
-		    	  if("${requestScope.boardvo.pw}" != pw) {
-		    		  alert("입력하신 글암호가 원래암호와 일치하지 않습니다.");
-			    	  return; // 종료
-		    	  }
-		      }
+			  
+			  
+			  
 		    	  
 		      // 폼(form)을 전송(submit)
-		      const frm = document.editFrm;
+		      const frm = document.addReserFrm;
 		      frm.method = "post";
-		      frm.action = "<%= ctxPath%>/board/edit";
+		      frm.action = "<%= ctxPath%>/reservation/reservationAdd";
 		      frm.submit();
 		  });
+		  // ================ 대분류 등록버튼 ================ //
+		  
+		  
+		  
+		  // ================ 소분류 토글 ================ //
+		  $('.assetTitleBtn').click(e=>{
+			
+			  $(e.target).next().toggle();
+			
+		  });
+		  // ================ 소분류 토글 ================ //
+		  
 		  
 	  });// end of $(document).ready(function(){})-----------
 </script>

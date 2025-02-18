@@ -1,5 +1,8 @@
 package com.spring.app.reservation.service;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,5 +15,35 @@ public class ReservationService_imple implements ReservationService {
 
 	@Autowired
 	private ReservationDAO dao;
+
+	
+	// 자산 대분류를 select 해주는 메소드
+	@Override
+	public List<Map<String, String>> tbl_assetSelect() {
+		List<Map<String, String>> assetList = dao.tbl_assetSelect();
+		
+		return assetList;
+	}
+	
+	
+	
+	// 자산 대분류를 insert 해주는 메소드
+	@Override
+	public int reservationAdd(Map<String, String> paraMap) {
+		int n = dao.reservationAdd(paraMap);
+		return n;
+	}
+
+
+
+	// 자산 상세를 select 해주는 메소드
+	@Override
+	public List<Map<String, String>> tbl_assetDetailSelect() {
+		List<Map<String, String>> assetDetailList = dao.tbl_assetDetailSelect();
+		return assetDetailList;
+	}
+
+
+	
 	
 }

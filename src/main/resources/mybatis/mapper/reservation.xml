@@ -6,7 +6,43 @@
 <!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="com.spring.app.reservation.model.ReservationDAO">
 
+
+	<resultMap id="assetSelect_Map" type="HashMap">
+		<result property="assetNo" 			column="assetNo" 			javaType="String"/>
+		<result property="assetTitle" 		column="assetTitle" 		javaType="String"/>
+		<result property="assetInfo" 		column="assetInfo" 			javaType="String"/>
+		<result property="assetRegisterday" column="assetRegisterday" 	javaType="String"/>
+		<result property="assetChangeday"   column="assetChangeday" 	javaType="String"/>
+		<result property="classification"   column="classification" 	javaType="String"/>
+	</resultMap>
+	<!-- 자산 대분류를 select 해주는 메소드 -->
+	<select id="tbl_assetSelect" resultMap="assetSelect_Map">
+		select assetNo, assetTitle, assetInfo, assetRegisterday, assetChangeday, classification
+		from tbl_asset
+	</select>
+	
+	
+	
+	<resultMap id="assetDetailSelect_Map" type="HashMap">
+		<result property="assetDetailNo" 		   column="assetDetailNo" 		   javaType="String"/>
+		<result property="fk_assetNo" 			   column="fk_assetNo" 			   javaType="String"/>
+		<result property="assetName" 			   column="assetName" 		       javaType="String"/>
+		<result property="assetDetailRegisterday"  column="assetDetailRegisterday" javaType="String"/>
+		<result property="assetDetailChangeday"    column="assetDetailChangeday"   javaType="String"/>
+	</resultMap>
+	<!-- 자산 상세를 select 해주는 메소드 -->
+	<select id="tbl_assetDetailSelect" resultMap="assetDetailSelect_Map">
+		select assetDetailNo, fk_assetNo, assetName, assetDetailRegisterday, assetDetailChangeday
+		from tbl_assetDetail
+	</select>
+
+	
   
+  	<!-- 자산 대분류를 insert 해주는 메소드 -->
+	<insert id="reservationAdd" parameterType="HashMap">
+		insert into tbl_asset(assetNo, assetTitle, assetInfo, assetRegisterday, assetChangeday, classification)
+		values(seq_assetNo.nextval, #{assetTitle}, #{assetInfo}, sysdate, null, #{classification})
+	</insert>
    
 
 </mapper>
