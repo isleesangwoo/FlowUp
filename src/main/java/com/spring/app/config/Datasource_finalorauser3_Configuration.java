@@ -26,7 +26,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 						 ,"com.spring.app.commute.model"
 						 ,"com.spring.app.document.model"
 						 ,"com.spring.app.employee.model"
-						 ,"com.spring.app.mail.model"}, sqlSessionFactoryRef="sqlSessionFactory") 
+						 ,"com.spring.app.mail.model"
+						 ,"com.spring.app.reservation.model"}, sqlSessionFactoryRef="sqlSessionFactory") 
 public class Datasource_finalorauser3_Configuration {
 
 	@Value("${mybatis.mapper-locations}")  // *.yml 파일에 있는 설정값을 가지고 온 것으로서 mapper 파일의 위치를 알려주는 것이다.
