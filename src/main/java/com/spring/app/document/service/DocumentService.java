@@ -1,11 +1,11 @@
 package com.spring.app.document.service;
 
-import java.util.List;
 import java.util.Map;
 
 public interface DocumentService {
 
-	List<Map<String, String>> test();
+	// 휴가신청서 결재 요청
+	int annualDraft(Map<String, String> paraMap);
 
 	
 }
