@@ -58,10 +58,10 @@ public class DocumentController {
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
 		if(loginuser != null) {
-			paraMap.put("fk_emloyeeNo", loginuser.getEmployeeNo());
+			paraMap.put("fk_employeeNo", loginuser.getEmployeeNo());
 		}
 		else {
-			paraMap.put("fk_emloyeeNo", "100014");
+			paraMap.put("fk_employeeNo", "100014");
 		}
 		
 		int n = service.annualDraft(paraMap);
@@ -83,10 +83,10 @@ public class DocumentController {
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
 		if(loginuser != null) {
-			paraMap.put("fk_emloyeeNo", loginuser.getEmployeeNo());
+			paraMap.put("fk_employeeNo", loginuser.getEmployeeNo());
 		}
 		else {
-			paraMap.put("fk_emloyeeNo", "100014");
+			paraMap.put("fk_employeeNo", "100014");
 		}
 		
 		if("휴가신청서".equals(paraMap.get("documentType"))) {
@@ -108,5 +108,34 @@ public class DocumentController {
 		
 		return map;
 	}
+	
+	
+	// 임시저장함
+	@GetMapping("tempList")
+	public ModelAndView tempList(ModelAndView mav, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		else {
+			employeeNo = "100014";
+		}
+		
+		List<Map<String, String>> tempList = service.tempList(employeeNo);
+		// 임시 저장 문서들 불러오기
+		
+		mav.addObject("tempList", tempList);
+		mav.setViewName("mycontent/document/tempList");
+		
+		return mav;
+		
+	}
+	
+	
 	
 }

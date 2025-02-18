@@ -3,6 +3,7 @@ package com.spring.app.document.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,15 @@ public class DocumentService_imple implements DocumentService {
 		}
 		
 		return n*m;
+	}
+
+	
+	// 임시저장 문서 리스트 가져오기
+	@Override
+	public List<Map<String, String>> tempList(String employeeNo) {
+		
+		List<Map<String, String>> tempList = mapper_dao.tempList(employeeNo);
+		return tempList;
 	}
 
 	

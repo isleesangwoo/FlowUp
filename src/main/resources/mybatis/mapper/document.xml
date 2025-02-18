@@ -7,18 +7,39 @@
 <mapper namespace="com.spring.app.document.model.DocumentDAO">
 
 
+	<!-- document sequence 값 가져오기 -->
 	<select id="getSeqDocument" resultType="String">
 		select seq_document.nextval from dual
 	</select>
 
+
+	<!-- document 테이블에 데이터 입력 -->
 	<insert id="insertDocument" parameterType="HashMap">
-		insert into tbl_document(DOCUMENTNO, FK_EMLOYEENO, SUBJECT, DRAFTDATE, TEMP, DOCUMENTTYPE)
-		values(#{documentNo}, #{fk_emloyeeNo}, #{subject}, sysdate, #{temp}, #{documentType})
+		insert into tbl_document(DOCUMENTNO, FK_EMPLOYEENO, SUBJECT, DRAFTDATE, TEMP, DOCUMENTTYPE)
+		values(#{documentNo}, #{fk_employeeNo}, #{subject}, sysdate, #{temp}, #{documentType})
 	</insert>
+	
+	
+	<!-- 휴가신청서 테이블에 데이터 입력 -->
 	<insert id="insertAnnualDraft" parameterType="HashMap">
 		insert into tbl_draft_annual(DOCUMENTNO, USEAMOUNT, REASON, STARTDATE, ENDDATE, ANNUALTYPE)
 		values(#{documentNo}, #{useAmount}, #{reason}, to_date(#{startDate}, 'yyyy-MM-dd'), to_date(#{endDate}, 'yyyy-MM-dd'), #{annualType})
 	</insert>
+	
+	
+	<!-- 임시저장 문서 리스트 불러오기 -->
+	<resultMap type="HashMap" id="tempList_Map">
+		<result column="documentNo"		property="documentNo"	javaType="String" />
+		<result column="subject"		property="subject"		javaType="String" />
+		<result column="documentType"	property="documentType"	javaType="String" />
+		<result column="draftDate"		property="draftDate"	javaType="String" />
+		<result column="status"			property="status"		javaType="String" />
+	</resultMap>
+	<select id="tempList" parameterType="String" resultMap="tempList_Map">
+		select documentNo, subject, documentType, draftDate, status
+		from tbl_document
+		where fk_employeeNo = #{employeeNo} and temp = 1
+	</select>
 	
 	
 </mapper>

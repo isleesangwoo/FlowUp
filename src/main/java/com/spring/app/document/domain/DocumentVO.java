@@ -3,7 +3,7 @@ package com.spring.app.document.domain;
 public class DocumentVO {
 
 	private String documentNo;		// 문서번호
-	private String fk_emloyeeNo;	// 사원번호
+	private String fk_employeeNo;	// 사원번호
 	private String subject;			// 제목
 	private String draftDate;		// 기안날짜
 	private String status;			// 승인여부
@@ -17,11 +17,11 @@ public class DocumentVO {
 	public void setDocumentNo(String documentNo) {
 		this.documentNo = documentNo;
 	}
-	public String getFk_emloyeeNo() {
-		return fk_emloyeeNo;
+	public String getFk_employeeNo() {
+		return fk_employeeNo;
 	}
-	public void setFk_emloyeeNo(String fk_emloyeeNo) {
-		this.fk_emloyeeNo = fk_emloyeeNo;
+	public void setFk_employeeNo(String fk_employeeNo) {
+		this.fk_employeeNo = fk_employeeNo;
 	}
 	public String getSubject() {
 		return subject;
