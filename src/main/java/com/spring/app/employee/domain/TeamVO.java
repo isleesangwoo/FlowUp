@@ -2,30 +2,32 @@ package com.spring.app.employee.domain;
 
 public class TeamVO {
 
-	private String teamSeq;         // 팀번호
-	private String FK_employeeNo;   // 팀장사번
+	private String teamNo;         // 팀번호
+	private String FK_managerNo;   // 팀장사번
 	private String FK_departmentNo; // 부서번호
 	private String teamName;        // 팀명
 	
 	////////////////////////////////////////////////// 
 	
 	
-	public String getTeamSeq() {
-		return teamSeq;
+	public String getTeamNo() {
+		return teamNo;
 	}
-	
-	public void setTeamSeq(String teamSeq) {
-		this.teamSeq = teamSeq;
+
+	public void setTeamNo(String teamNo) {
+		this.teamNo = teamNo;
 	}
+
 	
-	public String getFK_employeeNo() {
-		return FK_employeeNo;
+	public String getFK_managerNo() {
+		return FK_managerNo;
 	}
-	
-	public void setFK_employeeNo(String fK_employeeNo) {
-		FK_employeeNo = fK_employeeNo;
+
+
+	public void setFK_managerNo(String fK_managerNo) {
+		FK_managerNo = fK_managerNo;
 	}
-	
+
 	public String getFK_departmentNo() {
 		return FK_departmentNo;
 	}
