@@ -21,22 +21,24 @@
 
    
    <!-- #ljh5. 로그인 처리 하기 -->
+	<select id="getLoginEmployee" resultType="EmployeeVO" parameterType="HashMap" >
+	    SELECT E.EMPLOYEENO, E.passwd, E.FK_POSITIONNO, E.FK_TEAMNO, E.Name, 
+	           E.SECURITYLEVEL, E.Email, E.Bank, E.Mobile, E.directcall, 
+	           E.account, E.registerdate, E.Status, E.REASONFORLEAVING, 
+	           E.lastDate, E.MOTIVE, E.PROFILEIMG, E.Address, E.birth, 
+	           E.FK_DEPARTMENTNO , D.departmentname
+	    FROM tbl_employee E LEFT JOIN tbl_department D 
+	    ON E.FK_DEPARTMENTNO = D.DEPARTMENTNO
+	    WHERE E.employeeNo = to_number(#{id})
+	    AND E.passwd = #{passwd}
+	    AND E.status = 1
+	</select>
 
-   
-<select id="getLoginEmployee" resultType="EmployeeVO" parameterType="HashMap" >
-    SELECT E.EMPLOYEENO, E.passwd, E.FK_POSITIONNO, E.FK_TEAMNO, E.Name, 
-           E.SECURITYLEVEL, E.Email, E.Bank, E.Mobile, E.directcall, 
-           E.account, E.registerdate, E.Status, E.REASONFORLEAVING, 
-           E.lastDate, E.MOTIVE, E.PROFILEIMG, E.Address, E.birth, 
-           E.FK_DEPARTMENTNO , D.departmentname
-    FROM tbl_employee E LEFT JOIN tbl_department D 
-    ON E.FK_DEPARTMENTNO = D.DEPARTMENTNO
-    WHERE E.employeeNo = to_number(#{id})
-    AND E.passwd = #{passwd}
-    AND E.status = 1
-</select>
-
-   
+	<!-- 관리자의 사원 추가 -->
+   <insert id="insert_employee">
+   	insert into tbl_employee(EMPLOYEENO,passwd,name,FK_DEPARTMENTNO,FK_positionNo,FK_TEAMNO,directcall,securityLevel,email,Mobile,bank,account,registerdate,address,birth)
+                  values(#{employeeNo},#{passwd},#{name},#{FK_departmentNo},#{FK_positionNo},#{FK_teamNo},#{directCall},#{securityLevel},#{email},#{mobile},#{bank}, #{account},#{registerDate},#{address},#{birth})
+   </insert>
 
 </mapper>
 

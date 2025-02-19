@@ -276,13 +276,27 @@ AND E.status = 1;
 
 
 
+SELECT E.EMPLOYEENO, E.passwd, E.FK_POSITIONNO, E.FK_TEAMNO, E.Name, 
+       E.SECURITYLEVEL, E.Email, E.Bank, E.Mobile, E.directcall, 
+       E.account, E.registerdate, E.Status, E.REASONFORLEAVING, 
+       E.lastDate, E.MOTIVE, E.PROFILEIMG, E.Address, E.birth, 
+       E.FK_DEPARTMENTNO , D.departmentname
+FROM tbl_employee E 
+LEFT JOIN tbl_department D ON E.FK_DEPARTMENTNO = D.DEPARTMENTNO
+order by E.employeeNO desc;
+
+
+commit;
 
 
 
+--  관리자의 사원 추가 ----------------------------
+
+insert into tbl_employee(EMPLOYEENO,passwd,name,FK_DEPARTMENTNO,FK_POSITIONNO,FK_TEAMNO,directcall,SECURITYLEVEL,email,Mobile,bank,account,registerdate,address,birth)
+                  values(100015,'qwer1234','테스트',100000,100000,100000, 10212129090,1,'testacount@naver.com',01023239090,'농협', 1231234123412,sysdate, '충남','2002-08-08');
 
 
-
-
+rollback;
 
 
 
