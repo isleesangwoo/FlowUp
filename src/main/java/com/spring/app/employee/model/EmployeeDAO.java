@@ -14,5 +14,8 @@ public interface EmployeeDAO {
 
 	//로그인 처리
 	EmployeeVO getLoginEmployee(Map<String, String> paraMap);
+
+	//회원 추가
+	int insert_employee(EmployeeVO empvo);
 	
 }

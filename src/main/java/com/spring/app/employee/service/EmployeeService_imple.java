@@ -141,5 +141,13 @@ public class EmployeeService_imple implements EmployeeService {
 	    return loginuser;
 	}
 
+
+	// === #ljh9.회원추가 처리 === //
+	@Override
+	public int insert_employee(EmployeeVO empvo) {
+		int insert_employee = dao.insert_employee(empvo);
+		return insert_employee;
+	}
+
 	
 }

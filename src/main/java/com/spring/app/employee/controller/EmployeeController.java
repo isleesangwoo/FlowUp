@@ -17,6 +17,8 @@ import com.spring.app.employee.service.EmployeeService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 //=== 컨트롤러 선언 === //
@@ -76,6 +78,8 @@ public class EmployeeController {
 			HttpSession session = request.getSession();
 			session.setAttribute("loginuser", loginuser); //로그인 유저 세션에 저장
 			
+			
+			
 			mav.setViewName("redirect:/index"); // 로그인이 성공했을 때 메인페이지로 이동
 		}
 		
@@ -90,5 +94,48 @@ public class EmployeeController {
 		return mav;
 	}
 	
+	
+	
+	// === #ljh6. 관리자  페이지 요청 === //
+	@GetMapping("admin")
+	public ModelAndView admin(ModelAndView mav) {
+		mav.setViewName("mycontent/employee/admin_main");
+		return mav;
+	}
+	
+	
+	// === #ljh7. 관리자 회원추가 페이지 요청 === //
+	@GetMapping("addEmployee")
+	public ModelAndView addEmployee(ModelAndView mav,  @RequestParam Map<String,String>paraMap) {
+		mav.setViewName("mycontent/employee/addEmployee");
+		return mav;
+	}
+
+	
+	
+	// === #ljh8.회원추가 처리 === //
+	@PostMapping("addEmployeeFrm")
+	public ModelAndView addEmployeeFrm(EmployeeVO empvo) {
+		ModelAndView mav = new ModelAndView();
+		
+		int n = service.insert_employee(empvo);
+		
+		if(n != 0) {
+			mav.setViewName("mycontent/employee/addEmployee");// 기존 페이지에 간다.
+			System.out.println("사원 추가 성공적");
+		}
+		
+		else { // 회원 추가 실패
+			mav.addObject("message", "회원추가가 실패하였습니다");
+			mav.addObject("loc", "javaScript:history.back()");
+			mav.setViewName("msg"); // 실패 시 메시지 페이지로 이동
+		}
+		
+	
+		//System.out.println("확인");
+		return mav;
+	}
+	
+		
 	
 }

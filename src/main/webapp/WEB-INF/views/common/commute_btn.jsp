@@ -137,15 +137,14 @@
 	    border: 1px solid var(--keyColor);
 	    border-radius: var(--size8);
 	    font-size: var(--size16);
-	    cursor: pointer;
 	    transition: all 0.3s;
 	}
 	
-	#clock-contants > div:nth-child(2) button:hover {
-	    color: var(--whiteColor);
-	    background-color: var(--keyColor);
-	}
 	
+	.hhover:hover {
+		cursor: pointer;
+		
+	}
 	
 	
 	#total-hour {
@@ -242,7 +241,13 @@
 	    
 	    // 근무 상태 버튼 클릭시 열림
 	    $('#btn_status').click(e=>{
-	    	$('#btn_status_list').slideToggle();
+	    	
+	    	const btn_status = $(e.target).text();
+	    	
+	    	if(btn_status != '업무종료') {
+	    		$('#btn_status_list').slideToggle();
+	    	}
+	    
 	    });
 	    
 	 	// (내)근태 관리 버튼 클릭시 열림
@@ -256,6 +261,7 @@
 	    });
 	    
 	    
+		
 	    // 근무상태 하위 탭 클릭시
 	    $('#btn_status_list > li').click(e=>{
 	    	
@@ -319,8 +325,6 @@
 						alert("퇴근처리 실패");
 					}
 					
-					
-					
 				},
 				error: function(request, status, error){
 		        	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -362,26 +366,40 @@
 	    	} // confirm
 	    });
 	  
+    
 	    
-	    $("div.deptCommuteTable").click(e=>{
+	    $("#myCommuteTable").click(e=>{
 	    	
-	    	const $btn = $(e.target);
-	    	
-	    });
-	  
-	
- 		$("div.deptCommuteCart").click(e=>{
-	    	
-	    	const $btn = $(e.target);
-	    	
+	    	location.href="<%= ctxPath%>/commute/";
 	    	
 	    });
 	    
-			    
-	    
-	    
-	    
-	    
+		$("#myCommuteTable").click(e=>{
+	    	
+			
+			
+	    });
+ 		
+		$("div.deptCommuteTable").click(e=>{
+		    	
+			const $btn = $(e.target);
+		    	
+		});
+		  
+		
+	 	$("div.deptCommuteCart").click(e=>{
+		    	
+			const $btn = $(e.target);
+		    	
+		});
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
+ 		
 	    
 	}); // ready
 	
@@ -397,22 +415,36 @@
 			dataType:"json",
 			success:function(json) {
 				
-				console.log("~~확인용 n => " + json.n);
+				let todayStartTime;
+				let todayEndTime;
 				
-				const todayStartTime = (json.startTime).substring(11);
-				const todayEndTime = (json.endTime).substring(11);
+				console.log(json.startTime);
+				console.log(json.endTime);
+				
+				if(json.startTime != "-") {
+					console.log("startTime");
+					todayStartTime = (json.startTime).substring(11);
+				}
+				
+				if(json.endTime != "-") {
+					console.log("endTime");
+					todayEndTime = (json.endTime).substring(11);
+				}
+				
 				
 				if(json.n == 0) { // 아직 출근안함 
-					$("#startWork").attr("disabled", false);// 출근버튼 활성화
-					$("#endWork").attr("disabled", true);   // 퇴근버튼 비활성화
+					$("#startWork").attr("disabled", false);		// 출근버튼 활성화
+					$("#startWork").addClass("btnHover");
+					$("#endWork").attr("disabled", true);			// 퇴근버튼 비활성화
+					$("#endWork").removeClass("btnHover");   
 				}
 				else if(json.n == 1) { // 이미 출근
-					$("#startWork").attr("disabled", true); // 출근버튼 비활성화
-					$("#endWork").attr("disabled", false);  // 퇴근버튼 활성화	
+					$("#startWork").attr("disabled", true).removeClass("btnHover"); // 출근버튼 비활성화
+					$("#endWork").attr("disabled", false).addClass("btnHover");;  // 퇴근버튼 활성화	
 				}
 				else if(json.n == 2){ // 이미 퇴근
-					$("#startWork").attr("disabled", true); // 출근버튼 비활성화
-					$("#endWork").attr("disabled", true);   // 퇴근버튼 비활성화	
+					$("#startWork").attr("disabled", true).removeClass("btnHover"); // 출근버튼 비활성화
+					$("#endWork").attr("disabled", true).removeClass("btnHover");   // 퇴근버튼 비활성화	
 					$('#btn_status').html("업무종료");
 				}
 				else { // 에러
@@ -467,11 +499,6 @@
 	
 </script>
 
-
-
-
-
-
 <div id="goToWork">
      <div>
          <div id="workTitle">근태관리</div>
@@ -507,8 +534,8 @@
                 </div>
             </div>
             <div>
-                <button type="button" id="startWork">출근</button> <!-- 해당버튼 클릭시 출근시간이 input태그의 value값에 들어가게 해주세요 -->
-                <button type="button" id="endWork">퇴근</button> <!-- 해당버튼 클릭시 퇴근시간이 input태그의 value값에 들어가게 해주세요 -->
+                <button type="button" id="startWork" class="">출근</button> <!-- 해당버튼 클릭시 출근시간이 input태그의 value값에 들어가게 해주세요 -->
+                <button type="button" id="endWork" class="">퇴근</button> <!-- 해당버튼 클릭시 퇴근시간이 input태그의 value값에 들어가게 해주세요 -->
                 <!-- 출근시간과 퇴근시간의 차에 시급을 곱한 값이 일당입니다. -->
             </div>
             
@@ -527,48 +554,51 @@
             <br>
             
             <div>
-	         	<div id="btn_myCommute" style="font-size:14pt; font-weigt:bold;">근태관리</div>
+	         	<div id="btn_myCommute" class="hhover" style="font-size:14pt; font-weigt:bold;">근태관리</div>
 	            <div id="btn_myCommute_list" style="list-style: none; display: none;">
-            		<div>&nbsp;&nbsp;&nbsp;내 근태 현황</div>
-            		<div>&nbsp;&nbsp;&nbsp;내 연차 내역</div>
+            		<div id="myCommuteTable" class="hhover">&nbsp;&nbsp;&nbsp;내 근태 현황</div>
+            		<div id="myCommuteChart" class="hhover">&nbsp;&nbsp;&nbsp;내 연차 내역</div>
             	</div>
             </div>
             
             <div style="margin-top:5px;">
-	         	<div id="btn_depCommute" style="font-size:14pt; font-weigt:bold;">부서 근태관리</div>
-	         	
-	            <div id="btn_depCommute_list" style="list-style: none; display: none;">
-	            
-	            	<c:if test="${sessionScope.loginuser.securityLevel == '10'}">
-	            	
-	            		<c:forEach items="${requestScope.dvoList}" var="dvo">
-	            			
-		            		<div style="margin-bottom:10px;">
-		            			<div>${dvo.departmentName}</div>
-			            		<div class="deptCommuteTable">&nbsp;&nbsp;&nbsp;부서 근태현황</div>
-			            		<div class="deptCommuteCart">&nbsp;&nbsp;&nbsp;부서 근태통계</div>
-			            		<input type="hidden" value="${dvo.departmentNo}" />
+            
+            	<c:if test="${sessionScope.loginuser.departmentName != ' ' || sessionScope.loginuser.securityLevel == '10'}">
+            	
+		         	<div id="btn_depCommute" class="hhover" style="font-size:14pt; font-weigt:bold;">부서 근태관리</div>
+		         	
+		            <div id="btn_depCommute_list" style="list-style: none; display: none;">
+		            
+		            	<c:if test="${sessionScope.loginuser.securityLevel == '10'}">
+		            	
+		            		<c:forEach items="${requestScope.dvoList}" var="dvo">
+		            			
+			            		<div style="margin-bottom:10px;">
+			            			<div>${dvo.departmentName}</div>
+				            		<div class="deptCommuteTable hhover">&nbsp;&nbsp;&nbsp;부서 근태현황</div>
+				            		<div class="deptCommuteCart hhover">&nbsp;&nbsp;&nbsp;부서 근태통계</div>
+				            		<input type="hidden" value="${dvo.departmentNo}" />
+			            		</div>
+			            		
+		            		</c:forEach>
+			            	
+	            		</c:if>
+	            		
+	            		<c:if test="${sessionScope.loginuser.securityLevel != '10'}">
+		            		
+		            		<div>
+				            	<div>${sessionScope.loginuser.departmentName}</div>
+				            	<div class="deptCommuteTable hhover">&nbsp;&nbsp;&nbsp;부서 근태현황</div>
+				            	<div class="deptCommuteCart hhover">&nbsp;&nbsp;&nbsp;부서 근태통계</div>
+				            	<input type="hidden" value="" />
 		            		</div>
 		            		
-		            		
-	            		</c:forEach>
-		            	
-            		</c:if>
-            		
-            		<c:if test="${sessionScope.loginuser.securityLevel != '10'}">
+	            		</c:if>
 	            		
-	            		<div>
-			            	<div>내 부서이름</div>
-			            	<div class="deptCommuteTable">&nbsp;&nbsp;&nbsp;부서 근태현황</div>
-			            	<div class="deptCommuteCart">&nbsp;&nbsp;&nbsp;부서 근태통계</div>
-			            	<input type="hidden" value="" />
-	            		</div>
 	            		
-            		</c:if>
-            		
-            		
-            	</div>
+	            	</div>
             	
+            	</c:if>
             	
             </div>
             
