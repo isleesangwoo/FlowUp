@@ -20,5 +20,8 @@ public interface EmployeeService {
 	//로그인 처리하기-1
 	EmployeeVO login(Map<String, String> paraMap);
 
+	//회원추가 처리
+	int insert_employee(EmployeeVO empvo);
+
 
 }
