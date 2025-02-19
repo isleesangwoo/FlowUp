@@ -159,7 +159,7 @@ $(document).ready(function() {
 			$("#isNoticeElmt").hide();
 		 }
 		 
-	 }); // end of $(document).on("click", "#disableBoardIcon", function() {} --------------
+	 }); // end of $(document).on("change", "input[name='isNotice']", function(e) {}--------------
 
 	
 	
@@ -180,8 +180,7 @@ $(document).ready(function() {
 			                <i class="fa-solid fa-gear" style="margin-right:9px;"></i> <%-- 게시판 수정 아이콘 --%> 
 		                </a>
 		                
-		                <i class="fa-solid fa-trash disableBoardIcon" data-boardno="\${board.boardNo}"></i> <%-- 게시판 삭제 아이콘 --%>
-		                
+		                <i class="fa-regular fa-trash-can disableBoardIcon" data-boardno="\${board.boardNo}"></i> <%-- 게시판 삭제 아이콘 --%>
 	                </li>`; 
             });
             $(".board_menu_container ul li").not(":first").remove(); // 첫 번째 항목 제외하고 삭제
@@ -227,7 +226,7 @@ $(document).ready(function() {
                 }
             });
         }
-    }); // end of $(document).on("click", "#disableBoardIcon", function() {} --------------
+    }); // end of $(document).on("click", ".disableBoardIcon", function() {} --------------
 
     
    	

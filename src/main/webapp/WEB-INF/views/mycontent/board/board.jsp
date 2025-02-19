@@ -78,7 +78,7 @@
 					<div class="onePostElmt">
 						<div style="display: flex; justify-content: space-between;">
 							<div class="article_wrap">
-								<span class="postBoard">${post.boardvo.boardName}</span> <!-- 게시판 이름은... 조인해야긋네.. -->
+								<span class="postBoard">${post.boardvo.boardName}</span>
 								<span class="postSubject">${post.subject}</span><span class="postCommentCount">[댓개수] ${post.commentCount}</span>
 								<span class="postContent">${post.content}</span>
 							</div>

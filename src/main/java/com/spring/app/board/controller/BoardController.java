@@ -369,18 +369,6 @@ public class BoardController {
   // 게시글 등록하기
   @PostMapping("addPost")
   public String addPost(PostVO postvo) {
-	
-	  System.out.println("postvo.getFk_boardNo() 게시판 번호: " + postvo.getFk_boardNo());
-	  System.out.println("postvo.getSubject() 글제목 : " + postvo.getSubject());
-	  System.out.println("postvo.getContent() 글내용: " + postvo.getContent());
-	  System.out.println("postvo.getFk_employeeNo() 100013으로 고정값 줌. : " + postvo.getFk_employeeNo());
-	  System.out.println("postvo.getIsNotice() : " + postvo.getIsNotice());
-	  System.out.println("postvo.getName() 이상우로 고정값을 줌. : " + postvo.getName());
-	  System.out.println("postvo.getNoticeEndDate() : " + postvo.getNoticeEndDate());
-	  System.out.println("postvo.getAllowComments() : " + postvo.getAllowComments());
-	  
-	  
-	  
 	  int n = service.addPost(postvo); 
 	  
 	  if(n>0) {
@@ -391,6 +379,22 @@ public class BoardController {
 	  }
 	
 	  return "redirect:/board/board";
+  }
+  
+  // 게시글 하나 조회하기
+  @PostMapping("goViewOnePost")
+  public ModelAndView goViewOnePost(ModelAndView mav, HttpServletRequest request,@RequestParam String postNo) {
+	  
+	  System.out.println("postNo : " + postNo);
+			
+	  PostVO postvo = service.goViewOnePost(); // 게시글 하나 조회하기
+	  
+	  System.out.println("postvo : " + postvo);
+	  
+	  mav.addObject(postvo);
+	  mav.setViewName("redirect:/board/onePostView");
+	  
+	  return mav;
   }
 	
 	

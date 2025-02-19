@@ -131,22 +131,14 @@ WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
       where status = 1
    </select>
    
-   <!-- === #101. "Oracle 11g 와 호환" 글목록 가져오기(페이징 처리 했으며, 검색어가 있는 것 또는 검색어가 없는 것 모두 포함한 것이다.) === 
-
-   <select id="postList_withPaging" resultType="PostVO"> 
-		SELECT postNo, fk_employeeNo, name, subject, readCount, regDate, commentCount 
-		FROM 
-		(
-		    select row_number() over(order by postNo desc) AS rno 
-		         , postNo, fk_employeeNo, name, subject
-		         , readCount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate 
-		         , commentCount 
-		    from tbl_post
-		    where status = 1 
-		) V
-		WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})    
-   </select>
---> 
+<!--    게시글 하나 조회하기
+	<select id="goViewOnePost" resultType="PostVO">
+		select POSTNO,FK_BOARDNO,FK_EMPLOYEENO,NAME,SUBJECT,CONTENT,READCOUNT,REGDATE,COMMENTCOUNT
+		from tbl_post
+		where postNo=#{postNo}
+	</select>
+ -->
+   
 </mapper>
 
 

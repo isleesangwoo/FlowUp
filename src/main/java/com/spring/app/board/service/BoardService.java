@@ -39,9 +39,12 @@ public interface BoardService {
 	// 게시판 메인 페이지에 뿌려줄 모든 게시글 조회
 	List<PostVO> selectAllPost(Map<String, String> paraMap);
 
+	// 총 게시물 건수 (totalCount)
 	int getTotalCount();
 
-	//List<PostVO> postList_withPaging();
+	// 게시글 하나 조회하기
+	PostVO goViewOnePost();
+
 	
 	
 	

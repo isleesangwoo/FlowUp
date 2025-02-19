@@ -1,5 +1,13 @@
 $(document).ready(()=>{
 	
+	// === 게시글 하나에 마우스 호버 시 시작 === //
+	$(".onePostElmt").hover(function(){
+		 $(this).css('color', '#808080');
+	 }, function(){
+		 $(this).css('color', '');
+	 });
+	// === 게시글 하나에 마우스 호버 시 끝 === //	
+	 
     // ========= 정렬버튼 토글 ========= //
     $('#sort_btn').click(e=>{
 
@@ -28,10 +36,14 @@ $(document).ready(()=>{
 
 
     
-	
-	
-	
-	
 
 
 }) // end of $(document).ready(()=>{})---------
+
+
+
+
+// Function Declaration
+
+
+

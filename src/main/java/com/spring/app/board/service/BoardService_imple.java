@@ -90,17 +90,20 @@ public class BoardService_imple implements BoardService {
 		return postAllList;
 	}
 
+	// 총 게시물 건수 (totalCount)
 	@Override
 	public int getTotalCount() {
 		int totalCount = dao.getTotalCount();
 		return totalCount;
 	}
 
-//	@Override
-//	public List<PostVO> postList_withPaging() {
-//		List<PostVO> postList = dao.postList_withPaging();
-//		return postList;
-//	}
+	// 게시글 하나 조회하기
+	@Override
+	public PostVO goViewOnePost() {
+		PostVO postvo = dao.goViewOnePost(); 
+		return postvo;
+	}
+
 
 
 	
