@@ -43,7 +43,10 @@ public interface BoardService {
 	int getTotalCount();
 
 	// 게시글 하나 조회하기
-	PostVO goViewOnePost();
+	PostVO goViewOnePost(Map<String, String> paraMap);
+
+	// 글 조회수 증가는 없고 단순히 글 1개만 조회를 해오는 것
+	PostVO getView_no_increase_readCount(Map<String, String> paraMap);
 
 	
 	

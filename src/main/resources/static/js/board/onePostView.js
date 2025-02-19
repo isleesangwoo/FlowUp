@@ -39,23 +39,3 @@ $(document).ready(()=>{
 
 
 }) // end of $(document).ready(()=>{})---------
-
-
-
-
-// Function Declaration
-function goView(postNo) {
-	
-	const frm = document.goViewFrm;
-    frm.postNo.value = postNo;
-    frm.goBackURL.value = goBackURL;
-   
-    frm.method = "post";
-    frm.action = ctxPath + "/board/goViewOnePost";
-    frm.submit();
-}
-
-
-
-
-

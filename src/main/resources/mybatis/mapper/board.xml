@@ -131,13 +131,19 @@ WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
       where status = 1
    </select>
    
-<!--    게시글 하나 조회하기
-	<select id="goViewOnePost" resultType="PostVO">
+<!--    게시글 하나 조회하기 -->
+	<select id="goViewOnePost" resultType="PostVO" parameterType="HashMap">
 		select POSTNO,FK_BOARDNO,FK_EMPLOYEENO,NAME,SUBJECT,CONTENT,READCOUNT,REGDATE,COMMENTCOUNT
 		from tbl_post
 		where postNo=#{postNo}
 	</select>
- -->
+	
+	<!-- === #41. 글조회수 1증가 하기 === -->
+   <update id="increase_readCount" parameterType="String">
+        update tbl_post set readCount = readCount + 1
+        where postNo = to_number(#{postNo})
+   </update>
+
    
 </mapper>
 

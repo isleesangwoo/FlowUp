@@ -12,6 +12,7 @@
 
 <script>
 	var ctxPath = "<%= request.getContextPath() %>";
+	const goBackURL = "<%= request.getAttribute("goBackURL") %>";
 </script>
 <%-- 각자 페이지에 해당되는 js 연결 --%>
 <script src="<%=ctxPath%>/js/board/board.js"></script>
@@ -70,6 +71,7 @@
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
         </div>
         
+        
         <%-- 이곳에 각 해당되는 뷰 페이지를 작성 시작 --%>
 		<div id="postContainer"> <!-- 게시글 보여주는 요소 전체 박스-->
 			<div style="width:80%; border: solid 1px orange;">
@@ -79,8 +81,10 @@
 						<div style="display: flex; justify-content: space-between;">
 							<div class="article_wrap">
 								<span class="postBoard">${post.boardvo.boardName}</span>
-								<span class="postSubject">${post.subject}</span><span class="postCommentCount">[댓개수] ${post.commentCount}</span>
-								<span class="postContent">${post.content}</span>
+								<span onclick="goView('${post.postNo}')">
+									<span class="postSubject">${post.subject}</span><span class="postCommentCount">[댓개수] ${post.commentCount}</span>
+									<span class="postContent">${post.content}</span>
+								</span>
 							</div>
 							<div>
 								<div class="postLikeBtn"><i class="fa-regular fa-heart"></i></div>
@@ -94,9 +98,9 @@
 					</div>
 				</c:forEach>
 				<%-- === #103. 페이지바 보여주기 === --%>
-    <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
-    	${requestScope.pageBar}
-    </div>
+			    <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+			    	${requestScope.pageBar}
+			    </div>
 			</div>
 			
 			<%-- 게시판 별 게시글 조회 --%>
@@ -118,6 +122,12 @@
         
     </div>
     <!-- 오른쪽 바 -->
+
+<!-- onClick="goView" 로 클린된 함수에 폼을 같이 넘겨주기위함. 함수에서 폼의 input에 값을 넣어줌.-->    
+<form name="goViewFrm">
+   <input type="hidden" name="postNo" />
+   <input type="hidden" name="goBackURL" />
+</form>	     
     
 	
 	

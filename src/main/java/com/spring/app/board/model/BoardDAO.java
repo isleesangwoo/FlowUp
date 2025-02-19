@@ -45,7 +45,10 @@ public interface BoardDAO {
 	int getTotalCount();
 	
 	// 게시글 하나 조회하기
-	PostVO goViewOnePost();
+	PostVO goViewOnePost(Map<String, String> paraMap);
+
+	// 글조회수 1증가 하기 
+	int increase_readCount(String string);
 
 
 
