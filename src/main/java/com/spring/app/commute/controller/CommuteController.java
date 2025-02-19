@@ -40,7 +40,7 @@ public class CommuteController {
 		
 
 		HttpSession session = request.getSession();
-		
+
 		
 		////////////////////////////////////////////////////
 		
@@ -48,19 +48,14 @@ public class CommuteController {
 		
 		List<DepartmentVO> dvoList = new ArrayList<>();;
 		
-		if(loginuser.getSecurityLevel() == "10") {
+		if("10".equals(loginuser.getSecurityLevel())) {
+			
+			System.out.println("확인용 getSecurityLevel : " + loginuser.getSecurityLevel());
 			
 			dvoList = service.getDepInfo(); // 모든 부서 리스트 조회
 			
 		}
 
-		
-		for(DepartmentVO dvo : dvoList) {
-			System.out.println(dvo.getDepartmentName());
-		}
-		
-		
-		
 		mav.addObject("dvoList", dvoList);
 		
 		mav.setViewName("mycontent/commute/commute");
@@ -82,10 +77,15 @@ public class CommuteController {
 		// 금일자 출근정보 조회하기
 		CommuteVO cvo = service.getTodayWorkInfo(fk_employeeNo);
 		
-		System.out.println("~~~ getTodayWorkInfo ~~~ 확인용 cvo : " + cvo);
 		
 		if(cvo == null) {
 			n = 0;
+			map.put("startTime", "-");
+			map.put("endTime", "-");
+			map.put("status", "0");
+			map.put("overTimeYN","0");
+			map.put("rest","0");
+			
 		}
 		else {
 			
@@ -137,12 +137,6 @@ public class CommuteController {
 		workTime_min = (n_workTime_sec / 60 - workTime_hour * 60);
 
 		workTime_sec = (n_workTime_sec - workTime_hour * 60 * 60 - workTime_min * 60);
-
-		System.out.println("~~ 확인용 workTime_hour : " + workTime_hour);
-		System.out.println("~~ 확인용 workTime_min : " + workTime_min);
-		System.out.println("~~ 확인용 workTime_sec : " + workTime_sec);
-
-		System.out.println("출근 클릭 ~ n : " + n);
 		
 		map.put("n", n);
 		map.put("workTime_hour", workTime_hour);
