@@ -54,9 +54,9 @@
                     <span class="mail_cnt">5</span> <!-- 콤마처리 해주세요 -->
                 </li>
                 <li><a href="#">결제 예정 문서</a></li>
-                <li><a href="#">기안 문서함</a></li>
-                <li><a href="#">임시 저장함</a></li>
-                <li><a href="#">부서문서함</a></li>
+                <li><a href="<%= ctxPath%>/document/myDocumentList">기안 문서함</a></li>
+                <li><a href="<%= ctxPath%>/document/tempList">임시 저장함</a></li>
+                <li><a href="<%= ctxPath%>/document/deptDocumentList">부서문서함</a></li>
             </ul>
         </div>
     </div>

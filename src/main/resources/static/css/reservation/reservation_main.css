@@ -1,4 +1,4 @@
-/* 
+
 #main_section {
     display: flex;
     box-sizing: border-box;
@@ -36,16 +36,40 @@
     height: auto;
 }
 
-.board_menu_container > ul li {
+.board_menu_container > ul:first-child > li {
     width: 100%;
-    height: var(--size38);
+	height: auto;
+    min-height: var(--size38);
     font-size: var(--size15);
     user-select: none;
     cursor: pointer;
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    padding-left: var(--size10);
+    padding: 0px var(--size10);
+}
+
+.board_menu_container > ul:first-child > li div:first-child {
+	width: 100%;
+	height: auto;
+    min-height: var(--size38);
+    font-size: var(--size15);
+    user-select: none;
+    cursor: pointer;
+    line-height: var(--size38);
+    box-sizing: border-box;
+}
+
+.assetDetailList {
+	width: 100%;
+	height: auto;
+    min-height: var(--size38);
+    font-size: var(--size14);
+	user-select: none;
+    cursor: pointer;
+    line-height: var(--size38);
+    box-sizing: border-box;
+    padding-left: var(--size16);
 }
 
 .board_menu_container > ul > li > a {
@@ -58,8 +82,7 @@
 }
 
 
-
-현재 페이지에 이렇게 넣어주세요!
+/* 현재 페이지에 이렇게 넣어주세요! */
 .board_menu_container > ul li:nth-child(1){
     background-color: #dae8f8 !important;
     color: #056ac9;
@@ -69,7 +92,7 @@
 .board_menu_container > ul li:nth-child(1) > a {
     color: #056ac9;
 }
-*/
+
 /* 현재 페이지에 이렇게 넣어주세요! */
 
 
