@@ -1,6 +1,6 @@
 CREATE table tbl_document
 (documentNo         NVARCHAR2(20)           not null
-,fk_emloyeeNo       number                  not null
+,fk_employeeNo       number                  not null
 ,subject            NVARCHAR2(200)          not null
 ,draftDate          date    default sysdate not null
 ,status             number  default 0       not null
@@ -8,7 +8,7 @@ CREATE table tbl_document
 ,temp               number  default 0
 ,documentType       NVARCHAR2(20)           not null
 ,constraint     PK_tbl_document primary key(documentNo)
-,constraint     fk_tbl_document_employeeNo foreign key(fk_emloyeeNo) references tbl_employee(employeeNo) on delete cascade
+,constraint     fk_tbl_document_employeeNo foreign key(fk_employeeNo) references tbl_employee(employeeNo) on delete cascade
 );
 
 create sequence seq_document
@@ -19,7 +19,7 @@ nominvalue
 nocycle
 nocache;
 
-drop sequence seq_document;
+-- drop sequence seq_document;
 
 
 CREATE table tbl_document_attach
@@ -117,4 +117,43 @@ SELECT seq_document.nextval FROM DUAL;
 
 insert into tbl_draft_annual(DOCUMENTNO, USEAMOUNT, REASON, STARTDATE, ENDDATE, ANNUALTYPE)
 values(seq_document.currval, 1, 'dd', to_date('2025-02-17', 'yyyy-MM-dd'), to_date('2025-02-18', 'yyyy-MM-dd' ), '연차');
+
+select * from tbl_document;
+select * from tbl_draft_annual;
+
+select *
+from tbl_document;
+
+select documentNo, subject, documentType, draftDate
+		from tbl_document
+		where fk_employeeNo = 100014 and temp = 1;
+    
+    
+    
+    
+select documentNo, subject, documentType, draftDate, status
+from tbl_document;
+
+select documentNo, subject, documentType, draftDate, status, name
+from
+(
+    select employeeNo, name
+    from
+        (
+            select fk_departmentno
+            from tbl_employee
+            where employeeNo = '100014'
+        ) E1 JOIN tbl_employee E2
+    ON E1.fk_departmentNo = E2.fk_departmentno
+) E JOIN tbl_document D
+ON E.employeeNO = D.fk_employeeNo;
+
+
+
+select *
+from tbl_document
+where fk_employeeno = '100014';
+
+
+
 

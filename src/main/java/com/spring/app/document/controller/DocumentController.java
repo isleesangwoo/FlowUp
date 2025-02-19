@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.app.document.domain.DocumentVO;
 import com.spring.app.document.service.DocumentService;
 import com.spring.app.employee.domain.EmployeeVO;
 
@@ -58,10 +59,10 @@ public class DocumentController {
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
 		if(loginuser != null) {
-			paraMap.put("fk_emloyeeNo", loginuser.getEmployeeNo());
+			paraMap.put("fk_employeeNo", loginuser.getEmployeeNo());
 		}
 		else {
-			paraMap.put("fk_emloyeeNo", "100014");
+			paraMap.put("fk_employeeNo", "100014");
 		}
 		
 		int n = service.annualDraft(paraMap);
@@ -83,10 +84,10 @@ public class DocumentController {
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
 		if(loginuser != null) {
-			paraMap.put("fk_emloyeeNo", loginuser.getEmployeeNo());
+			paraMap.put("fk_employeeNo", loginuser.getEmployeeNo());
 		}
 		else {
-			paraMap.put("fk_emloyeeNo", "100014");
+			paraMap.put("fk_employeeNo", "100014");
 		}
 		
 		if("휴가신청서".equals(paraMap.get("documentType"))) {
@@ -107,6 +108,86 @@ public class DocumentController {
 		map.put("n", String.valueOf(n));
 		
 		return map;
+	}
+	
+	
+	// 임시저장함
+	@GetMapping("tempList")
+	public ModelAndView tempList(ModelAndView mav, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		else {
+			employeeNo = "100014";
+		}
+		
+		List<DocumentVO> tempList = service.tempList(employeeNo);
+		// 임시 저장 문서 리스트 가져오기
+		
+		mav.addObject("tempList", tempList);
+		mav.setViewName("mycontent/document/tempList");
+		
+		return mav;
+		
+	}
+	
+	
+	// 기안 문서함
+	@GetMapping("myDocumentList")
+	public ModelAndView myDocumentList(ModelAndView mav, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		else {
+			employeeNo = "100014";
+		}
+		
+		List<DocumentVO> myDocumentList = service.myDocumentList(employeeNo);
+		// 기안 문서 리스트 가져오기
+		
+		mav.addObject("myDocumentList", myDocumentList);
+		mav.setViewName("mycontent/document/myDocumentList");
+		
+		return mav;
+	}
+	
+	
+	// 부서 문서함
+	@GetMapping("deptDocumentList")
+	public ModelAndView deptDocumentList(ModelAndView mav, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		else {
+			employeeNo = "100014";
+		}
+		
+		List<DocumentVO> deptDocumentList = service.deptDocumentList(employeeNo);
+		// 부서 문서 리스트 가져오기
+		
+		mav.addObject("deptDocumentList", deptDocumentList);
+		mav.setViewName("mycontent/document/deptDocumentList");
+		
+		return mav;
+		
 	}
 	
 }

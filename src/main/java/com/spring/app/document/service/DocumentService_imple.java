@@ -3,11 +3,13 @@ package com.spring.app.document.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.app.document.domain.DocumentVO;
 import com.spring.app.document.model.DocumentDAO;
 
 
@@ -41,6 +43,33 @@ public class DocumentService_imple implements DocumentService {
 		}
 		
 		return n*m;
+	}
+
+	
+	// 임시저장 문서 리스트 가져오기
+	@Override
+	public List<DocumentVO> tempList(String employeeNo) {
+		
+		List<DocumentVO> tempList = mapper_dao.tempList(employeeNo);
+		return tempList;
+	}
+
+
+	// 기안 문서 리스트 가져오기
+	@Override
+	public List<DocumentVO> myDocumentList(String employeeNo) {
+		
+		List<DocumentVO> myDocumentList = mapper_dao.myDocumentList(employeeNo);
+		return myDocumentList;
+	}
+
+
+	// 부서 문서 리스트 가져오기
+	@Override
+	public List<DocumentVO> deptDocumentList(String employeeNo) {
+		
+		List<DocumentVO> deptDocumentList = mapper_dao.deptDocumentList(employeeNo);
+		return deptDocumentList;
 	}
 
 	
