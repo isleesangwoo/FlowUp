@@ -74,7 +74,7 @@
         <form name="loginFrm">
             <!-- 아이디 -->
             <div class="inputDiv">
-                <input type="text" class="loginId loginInput" name="id" id="userid" placeholder="아이디">
+                <input type="text" class="loginId loginInput" name="id" id="userid" placeholder="사원번호">
                 
                 <!-- <div class="errorMsg">
                     <span class="loginErrorId">!아이디가 틀렸습니다 올바른 아이디를 입력해주세요</span>
