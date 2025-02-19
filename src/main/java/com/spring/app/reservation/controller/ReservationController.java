@@ -133,9 +133,16 @@ public class ReservationController {
 	
 	
 	@GetMapping("showReservationOne")
-	public ModelAndView showReservationOne(ModelAndView mav, @RequestParam String assetNo) {
+	public ModelAndView showReservationOne(ModelAndView mav, @RequestParam String assetNo, @RequestParam String assetTitle) {
 		
-		mav.addObject("assetNo", assetNo);
+		List<Map<String, String>> assetList = service.tbl_assetSelect(); // 자산 대분류를 select 해주는 메소드
+		
+		List<Map<String, String>> assetDetailList = service.tbl_assetDetailSelect(); // 자산 상세를 select 해주는 메소드
+		
+		mav.addObject("assetDetailList", assetDetailList);
+		mav.addObject("assetList", assetList);
+		mav.addObject("assetTitle", assetTitle);
+		
 		mav.setViewName("mycontent/reservation/showReservationOne");
 		
 		return mav;
