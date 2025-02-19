@@ -1,0 +1,75 @@
+@charset "utf-8";
+
+
+
+.container{
+	margin: 10px auto;
+}
+
+hr{
+	margin-bottom: 30px;
+}
+
+.inputTitle{
+	display:inline-block;
+	width: 100px;
+}
+
+.inputList{
+	margin-bottom: 15px;
+}
+
+.frmInput{
+	width: 30%;
+    height: 30px;
+    margin: 6px 0;
+    padding: 0.5%;
+    border-radius: 5px;
+    border:1px solid rgb(197, 197, 197)
+}
+
+li:last-child {
+	margin-bottom: 30px;
+}
+
+#addEmployee{
+	color: #ffff;
+    background-color:rgb(215, 215, 215);
+    border: none;
+    border-radius: 5px;
+    padding: 1% 2%;
+}
+
+#addEmployee:hover{
+    cursor: pointer;
+    background-color:#0d6efd;
+    color: #ffff;
+}
+
+
+#noAddEmployee{
+	color: #ffff;
+    background-color:rgb(215, 215, 215);
+    border: none;
+    border-radius: 5px;
+    padding: 1% 2%;
+    margin-left: 1%;
+}
+
+#noAddEmployee:hover{
+    cursor: pointer;
+    background-color:#ff0b0b;
+    color: #ffff;
+    text-decoration: none;
+}
+
+
+.addtitle{
+	display: flex;
+	align-items: flex-end;
+}
+
+
+.errorMsg,.errorMsg2{
+	color:#ff0b0b;
+}
