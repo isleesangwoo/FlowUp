@@ -40,10 +40,33 @@
   
   	<!-- 자산 대분류를 insert 해주는 메소드 -->
 	<insert id="reservationAdd" parameterType="HashMap">
-		insert into tbl_asset(assetNo, assetTitle, assetInfo, assetRegisterday, assetChangeday, classification)
-		values(seq_assetNo.nextval, #{assetTitle}, #{assetInfo}, sysdate, null, #{classification})
+		insert into tbl_asset(assetNo, assetTitle, assetInfo, assetRegisterday, assetChangeday, classification, asseGroupno, asseDepthno)
+		values(seq_assetNo.nextval, #{assetTitle}, #{assetInfo}, sysdate, null, #{classification}, seq_assetNo.NEXTVAL, 0)
 	</insert>
    
+   
+   <resultMap type="HashMap" id="my_Reservation_Map">
+	   	<result property="assetReservationNo"  column="assetReservationNo"  javaType="String"/>
+	   	<result property="fk_assetDetailNo"    column="fk_assetDetailNo" 	javaType="String"/>
+	   	<result property="fk_employeeNo"       column="fk_employeeNo" 		javaType="String"/>
+	   	<result property="reservationStart"    column="reservationStart" 	javaType="String"/>
+	   	<result property="reservationEnd" 	   column="reservationEnd" 	 	javaType="String"/>
+	   	<result property="reservationDay" 	   column="reservationDay" 	    javaType="String"/>
+   </resultMap>
+   <!-- 내 예약 정보를 select 해주는 메소드 -->
+   <select id="my_Reservation" parameterType="String" resultMap="my_Reservation_Map">
+   		select assetReservationNo, fk_assetDetailNo, fk_employeeNo, reservationStart, reservationEnd, reservationDay
+		from tbl_assetReservation
+		where fk_employeeNo = #{employeeNo}
+   </select>
+
+
+
+
+	<delete id="deleteAsset" parameterType="String">
+		delete from tbl_asset
+		where assetNo = #{assetNo}
+	</delete>
 
 </mapper>
 

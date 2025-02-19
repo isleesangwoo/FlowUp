@@ -46,18 +46,18 @@
     display: flex;
     align-items: center;
     box-sizing: border-box;
-    padding-left: var(--size10);
+    padding: 0px var(--size10);
 }
 
 .board_menu_container > ul:first-child > li div:first-child {
 	width: 100%;
-		height: auto;
-	    min-height: var(--size38);
-	    font-size: var(--size15);
-	    user-select: none;
-	    cursor: pointer;
-	    line-height: var(--size38);
-	    box-sizing: border-box;
+	height: auto;
+    min-height: var(--size38);
+    font-size: var(--size15);
+    user-select: none;
+    cursor: pointer;
+    line-height: var(--size38);
+    box-sizing: border-box;
 }
 
 .assetDetailList {

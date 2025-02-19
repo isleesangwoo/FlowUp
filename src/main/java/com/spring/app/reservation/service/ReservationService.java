@@ -14,6 +14,12 @@ public interface ReservationService {
 	// 자산 대분류를 insert 해주는 메소드
 	int reservationAdd(Map<String, String> paraMap);
 
+	// 내 예약 정보를 select 해주는 메소드
+	List<Map<String, String>> my_Reservation(String employeeNo);
+
+	// 대분류를 삭제하는 메소드
+	int deleteAsset(String assetNo);
+
 	
 
 	

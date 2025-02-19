@@ -44,6 +44,23 @@ public class ReservationService_imple implements ReservationService {
 	}
 
 
+
+	// 내 예약 정보를 select 해주는 메소드
+	@Override
+	public List<Map<String, String>> my_Reservation(String employeeNo) {
+		List<Map<String, String>> my_ReservationList = dao.my_Reservation(employeeNo);
+		return my_ReservationList;
+	}
+
+
+	// 대분류를 삭제하는 메소드
+	@Override
+	public int deleteAsset(String assetNo) {
+		int n = dao.deleteAsset(assetNo);
+		return n;
+	}
+
+
 	
 	
 }
