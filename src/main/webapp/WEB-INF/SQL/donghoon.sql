@@ -567,6 +567,9 @@ nocache;
 
 desc tbl_board;
 
+select *
+from tbl_comment;
+
 /*
 begin
     for i in 1..100 loop
@@ -700,17 +703,104 @@ grant connect, resource, create view, unlimited tablespace to FINAL_ORAUSER3;
 
 
 
+-------------------------------- 메일 테이블 생성 --------------------------------
 
 
 
+create table tbl_mail
+(seq           number               not null   -- 메일 번호
+,fk_userid     varchar2(20)         not null   -- 사용자ID
+,name          varchar2(20)         not null   -- 성명
+,content       varchar2(1000)       not null   -- 댓글내용
+,regDate       date default sysdate not null   -- 작성일자
+,parentSeq     number               not null   -- 원게시물 글번호
+,status        number(1) default 1  not null   -- 글삭제여부
+                                               -- 1 : 사용가능한 글,  0 : 삭제된 글
+                                               -- 댓글은 원글이 삭제되면 자동적으로 삭제되어야 한다.
+,constraint PK_tbl_comment_seq primary key(seq)
+,constraint FK_tbl_comment_userid foreign key(fk_userid) references tbl_member(userid)
+,constraint FK_tbl_comment_parentSeq foreign key(parentSeq) references tbl_board(seq) on delete cascade
+,constraint CK_tbl_comment_status check( status in(1,0) ) 
+);
+
+create table tbl_comment
+(seq           number               not null   -- 댓글번호
+,fk_userid     varchar2(20)         not null   -- 사용자ID
+,name          varchar2(20)         not null   -- 성명
+,content       varchar2(1000)       not null   -- 댓글내용
+,regDate       date default sysdate not null   -- 작성일자
+,parentSeq     number               not null   -- 원게시물 글번호
+,status        number(1) default 1  not null   -- 글삭제여부
+                                               -- 1 : 사용가능한 글,  0 : 삭제된 글
+                                               -- 댓글은 원글이 삭제되면 자동적으로 삭제되어야 한다.
+,constraint PK_tbl_comment_seq primary key(seq)
+,constraint FK_tbl_comment_userid foreign key(fk_userid) references tbl_member(userid)
+,constraint FK_tbl_comment_parentSeq foreign key(parentSeq) references tbl_board(seq) on delete cascade
+,constraint CK_tbl_comment_status check( status in(1,0) ) 
+);
 
 
+CREATE TABLE tbl_mail
+(pk_mailNo     NUMBER                           NOT NULL -- 메일번호
+,subject       VARCHAR2(100)                    NOT NULL -- 메일제목
+,content       VARCHAR2(1000) DEFAULT '내용없음'  NULL     -- 메일내용
+,read          VARCHAR2(1)    DEFAULT '0'       NOT NULL -- 열람여부 / 0:미열람, 1:열람
+,delete        VARCHAR2(1)    DEFAULT '0'       NOT NULL -- 삭제여부 / 0:존재, 1:삭제
+,save          VARCHAR2(1)    DEFAULT '0'       NOT NULL -- 저장여부 / 0:일반상태, 1:임시저장
+,important     VARCHAR2(1)    DEFAULT '0'       NOT NULL -- 중요표시 / 0:기본, 1:중요
+,sendDate      DATE           DEFAULT SYSDATE   NOT NULL -- 전송날짜
+,fk_employeeNo NUMBER(7)      NOT NULL          NOT NULL -- 사번
+
+,constraint pk_tbl_mail_pk_mailNo primary key (fk_employeeno)
+,constraint fk_tbl_employee_employeeno foreign key(fk_employeeno) references tbl_mail
+,constraint ck_tbl_mail_read check( status in(1,0) ) 
+,constraint ck_tbl_mail_delete check( status in(1,0) ) 
+,constraint ck_tbl_mail_save check( status in(1,0) ) 
+,constraint ck_tbl_mail_important check( status in(1,0) ) 
+);
+
+CREATE TABLE tbl_referenced
+(pk_mailNo      number        NOT NULL -- 참조 이메일번호
+,reference      NUMBER(1)     NOT NULL -- 참조수신여부 / 0:수신자, 1:참조자
+,referenceName  VARCHAR2(20)  NOT NULL -- 참조/수신자이름
+,referenceMail  VARCHAR2(50)  NOT NULL -- 참조/수신자이메일
+,fk_mailNo      NUMBER        NOT NULL -- 메일번호
+,fk_adrsBNo     NUMBER        NOT NULL -- 주소록 고유번호
+
+,constraint pk_tbl_referenced primary key (reference)
+,constraint fk_tbl_tag_fk_mailNo foreign key(fk_mailNo) references tbl_mail(pk_mailNo)
+,constraint fk_tbl_tag_fk_adrsBNo foreign key(fk_adrsBNo) references tbl_addressBook(pk_mailNo)
+);
 
 
+CREATE TABLE tbl_tag
+(tagNo      number(2)     NOT NULL -- 태그번호
+,color      varchar2(6)   NOT NULL -- 태그색
+,name       varchar2(20)  NOT NULL -- 태그이름
+,fk_mailNo  number        NOT NULL -- 메일번호
+
+,constraint pk_tbl_tag_tagNo primary key(tagNo)
+,constraint fk_tbl_tag_fk_mailNo foreign key(fk_mailNo) references tbl_mail(pk_mailNo)
+);
 
 
+CREATE TABLE tbl_mailFile
+(fileNo        number         NOT NULL -- 첨부파일번호
+,fileName      varchar2(50)   NOT NULL -- 첨부파일명
+,orgFilename   varchar2(50)   NOT NULL -- 원래파일명
+,fileSize      varchar2(6)    NOT NULL -- 파일용량
+,fk_mailNo     NUMBER         NOT NULL -- 메일번호
 
+,constraint pk_tbl_mailFile_fileNo primary key(fileNo)
+,constraint fk_tbl_mailFile_fk_mailNo foreign key(fk_mailNo) references tbl_mail(pk_mailNo)
+);
 
+select *
+from tbl_employee;
 
+insert into tbl_employee(EMPLOYEENO,passwd,name,FK_DEPARTMENTNO,FK_POSITIONNO,FK_TEAMNO,directcall,SECURITYLEVEL,email,Mobile,bank,account,registerdate,address,birth)
+values(100020,'qwer1234$','이동훈',100000,100000,100000, 01087847311,1,'ehdgns6402@naver.com',01087847311,'신한은행', 110438090725, sysdate, '서울 중랑구', '2002-08-08');
+
+commit;
 
 

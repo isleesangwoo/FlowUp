@@ -101,14 +101,9 @@ button {
 }
 
 
-
-/* 현재 페이지에 이렇게 넣어주세요! */
-
 .mail_menu_container > ul li:nth-child(1) > a {
     color: #056ac9;
 }
-/* 현재 페이지에 이렇게 넣어주세요! */
-
 
 
 .mail_cnt {
@@ -238,7 +233,9 @@ button {
   margin-bottom: 10px;
 }
 
-.file-btn-group button {
+/* 메일 쓰기 - 파일 첨부 버튼 3개 */
+.file-btn-group button,
+#btnReservationMail { /* 예약메일 버튼 */
   margin-right: 8px;
   padding: 6px 12px;
   background-color: transparent;
@@ -380,14 +377,6 @@ button {
 	font-size: var(--size16);
 }
 
-#sendDate {
-	font-size: var(--size14);
-}
-
-#fileSize {
-	font-size: var(--size14);
-}
-
 #right_info {
     color: #999;
     font-size: var(--size12);
@@ -463,36 +452,44 @@ button {
 
 /* 메일함 메일 제목 */
 .mailReadTitle {
-	height: 40px;
+	height: 50px;
 	vertical-align: middle;
 	table-layout: fixed;
 	width: 100%;
 }
-.mailReadTitle:hover {
-	background-color: rgba(242, 247, 253, 0.5);
+
+.mailReadTitle i {
+	color: #bbb;
 }
 
-.mailReadTitle i,
-#sendDate,
-#fileSize {
-	color: #bbb;
+.mailReadTitle:hover {
+	background-color: rgba(242, 247, 253, 0.5);
 }
 
 .mailReadTitle td {
 	box-sizing: border-box;
 	padding: 2px 8px;
-	display: inline-flex;
-    width: 150px;
+	/* display: inline-flex; */
     align-items: center;
+    vertical-align: middle;
 }
 
 
 .mailReadTitle td:first-child {
-	width: 100px;
+	width: 50px;
 	height: 40px;
 	/* display: flex; */
 	align-items: center;
 	padding-left: var(--size24);
+	vertical-align: middle;
+}
+
+.mailReadTitle td:nth-child(2) {
+	width: 110px;
+}
+
+.mailReadTitle td:nth-child(3) {
+	width: 150px;
 }
 
 .mailReadTitle td:nth-child(2) i:nth-child(2) {
@@ -638,12 +635,16 @@ button {
 	background-color: rgba(242, 247, 253, 0.5);
 } */
 
-
+/* 메일의 시간, 용량 표시 */
 #right-content {
-	margin-left: auto;
-    display: flex;
+    text-align: right;
     gap: 40px; /* 간격 조정 */
 }
 
+#right-content span {
+	margin-right: 40px;
+	font-size: var(--size12);
+	color: #aaa;
+}
 
 
