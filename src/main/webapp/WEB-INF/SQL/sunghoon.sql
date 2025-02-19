@@ -19,7 +19,7 @@ nominvalue
 nocycle
 nocache;
 
-drop sequence seq_document;
+-- drop sequence seq_document;
 
 
 CREATE table tbl_document_attach
@@ -127,3 +127,33 @@ from tbl_document;
 select documentNo, subject, documentType, draftDate
 		from tbl_document
 		where fk_employeeNo = 100014 and temp = 1;
+    
+    
+    
+    
+select documentNo, subject, documentType, draftDate, status
+from tbl_document;
+
+select documentNo, subject, documentType, draftDate, status, name
+from
+(
+    select employeeNo, name
+    from
+        (
+            select fk_departmentno
+            from tbl_employee
+            where employeeNo = '100014'
+        ) E1 JOIN tbl_employee E2
+    ON E1.fk_departmentNo = E2.fk_departmentno
+) E JOIN tbl_document D
+ON E.employeeNO = D.fk_employeeNo;
+
+
+
+select *
+from tbl_document
+where fk_employeeno = '100014';
+
+
+
+

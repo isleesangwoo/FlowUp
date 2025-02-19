@@ -5,6 +5,8 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.spring.app.document.domain.DocumentVO;
+
 @Mapper
 public interface DocumentDAO {
 
@@ -18,7 +20,13 @@ public interface DocumentDAO {
 	int insertAnnualDraft(Map<String, String> paraMap);
 
 	// 임시저장 문서 리스트 가져오기
-	List<Map<String, String>> tempList(String employeeNo);
+	List<DocumentVO> tempList(String employeeNo);
+
+	// 기안 문서 리스트 가져오기
+	List<DocumentVO> myDocumentList(String employeeNo);
+
+	// 부서 문서 리스트 가져오기
+	List<DocumentVO> deptDocumentList(String employeeNo);
 
 
 

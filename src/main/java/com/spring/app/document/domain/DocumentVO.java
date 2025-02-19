@@ -6,10 +6,12 @@ public class DocumentVO {
 	private String fk_employeeNo;	// 사원번호
 	private String subject;			// 제목
 	private String draftDate;		// 기안날짜
+	private String approvalDate;	// 승인날짜
 	private String status;			// 승인여부
 	private String securityLevel;	// 보안등급
 	private String temp;			// 임시저장여부
 	private String documentType;	// 양식이름
+	private String name;			// 기안자이름
 	
 	public String getDocumentNo() {
 		return documentNo;
@@ -35,6 +37,12 @@ public class DocumentVO {
 	public void setDraftDate(String draftDate) {
 		this.draftDate = draftDate;
 	}
+	public String getApprovalDate() {
+		return approvalDate;
+	}
+	public void setApprovalDate(String approvalDate) {
+		this.approvalDate = approvalDate;
+	}
 	public String getStatus() {
 		return status;
 	}
@@ -59,4 +67,12 @@ public class DocumentVO {
 	public void setDocumentType(String documentType) {
 		this.documentType = documentType;
 	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	
 }

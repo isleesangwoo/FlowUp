@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.app.document.domain.DocumentVO;
 import com.spring.app.document.service.DocumentService;
 import com.spring.app.employee.domain.EmployeeVO;
 
@@ -126,8 +127,8 @@ public class DocumentController {
 			employeeNo = "100014";
 		}
 		
-		List<Map<String, String>> tempList = service.tempList(employeeNo);
-		// 임시 저장 문서들 불러오기
+		List<DocumentVO> tempList = service.tempList(employeeNo);
+		// 임시 저장 문서 리스트 가져오기
 		
 		mav.addObject("tempList", tempList);
 		mav.setViewName("mycontent/document/tempList");
@@ -137,5 +138,56 @@ public class DocumentController {
 	}
 	
 	
+	// 기안 문서함
+	@GetMapping("myDocumentList")
+	public ModelAndView myDocumentList(ModelAndView mav, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		else {
+			employeeNo = "100014";
+		}
+		
+		List<DocumentVO> myDocumentList = service.myDocumentList(employeeNo);
+		// 기안 문서 리스트 가져오기
+		
+		mav.addObject("myDocumentList", myDocumentList);
+		mav.setViewName("mycontent/document/myDocumentList");
+		
+		return mav;
+	}
+	
+	
+	// 부서 문서함
+	@GetMapping("deptDocumentList")
+	public ModelAndView deptDocumentList(ModelAndView mav, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		else {
+			employeeNo = "100014";
+		}
+		
+		List<DocumentVO> deptDocumentList = service.deptDocumentList(employeeNo);
+		// 부서 문서 리스트 가져오기
+		
+		mav.addObject("deptDocumentList", deptDocumentList);
+		mav.setViewName("mycontent/document/deptDocumentList");
+		
+		return mav;
+		
+	}
 	
 }

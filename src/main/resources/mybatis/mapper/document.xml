@@ -27,19 +27,41 @@
 	</insert>
 	
 	
-	<!-- 임시저장 문서 리스트 불러오기 -->
-	<resultMap type="HashMap" id="tempList_Map">
-		<result column="documentNo"		property="documentNo"	javaType="String" />
-		<result column="subject"		property="subject"		javaType="String" />
-		<result column="documentType"	property="documentType"	javaType="String" />
-		<result column="draftDate"		property="draftDate"	javaType="String" />
-		<result column="status"			property="status"		javaType="String" />
-	</resultMap>
-	<select id="tempList" parameterType="String" resultMap="tempList_Map">
-		select documentNo, subject, documentType, draftDate, status
+	<!-- 임시저장 문서 리스트 가져오기 -->
+	<select id="tempList" parameterType="String" resultType="DocumentVO">
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
 		from tbl_document
 		where fk_employeeNo = #{employeeNo} and temp = 1
 	</select>
+	
+	
+	<!-- 기안 문서 리스트 가져오기 -->
+	<select id="myDocumentList" parameterType="String" resultType="DocumentVO">
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
+		from tbl_document
+		where fk_employeeNo = #{employeeNo} and temp = 0
+	</select>
+	
+	
+	<!-- 부서 문서 리스트 가져오기 -->
+	<select id="deptDocumentList" parameterType="String" resultType="DocumentVO">
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, name, nvl(to_char(approvalDate, 'yyyy-mm-dd'), '-') as approvalDate, name, documentNo
+		from
+		(
+		    select employeeNo, name
+		    from
+		        (
+		            select fk_departmentno
+		            from tbl_employee
+		            where employeeNo = '100014'
+		        ) E1 JOIN tbl_employee E2
+		    ON E1.fk_departmentNo = E2.fk_departmentno
+		) E JOIN tbl_document D
+		ON E.employeeNO = D.fk_employeeNo
+	</select>
+	
+	
+	
 	
 	
 </mapper>
