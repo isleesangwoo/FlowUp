@@ -243,10 +243,23 @@
   // ================ 대분류 등록버튼 ================ //
   
   
-  <%-- === 해당 페이지 들어오자마자 ajax 불러옴 === --%>
+  <%-- === 해당 페이지 들어오자마자 ajax 자산정보 관리 불러옴 === --%>
+  $.ajax({
+	 url:"<%= ctxPath%>/reservation/middleTapInfo",
+	 type:"post",
+	 data:{"assetNo":${requestScope.assetvo.assetNo}},
+	 dataType:"json",
+	 success:function(json) {
+		 console.log(JSON.stringify(json));
+		 
+		 
+	 },
+	 error: function(request, status, error){
+		 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	 }  
+  });
   
-  
-  
+  <%-- === 해당 페이지 들어오자마자 ajax 자산정보 관리 불러옴 === --%>
 		  
 		  
 </script>

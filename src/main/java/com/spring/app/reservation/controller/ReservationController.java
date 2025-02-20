@@ -127,7 +127,7 @@ public class ReservationController {
 	}
 	
 	
-	
+	// 자산 관리자용 상세페이지
 	@GetMapping("showReservationOne")
 	public ModelAndView selectLeftBar_showReservationOne(HttpServletRequest request, 
 														 ModelAndView mav, 
@@ -145,6 +145,33 @@ public class ReservationController {
 	}
 
 	
+	// 자산 관리자용 상세페이지에서 자산정보를 조회해주는 메소드
+	@PostMapping("middleTapInfo")
+	@ResponseBody
+	public String middleTapInfo(@RequestParam String assetNo) {
+		
+		List<Map<String, String>> middleTapInfoList = service.middleTapInfo(assetNo);
+		System.out.println("ajax 들어옴?????????????" + middleTapInfoList.size());
+		
+		JSONArray jsonArr = new JSONArray();  //  []
+		
+		if(middleTapInfoList != null) {
+			
+			for(Map<String,String> listMap : middleTapInfoList) {
+				JSONObject jsonObj = new JSONObject();  //  {}
+				jsonObj.put("assetReservationNo", listMap.get("assetReservationNo"));
+				jsonObj.put("fk_assetDetailNo", listMap.get("fk_assetDetailNo"));
+				jsonObj.put("fk_employeeNo", listMap.get("fk_employeeNo"));
+				jsonObj.put("reservationStart", listMap.get("reservationStart"));
+				jsonObj.put("reservationEnd", listMap.get("reservationEnd"));
+				jsonObj.put("reservationDay", listMap.get("reservationDay"));
+				
+				jsonArr.put(jsonObj);
+			} // end of for --------------
+		}
+		
+		return jsonArr.toString();
+	}
 	
 	
 		
