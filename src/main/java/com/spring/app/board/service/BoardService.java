@@ -7,7 +7,6 @@ import com.spring.app.board.domain.BoardVO;
 
 public interface BoardService {
 	
-	
 	// 게시판 생성하기
 	int addBoard(BoardVO boardvo) throws Exception;
 

@@ -12,7 +12,6 @@ public class BoardVO {
 	private String status;      // 게시판 활성/비활성화(삭제) :: 1 활성화 0 비활성화
 	
 	
-	
 	public String getBoardNo() {
 		return boardNo;
 	}

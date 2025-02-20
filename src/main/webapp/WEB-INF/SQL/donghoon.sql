@@ -693,71 +693,82 @@ alter session set "_ORACLE_SCRIPT"=true;
 -- Session이(가) 변경되었습니다.
 
 -- 오라클 계정명은 FINAL_ORAUSER3 이고 암호는 gclass 인 사용자 계정을 생성합니다.
-create user FINAL_ORAUSER3 identified by gclass default tablespace users; 
+create user final_orauser3 identified by gclass default tablespace users; 
 -- User FINAL_ORAUSER3이(가) 생성되었습니다.
 
 -- 위에서 생성되어진 FINAL_ORAUSER3 이라는 오라클 일반사용자 계정에게 오라클 서버에 접속이 되어지고,
 -- 테이블 생성 등등을 할 수 있도록 여러가지 권한을 부여해주겠습니다.
-grant connect, resource, create view, unlimited tablespace to FINAL_ORAUSER3;
+grant connect, resource, create view, unlimited tablespace to final_orauser3;
 -- Grant을(를) 성공했습니다.
 
+
+insert into tbl_employee(EMPLOYEENO,passwd,name,FK_DEPARTMENTNO,FK_POSITIONNO,FK_TEAMNO,directcall,SECURITYLEVEL,email,Mobile,bank,account,registerdate,address,birth)
+values(100020,'qwer1234$','이동훈',100000,100000,100000, 01087847311,1,'ehdgns6402@naver.com',01087847311,'신한은행', 110438090725, sysdate, '서울 중랑구', '2002-08-08');
 
 
 -------------------------------- 메일 테이블 생성 --------------------------------
 
-
-
-create table tbl_mail
-(seq           number               not null   -- 메일 번호
-,fk_userid     varchar2(20)         not null   -- 사용자ID
-,name          varchar2(20)         not null   -- 성명
-,content       varchar2(1000)       not null   -- 댓글내용
-,regDate       date default sysdate not null   -- 작성일자
-,parentSeq     number               not null   -- 원게시물 글번호
-,status        number(1) default 1  not null   -- 글삭제여부
-                                               -- 1 : 사용가능한 글,  0 : 삭제된 글
-                                               -- 댓글은 원글이 삭제되면 자동적으로 삭제되어야 한다.
-,constraint PK_tbl_comment_seq primary key(seq)
-,constraint FK_tbl_comment_userid foreign key(fk_userid) references tbl_member(userid)
-,constraint FK_tbl_comment_parentSeq foreign key(parentSeq) references tbl_board(seq) on delete cascade
-,constraint CK_tbl_comment_status check( status in(1,0) ) 
+create table tbl_board
+(seq           number                not null    -- 글번호
+,fk_userid     varchar2(20)          not null    -- 사용자ID
+,name          varchar2(20)          not null    -- 글쓴이 
+,subject       Nvarchar2(200)        not null    -- 글제목
+,content       Nvarchar2(2000)       not null    -- 글내용   -- clob (최대 4GB까지 허용) 
+,pw            varchar2(20)          not null    -- 글암호
+,readCount     number default 0      not null    -- 글조회수
+,regDate       date default sysdate  not null    -- 글쓴시간
+,status        number(1) default 1   not null    -- 글삭제여부   1:사용가능한 글,  0:삭제된글
+,commentCount  number default 0      not null    -- 댓글의 개수
+,constraint PK_tbl_board_seq primary key(seq)
+,constraint FK_tbl_board_fk_userid foreign key(fk_userid) references tbl_member(userid)
+,constraint CK_tbl_board_status check( status in(0,1) )
 );
+-- Table TBL_BOARD이(가) 생성되었습니다.
+create sequence boardSeq
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+-- Sequence BOARDSEQ이(가) 생성되었습니다.
 
-create table tbl_comment
-(seq           number               not null   -- 댓글번호
-,fk_userid     varchar2(20)         not null   -- 사용자ID
-,name          varchar2(20)         not null   -- 성명
-,content       varchar2(1000)       not null   -- 댓글내용
-,regDate       date default sysdate not null   -- 작성일자
-,parentSeq     number               not null   -- 원게시물 글번호
-,status        number(1) default 1  not null   -- 글삭제여부
-                                               -- 1 : 사용가능한 글,  0 : 삭제된 글
-                                               -- 댓글은 원글이 삭제되면 자동적으로 삭제되어야 한다.
-,constraint PK_tbl_comment_seq primary key(seq)
-,constraint FK_tbl_comment_userid foreign key(fk_userid) references tbl_member(userid)
-,constraint FK_tbl_comment_parentSeq foreign key(parentSeq) references tbl_board(seq) on delete cascade
-,constraint CK_tbl_comment_status check( status in(1,0) ) 
-);
-
+select *
+from tbl_board ;
 
 CREATE TABLE tbl_mail
-(pk_mailNo     NUMBER                           NOT NULL -- 메일번호
-,subject       VARCHAR2(100)                    NOT NULL -- 메일제목
-,content       VARCHAR2(1000) DEFAULT '내용없음'  NULL     -- 메일내용
-,read          VARCHAR2(1)    DEFAULT '0'       NOT NULL -- 열람여부 / 0:미열람, 1:열람
-,delete        VARCHAR2(1)    DEFAULT '0'       NOT NULL -- 삭제여부 / 0:존재, 1:삭제
-,save          VARCHAR2(1)    DEFAULT '0'       NOT NULL -- 저장여부 / 0:일반상태, 1:임시저장
-,important     VARCHAR2(1)    DEFAULT '0'       NOT NULL -- 중요표시 / 0:기본, 1:중요
-,sendDate      DATE           DEFAULT SYSDATE   NOT NULL -- 전송날짜
-,fk_employeeNo NUMBER(7)      NOT NULL          NOT NULL -- 사번
+(mailNo           NUMBER                          NOT NULL -- 메일번호
+,subject          VARCHAR2(100)                   NOT NULL -- 메일제목
+,content          VARCHAR2(1000)                  NULL     -- 메일내용
+,readStatus       NUMBER(1)       DEFAULT 0       NOT NULL -- 열람여부 / 0:미열람, 1:열람
+,deleteStatus     NUMBER(1)       DEFAULT 0       NOT NULL -- 삭제여부 / 0:존재, 1:삭제
+,saveStatus       NUMBER(1)       DEFAULT 0       NOT NULL -- 저장여부 / 0:일반상태, 1:임시저장
+,importantStatus  NUMBER(1)       DEFAULT 0       NOT NULL -- 중요표시 / 0:기본, 1:중요
+,sendDate         DATE            DEFAULT SYSDATE NOT NULL -- 전송날짜
+,fk_employeeNo    NUMBER(7)                       NOT NULL -- 사번 (직원 테이블 참조)
 
-,constraint pk_tbl_mail_pk_mailNo primary key (fk_employeeno)
-,constraint fk_tbl_employee_employeeno foreign key(fk_employeeno) references tbl_mail
-,constraint ck_tbl_mail_read check( status in(1,0) ) 
-,constraint ck_tbl_mail_delete check( status in(1,0) ) 
-,constraint ck_tbl_mail_save check( status in(1,0) ) 
-,constraint ck_tbl_mail_important check( status in(1,0) ) 
+,constraint pk_tbl_mail_mailNo primary key (mailNo)
+,constraint fk_tbl_employee_employeeNo foreign key(fk_employeeNo) references tbl_employee(employeeNo)
+,constraint ck_tbl_mail_readStatus check( readStatus in(1,0) ) 
+,constraint ck_tbl_mail_deleteStatus check( deleteStatus in(1,0) ) 
+,constraint ck_tbl_mail_saveStatus check( saveStatus in(1,0) ) 
+,constraint ck_tbl_mail_importantStatus check( importantStatus in(1,0) ) 
 );
+
+insert into tbl_mail(mailNo, fk_employeeNo, subject, content)
+values(10001, 100020, '메일 테스트', '안녕하세요 메일입니다');
+
+select mailNo, fk_employeeNo, subject, content
+from tbl_mail;
+
+select *
+from tbl_mail;
+
+select *
+from tbl_employee;
+
+commit;
+
 
 CREATE TABLE tbl_referenced
 (pk_mailNo      number        NOT NULL -- 참조 이메일번호
@@ -794,13 +805,5 @@ CREATE TABLE tbl_mailFile
 ,constraint pk_tbl_mailFile_fileNo primary key(fileNo)
 ,constraint fk_tbl_mailFile_fk_mailNo foreign key(fk_mailNo) references tbl_mail(pk_mailNo)
 );
-
-select *
-from tbl_employee;
-
-insert into tbl_employee(EMPLOYEENO,passwd,name,FK_DEPARTMENTNO,FK_POSITIONNO,FK_TEAMNO,directcall,SECURITYLEVEL,email,Mobile,bank,account,registerdate,address,birth)
-values(100020,'qwer1234$','이동훈',100000,100000,100000, 01087847311,1,'ehdgns6402@naver.com',01087847311,'신한은행', 110438090725, sysdate, '서울 중랑구', '2002-08-08');
-
-commit;
 
 
