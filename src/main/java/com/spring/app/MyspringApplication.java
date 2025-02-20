@@ -3,6 +3,7 @@ package com.spring.app;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 // 프로젝트명+Application 으로 되어진 클래스가 프로젝트가 동작할 수 있게 해주는 시작점인 메인 클래스 파일이다. 
 // 이 클래스에는 @SpringBootApplication 어노테이션이 붙어있는데  @SpringBootApplication 어노테이션 속에는 
@@ -13,6 +14,7 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @SpringBootApplication
 @EnableAspectJAutoProxy  // Application 클래스에 @EnableAspectJAutoProxy 를 추가하여 AOP(Aspect Oriented Programming)클래스를 찾을 수 있게 해준다. 우리는 com.spring.app.aop.CommonAop 이 AOP 클래스 이다.
+@EnableScheduling
 public class MyspringApplication {
 
 	public static void main(String[] args) {
