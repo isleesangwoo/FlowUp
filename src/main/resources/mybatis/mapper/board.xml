@@ -85,19 +85,19 @@ ORDER BY createdAt DESC
 <!-- 게시판 메인 페이지에 뿌려줄 모든 게시글 조회 (조인했음)-->
 <resultMap id="selectAllPost_Map" type="PostVO">
  <!-- PostVO의 필드 매핑 -->
-    <result property="postNo" column="postNo"/>
-    <result property="fk_boardNo" column="fk_boardNo"/>
-    <result property="fk_employeeNo" column="fk_employeeNo"/>
-    <result property="name" column="name"/>
-    <result property="subject" column="subject"/>
-    <result property="content" column="content"/>
-    <result property="readCount" column="readCount"/>
-    <result property="regDate" column="regDate"/>
-    <result property="commentCount" column="commentCount"/>
-    <result property="allowComments" column="allowComments"/>
-    <result property="status" column="status"/>
-    <result property="isNotice" column="isNotice"/>
-    <result property="noticeEndDate" column="noticeEndDate"/>
+    <result property="postNo" 			column="postNo"/>
+    <result property="fk_boardNo" 		column="fk_boardNo"/>
+    <result property="fk_employeeNo" 	column="fk_employeeNo"/>
+    <result property="name" 			column="name"/>
+    <result property="subject" 			column="subject"/>
+    <result property="content" 			column="content"/>
+    <result property="readCount" 		column="readCount"/>
+    <result property="regDate" 			column="regDate"/>
+    <result property="commentCount" 	column="commentCount"/>
+    <result property="allowComments" 	column="allowComments"/>
+    <result property="status" 			column="status"/>
+    <result property="isNotice" 		column="isNotice"/>
+    <result property="noticeEndDate" 	column="noticeEndDate"/>
 
  <!-- BoardVO의 필드 매핑 -->
     <association property="boardvo" javaType="BoardVO">
@@ -111,17 +111,17 @@ ORDER BY createdAt DESC
     V.readCount, V.regDate, V.commentCount, V.allowComments, V.status, 
     V.isNotice, V.noticeEndDate,
     b.boardNo, b.boardName
-FROM 
-    ( 
-        SELECT row_number() OVER (ORDER BY postNo DESC) AS rno, 
-               postNo, fk_boardNo, fk_employeeNo, name, subject, content,
-               readCount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate, 
-               commentCount, allowComments, status, isNotice, noticeEndDate
-        FROM tbl_post
-        WHERE status = 1
-    ) V
-JOIN tbl_board b ON V.fk_boardNo = b.boardNo
-WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+	FROM 
+	    ( 
+	        SELECT row_number() OVER (ORDER BY postNo DESC) AS rno, 
+	               postNo, fk_boardNo, fk_employeeNo, name, subject, content,
+	               readCount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate, 
+	               commentCount, allowComments, status, isNotice, noticeEndDate
+	        FROM tbl_post
+	        WHERE status = 1
+	    ) V
+	JOIN tbl_board b ON V.fk_boardNo = b.boardNo
+	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
 </select>
 
 <!-- === 총 게시물 건수(totalCount) 구하기 === --> 
@@ -131,11 +131,31 @@ WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
       where status = 1
    </select>
    
-<!--    게시글 하나 조회하기 -->
-	<select id="goViewOnePost" resultType="PostVO" parameterType="HashMap">
-		select POSTNO,FK_BOARDNO,FK_EMPLOYEENO,NAME,SUBJECT,CONTENT,READCOUNT,REGDATE,COMMENTCOUNT
-		from tbl_post
-		where postNo=#{postNo}
+<!--    게시글 하나 조회하기(조인함) -->
+	<resultMap id="goViewOnePost_Map" type="PostVO">
+	 <!-- PostVO의 필드 매핑 -->
+	    <result property="postNo" column="postNo"/>
+	    <result property="fk_boardNo" column="fk_boardNo"/>
+	    <result property="fk_employeeNo" column="fk_employeeNo"/>
+	    <result property="name" column="name"/>
+	    <result property="subject" column="subject"/>
+	    <result property="content" column="content"/>
+	    <result property="readCount" column="readCount"/>
+	    <result property="regDate" column="regDate"/>
+	    <result property="commentCount" column="commentCount"/>
+	
+	 	<!-- BoardVO의 필드 매핑 -->
+	    <association property="boardvo" javaType="BoardVO">
+	        <result property="boardName" 	column="boardName"/>
+	        <result property="createdBy" 	column="createdBy"/>
+	    </association>
+	</resultMap>
+	<select id="goViewOnePost" resultMap="goViewOnePost_Map" parameterType="HashMap">
+		select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount
+		from tbl_post P
+		join tbl_board B
+		on P.FK_BOARDNO = B.boardNo
+		where postNo = #{postNo}
 	</select>
 	
 	<!-- === #41. 글조회수 1증가 하기 === -->

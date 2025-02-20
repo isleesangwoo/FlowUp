@@ -16,66 +16,76 @@
 <!-- 오른쪽 바 -->
     <div id="right_bar">
         <div id="right_title_box">
-            <span id="right_title">게시판 홈</span>
-
+            <span id="right_title">${postvo.boardvo.boardName} </span>
+			<span id="boardMaster">운영 : ${postvo.boardvo.createdBy}</span>
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
+            
             <div id="right_menu_container">
-                <span>
-                    <a href="#">
-                        <span>전체 게시판</span>
-                    </a>
-                </span>
-
-                <span id="reBtn_box">
+            
+            	<span id="tool_box_left">
                     <span>
-                        <span id="sort_btn" title="정렬"> <!-- 정렬 버튼입니다! -->
-                            <i class="fa-solid fa-arrow-down-short-wide"></i>
-                            <ul>
-                                <li class="list_title">정렬순서</li>
-                                <!-- 각 li 태그 마다 ajax 보내주세요 -->
-                                <li>제목</li> 
-                                <li>받은날짜</li>
-                                <li>크기</li>
-
-                                <li class="list_title">빠른검색</li>
-                                <li>중요메일</li>
-                                <li>안읽은 메일</li>
-                                <li>읽은 메일</li>
-                                <li>오늘온 메일</li>
-                                <li>어제온 메일</li>
-                                <!-- 각 li 태그 마다 ajax 보내주세요 -->
-                            </ul>
+                        <span id="re_btn">
+                            <a href="#"><i class="fa-regular fa-pen-to-square"></i> 수정</a>
                         </span>
+                        <span>
+                            <a href="#"><i class="fa-regular fa-trash-can"></i>삭제</a>
+                        </span>
+                    </span>
+                </span>
+	                
+
+                <span id="tool_box_right">
+                    <span>
                         <span id="re_btn" title="새로고침">
-                            <i class="fa-solid fa-rotate-right"></i>
+                            <a href="#"><i class="fa-solid fa-arrow-left"></i>이전</a>
                         </span>
                         <span id="sortCnt_btn">
-                            <span>20</span>
-                            <i class="fa-solid fa-angle-right"></i>
-                            <ul>
-                                <li>5</li>
-                                <li>10</li>
-                                <li>20</li>
-                            </ul>
+                            <a href="#">다음<i class="fa-solid fa-arrow-right"></i></a>
+                        </span>
+                        <span>
+                            <button type="button" onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'" id="goBackUrlBtn">
+                            	<i class="fa-solid fa-list"></i> 목록
+                            </button>
                         </span>
                     </span>
                 </span>
             </div>
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
         </div>
+        
+        <!-- 게시글 하나 내용보여주기 시작  -->
+        	<div id="onePostHeader" class="padding">
+        		<span id="postSubject">제목 : ${postvo.subject}</span>
+        		<span id="postCommentCount">[${postvo.commentCount}]</span>
+        		<div>
+        			<span id="postCreatBy">${postvo.name}</span>
+        			<span id="postRegDate">${postvo.regDate}</span>
+        		</div>
+        	</div>
+	        <div id="onePostContent" class="padding">
+	        	${postvo.content}
+	        </div>
+	        <div id="ViewOption" class="padding">
+	        	<span class="tranBlock">댓글 ${postvo.commentCount}개</span>
+	        	<span class="tranBlock">조회 ${postvo.readCount}</span>
+	        	<span class="tranBlock">좋아요 누른 사람 0명</span>
+	        </div>
+	        <div id="commentCreate" class="padding">
+	        	<div>프로필</div>
+	        	<div id="commentContent">
+	        		<input type="text" name="content" placeholder="댓글을 남겨보세요">
+	        	</div>
+	        </div>
+	        
+	        
+        
         <div>
 	        게시글 번호 : ${postvo.postNo} <br>
 			게시판 번호 : ${postvo.fk_boardNo}<br>
 			작성자 번호 : ${postvo.fk_employeeNo}<br>
-			작성자 명 : ${postvo.name}<br>
-			제목 : ${postvo.subject}<br>
-			내용 : ${postvo.content}<br>
-			조회수 : ${postvo.readCount}<br>
-			작성 날짜 : ${postvo.regDate}<br>
-			댓글 개수 : ${postvo.commentCount}<br>
 		</div>
 		
-		<button type="button" class="btn btn-secondary btn-sm mr-3" onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'">검색된결과목록보기</button>
+		
    </div>
 
 
