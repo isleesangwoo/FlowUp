@@ -21,15 +21,60 @@
 	td {
 		border: solid 1px gray;
 	}
+	
+	.approval_line_modal_container {
+		border-radius: 3%;
+		display: none;
+		text-align: center;
+		position: fixed;
+		min-width: 600px;
+		min-height: 300px;
+		width: 50%;
+		height: 60vh;
+		z-index: 11;
+		top: 50%;
+	    left: 50%;
+	    transform: translate(-50%, -50%);
+	    background-color: #fff;
+	    overflow: hidden;
+	}
+	
 </style>
 
 <script type="text/javascript">
 	
 	$(document).ready(function(){
 	
+		$('#approve_line').click(e=>{
+
+	        $('#approve_line_modal').fadeIn();
+			$('.approval_line_modal_container').css({
+				'display':'block'
+			})
+	  
+	    }) // end of $('#goMail').click(e=>{})-----------
+
+	    $('.modal_bg:not(.modal_container_document)').click(e=>{
+
+	        $('#approve_line_modal').fadeOut();
+	        $('.approval_line_modal_container').css({
+	        	'display':''
+			})
+
+	    })
+	    
+		$('.close').click(e=>{
 			
+			$('#approve_line_modal').fadeOut();
+			$('.approval_line_modal_container').css({
+				'width': '0%'
+			})
+			
+			
+		}); // end of $('.close').click(e=>{})---------- 
+		
 	}); // end of $(document).ready(funtion(){})-----------------------------------
-	
+
 	
 	// 사용연차 개수 계산하기
 	function calAnnualAmount(){
@@ -99,7 +144,7 @@
 		
 		const queryString = $("form[name='annualDraftForm']").serialize();
 		console.log(queryString);
-			
+		
 		$.ajax({
 			url:"<%= ctxPath%>/document/annualDraft",
 			data:queryString,
@@ -127,7 +172,8 @@
 	// 결재정보 수정하기
 	function editApprover(){
 		
-		alert("결재정보");
+		$('div#approverModal').css('display','block');
+		
 		
 	} // end of function editApprover(){}---------------------------------------------
 	
@@ -160,15 +206,25 @@
 		
 	} // end of function annualTemp(){}-----------------------------------------------
 	
-</script>
+	</script>
+	
+	
+	<!-- 결재라인 모달 -->
+	<div id="approve_line_modal" class="modal_bg">
+	</div>
+	<div class="approval_line_modal_container">
+		<p>hello world</p>
+	</div>
+		
 
- 
-	<div>
+    <!-- 전자결재작성 폼 -->
+	
+	
 		<h1>휴가신청서</h1>
 		<button onclick="annualDraft()">결재요청</button>
 		<button onclick="saveTemp()">임시저장</button>
 		<button>미리보기</button>
-		<button onclick="editApprover()">결재 정보</button>
+		<button id="approve_line">결재 정보</button>
 		
 		<div style="border: solid 1px gray">
 			<form name="annualDraftForm">
