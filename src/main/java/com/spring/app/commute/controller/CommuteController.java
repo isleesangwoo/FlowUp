@@ -41,16 +41,33 @@ public class CommuteController {
 
 		HttpSession session = request.getSession();
 
-		
-		////////////////////////////////////////////////////
-		
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		if (loginuser == null) {
+
+			EmployeeVO evo = new EmployeeVO();
+			evo.setEmployeeNo("100010");
+			evo.setFK_positionNo("100000");
+			evo.setFK_teamNo("100000");
+			evo.setName("윤영주");
+			evo.setSecurityLevel("10");
+			evo.setEmail("mechanicon@naver.com");
+			evo.setMobile("01082487243");
+			evo.setDirectCall("01082487243");
+			evo.setBank("국민은행");
+			evo.setAccount("43340201215074");
+			evo.setRegisterDate("2025-02-11");
+			evo.setStatus("1");
+			evo.setFK_departmentNo("100000");
+			evo.setDepartmentName("가상의 부서~~");
+			
+			session.setAttribute("loginuser", evo);
+
+		}
 		
 		List<DepartmentVO> dvoList = new ArrayList<>();;
 		
 		if("10".equals(loginuser.getSecurityLevel())) {
-			
-			System.out.println("확인용 getSecurityLevel : " + loginuser.getSecurityLevel());
 			
 			dvoList = service.getDepInfo(); // 모든 부서 리스트 조회
 			
@@ -127,8 +144,6 @@ public class CommuteController {
 			double n_workTime_day = Double.parseDouble(workTime); // 1 = 1일
 
 			n_workTime_sec += (int) (n_workTime_day * 24 * 60 * 60);
-
-			System.out.println("~~ 확인용 n_workTime_sec : " + n_workTime_sec);
 			
 		}
 
@@ -222,7 +237,18 @@ public class CommuteController {
 		return map;
 	}
 	
-	
+	@GetMapping("getMontWorkInfo")
+	@ResponseBody
+	public List<Map<String, String>> getMontWorkInfo(@RequestParam Map<String, String> paramap) {
+		
+		System.out.println("확인용 selectMonth : " + paramap.get("selectMonth")); 
+		
+		List<Map<String, String>> mapList = service.getMontWorkInfo(paramap);
+		
+		System.out.println("확인용 mapList : " + mapList); 
+		
+		return mapList;
+	}
 	
 	
 	

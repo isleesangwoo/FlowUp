@@ -1,5 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+    
+<%
+   String ctxPath = request.getContextPath();
+   //     /myspring 
+%> 
+    
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <jsp:include page="../../header/header.jsp" /> 
@@ -71,7 +77,7 @@
         gap: var(--size16);
         align-items: center;
         justify-content: space-between;
-      padding: 0px var(--size24);
+      	padding: 0px var(--size24);
         margin-bottom: var(--size30);
     }
    
@@ -104,9 +110,6 @@
     table {
         border-collapse : collapse;
         font-size: var(--size14);
-    }
-
-    .time_table_back_form {
         border: 1px solid #ddd;
         width: 100%;
         table-layout: fixed;
@@ -114,11 +117,11 @@
         border-spacing: 0;
     }
 
-    .time_table_back_form tr th,
+    table tr th,
     .info {
         height: var(--size30);
         font-weight: normal;
-      text-align: center;
+        text-align: center;
     }
 
     .info {
@@ -141,14 +144,20 @@
         font-size: 13px;
     }
     
-    table#timeTable td {
-    	
+    table td {
+    position: relative;
+    	z-index:1;
     }
     
-    table#timeTable td:hover {
-    	background-color: yellow;
+    div.hoverDiv:hover {
     	cursor: pointer;
     }
+    
+    
+  /*   table td:hover {
+    	background-color: yellow;
+    	cursor: pointer;
+    } */
  
     .openDiv {
     	display:block;
@@ -157,6 +166,7 @@
     .closeDiv {
     	display:none;
     }
+
 
     
 </style>
@@ -170,31 +180,31 @@
         const currentDate_month = String(currentDate.getMonth()+1).padStart(2, '0');  
         
         
-        const select_month_first_day = new Date(currentDate_year,currentDate_month-1,1);
+        let today = new Date(currentDate_year,currentDate_month-1,1);
         
         
         // 이전 버튼 클릭 시
         $('#prev').click(() => {
         	select_month_first_day.setMonth(select_month_first_day.getMonth() - 1);
-            week_div(select_month_first_day);
+            week_div(today);
             
         });
 
         // 다음 버튼 클릭 시
         $('#next').click(() => {
         	select_month_first_day.setMonth(select_month_first_day.getMonth() + 1);
-            week_div(select_month_first_day);
+            week_div(today);
         });
 
         // 오늘 버튼 클릭 시
         $('#now').click(() => {
         	select_month_first_day = new Date(currentDate); // 저장된 currentDate 날짜로 복구
-            week_div(select_month_first_day);
+            week_div(today);
         });
 
        
         // 페이지 로드 시 현재 날짜 및 테이표시
-        week_div(select_month_first_day);
+        week_div(today);
         // ====================== 날짜 리모컨 기능 생성 ====================== //
  
         $('div.oneday').hide();
@@ -212,10 +222,7 @@
 	 			$(e.target).parent().parent().find("div.weekbro").css({"display":"none"});
 	 		}
 	 		
-     		
-     		
      	});
-     	
      	
      	
      	// 일자 버튼 클릭시 열림
@@ -231,9 +238,18 @@
     	
      	});
         
-        
-        
-        
+     	
+     	// 출퇴근표시 div 반응형
+     	$(window).on('resize', function(){
+     		
+     		getHistory(today);
+
+     	});
+     	
+   
+     	$("select#searchType").val("deptname").trigger("change");
+     	
+     	
     }); // end of $(document).ready(() => {})-------------
 
    
@@ -241,13 +257,12 @@
 
     	const year = today.getFullYear();
     	let month = String(today.getMonth()+1).padStart(2, '0');  		// 오늘(선택일)의 월
-
-    	console.log(month);
     	
     	const day = String(today.getDate()).padStart(2, '0');			// 오늘(선택일)의 일
     	const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];		//
     	const dayOfWeek = daysOfWeek[today.getDay()]; 					// 오늘(선택일)의 요일
  
+    	const start = new Date(year, month-1, 1);
     	const end = new Date(year, month, 0);
     	
     	const end_day = Number(String(end.getDate()));
@@ -277,30 +292,33 @@
 
     		const i_month = String(i_today.getMonth()+1).padStart(2, '0'); 
     		const i_date = String(i_today.getDate()).padStart(2, '0');
+    		
+    		console.log("확인용 i_date : " +i_date);
+    		
     		const i_dayOfWeek = daysOfWeek[i_today.getDay()]; 
     	
     		
     		if(i == 1 || i_dayOfWeek == '월') {
     			html += `<div>
-    						<div class="weekBig" style="width:100px; font-size:14pt;">\${weekNo} 주차</div>
+    						<div class="weekBig hoverDiv" style="width:100px; font-size:14pt;">\${weekNo} 주차</div>
     						<div class="weekbro" style="display:none;">`;			// 주차 적는 div
     		}
     		
-    		html += `<div class="dayBig" style="width:200px;">&nbsp;&nbsp;&nbsp;\${i_month}월 \${i_date}일 (\${i_dayOfWeek})</div>		
+    		html += `<div class="dayBig hoverDiv" style="width:200px;">&nbsp;&nbsp;&nbsp;\${i_month}월 \${i_date}일 (\${i_dayOfWeek})</div>		
  
     				<div class="daybro" style="display:none; padding:0 10px;">													
-    		    		<table border="1" class="time_table_back_form" id="timeTable">			
+    		    		<table class="\${i_date}" style="box-sizing: border-box; border-collapse:collapse;">			
     		    			<thead>`;															
     					
-    		for(let j=1; j<=24; j++) {
+    		for(let j=0; j<24; j++) {
     	        		
     	    	let hour = j;
     	    			
     	    	if(hour < 10 ) {
     	    		hour = `0\${j}`;
     	    	}
-    	    			
-    	        html += `<th colspan="6">\${hour}</th>`;										// th 
+    	    	
+    	        html += `<th colspan="6" style="text-align:left; font-size:8pt;">\${hour}</th>`;										// th 
     		} ///
     			
     		html += `</thead>`;																	// 헤더 끝
@@ -311,10 +329,7 @@
     					
         	for(let k=0; k<144; k++) {
         		
-        		const hour = Math.floor(k/6);
-        		const min = (k - ( Math.floor(k/6) * 6 ) ) * 10;
-        		
-        		html += `<td style="height:30px;"><input type="hidden" name="today" value="\${hour}-\${min}"></td>`;	// td
+        		html += `<td style="height:30px;" class="\${k}"></td>`;	// td
         		
         	}
         	
@@ -324,18 +339,149 @@
     			html += `</div></div>`;														// 주차 감싸는 div 끝
     			weekNo++;   
     		}
-    		
-    		
+    	
     	}
     
     	html += `</div>`; // 전체 div 끝
     	
     	$("div#vieww").html(html);
     	
-    	
-    	
+    	getHistory(today);
     	
     } //// week_div(today) 
+    	
+    	
+    	
+    function getHistory(today) {
+    	
+    	const year = today.getFullYear();
+    	let month = String(today.getMonth()+1).padStart(2, '0');  		// 오늘(선택일)의 월
+    	
+    	const day = String(today.getDate()).padStart(2, '0');			// 오늘(선택일)의 일
+    	const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];		//
+    	const dayOfWeek = daysOfWeek[today.getDay()]; 					// 오늘(선택일)의 요일
+ 
+    	const start = new Date(year, month-1, 1);
+    	const end = new Date(year, month, 0);
+    	
+    	const end_day = Number(String(end.getDate()));
+
+    	const timeString = `\${year}-\${month}`;
+    	
+    	
+
+    	const tableWidth = $('.dateController').width() - 40;
+   // 	alert(tableWidth);
+    	
+    	$.ajax({
+    		url:"<%= ctxPath%>/commute/getMontWorkInfo",
+			type:"get",
+			data:{"fk_employeeNo":"${sessionScope.loginuser.employeeNo}"
+				 ,"selectMonth":start.getFullYear()+"-"+String(start.getMonth()+1).padStart(2, '0')+"-01"},
+			dataType:"json",
+			success:function(json) {
+				
+				console.log(JSON.stringify(json));
+				
+				$.each(json, (index,item)=>{
+					
+					
+		//			console.log("확인용 startTime : " + item.startTime);
+					// 확인용 startTime : 2025-02-18 09:54
+		//			console.log("확인용 endTime : " + item.endTime);
+					// 확인용 endTime : 2025-02-18 15:46
+					
+					const selectDay = item.startTime.substring(8, 10); 
+					
+					const starthour = (item.startTime).substring(11, 13); 
+					const startmin = (item.startTime).substring(14, 16); 
+					
+					const endhour = (item.endTime).substring(11, 13); 
+					const endmin = (item.endTime).substring(14, 16); 
+																				                 //		   |00시 	   |01시 					
+					const startCell = Number(starthour) * 6 + Math.ceil(Number(startmin)/10); // 01:19 라면 |1|2|3|4|5|6|7|@@@@@@@@@@@@@        => 8
+					const endCell = Number(endhour) * 6 + Math.floor(Number(endmin)/10);   // 18:41 라면 @@@@@@@@@@@@@|@@@@@@@@@@@@@|@@@@@@@@@@@@|113|114|115|  => 112
+					                  
+					const totalCellCnt = endCell - startCell +1;                                              
+					                                                        
+					for(let workCell=startCell; workCell<=endCell; workCell++) {
+						
+					//	console.log("확인용 selectDay : " +selectDay);
+					//	console.log("확인용 workCell : " +workCell);
+						
+					//	$("table td."+workCell).css({"background-color":"red"});
+						
+					//	$("table."+selectDay+" td").css({"background-color":"blue"});
+						
+	//					$("table."+selectDay+" td."+workCell).css({"background-color":"green"});
+					}
+					
+					console.log(totalCellCnt);
+					
+					
+					let v_html = ``;
+					
+					for(let k=0; k<144; k++) {
+						
+		        		
+						if(k == startCell && totalCellCnt > 0) {
+							
+							
+							
+							v_html += `<td colspan="\${totalCellCnt}" style="height:20px; border: solid 0px;">
+											<div title="출근시간 : \${starthour}:\${startmin}\n퇴근시간 : \${endhour}:\${endmin}" style="width: 100%%; height: 100%;background-color: #00b6c2; margin:0 auto; z-index:100; border-radius:50px; text-align:center; color:white; font-size:10pt; line-height:20px;">업무</div>
+										</td>`;	// td
+							
+							k = k + totalCellCnt - 1;
+							
+						}
+						else {
+							
+							if( k % 6 == 0 ) {
+								v_html += `<td style="height:20px; border: solid #e6e6e6; border-width: 0px 0px 0px 1px"></td>`;
+							}
+							else if( k % 6 == 5 ) {
+								v_html += `<td style="height:20px; border: solid #e6e6e6; border-width: 0px 1px 0px 0px"></td>`;
+							}
+							else {
+								v_html += `<td style="height:20px; border: solid #e6e6e6 0px"></td>`;
+							}
+							
+						}
+		        		
+		        	}
+					
+					
+					$("table."+selectDay+" tbody").html(v_html);
+					
+					
+					
+					
+					/* $("table."+selectDay+" td."+startCell).css({
+						'position' : 'releate'
+					}).html(`
+								<div title="출근시간" style="width: calc(\${tableWidth}px / 144 * \${totalCellCnt}); background-color: #80ff80; padding:10px; z-index:100; border-radius:50px;" >
+									
+								</div>
+							`); */
+					
+				});
+				
+			},
+			error: function(request, status, error){
+		        alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		    }
+    		
+    	});
+    	
+    	
+    } // func
+    
+
+    	
+    	
+    	
+
     
     
     

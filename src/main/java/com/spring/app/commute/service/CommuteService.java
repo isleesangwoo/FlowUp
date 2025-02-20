@@ -29,6 +29,9 @@ public interface CommuteService {
 	// 모든 부서정보 조회 select 
 	List<DepartmentVO> getDepInfo();
 
+	// 1달치 
+	List<Map<String, String>> getMontWorkInfo(Map<String, String> paramap);
+
 
 
 	
