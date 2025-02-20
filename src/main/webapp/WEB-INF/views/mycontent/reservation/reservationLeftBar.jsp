@@ -68,7 +68,7 @@
 								<div class="assetTitleBtn" style="justify-content: space-between; display: flex;">
 									<span style="pointer-events: none;">${assetMap.assetTitle}</span>
 									<span>
-										<a href="<%= ctxPath%>/reservation/showReservationOne?assetNo=${assetMap.assetNo}&assetTitle=${assetMap.assetTitle}"><i class="fa-solid fa-gear"></i></a>
+										<a href="<%= ctxPath%>/reservation/showReservationOne?assetNo=${assetMap.assetNo}"><i class="fa-solid fa-gear"></i></a>
 										<i class="fa-solid fa-trash disableBoardIcon deleteAsset" id="${assetMap.assetNo}"></i>
 									</span>
 								</div> <!-- 대분류 명 -->

@@ -13,6 +13,7 @@
     box-sizing: border-box;
     padding: var(--size20);
     border-right: 1px solid #c8c8c8;
+    flex-shrink: 0;	
 }
 
 #writePostBtn {

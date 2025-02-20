@@ -15,9 +15,11 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.spring.app.reservation.domain.AssetVO;
 import com.spring.app.reservation.service.ReservationService;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 
 //=== 컨트롤러 선언 === //
@@ -34,14 +36,8 @@ public class ReservationController {
 	
 	// 자산 예약 메인페이지
 	@GetMapping("")
-	public ModelAndView reservation(ModelAndView mav) {
-		
-		List<Map<String, String>> assetList = service.tbl_assetSelect(); // 자산 대분류를 select 해주는 메소드
-		
-		List<Map<String, String>> assetDetailList = service.tbl_assetDetailSelect(); // 자산 상세를 select 해주는 메소드
-		
-		mav.addObject("assetDetailList", assetDetailList);
-		mav.addObject("assetList", assetList);
+	public ModelAndView selectLeftBar_reservation(HttpServletRequest request, 
+												  ModelAndView mav) {
 		
 		mav.setViewName("mycontent/reservation/reservation");
 		
@@ -133,15 +129,15 @@ public class ReservationController {
 	
 	
 	@GetMapping("showReservationOne")
-	public ModelAndView showReservationOne(ModelAndView mav, @RequestParam String assetNo, @RequestParam String assetTitle) {
+	public ModelAndView selectLeftBar_showReservationOne(HttpServletRequest request, 
+														 ModelAndView mav, 
+														 @RequestParam String assetNo) {
+
+		AssetVO assetvo = service.assetOneSelect(assetNo); // 자산 하나에 해당하는 대분류 정보를 select 해주는 메소드
 		
-		List<Map<String, String>> assetList = service.tbl_assetSelect(); // 자산 대분류를 select 해주는 메소드
-		
-		List<Map<String, String>> assetDetailList = service.tbl_assetDetailSelect(); // 자산 상세를 select 해주는 메소드
-		
-		mav.addObject("assetDetailList", assetDetailList);
-		mav.addObject("assetList", assetList);
-		mav.addObject("assetTitle", assetTitle);
+		// ==== 대분류 정보 ==== //
+		mav.addObject("assetvo", assetvo);
+		// ==== 대분류 정보 ==== //
 		
 		mav.setViewName("mycontent/reservation/showReservationOne");
 		
