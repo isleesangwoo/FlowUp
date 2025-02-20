@@ -3,8 +3,6 @@
     
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
 
-
-
  
 <%@include file="./reservationLeftBar.jsp" %>
 
@@ -14,7 +12,7 @@
 <%-- 각자 페이지에 해당되는 js 연결 --%>
 <script src="<%=ctxPath%>/js/reservation/reservation.js"></script>
 
-	<%-- 이곳에 각 해당되는 뷰 페이지를 작성해주세요 --%>
+	
     <!-- 오른쪽 바 -->
     <div id="right_bar">
         <div id="right_title_box">
