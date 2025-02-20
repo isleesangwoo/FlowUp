@@ -3,6 +3,8 @@ package com.spring.app.reservation.service;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.app.reservation.domain.AssetVO;
+
 public interface ReservationService {
 
 	// 자산 대분류를 select 해주는 메소드
@@ -19,6 +21,9 @@ public interface ReservationService {
 
 	// 대분류를 삭제하는 메소드
 	int deleteAsset(String assetNo);
+
+	// 자산 하나에 해당하는 대분류 정보를 select 해주는 메소드
+	AssetVO assetOneSelect(String assetNo);
 
 	
 

@@ -159,13 +159,71 @@
         cursor: pointer;
         font-size: 13px;
     }
+    
+    /* 여기부터는 예약 바 생성 */
+    
+    .time_table {
+    	width: calc(100% - 120px);
+    	height: calc(100% - var(--size30));
+    	position: absolute;
+	    top: var(--size30);
+	    left: 120px;
+    }
+    
+    #timeLine {
+    	position: absolute;
+	    width: 1px;
+	    background: red;
+	    height: calc(100% - var(--size30));
+	    top: var(--size30);
+	    left: 500px;
+    }
+    
+    
+    
+    
+    
+    /* 여기까지는 예약 바 생성 */
+    
 </style>
 
 
 <script>
     $(document).ready(() => {
+	
+    	
+    	$(window).on('resize', function(){
 
+    		// console.log('되는중')
+    		
+    		const totalWidth = $('.time_table_back_form').width();
+    		// alert(totalWidth);
+    		
+    		// 현재 시간
+    		const now = new Date();
+    		const startHour = 9; // 9시
+    		const endHour = 21;  // 21시
 
+    		// 9시부터 현재 시간까지 경과한 분
+    		const startTime = new Date(now);
+    		startTime.setHours(startHour, 0, 0, 0); // 오늘 9시 기준
+    		const minutesPassed = Math.floor((now - startTime) / (1000 * 60)); // 경과 시간 (분)
+
+    		// 타임라인의 총 분 (9시부터 21시까지 720분)
+    		const totalMinutes = (endHour - startHour) * 60;
+
+    		// 비율로 계산하여 left 값 설정
+    		const leftPercentage = (minutesPassed / totalMinutes) * totalWidth;
+
+    		// 타임라인의 스타일 업데이트 (여기서는 예시로 div 요소)
+    		const timelineElement = $("#timeline");
+    		timelineElement.css({
+    			'left' : leftPercentage + "%"
+    		})
+    	});
+    	
+    	
+    	
         // ====================== 날짜 리모컨 기능 생성 ====================== //
         let today = new Date(); // 현재 날짜 저장
         let currentDate = new Date(); // 오늘을 저장하는 변수

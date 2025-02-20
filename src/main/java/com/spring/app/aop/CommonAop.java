@@ -1,6 +1,7 @@
 package com.spring.app.aop;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 
 import org.aspectj.lang.JoinPoint;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Component;
 
 import com.spring.app.board.service.BoardService;
 import com.spring.app.common.MyUtil;
+import com.spring.app.reservation.service.ReservationService;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -24,6 +26,9 @@ import jakarta.servlet.http.HttpSession;
 @Aspect		// 공통관심사 클래스(Aspect 클래스)로 등록된다.
 @Component	// bean 으로 동록된다.
 public class CommonAop {
+	
+	@Autowired // Type 에 따라 알아서 Bean 을 주입해준다.
+	private ReservationService service;
 	
 	// ==== Pointcut(주업무)을 설정해야 한다. ==== //
 	//		Pointcut 이란 공통관심사<예: 로그인 유무검사>를 필요로 하는 메소드를 말한다.
@@ -59,7 +64,29 @@ public class CommonAop {
 				e.printStackTrace();
 			}
 		}
-	}
+	} // end of public void loginCheck(JoinPoint joinpoint) {}--------------
 	
+	
+	
+	
+	
+
+	@Pointcut("execution(public * com.spring.app..*Controller.selectLeftBar_*(..) )") // 해당 패키지 파일명에서  selectLeftBar_ 로 시작하는 메소드는 다 aop 로 데려올 것이다
+	public void selectLeftBar() {}
+	
+	@Before("selectLeftBar()")
+	public void selectLeftBar(JoinPoint joinpoint) { // joinpoint 로 메소드 정보 가져오기 why? => request 는 조상님이 갖다주시는가!?
+		
+		HttpServletRequest request = (HttpServletRequest) joinpoint.getArgs()[0];	// 값을 저장해서 뿌려주기 위해 request 설정
+		
+		// ====== 메뉴 정보들 select 하기 ====== //
+		List<Map<String, String>> assetList = service.tbl_assetSelect(); // 자산 대분류를 select 해주는 메소드
+		List<Map<String, String>> assetDetailList = service.tbl_assetDetailSelect(); // 자산 상세를 select 해주는 메소드
+		// ====== 메뉴 정보들 select 하기 ====== //
+		
+		request.setAttribute("assetList", assetList);
+		request.setAttribute("assetDetailList", assetDetailList);
+		
+	} // end of public void selectLeftBar(JoinPoint joinpoint) {}---------------- 
 	
 }
