@@ -25,7 +25,7 @@
 			<button>문서 삭제</button>
 		</div>
 		
-		<table>
+		<table class="table">
 			<thead>
 				<tr>
 					<th>
