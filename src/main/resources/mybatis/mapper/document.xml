@@ -32,6 +32,7 @@
 		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
 		from tbl_document
 		where fk_employeeNo = #{employeeNo} and temp = 1
+		order by draftDate desc
 	</select>
 	
 	
@@ -40,6 +41,7 @@
 		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
 		from tbl_document
 		where fk_employeeNo = #{employeeNo} and temp = 0
+		order by draftDate desc
 	</select>
 	
 	
@@ -58,6 +60,7 @@
 		    ON E1.fk_departmentNo = E2.fk_departmentno
 		) E JOIN tbl_document D
 		ON E.employeeNO = D.fk_employeeNo
+		order by draftDate desc
 	</select>
 	
 	
