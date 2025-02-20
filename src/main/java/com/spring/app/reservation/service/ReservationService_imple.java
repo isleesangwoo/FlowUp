@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.app.reservation.domain.AssetVO;
 import com.spring.app.reservation.model.ReservationDAO;
 
 //=== 서비스 선언 === //
@@ -58,6 +59,14 @@ public class ReservationService_imple implements ReservationService {
 	public int deleteAsset(String assetNo) {
 		int n = dao.deleteAsset(assetNo);
 		return n;
+	}
+
+
+	// 자산 하나에 해당하는 대분류 정보를 select 해주는 메소드
+	@Override
+	public AssetVO assetOneSelect(String assetNo) {
+		AssetVO assetvo = dao.assetOneSelect(assetNo);
+		return assetvo;
 	}
 
 
