@@ -47,8 +47,6 @@
    		where departmentNo != 100000
    	</select>
    	
-   	
-   	
    	<resultMap type="HashMap" id="getMontWorkInfoMap">
    		<result property="startTime" column="startTime" javaType="String" />
    		<result property="endTime" column="endTime" javaType="String" />
@@ -59,6 +57,24 @@
    		where fk_employeeNo = #{fk_employeeNo} 
    			  and (starttime BETWEEN to_date(#{selectMonth}, 'yyyy-mm-dd') and add_months(to_date(#{selectMonth}, 'yyyy-mm-dd'), 1)-0.00001)
    	</select>   	
+   	
+   	<resultMap type="HashMap" id="getWorktimeMap">
+   		<result property="weekNo" 		column="weekNo" 		javaType="String" />
+   		<result property="worktime_sec" column="worktime_sec" 	javaType="String" />
+   	</resultMap>
+   	<select id="getWorktime" parameterType="HashMap" resultMap="getWorktimeMap">
+   		select to_char(trunc(starttime+7) , 'w') as weekNo
+		     , sum(nvl((endtime - starttime), 0) * 24 * 60 * 60) as worktime_sec
+		from tbl_commute
+		where fk_employeeno = ${fk_employeeNo}
+		and to_char(starttime, 'yyyymm') = ${year_month}
+		group by to_char(trunc(starttime+7) , 'w') 	
+		order by 1
+   	</select> 
+   	
+   	
+   	
+   	
    	
    	
    	

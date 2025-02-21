@@ -331,7 +331,7 @@
 		        }
 			});
 	    	
-	    	getTodayWorkInfo();
+	    	location.reload(true);
 	    	
 	    });
 	    
@@ -361,7 +361,7 @@
 			        }
 				});
 	    		
-	    		getTodayWorkInfo();
+	    		location.reload(true);
 	    		
 	    	} // confirm
 	    });
