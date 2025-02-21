@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.spring.app.document.domain.DocumentVO;
 import com.spring.app.document.model.DocumentDAO;
+import com.spring.app.employee.domain.EmployeeVO;
 
 
 // === 서비스 선언 === //
@@ -70,6 +71,15 @@ public class DocumentService_imple implements DocumentService {
 		
 		List<DocumentVO> deptDocumentList = mapper_dao.deptDocumentList(employeeNo);
 		return deptDocumentList;
+	}
+
+
+	// 조직도에 뿌려주기 위한 사원 목록 가져오기
+	@Override
+	public List<EmployeeVO> getEmployeeList() {
+		
+		List<EmployeeVO> employeeList = mapper_dao.getEmployeeList();
+		return employeeList;
 	}
 
 	
