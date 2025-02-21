@@ -4,6 +4,7 @@ package com.spring.app.employee.domain;
 
 public class EmployeeVO {
 
+	
 	 private String employeeNo;         // 사번
 	 private String FK_positionNo;      // 직급번호
      private String FK_teamNo;         // 팀번호

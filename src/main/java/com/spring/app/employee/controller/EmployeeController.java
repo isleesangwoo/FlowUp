@@ -2,6 +2,7 @@ package com.spring.app.employee.controller;
 
 
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.app.employee.domain.EmployeeVO;
@@ -17,7 +19,6 @@ import com.spring.app.employee.service.EmployeeService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.web.bind.annotation.RequestBody;
 
 
 
@@ -136,6 +137,36 @@ public class EmployeeController {
 		return mav;
 	}
 	
-		
 	
+	
+	// === #ljh10.마이페이지 요청 === //
+		@GetMapping("mypage")
+		public ModelAndView mypage(ModelAndView mav) {
+			mav.setViewName("mycontent/employee/myPage");
+			return mav;
+		}
+		
+		
+	// === #ljh11.내 정보 수정 페이지 요청 === //
+		@GetMapping("updateMypageInfo")
+		public ModelAndView updateMypageInfo(ModelAndView mav) {
+			mav.setViewName("mycontent/employee/updateMypageInfo");
+			return mav;
+		}
+	
+		
+	// === 부서번호, 부서명 알아오기 === //
+	   @GetMapping("departmentno_select")	 	
+       @ResponseBody
+       public List<Map<String, String>> departmentno_select() {
+		   
+		   List<Map<String, String>> mapList = service.departmentno_select();
+		   
+		   return mapList;
+	   }
+		
+		
+		
+		
+		
 }

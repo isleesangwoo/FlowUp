@@ -1,0 +1,108 @@
+@charset "UTF-8";
+
+
+
+#right-bar{
+	width: 100%;
+    height: auto;
+}
+
+#right_title_box{
+    box-sizing: border-box;
+    padding: var(--size24) var(--size24) var(--size18) var(--size24);
+   
+}
+
+#right_title{
+	font-size: var(--size22);
+}
+
+#mypagecontent{
+	width: 80%;
+	height: auto;
+	padding-top: 10px;
+	padding-left: 24px;
+	display: flex;
+}
+
+#profileImg{
+	display : inline-block;
+	text-align:center;
+	line-height: 100px;
+	width:100px;
+	height: 100px;
+	border: gray solid 0px;
+	background-color: #bebebe;
+	border-radius: 3px;
+	overflow-clip-margin: content-box;
+    overflow: clip;
+}
+
+
+.myinfoinput{
+	width:100%;
+}
+
+
+
+.title{
+	display: inline-block;
+}
+
+th{
+	text-align: left;
+    vertical-align: top;
+    font-weight: normal;
+}
+
+td{
+	vertical-align: top;
+}
+
+.updateProfileImg{
+	vertical-align: bottom;
+	border-radius: 3px;
+	border : 1px black solid;
+	padding : 2px;
+	font-size: 12px;
+	margin-left: 3px;
+}
+
+
+.profiletable{
+	margin: 8px 0;
+	display: table;
+    border-collapse: separate;
+    box-sizing: border-box;
+    text-indent: initial;
+    unicode-bidi: isolate;
+    border-spacing: 0 1.5rem;
+    border-color: gray;
+}
+
+
+.profileimg_text{
+	display: inline-block;
+    font-size: 13px;
+    color: #999;
+    line-height: 1.6;
+    letter-spacing: -0.5px;
+}
+
+.successInfoUpdate,.cancelInfoUpdate{
+	background-color: rgb(215, 215, 215);
+	border: none;
+	padding: 1% 4%;
+	border-radius:3px; 
+	font-size: 12px;
+}
+
+.successInfoUpdate:hover{
+	background-color: #0d6efd;
+	color:white;
+}
+
+.cancelInfoUpdate:hover{
+	background-color:#ff0b0b;
+	color:white;
+}

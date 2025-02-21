@@ -2,67 +2,198 @@
     pageEncoding="UTF-8"%>
 
 <%
-String ctxPath = request.getContextPath();
-//     /myspring 
+   String ctxPath = request.getContextPath();
+   //     /flowUp
 %>  
 
+<jsp:include page="../../header/header.jsp" />
+
 <link href="<%=ctxPath%>/css/employeeCss/addEmployee.css" rel="stylesheet"> 
-<jsp:include page="../../header/header.jsp" /> 
+ 
+<style type="text/css">
+   span.error {
+   	  color: red;
+   }
+</style>
 
 <script type="text/javascript">
 
 $(document).ready(function(){
+	$("input:text[name='employeeNo']").focus();
 	
-	$("span.errorMsg").hide();
-	$("span.errorMsg2").hide();
+	// === 샘 시작=== //=========================================================
+			
+	// --- 부서번호 입력해주기 시작 ---
+	$.ajax({
+		url:"<%= ctxPath%>/employee/departmentno_select",
+		dataType:"json",
+		async:false,
+		succcess:function(json){
+	       alert(JSON.stringify(json));
+			
+	       /*
+	          [{"departmentno":"100000", "departmentname":" "}
+	          ,{"departmentno":"100002", "departmentname":"영업부"}
+	          ,{"departmentno":"100003", "departmentname":"총무부"}
+	          ,{"departmentno":"100004", "departmentname":"물류부"}
+	          ,{"departmentno":"100005", "departmentname":"관리부"}
+	          ]
+	       */
+		},
+		error: function(request, status, error){
+            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	    }	
+	});
+	// --- 부서번호 입력해주기 끝 ---
+		
+	$("span.error").hide();
 	
-<%-- 사원 등록 --%>
- $("button#addEmployee").click(function(){
-	 //alert("클릭됨");
-	 
-	 
-	 
-	 const employeeNoInfo = $("input.employeeNoInfo").val().trim();
-	 if(employeeNoInfo ==  ""){
-		 alert("사번을 입력해주세요!");
-		 $("input.employeeNoInfo").val("").focus();
-		 return;
-	 }
-	 
-	 
-	/*  // ---- 사번 유효성 검사 확인 ----
-	 $("input.employeeNoInfo").blur((e)=>{
+	$("input:text[name='employeeNo']").keyup(function(e){
+		
+		 const regExp = /^[0-9]+$/;
+		
+		 const bool = regExp.test($(e.target).val());
 		 
-		 const employeeNoInfo = $("input.employeeNoInfo").val().trim();
-		 const regExp_employeeNoInfo = /^[ㄱ-ㅎ가-힣a-zA-Z]+$/ //한국어나 영어가 들어감
-		 const bool = regExp_employeeNoInfo.test($(e.target).val());
+		 if(!bool) { // 입력한 글자가 숫자가 아닌 경우
+			 $(e.target).next().show(); 
 		 
+			 const current_val = $(e.target).val();
+		     const str_only_number = current_val.substring(0, current_val.length-1);
+		     $(e.target).val(str_only_number);
+		 }
+		 else if( $(e.target).val().substring(0, 1) === '0' ){ // 처음 시작하는 숫자가 '0' 일 경우
+			 $(e.target).next().show(); 
+			 
+			 const current_val = $(e.target).val();
+		     const str_only_number = current_val.substring(0, current_val.length-1);
+		     $(e.target).val(str_only_number);
+		 }
+		 else if($(e.target).val().length < 6 ) { // 입력한 글자가 모두 숫자이지만 글자수가 6글자 미만인 경우 
+			 $(e.target).next().show();
+		 }
+		 else if($(e.target).val().length > 6 ) { // 입력한 글자가 모두 숫자이지만 글자수가 6글자를 초과한 경우 
+			 $(e.target).next().show();
 		 
-		 if(bool){
-			 $("input").prop("disabled", true);
-				$("a#noAddEmployee").prop("disabled", false);  
-				$(e.target).prop("disabled", false);
-				$(e.target).val("").focus();
-				$(e.target).parent().find("span.errorMsg2").show(); // 숫자가 아닌 다른 글자가 들어 갔을 때 경고문을 띄움
+			 const current_val = $(e.target).val();
+		     const str_only_number = current_val.substring(0, current_val.length-1);
+			       
+			 $(e.target).val(str_only_number);
+		 }
+		 else { // 모두가 숫자 6자리로만 채워진 경우
+			 $(e.target).next().hide();
 		 }
 		 
-		 else if(employeeNoInfo==""){
-			 $("input").prop("disabled", true);
-				$("a#noAddEmployee").prop("disabled", false);  
-				$(e.target).prop("disabled", false);
-				$(e.target).val("").focus();
-				$(e.target).parent().find("span.errorMsg").show(); // 공백일 때 경고문을 띄움
+	 });
+	
+	
+	$("input:text[name='employeeNo']").blur(function(e){
+		
+		 const regExp = /^[0-9]+$/;
+		 
+		 const bool = regExp.test($(e.target).val());
+		 
+		 if(bool && $(e.target).val().length == 6) { // 모두가 숫자 6자리로만 채워진 경우
+			 $(e.target).next().hide(); 
+		 }
+		 else { // 모두가 숫자 6자리로만 채워것이 아닌 경우
+			 $(e.target).next().show();
+			 $(e.target).focus();
+		 }
+ 
+	 });
+	 // === 샘 끝=== //=========================================================
+	 
+	 // === 지혜 시작 === //
+	 <%-- ======== 비밀번호 검사 시작 ======== --%>
+	 $("input:text[name='passwd']").blur(function(e) {
+		 
+		 const regExp =  /^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-zA-Z])(?=.*[^a-zA-Z0-9]).*$/g;
+		 const bool = regExp.test($(e.target).val());
+		 
+		 if(!bool){
+			 $(e.target).next().show(); 
+			 $(e.target).focus();
 		 }
 		 
 		 else{
-			 $("input").prop("disabled", false);
-			 $(e.target).parent().find("span.errorMsg2").hide();
-			 $(e.target).parent().find("span.errorMsg").hide();
+			 $(e.target).next().hide();  
+		 }
+
+	});// end of  $("input:text[name='passwd']").keyup(function(e) {});----------
+	
+	$("input:text[name='passwd']").keyup(function(e){
+		if($(e.target).val().length < 8){
+			$(e.target).next().show(); 
+			$(e.target).focus();
+		}
+		else if($(e.target).val().length > 15){
+			$(e.target).next().show(); 
+			
+			const current_val = $(e.target).val();
+			const str_passwd = current_val.substring(0, current_val.length-1);
+			
+			$(e.target).val(str_passwd);
+		}
+		
+		else{
+			$(e.target).next().hide
+		}
+	});
+	 <%-- ======== 비밀번호 검사 끝 ======== --%>
+	 
+	 
+	 <%-- ========= 이름 검사 시작 ========= --%>
+	 $("input:text[name='name']").blur(function(e){
+		 
+		 const regExp= /^[가-힣]{2,6}$/ // 한글이 2~6자리
+		 const bool = regExp.test($(e.target).val());
+		 
+		 if(!bool){
+			 
+			 $(e.target).next().show();
+			 $(e.target).focus();
+			 
+		 }
+		 else{
+				$(e.target).next().hide();
 		 }
 		 
-	 }); // end of $("input.employeeNoInfo").blur((e)=>{})---------------------
-	// ---- 사번 유효성 검사 확인 끝 ----
-	  */
+	 })	;
+	
+	 <%-- ========= 이름 검사 끝 =========  --%>
+	 
+	 
+	 <%-- ========= 이메일 검사 시작 ========= --%>
+	 
+	 $("input:text[name='email']").blur(function(e){
+		 
+		 const regExp = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i; 
+		 const bool = regExp.test($(e.target).val());
+		 
+		 if(!bool){
+			 $(e.target).next().show();
+			 $(e.target).focus();
+		 }
+		 else{
+				$(e.target).next().hide();
+		 }
+		 
+	 });
+	 
+	 <%-- ========= 이메일 검사  끝 ========= --%>
+
+	 
+	
+	// === 지혜 시작 끝 === //
+	
+	
+	
+	
+	
+	
+<%-- 사원 등록 --%>
+ $("button#addEmployee").click(function(){
+
 	 
 	 // ----- 비밀번호 공백 확인 ------
 	 const passwdInfo = $("input.passwdInfo").val().trim();
@@ -100,12 +231,12 @@ $(document).ready(function(){
 	// --- 직급번호 공백 확인 ------
 	 const positionNoInfo = $("input.positionNoInfo").val().trim();
 	 if(positionNoInfo ==  ""){
-		 alert("팀번호를 입력해주세요!");
+		 alert("직급번호를 입력해주세요!");
 		 $("input.positionNoInfo").val("").focus();
 		 return;
 	 }
 	 
-/* 	 
+	/* 	 s
 	// --- 내선번호 공백 확인 ------
 	 const directCallInfo = $("input.directCallInfo").val().trim();
 	 if(directCallInfo ==  ""){
@@ -113,7 +244,7 @@ $(document).ready(function(){
 		 $("input.directCallInfo").val("").focus();
 		 return;
 	 }
-	  */
+	 */
 	 
 	// --- 보안등급 공백 확인 ------
 	 const securityInfo = $("input.securityInfo").val().trim();
@@ -163,7 +294,7 @@ $(document).ready(function(){
 	// --- 입사일 공백 확인 ------
 	 const registerInfo = $("input.registerInfo").val().trim();
 	 if(registerInfo ==  ""){
-		 alert("계좌를 입력해주세요!");
+		 alert("입사일을 입력해주세요!");
 		 $("input.registerInfo").val("").focus();
 		 return;
 	 }
@@ -203,106 +334,98 @@ $(document).ready(function(){
 <div class="container">
 
 	<div class="addtitle">
-		<h3>회원추가</h3>
+		<h3>사원추가</h3>
 	</div>
-	<hr>
 	<div class="frmdiv">
 		
 		<form name="addEmployeeFrm">
 		<ul>
 	
 			<li class="inputList">
-			<span class="inputTitle">사번</span>
-			<input type="text" class="frmInput employeeNoInfo" name="employeeNo" placeholder="6자리 숫자 조합"/>
-			<!-- <span class="errorMsg">*사번을 입력해주세요!</span> first-child
-			<span class="errorMsg2">*숫자로만 입력할 수 있습니다!</span> first-child -->
+				<span class="inputTitle">사번</span>
+				<input type="text" class="frmInput employeeNoInfo" name="employeeNo" placeholder="6자리 숫자 조합"/>
+				<span class="error">사번은 숫자 6자리 입력하세요</span>
 			</li>
 			
 			<li class="inputList">
-			<span class="inputTitle">비밀번호</span>
-			<input type="text" class="frmInput passwdInfo" name="passwd" placeholder="8~15자의 영어, 숫자 조합"/>
-			<!-- <span class="errorMsg">*비밀번호를 입력해주세요!</span> nth-child(2)
-			<span class="errorMsg2">*8~15자의 영어, 숫자 조합로만 입력할 수 있습니다!</span> nth-child(2) -->
+				<span class="inputTitle">비밀번호</span>
+				<input type="text" class="frmInput passwdInfo" name="passwd" placeholder="8~15자의 영어, 숫자 조합"/>
+				<span class="error">비밀번호는 8~15자의 영어와 숫자, 특수문자가 포함되어야합니다.</span>
 			</li>
 			
 			<li class="inputList">
-			<span class="inputTitle">이름</span>
-			<input type="text" class="frmInput nameInfo" name="name"/>
-			<!-- <span class="errorMsg">*이름을 입력해주세요!</span>nth-child(3) -->
+				<span class="inputTitle">이름</span>
+				<input type="text" class="frmInput nameInfo" name="name" />
+				<span class="error">이름을 입력하세요</span>
 			</li>
 			
 			<li class="inputList">
-			<span class="inputTitle">부서번호</span>
-			<input type="text" class="frmInput deptNoInfo" name="FK_departmentNo" placeholder="6자리 숫자 조합" maxlength="6"/>
-			<!-- <span class="errorMsg">*부서번호를 입력해주세요!</span>nth-child(4)
-			<span class="errorMsg2">*부서번호는 6자리로 입력해주세요!</span>nth-child(3) : 숫자가 6자리 미만이면 나올 메세지 -->
+				<span class="inputTitle">부서번호</span>
+	<!-- 		<input type="text" class="frmInput deptNoInfo" name="FK_departmentNo" placeholder="6자리 숫자 조합" maxlength="6"/> -->
+				<select name="departmentNo">
+					<option value="defaultselect">부서번호를 선택하세요</option>
+					<option value="100002" class="deptNoAndName">100002(영업부)</option>
+					<option value="100003" class="deptNoAndName">100003(총무부)</option>
+					<option value="100004" class="deptNoAndName">100004(물류부)</option>
+					<option value="100005" class="deptNoAndName">100004(관리부)</option>
+				</select>
+			
 			</li>
 			
 			<li class="inputList">
 			<span class="inputTitle">직위번호</span>
 			<input type="text" class="frmInput positionNoInfo" name="FK_positionNo" placeholder="6자리 숫자 조합" maxlength="6"/>
-			<!-- <span class="errorMsg">*직위번호를 입력해주세요!</span>nth-child(5)
-			<span class="errorMsg2">*직위번호는 6자리로 입력해주세요!</span>nth-child(4) : 숫자가 6자리 미만이면 나올 메세지 -->
-			</li>
 			
 			<li class="inputList">
 			<span class="inputTitle">팀번호</span>
 			<input type="text" class="frmInput teamNoInfo" name="FK_teamNo" placeholder="6자리 숫자 조합" maxlength="6"/>
-			<!-- <span class="errorMsg">*팀번호를 입력해주세요!</span>nth-child(6)
-			<span class="errorMsg2">*팀번호는 6자리로 입력해주세요!</span>nth-child(5) : 숫자가 6자리 미만이면 나올 메세지 -->
 			</li>
 			
+			
 			<li class="inputList">
-			<input type="hidden" class="frmInput directCallInfo" name="directCall" placeholder="'-'없이 숫자로만 입력하세요" value="000000"/>
-			<!-- <span class="errorMsg">*내선번호를 입력해주세요!</span>nth-child(7) -->
+			<input type="hidden" class="frmInput directCallInfo" name="directCall" placeholder="'-'없이 숫자로만 입력하세요" value="1"/>
 			</li>
+			
 			
 			<li class="inputList">
 			<span class="inputTitle">보안등급</span>
 			<input type="text" class="frmInput securityInfo" name="securityLevel" placeholder="1~10 중 골라주세요."/> 
-			<!-- <span class="errorMsg">*보안등급을 입력해주세요!</span>nth-child(8) -->
 			</li>
 			
 			<li class="inputList">
 			<span class="inputTitle">이메일</span>
-			<input type="text" class="frmInput emailInfo" name="email" />
-			<!-- <span class="errorMsg">*이메일을 입력해주세요!</span>nth-child(9) -->
+			<input type="text" class="frmInput emailInfo" name="email" placeholder="예) honggildong@naver.com"/>
+			<span class="error">이메일의 형식에 맞춰서 입력하세요</span>
 			</li>
 			
 			<li class="inputList">
 			<span class="inputTitle">전화번호</span>
 			<input type="text" class="frmInput mobileInfo" name="mobile" placeholder="'-'없이 숫자로만 입력하세요"/>
-		<!-- 	<span class="errorMsg">*전화번호를 입력해주세요!</span>nth-child(10) -->
 			</li>
 			
 			<li class="inputList">
 			<span class="inputTitle">은행</span>
 			<input type="text" class="frmInput bankInfo" name="bank" />
-			<!--<span class="errorMsg">*은행을 입력해주세요!</span> nth-child(11) -->
 			</li>
 			
 			<li class="inputList">
 			<span class="inputTitle">계좌</span>
 			<input type="text" class="frmInput accountInfo" name="account" placeholder="'-'없이 숫자로만 입력하세요"/>
-			<!--<span class="errorMsg">*계좌번호를 입력해주세요!</span> nth-child(12) -->
 			</li>
 			
 			<li class="inputList">
 			<span class="inputTitle">입사일</span>
 			<input type="text" class="frmInput registerInfo" name="registerDate" placeholder="'-'없이 숫자로만 입력하세요"/>
-			<!--<span class="errorMsg">*입사일을 입력해주세요!</span> nth-child(13) -->
 			</li>
 			
 			<li class="inputList">
 			<span class="inputTitle">주소</span>
 			<input type="text" class="frmInput addressInfo" name="address"/>
-			<!--<span class="errorMsg">*주소를 입력해주세요!</span> nth-child(14) -->
 			</li>
 			
 			<li class="inputList">
 			<span class="inputTitle">생년월일</span>
 			<input type="text" class="frmInput birthInfo" name="birth" placeholder="'-'없이 숫자로만 입력하세요"/>
-			<!--  <span class="errorMsg">*생년월일을 입력해주세요!</span>- last-child -->
 			</li>
 			
 			<!-- status 기본적으로 상태 1로 맞춘다. -->
