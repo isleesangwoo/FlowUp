@@ -151,7 +151,7 @@ public class ReservationController {
 	public String middleTapInfo(@RequestParam String assetNo) {
 		
 		List<Map<String, String>> middleTapInfoList = service.middleTapInfo(assetNo);
-		System.out.println("ajax 들어옴?????????????" + middleTapInfoList.size());
+		// System.out.println("ajax 들어옴?????????????" + middleTapInfoList.size());
 		
 		JSONArray jsonArr = new JSONArray();  //  []
 		
@@ -159,18 +159,45 @@ public class ReservationController {
 			
 			for(Map<String,String> listMap : middleTapInfoList) {
 				JSONObject jsonObj = new JSONObject();  //  {}
-				jsonObj.put("assetReservationNo", listMap.get("assetReservationNo"));
+				jsonObj.put("assetInformationNo", listMap.get("assetInformationNo"));
 				jsonObj.put("fk_assetDetailNo", listMap.get("fk_assetDetailNo"));
-				jsonObj.put("fk_employeeNo", listMap.get("fk_employeeNo"));
-				jsonObj.put("reservationStart", listMap.get("reservationStart"));
-				jsonObj.put("reservationEnd", listMap.get("reservationEnd"));
-				jsonObj.put("reservationDay", listMap.get("reservationDay"));
+				jsonObj.put("fk_assetNo", listMap.get("fk_assetNo"));
+				jsonObj.put("InformationTitle", listMap.get("InformationTitle"));
+				jsonObj.put("InformationContents", listMap.get("InformationContents"));
 				
 				jsonArr.put(jsonObj);
 			} // end of for --------------
 		}
 		
 		return jsonArr.toString();
+	}
+	
+	
+	
+	@PostMapping("addFixtures")
+	@ResponseBody
+	public String addFixtures(@RequestParam String str_InformationTitle
+							 ,@RequestParam String fk_assetNo) {
+		
+		Map<String, Object> paraMap = new HashMap<>();
+		
+		String[] arr_InformationTitle = str_InformationTitle.split(",");
+		
+		paraMap.put("fk_assetNo", fk_assetNo);
+		paraMap.put("arr_InformationTitle", arr_InformationTitle);
+		
+		int result = service.addFixtures(paraMap); // 비품명을 추가해주는 메소드
+		
+		JSONObject jsonObj = new JSONObject();  //  {}
+		
+		if(result == 1) {
+			jsonObj.put("result", 1);
+		}
+		else {
+			jsonObj.put("result", 0);
+		}
+		
+		return jsonObj.toString();
 	}
 	
 	

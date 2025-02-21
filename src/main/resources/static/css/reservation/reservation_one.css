@@ -157,3 +157,16 @@ a {
     text-wrap: nowrap;
     border-color: #eee;
 }
+
+.bottom_btn_box{
+	width: 50%; 
+	display: flex; 
+	justify-content: center; 
+	gap: var(--size8);
+	margin: auto; 
+	padding-top: var(--size24);
+}
+
+.top_btn_box{
+	margin-bottom: var(--size12);
+}

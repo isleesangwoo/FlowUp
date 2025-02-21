@@ -34,6 +34,9 @@ public interface ReservationDAO {
 	// 대분류 하나에 해당하는 자산 정보를 select 해주는 메소드
 	List<Map<String, String>> middleTapInfo(String assetNo);
 
+	// 비품명을 추가해주는 메소드
+	int addFixtures(Map<String, Object> paraMap);
+
 	
 
 }

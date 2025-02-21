@@ -78,6 +78,14 @@ public class ReservationService_imple implements ReservationService {
 	}
 
 
+	// 비품명을 추가해주는 메소드
+	@Override
+	public int addFixtures(Map<String, Object> paraMap) {
+		int result = dao.addFixtures(paraMap);
+		return result;
+	}
+
+
 	
 	
 }
