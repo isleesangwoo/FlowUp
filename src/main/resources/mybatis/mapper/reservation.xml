@@ -62,19 +62,43 @@
 
 
 
-
+	<!-- 대분류 하나를 삭제해주는 메소드 -->
 	<delete id="deleteAsset" parameterType="String">
 		delete from tbl_asset
 		where assetNo = #{assetNo}
 	</delete>
 	
 	
-	
+	<!-- 하나에 해당하는 대분류를 조회해주는 메소드 -->
 	<select id="assetOneSelect" resultType="AssetVO" parameterType="String">
 		select assetNo, assetTitle, assetInfo, assetRegisterday, assetChangeday, classification, asseGroupno, asseDepthno
 		from tbl_asset
 		where assetNo = #{assetNo}
 	</select>
+	
+	
+	
+	<resultMap type="HashMap" id="middleTapInfo_Map">
+	   	<result property="assetInformationNo"  column="assetInformationNo"  javaType="String"/>
+	   	<result property="fk_assetDetailNo"    column="fk_assetDetailNo" 	javaType="String"/>
+	   	<result property="fk_assetNo"          column="fk_assetNo" 		    javaType="String"/>
+	   	<result property="InformationTitle"    column="InformationTitle" 	javaType="String"/>
+	   	<result property="InformationContents" column="InformationContents" javaType="String"/>
+   </resultMap>
+	<select id="middleTapInfo" parameterType="String" resultMap="middleTapInfo_Map">
+		select assetInformationNo, fk_assetDetailNo, fk_assetNo, InformationTitle, InformationContents
+		from tbl_assetInformation
+		where fk_assetNo = #{assetNo}
+	</select>
+	
+	
+	<!-- 비품명을 추가해주는 메소드 -->
+	<insert id="addFixtures" parameterType="HashMap">
+		<foreach collection="arr_InformationTitle" index="i" open="(" separator="," close=")">
+			insert into tbl_assetInformation(assetInformationNo, fk_assetDetailNo, fk_assetNo, InformationTitle, InformationContents)
+			values(seq_assetInformationNo.nextval,dasdsa  , #{fk_assetNo}, ${arr_InformationTitle[i]}, dasdsa)
+		</foreach>
+	</insert>
 
 </mapper>
 

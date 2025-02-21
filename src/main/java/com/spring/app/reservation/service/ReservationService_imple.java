@@ -70,6 +70,22 @@ public class ReservationService_imple implements ReservationService {
 	}
 
 
+	// 대분류 하나에 해당하는 자산 정보를 select 해주는 메소드
+	@Override
+	public List<Map<String, String>> middleTapInfo(String assetNo) {
+		List<Map<String, String>> middleTapInfoList = dao.middleTapInfo(assetNo);
+		return middleTapInfoList;
+	}
+
+
+	// 비품명을 추가해주는 메소드
+	@Override
+	public int addFixtures(Map<String, Object> paraMap) {
+		int result = dao.addFixtures(paraMap);
+		return result;
+	}
+
+
 	
 	
 }
