@@ -67,6 +67,14 @@
 		delete from tbl_asset
 		where assetNo = #{assetNo}
 	</delete>
+	
+	
+	
+	<select id="assetOneSelect" resultType="AssetVO" parameterType="String">
+		select assetNo, assetTitle, assetInfo, assetRegisterday, assetChangeday, classification, asseGroupno, asseDepthno
+		from tbl_asset
+		where assetNo = #{assetNo}
+	</select>
 
 </mapper>
 
