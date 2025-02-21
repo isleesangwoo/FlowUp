@@ -241,14 +241,45 @@ public class CommuteController {
 	@ResponseBody
 	public List<Map<String, String>> getMontWorkInfo(@RequestParam Map<String, String> paramap) {
 		
-		System.out.println("확인용 selectMonth : " + paramap.get("selectMonth")); 
-		
 		List<Map<String, String>> mapList = service.getMontWorkInfo(paramap);
-		
-		System.out.println("확인용 mapList : " + mapList); 
 		
 		return mapList;
 	}
+	
+	
+	@GetMapping("getWorktime")
+	@ResponseBody
+	public List<Map<String, String>> getWorktime(@RequestParam Map<String, String> paramap) {
+		
+		List<Map<String, String>> mapList = service.getWorktime(paramap);
+		
+		
+		
+		
+		
+		return mapList;
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

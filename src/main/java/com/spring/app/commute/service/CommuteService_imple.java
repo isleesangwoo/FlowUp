@@ -70,6 +70,12 @@ public class CommuteService_imple implements CommuteService {
 		return mapList;
 	}
 
+	@Override
+	public List<Map<String, String>> getWorktime(Map<String, String> paramap) {
+		List<Map<String, String>> mapList = dao.getWorktime(paramap);
+		return mapList;
+	}
+
 
 	
 

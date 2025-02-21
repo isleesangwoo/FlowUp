@@ -32,6 +32,9 @@ public interface CommuteService {
 	// 1달치 
 	List<Map<String, String>> getMontWorkInfo(Map<String, String> paramap);
 
+	// 서머리에 출력될 주간 근무시간 가져오기
+	List<Map<String, String>> getWorktime(Map<String, String> paramap);
+
 
 
 	
