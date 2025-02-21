@@ -541,13 +541,13 @@
             
             <div style="margin-top:6px;">
             
-            	<div id="btn_status" style="font-size:14pt; font-weigt:bold; border:solid 1px #21255b; text-align:center; border-radius: 6px; margin-bottom:3px; height:35px;">업무시작전</div>
+            	<div id="btn_status" class="hhover" style="font-size:14pt; font-weigt:bold; border:solid 1px #21255b; text-align:center; border-radius: 6px; margin-bottom:3px; height:35px;">업무시작전</div>
             	
             	<ul id="btn_status_list" style="list-style: none; display: none; text-align:center; border:solid 1px #21255b; border-radius: 6px; ">
-            		<li style="margin-top:3px; margin-bottom:3px;">내근</li>
-            		<li style="margin-top:3px; margin-bottom:3px;">외근</li>
-            		<li style="margin-top:3px; margin-bottom:3px;">파견</li>
-            		<li style="margin-top:3px; margin-bottom:3px;">출장</li>
+            		<li style="margin-top:3px; margin-bottom:3px;" class="hhover">내근</li>
+            		<li style="margin-top:3px; margin-bottom:3px;" class="hhover">외근</li>
+            		<li style="margin-top:3px; margin-bottom:3px;" class="hhover">파견</li>
+            		<li style="margin-top:3px; margin-bottom:3px;" class="hhover">출장</li>
             	</ul>
             </div>
             
