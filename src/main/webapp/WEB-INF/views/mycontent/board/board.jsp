@@ -12,6 +12,7 @@
 
 <script>
 	var ctxPath = "<%= request.getContextPath() %>";
+	const goBackURL = "<%= request.getAttribute("goBackURL") %>";
 </script>
 <%-- 각자 페이지에 해당되는 js 연결 --%>
 <script src="<%=ctxPath%>/js/board/board.js"></script>
@@ -70,26 +71,36 @@
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
         </div>
         
+        
         <%-- 이곳에 각 해당되는 뷰 페이지를 작성 시작 --%>
 		<div id="postContainer"> <!-- 게시글 보여주는 요소 전체 박스-->
-			<div style="width:80%;">
-				<div class="onePostElmt">
-					<div style="display: flex; justify-content: space-between;">
-						<div class="article_wrap">
-							<span id="postBoard">전사게시판</span>
-							<span id="postSubject">게시글의 제목이 들어올 자리</span><span id="postCommentCount">[댓개수] 5</span>
-							<span id="postContent">게시글의 내용이 들어올 자리게시글의 내용이 들어올 자리게시글의 내용이 들어올 자리게시글의 내용이 들어올 자리게시글의 내용이 들어올 자리게시글의 내용이 들어올 자리</span>
+			<div style="width:80%; border: solid 1px orange;">
+			
+				<c:forEach var="post" items="${postAllList}">
+					<div class="onePostElmt">
+						<div style="display: flex; justify-content: space-between;">
+							<div class="article_wrap">
+								<span class="postBoard">${post.boardvo.boardName}</span>
+								<span onclick="goView('${post.postNo}')">
+									<span class="postSubject">${post.subject}</span><span class="postCommentCount">[댓개수] ${post.commentCount}</span>
+									<span class="postContent">${post.content}</span>
+								</span>
+							</div>
+							<div>
+								<div class="postLikeBtn"><i class="fa-regular fa-heart"></i></div>
+								<div class="likeCount">10</div> <!-- 좋아요도 조인해야긋네..~ -->
+							</div>
 						</div>
-						<div>
-							<div id="postLikeBtn">❤️</div>
-							<div id="likeCount">10</div>
-						</div>
+						
+						<span id="profileImg">프사</span><!-- 프사도 조인해야긋네~.. -->
+						<span id="postCreateBy">${post.name}</span>
+						<span id="postCreateAt">${post.regDate}</span>
 					</div>
-					
-					<span id="profileImg">프사</span>
-					<span id="postCreateBy">글작성자</span>
-					<span id="postCreateAt">2025-06월-24일(월) 13:07</span>
-				</div>
+				</c:forEach>
+				<%-- === #103. 페이지바 보여주기 === --%>
+			    <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+			    	${requestScope.pageBar}
+			    </div>
 			</div>
 			
 			<%-- 게시판 별 게시글 조회 --%>
@@ -111,6 +122,12 @@
         
     </div>
     <!-- 오른쪽 바 -->
+
+<!-- onClick="goView" 로 클린된 함수에 폼을 같이 넘겨주기위함. 함수에서 폼의 input에 값을 넣어줌.-->    
+<form name="goViewFrm">
+   <input type="hidden" name="postNo" />
+   <input type="hidden" name="goBackURL" />
+</form>	     
     
 	
 	

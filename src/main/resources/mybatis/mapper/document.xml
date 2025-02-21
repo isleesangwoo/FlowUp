@@ -64,6 +64,14 @@
 	</select>
 	
 	
+	<!-- 조직도에 뿌려주기 위한 사원 목록 가져오기 -->
+	<select id="getEmployeeList" resultType="EmployeeVO">
+		select employeeNo, departmentName, FK_departmentNo, name, securityLevel
+		from tbl_employee E JOIN tbl_department D
+		ON FK_departmentNo = departmentNo
+		order by FK_departmentNo, securityLevel
+	</select>
+	
 	
 	
 	

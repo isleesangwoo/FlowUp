@@ -29,6 +29,8 @@ public interface CommuteDAO {
 
 	List<DepartmentVO> getDepInfo();
 
+	List<Map<String, String>> getMontWorkInfo(Map<String, String> paramap);
+
 
 
 }

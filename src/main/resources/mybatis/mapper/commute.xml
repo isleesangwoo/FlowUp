@@ -46,6 +46,23 @@
    		from tbl_department
    		where departmentNo != 100000
    	</select>
+   	
+   	
+   	
+   	<resultMap type="HashMap" id="getMontWorkInfoMap">
+   		<result property="startTime" column="startTime" javaType="String" />
+   		<result property="endTime" column="endTime" javaType="String" />
+   	</resultMap>
+   	<select id="getMontWorkInfo" parameterType="HashMap" resultMap="getMontWorkInfoMap">
+   		select nvl(to_char(startTime, 'yyyy-mm-dd hh24:mi'), '-') as startTime, nvl(to_char(endTime, 'yyyy-mm-dd hh24:mi'), '-') as endTime
+   		from tbl_commute
+   		where fk_employeeNo = #{fk_employeeNo} 
+   			  and (starttime BETWEEN to_date(#{selectMonth}, 'yyyy-mm-dd') and add_months(to_date(#{selectMonth}, 'yyyy-mm-dd'), 1)-0.00001)
+   	</select>   	
+   	
+   	
+   	
+   	
 </mapper>
 
 

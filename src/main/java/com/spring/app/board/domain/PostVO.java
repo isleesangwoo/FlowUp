@@ -15,6 +15,8 @@ public class PostVO {
 	private String isNotice;           // 공지글 여부 (1: 공지글, 0: 일반글)
 	private String noticeEndDate ;     // 공지사항 종료일 (공지글일 경우 사용)
 	
+	private BoardVO boardvo; // 조인을 위해
+	
 	
 	public String getPostNo() {
 		return postNo;
@@ -94,5 +96,16 @@ public class PostVO {
 	public void setNoticeEndDate(String noticeEndDate) {
 		this.noticeEndDate = noticeEndDate;
 	}
+	
+	
+	public BoardVO getBoardvo() {
+		return boardvo;
+	}
+	public void setBoardvo(BoardVO boardvo) {
+		this.boardvo = boardvo;
+	}
+	
+	
+	
 	
 }

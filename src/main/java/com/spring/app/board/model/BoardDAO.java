@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.spring.app.board.domain.BoardVO;
+import com.spring.app.board.domain.PostVO;
 
 @Mapper
 public interface BoardDAO {
@@ -35,7 +36,20 @@ public interface BoardDAO {
 	List<Map<String, String>> getAccessibleBoardList(String employeeNo);
 
 	// 게시글 등록하기
-	int addPost();
+	int addPost(PostVO postvo);
+
+	// 게시판 메인 페이지에 뿌려줄 모든 게시글 조회
+	List<PostVO> selectAllPost(Map<String, String> paraMap);
+
+	// 총 게시물 건수 (totalCount)
+	int getTotalCount();
+	
+	// 게시글 하나 조회하기
+	PostVO goViewOnePost(Map<String, String> paraMap);
+
+	// 글조회수 1증가 하기 
+	int increase_readCount(String string);
+
 
 
 }

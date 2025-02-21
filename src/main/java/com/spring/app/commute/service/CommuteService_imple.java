@@ -64,6 +64,12 @@ public class CommuteService_imple implements CommuteService {
 		return dvoList;
 	}
 
+	@Override
+	public List<Map<String, String>> getMontWorkInfo(Map<String, String> paramap) {
+		List<Map<String, String>> mapList = dao.getMontWorkInfo(paramap);
+		return mapList;
+	}
+
 
 	
 

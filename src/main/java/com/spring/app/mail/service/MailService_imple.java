@@ -7,7 +7,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.app.board.domain.BoardVO;
 import com.spring.app.board.model.BoardDAO;
+import com.spring.app.mail.domain.MailVO;
 import com.spring.app.mail.model.MailDAO;
 
 
@@ -19,11 +21,15 @@ public class MailService_imple implements MailService {
 	@Autowired
 	private MailDAO dao;
 
+	// 전체 메일
 	@Override
-	public List<Map<String, String>> test() {
-		List<Map<String, String>> testList = dao.test();
-		return testList;
+	public List<MailVO> mailListAll() {
+
+		List<MailVO> mailList = dao.mailListAll();
+		
+		return mailList;
 	}
+
 
 	
 }

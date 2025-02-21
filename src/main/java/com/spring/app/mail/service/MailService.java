@@ -1,11 +1,15 @@
 package com.spring.app.mail.service;
 
 import java.util.List;
-import java.util.Map;
+
+import com.spring.app.mail.domain.MailVO;
 
 public interface MailService {
 
-	List<Map<String, String>> test();
+	// 전체 메일
+	List<MailVO> mailListAll();
 
 	
+	
+
 }

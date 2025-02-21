@@ -23,9 +23,9 @@
 	}
 	
 	.approval_line_modal_container {
+		text-align: left;
 		border-radius: 3%;
 		display: none;
-		text-align: center;
 		position: fixed;
 		min-width: 600px;
 		min-height: 300px;
@@ -33,11 +33,16 @@
 		height: 60vh;
 		z-index: 11;
 		top: 50%;
-	    left: 50%;
-	    transform: translate(-50%, -50%);
-	    background-color: #fff;
-	    overflow: hidden;
+		left: 50%;
+		transform: translate(-50%, -50%); 
+		background-color: #fff;
+		overflow: hidden;
 	}
+	
+	.closed {
+		display: none;
+	}
+	
 	
 </style>
 
@@ -45,18 +50,57 @@
 	
 	$(document).ready(function(){
 	
-		$('#approve_line').click(e=>{
+		// 결재 정보 버튼을 눌렀을 때
+		$('#approval_line_btn').click(e=>{
 
-	        $('#approve_line_modal').fadeIn();
+	        $('#approval_line_bg').fadeIn();
 			$('.approval_line_modal_container').css({
 				'display':'block'
 			})
+			
+			// 조직도에 뿌려주기 위한 사원 목록 가져오기
+			$.ajax({
+				url:"<%= ctxPath%>/document/getEmployeeList",
+				dataType:"json",
+				success: function(json){
+					let departmentName = json[0].departmentName;
+					let v_html = `<ul><li class='departmentName'>\${departmentName}</li><ul class='closed ml-1'>`;
+					
+					$.each(json, function(index, item){
+						if(departmentName == item.departmentName) {
+							v_html += `<li>\${item.name}</li>`;
+						}
+						else {
+							departmentName = item.departmentName
+							v_html += `</ul><li class='departmentName'>\${departmentName}</li><ul class='closed ml-1'><li>\${item.name}</li>`;
+						}
+					});
+					
+					v_html += `</ul></ul>`;
+					
+					$("div#approval_line").html(v_html);
+					
+					 
+					
+				},
+				error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			});
 	  
 	    }) // end of $('#goMail').click(e=>{})-----------
+	    
+		$("div#approval_line").on('click', "li.departmentName", function(e) {
+		    	console.log($(e.target).html());
+		    	$(e.target).next().toggle('closed');
+			
+		});
+	    
+	   
 
 	    $('.modal_bg:not(.modal_container_document)').click(e=>{
 
-	        $('#approve_line_modal').fadeOut();
+	        $('#approval_line_bg').fadeOut();
 	        $('.approval_line_modal_container').css({
 	        	'display':''
 			})
@@ -65,7 +109,7 @@
 	    
 		$('.close').click(e=>{
 			
-			$('#approve_line_modal').fadeOut();
+			$('#approval_line_modal').fadeOut();
 			$('.approval_line_modal_container').css({
 				'width': '0%'
 			})
@@ -210,22 +254,39 @@
 	
 	
 	<!-- 결재라인 모달 -->
-	<div id="approve_line_modal" class="modal_bg">
+	<div id="approval_line_bg" class="modal_bg">
 	</div>
-	<div class="approval_line_modal_container">
-		<p>hello world</p>
+	<div id="approval_line_container" class="approval_line_modal_container">
+		<div>
+			<h1>결재 정보</h1>
+		</div>
+		<div>
+			<span>결재선</span>
+			<div id="approval_line_content" class="approval_line_modal_content">
+				<div>
+					<span>조직도</span>
+				</div>
+				<div>
+					<input type="text" />
+				</div>
+				<div id="approval_line" class="approval_line">
+				</div>
+			</div>
+		</div>
+		<div>
+		</div>
 	</div>
 		
 
-    <!-- 전자결재작성 폼 -->
+    <!-- 휴가신청서 폼 -->
 	
-	
+	<div>
 		<h1>휴가신청서</h1>
 		<button onclick="annualDraft()">결재요청</button>
 		<button onclick="saveTemp()">임시저장</button>
 		<button>미리보기</button>
-		<button id="approve_line">결재 정보</button>
-		
+		<button id="approval_line_btn">결재 정보</button>
+	</div>
 		<div style="border: solid 1px gray">
 			<form name="annualDraftForm">
 				<input type="hidden" name="documentType" value="휴가신청서" />
