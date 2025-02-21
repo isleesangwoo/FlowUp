@@ -216,16 +216,6 @@ button {
   text-align: left;
 }
 
-/* 파일 첨부 영역 */
-.file-upload-area {
-  position: relative;
-  padding: 10px;
-  max-height: 300px;
-  overflow-y: auto;
-  font-size: 14px;
-  color: #333;
-}
-
 /* 버튼 + 용량 문구 한 줄 배치 */
 .file-btn-group {
   display: flex;
@@ -278,35 +268,60 @@ button {
 
 /* 파일첨부 공간 */
 #writeAreaTable {
-  width: 100%;
-  border-collapse: collapse; /* 셀 경계 겹치기(옵션) */
-  table-layout: fixed;       /* 열 너비를 균일하게 처리(옵션) */
+	width: 100%;
+	border-collapse: collapse; /* 셀 경계 겹치기(옵션) */
+	table-layout: fixed;       /* 열 너비를 균일하게 처리(옵션) */
 }
 
 #writeAreaTable th {
-  width: 100px; /* 고정 너비 */
+	width: 100px; /* 고정 너비 */
 }
 
 #writeAreaTable td {
-  width: auto; /* 남은 공간은 td가 차지하게 함 */
+	width: auto; /* 남은 공간은 td가 차지하게 함 */
 }
 
-#mailWriteReference {
-	padding-left: 10px;
+#writeAreaTable button {
+	margin-right: 8px;
+	padding: 2px 8px;
+	background-color: transparent;
+	border: 1px solid #ddd;
+	color: black;
+	cursor: pointer;
+	font-size: 14px;
+}
+
+
+
+#addrWrite {
+    vertical-align: top;
+    margin-top: 0px;
+    min-height: 13px;
+    /* height: 13px; */
+    height: 22px;
+    line-height: 15px;
+    border: 0 none;
+    padding: 3px;
+    resize: none;
+    overflow: hidden;
+    box-shadow: none;
+    font-size: 13px;
 }
 
 #mailWriteTitle {
-	padding-left: 10px;
+	padding: 4px 0 0 4px;
 }
 
 #mailWriteTitleBox {
-	width: 100%;
+	width: 99%;
+	
+	border: 1px solid #ddd;
 }
 
 /* 파일첨부 영역 전체 */
 .file-upload-area {
   position: relative;
-  padding: 10px;
+  padding: 4px;
   max-height: 300px;
   overflow-y: auto;
   font-size: 14px;
@@ -639,6 +654,7 @@ button {
 #right-content {
     text-align: right;
     gap: 40px; /* 간격 조정 */
+    width: 200px;
 }
 
 #right-content span {
@@ -648,3 +664,195 @@ button {
 }
 
 
+
+
+
+
+
+
+#writeArea tr:nth-child(2) {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+}
+
+#mailWriteReference {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    padding: 4px 12px 4px 4px;
+    vertical-align: inherit;
+    margin-left: 20px;
+}
+
+#mailWriteReferenceDiv {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+#addrInput {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    list-style: none;
+    line-height: 21px;
+    margin: 0;
+    padding: 0;
+}
+
+#addrWrap {
+    font-size: 14px;
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    padding: 0 2px;
+    line-height: 30px;
+    min-height: 24px;
+    margin-right: 62px;
+}
+
+.nameTag {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    line-height: 30px;
+    padding: 0;
+    list-style: none;
+    overflow: hidden;
+    margin: 1px 100px 0 0;
+}
+
+.addrCreate {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    list-style: none;
+    display: inline-block;
+    float: left;
+    height: 22px!important;
+    border: 0 !important;
+    background: transparent;
+    padding: 0 !important;
+    border-radius: 2px;
+    margin: 1px 1px 1px 0;
+    line-height: 21px;
+}
+
+.addrInput {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    list-style: none;
+    line-height: 21px;
+    margin: 0;
+    padding: 0;
+}
+
+.addrWrite {
+    vertical-align: top;
+    margin-top: 0px;
+    min-height: 13px;
+    /* height: 13px; */
+    height: 22px;
+    line-height: 15px;
+    border: 0 none;
+    padding: 3px;
+    resize: none;
+    overflow: hidden;
+    box-shadow: none;
+    font-size: 13px;
+}
+
+#addrSelect {
+    border-collapse: collapse;
+    color: #333;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    font-size: 13px;
+    border-radius: 2px;
+    white-space: nowrap;
+    vertical-align: middle;
+    position: absolute;
+    top: 1px;
+    right: 63px;
+    background: transparent;
+    height: 25px;
+    border: 0;
+    width: 90px;
+}
+
+.btnWrap {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    cursor: pointer;
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 22px;
+}
+
+.btnAddr {
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    color: #333;
+    line-height: 26px;
+    background: #fff;
+    border: 1px solid #ddd;
+    font-size: 13px;
+    top: 0;
+    text-align: center;
+    position: static;
+    padding: 0 8px!important;
+    width: auto;
+    font-weight: normal;
+    height: 25px;
+    right: 62px;
+    border-radius: 0;
+}
+
+.text {
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    cursor: pointer;
+    color: #333;
+    line-height: 26px;
+    text-align: center;
+    font-weight: normal;
+    font-size: 13px;
+    display: inline-block;
+    padding: 0;
+}

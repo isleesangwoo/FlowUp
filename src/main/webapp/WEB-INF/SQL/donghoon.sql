@@ -731,10 +731,24 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
--- Sequence BOARDSEQ이(가) 생성되었습니다.
+
 
 select *
 from tbl_board ;
+
+insert into tbl_mail(mailNo, fk_employeeNo, subject, content)
+values(10001, 100020, '메일 테스트', '안녕하세요 메일입니다');
+
+select mailNo, fk_employeeNo, subject, content
+from tbl_mail;
+
+select *
+from tbl_mail;
+
+select *
+from tbl_employee;
+
+commit;
 
 CREATE TABLE tbl_mail
 (mailNo           NUMBER                          NOT NULL -- 메일번호
@@ -755,30 +769,15 @@ CREATE TABLE tbl_mail
 ,constraint ck_tbl_mail_importantStatus check( importantStatus in(1,0) ) 
 );
 
-insert into tbl_mail(mailNo, fk_employeeNo, subject, content)
-values(10001, 100020, '메일 테스트', '안녕하세요 메일입니다');
-
-select mailNo, fk_employeeNo, subject, content
-from tbl_mail;
-
-select *
-from tbl_mail;
-
-select *
-from tbl_employee;
-
-commit;
-
-
 CREATE TABLE tbl_referenced
-(pk_mailNo      number        NOT NULL -- 참조 이메일번호
+(mailNo         number        NOT NULL -- 참조 이메일번호
 ,reference      NUMBER(1)     NOT NULL -- 참조수신여부 / 0:수신자, 1:참조자
 ,referenceName  VARCHAR2(20)  NOT NULL -- 참조/수신자이름
 ,referenceMail  VARCHAR2(50)  NOT NULL -- 참조/수신자이메일
 ,fk_mailNo      NUMBER        NOT NULL -- 메일번호
 ,fk_adrsBNo     NUMBER        NOT NULL -- 주소록 고유번호
 
-,constraint pk_tbl_referenced primary key (reference)
+,constraint pk_tbl_referenced_mailNo primary key (mailNo)
 ,constraint fk_tbl_tag_fk_mailNo foreign key(fk_mailNo) references tbl_mail(pk_mailNo)
 ,constraint fk_tbl_tag_fk_adrsBNo foreign key(fk_adrsBNo) references tbl_addressBook(pk_mailNo)
 );

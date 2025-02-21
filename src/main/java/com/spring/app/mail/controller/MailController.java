@@ -21,7 +21,7 @@ public class MailController {
 	@Autowired // Type 에 따라 알아서 Bean 을 주입해준다.
 	private MailService service;
 	
-	@GetMapping("list") // 메일 목록
+	@GetMapping("") // 메일 목록
 	public ModelAndView list(ModelAndView mav, HttpServletRequest request) {
 		
 		List<MailVO> mailList = null;
