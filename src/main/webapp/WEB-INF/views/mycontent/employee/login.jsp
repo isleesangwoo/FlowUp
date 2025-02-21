@@ -19,9 +19,13 @@
    
    
 <script type="text/javascript">
+
+
+<%-- 유효성 검사 시작 --%>
+<%-- 유효성 검사 시작 --%>
+
     $(document).ready(function(){
-        /* $("div.errorMsg").hide(); */
-        
+        /* $("div.errorMsg").hide(); */  
         const func_Login = function(){
             const userid = $("input#userid").val();
             const pwd = $("input#pwd").val();

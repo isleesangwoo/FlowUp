@@ -3,7 +3,7 @@ package com.spring.app.employee.service;
 
 import java.io.UnsupportedEncodingException;
 import java.security.GeneralSecurityException;
-
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -74,11 +74,11 @@ public class EmployeeService_imple implements EmployeeService {
 		
 		  if(loginuser == null) {//로그인 실패 시
 		  
-		  String message = "아이디 또는 암호가 틀립니다.";
+		  String message = "아이디 또는 암호가 비었습니다. 입력하세요";
 		  String loc ="javascript:history.back()";
 		  
 		  
-		  request.setAttribute("", loginuser);
+		  request.setAttribute("loginuser", loginuser);
 		  
 		  mav.addObject("message", message); 
 		  mav.addObject("loc", loc);
@@ -147,6 +147,14 @@ public class EmployeeService_imple implements EmployeeService {
 	public int insert_employee(EmployeeVO empvo) {
 		int insert_employee = dao.insert_employee(empvo);
 		return insert_employee;
+	}
+
+
+	// === 부서번호, 부서명 알아오기 === //
+	@Override
+	public List<Map<String, String>> departmentno_select() {
+		List<Map<String, String>> mapList = dao.departmentno_select();
+		return mapList;
 	}
 
 	

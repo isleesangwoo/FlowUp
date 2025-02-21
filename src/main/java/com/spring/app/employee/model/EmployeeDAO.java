@@ -1,5 +1,6 @@
 package com.spring.app.employee.model;
 
+import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -17,5 +18,8 @@ public interface EmployeeDAO {
 
 	//회원 추가
 	int insert_employee(EmployeeVO empvo);
+
+	// === 부서번호, 부서명 알아오기 === //
+	List<Map<String, String>> departmentno_select();
 	
 }

@@ -39,6 +39,18 @@
    	insert into tbl_employee(EMPLOYEENO,passwd,name,FK_DEPARTMENTNO,FK_positionNo,FK_TEAMNO,directcall,securityLevel,email,Mobile,bank,account,registerdate,address,birth)
                   values(#{employeeNo},#{passwd},#{name},#{FK_departmentNo},#{FK_positionNo},#{FK_teamNo},#{directCall},#{securityLevel},#{email},#{mobile},#{bank}, #{account},#{registerDate},#{address},#{birth})
    </insert>
+   
+   
+   <!-- === 부서번호, 부서명 알아오기 === -->
+   <resultMap type="HashMap" id="departmentno_select_Map">
+      <result property="departmentno" 	column="departmentno" 	javaType="String" />
+      <result property="departmentname" column="departmentname" javaType="String" />
+   </resultMap>
+   <select id="departmentno_select" resultMap="departmentno_select_Map">
+		select departmentno, departmentname
+		from tbl_department
+		order by departmentno asc
+   </select>
 
 </mapper>
 

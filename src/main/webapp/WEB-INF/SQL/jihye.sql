@@ -301,5 +301,17 @@ rollback;
 
 
 
+-- 내정보 수정 쿼리
+
+update tbl_employee set 
+
+--  샘 시작 ---
+select departmentno, departmentname
+from tbl_department
+order by departmentno asc;
+--  샘 끝 ---
+
+
+
 
 

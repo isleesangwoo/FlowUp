@@ -1,6 +1,7 @@
 package com.spring.app.employee.service;
 
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.web.servlet.ModelAndView;
@@ -22,6 +23,9 @@ public interface EmployeeService {
 
 	//회원추가 처리
 	int insert_employee(EmployeeVO empvo);
+
+	// === 부서번호, 부서명 알아오기 === //
+	List<Map<String, String>> departmentno_select();
 
 
 }
