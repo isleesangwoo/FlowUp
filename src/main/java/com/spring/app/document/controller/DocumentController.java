@@ -189,4 +189,15 @@ public class DocumentController {
 		
 	}
 	
+	
+	// 조직도에 뿌려주기 위한 사원 목록 가져오기
+	@GetMapping("getEmployeeList")
+	@ResponseBody
+	public List<EmployeeVO> getEmployeeList(){
+		
+		List<EmployeeVO> employeeList = service.getEmployeeList();
+		return employeeList;
+		
+	}
+	
 }

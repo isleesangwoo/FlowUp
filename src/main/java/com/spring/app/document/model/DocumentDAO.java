@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.spring.app.document.domain.DocumentVO;
+import com.spring.app.employee.domain.EmployeeVO;
 
 @Mapper
 public interface DocumentDAO {
@@ -27,6 +28,9 @@ public interface DocumentDAO {
 
 	// 부서 문서 리스트 가져오기
 	List<DocumentVO> deptDocumentList(String employeeNo);
+
+	// 조직도에 뿌려주기 위한 사원 목록 가져오기
+	List<EmployeeVO> getEmployeeList();
 
 
 
