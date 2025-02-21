@@ -10,6 +10,10 @@
       <typeAlias type="com.spring.app.commute.domain.CommuteVO" alias="CommuteVO"/>
       <typeAlias type="com.spring.app.employee.domain.DepartmentVO" alias="DepartmentVO"/>
       <typeAlias type="com.spring.app.employee.domain.EmployeeVO" alias="EmployeeVO"/>
+      <typeAlias type="com.spring.app.schedule.domain.Calendar_small_category_VO" alias="Calendar_small_category_VO"/> 
+      <typeAlias type="com.spring.app.board.domain.PostVO" alias="PostVO"/>
+      <typeAlias type="com.spring.app.document.domain.DocumentVO" alias="DocumentVO"/>
+      <typeAlias type="com.spring.app.mail.domain.MailVO" alias="MailVO"/>
    </typeAliases>
 
 </configuration>

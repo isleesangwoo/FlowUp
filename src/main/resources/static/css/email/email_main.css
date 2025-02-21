@@ -3,6 +3,10 @@
 	--size4  : clamp(4px, 0.2083vw, 200px);
 }
 
+#rigth_bar {
+	overflow-y: scroll;
+}
+
 button {
 	border: 0;
 	background-color: transparent;
@@ -97,21 +101,9 @@ button {
 }
 
 
-
-/* 현재 페이지에 이렇게 넣어주세요! */
-/*
-.mail_menu_container > ul li:nth-child(1){
-    background-color: #dae8f8 !important;
-    color: #056ac9;
-    font-weight: 600;
-}
-*/
-
 .mail_menu_container > ul li:nth-child(1) > a {
     color: #056ac9;
 }
-/* 현재 페이지에 이렇게 넣어주세요! */
-
 
 
 .mail_cnt {
@@ -180,7 +172,6 @@ button {
 
 #modal_menu_container span {
    color: black;
-   padding-right: var(--size12);
    padding-top: var(--size12);
 }
 
@@ -204,11 +195,6 @@ button {
 	padding: var(--size24);
 }
 
-#smartedit {
-	padding: 7px;
-}
-
-
 /* 테이블 전체 폭 사용 */
 .mail-form-table {
   width: 100%;
@@ -230,16 +216,6 @@ button {
   text-align: left;
 }
 
-/* 파일 첨부 영역 */
-.file-upload-area {
-  position: relative;
-  padding: 10px;
-  max-height: 300px;
-  overflow-y: auto;
-  font-size: 14px;
-  color: #333;
-}
-
 /* 버튼 + 용량 문구 한 줄 배치 */
 .file-btn-group {
   display: flex;
@@ -247,18 +223,21 @@ button {
   margin-bottom: 10px;
 }
 
-.file-btn-group button {
+/* 메일 쓰기 - 파일 첨부 버튼 3개 */
+.file-btn-group button,
+#btnReservationMail { /* 예약메일 버튼 */
   margin-right: 8px;
   padding: 6px 12px;
-  background-color: #2985db;
-  border: 1px solid #056ac9;
+  background-color: transparent;
+  border: 1px solid #ddd;
   border-radius: 4px;
-  color: #fff;
+  color: black;
   cursor: pointer;
   font-size: 14px;
 }
+
 .file-btn-group button:hover {
-  background-color: #056ac9;
+  border: 1px solid black;
 }
 
 /* 용량 표시를 오른쪽 끝으로 */
@@ -266,15 +245,6 @@ button {
   margin-left: auto;
   font-size: 13px;
   color: #333;
-}
-
-/* 드래그앤드롭 영역 */
-.file-drag-drop-zone {
-  border: 2px dashed #ddd;
-  padding: 20px;
-  text-align: center;
-  margin-bottom: 10px;
-  color: #666;
 }
 
 /* 파일 목록 */
@@ -292,55 +262,70 @@ button {
 
 
 #writeArea{
-	display: block;
-	border: 1px solid red;	
+	/* display: block; */
+	padding: var(--size22);
 }
 
 /* 파일첨부 공간 */
 #writeAreaTable {
-  width: 100%;
-  border-collapse: collapse; /* 셀 경계 겹치기(옵션) */
-  table-layout: fixed;       /* 열 너비를 균일하게 처리(옵션) */
+	width: 100%;
+	border-collapse: collapse; /* 셀 경계 겹치기(옵션) */
+	table-layout: fixed;       /* 열 너비를 균일하게 처리(옵션) */
 }
 
 #writeAreaTable th {
-  width: 80px; /* 혹은 적절한 고정 너비 */
+	width: 100px; /* 고정 너비 */
 }
 
 #writeAreaTable td {
-  width: auto; /* 남은 공간은 td가 차지하게 함 */
+	width: auto; /* 남은 공간은 td가 차지하게 함 */
+}
+
+#writeAreaTable button {
+	margin-right: 8px;
+	padding: 2px 8px;
+	background-color: transparent;
+	border: 1px solid #ddd;
+	color: black;
+	cursor: pointer;
+	font-size: 14px;
+}
+
+
+
+#addrWrite {
+    vertical-align: top;
+    margin-top: 0px;
+    min-height: 13px;
+    /* height: 13px; */
+    height: 22px;
+    line-height: 15px;
+    border: 0 none;
+    padding: 3px;
+    resize: none;
+    overflow: hidden;
+    box-shadow: none;
+    font-size: 13px;
+}
+
+#mailWriteTitle {
+	padding: 4px 0 0 4px;
+}
+
+#mailWriteTitleBox {
+	width: 99%;
+	
+	border: 1px solid #ddd;
 }
 
 /* 파일첨부 영역 전체 */
 .file-upload-area {
   position: relative;
-  padding: 10px;
+  padding: 4px;
   max-height: 300px;
   overflow-y: auto;
   font-size: 14px;
   color: #333;
-}
-
-/* 버튼 그룹 */
-.file-btn-group {
-	display: flex;
-	align-items: center;
-	margin-bottom: 10px;
-}
-
-/* 자료실, 모두삭제 버튼들 */
-.file-btn-group button {
-  margin-right: 8px;
-  padding: 6px 12px;
-  background-color: #2985db;
-  border: 1px solid #056ac9;
-  border-radius: 4px;
-  color: #fff;
-  cursor: pointer;
-  font-size: 14px;
-}
-.file-btn-group button:hover {
-  background-color: #056ac9;
 }
 
 /* 파일 사이즈 안내 문구 */
@@ -405,14 +390,6 @@ button {
 
 #mailTitle {
 	font-size: var(--size16);
-}
-
-#sendDate {
-	font-size: var(--size12);
-}
-
-#fileSize {
-	font-size: var(--size12);
 }
 
 #right_info {
@@ -481,6 +458,59 @@ button {
     border-color: #2985db;
     background-color: #2985db;
 }
+
+
+/* 메일 목록 */
+#mailTable {
+	width: 100%;
+}
+
+/* 메일함 메일 제목 */
+.mailReadTitle {
+	height: 50px;
+	vertical-align: middle;
+	table-layout: fixed;
+	width: 100%;
+}
+
+.mailReadTitle i {
+	color: #bbb;
+}
+
+.mailReadTitle:hover {
+	background-color: rgba(242, 247, 253, 0.5);
+}
+
+.mailReadTitle td {
+	box-sizing: border-box;
+	padding: 2px 8px;
+	/* display: inline-flex; */
+    align-items: center;
+    vertical-align: middle;
+}
+
+
+.mailReadTitle td:first-child {
+	width: 50px;
+	height: 40px;
+	/* display: flex; */
+	align-items: center;
+	padding-left: var(--size24);
+	vertical-align: middle;
+}
+
+.mailReadTitle td:nth-child(2) {
+	width: 110px;
+}
+
+.mailReadTitle td:nth-child(3) {
+	width: 150px;
+}
+
+.mailReadTitle td:nth-child(2) i:nth-child(2) {
+	margin: 0 8px;
+}
+
 
 #reBtn_box {
     margin-left: auto;
@@ -581,6 +611,7 @@ button {
     z-index: 11;
     background-color: #fff;
     transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+    border: 1px solid #aaa;
 }
 
 
@@ -597,4 +628,231 @@ button {
 
 #modal_bar::-webkit-scrollbar-track{
     background-color: rgba(0,0,0,0);
+}
+
+#rigth_bar::-webkit-scrollbar{
+    width: var(--size2);
+}
+  
+
+#rigth_bar::-webkit-scrollbar-thumb{
+    background-color: rgb(0, 0, 0);
+    border-radius: var(--size12); 
+}
+  
+
+#rigth_bar::-webkit-scrollbar-track{
+    background-color: rgba(0,0,0,0);
+}
+
+
+/* .mailReadTitle:nth-child(even) {
+	background-color: rgba(242, 247, 253, 0.5);
+} */
+
+/* 메일의 시간, 용량 표시 */
+#right-content {
+    text-align: right;
+    gap: 40px; /* 간격 조정 */
+    width: 200px;
+}
+
+#right-content span {
+	margin-right: 40px;
+	font-size: var(--size12);
+	color: #aaa;
+}
+
+
+
+
+
+
+
+
+#writeArea tr:nth-child(2) {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+}
+
+#mailWriteReference {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    padding: 4px 12px 4px 4px;
+    vertical-align: inherit;
+    margin-left: 20px;
+}
+
+#mailWriteReferenceDiv {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+#addrInput {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    list-style: none;
+    line-height: 21px;
+    margin: 0;
+    padding: 0;
+}
+
+#addrWrap {
+    font-size: 14px;
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    margin: 0;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    padding: 0 2px;
+    line-height: 30px;
+    min-height: 24px;
+    margin-right: 62px;
+}
+
+.nameTag {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    line-height: 30px;
+    padding: 0;
+    list-style: none;
+    overflow: hidden;
+    margin: 1px 100px 0 0;
+}
+
+.addrCreate {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    list-style: none;
+    display: inline-block;
+    float: left;
+    height: 22px!important;
+    border: 0 !important;
+    background: transparent;
+    padding: 0 !important;
+    border-radius: 2px;
+    margin: 1px 1px 1px 0;
+    line-height: 21px;
+}
+
+.addrInput {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    list-style: none;
+    line-height: 21px;
+    margin: 0;
+    padding: 0;
+}
+
+.addrWrite {
+    vertical-align: top;
+    margin-top: 0px;
+    min-height: 13px;
+    /* height: 13px; */
+    height: 22px;
+    line-height: 15px;
+    border: 0 none;
+    padding: 3px;
+    resize: none;
+    overflow: hidden;
+    box-shadow: none;
+    font-size: 13px;
+}
+
+#addrSelect {
+    border-collapse: collapse;
+    color: #333;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    font-size: 13px;
+    border-radius: 2px;
+    white-space: nowrap;
+    vertical-align: middle;
+    position: absolute;
+    top: 1px;
+    right: 63px;
+    background: transparent;
+    height: 25px;
+    border: 0;
+    width: 90px;
+}
+
+.btnWrap {
+    color: #333;
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    cursor: pointer;
+    display: inline-block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 22px;
+}
+
+.btnAddr {
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    text-decoration: none;
+    display: inline-block;
+    cursor: pointer;
+    color: #333;
+    line-height: 26px;
+    background: #fff;
+    border: 1px solid #ddd;
+    font-size: 13px;
+    top: 0;
+    text-align: center;
+    position: static;
+    padding: 0 8px!important;
+    width: auto;
+    font-weight: normal;
+    height: 25px;
+    right: 62px;
+    border-radius: 0;
+}
+
+.text {
+    white-space: normal;
+    word-break: break-all;
+    letter-spacing: -0.5px;
+    border-collapse: collapse;
+    cursor: pointer;
+    color: #333;
+    line-height: 26px;
+    text-align: center;
+    font-weight: normal;
+    font-size: 13px;
+    display: inline-block;
+    padding: 0;
 }
