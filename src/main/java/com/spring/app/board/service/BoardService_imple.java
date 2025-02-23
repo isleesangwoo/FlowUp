@@ -1,6 +1,7 @@
 package com.spring.app.board.service;
 
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -8,8 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.app.board.domain.BoardVO;
+import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.board.domain.PostVO;
 import com.spring.app.board.model.BoardDAO;
+import com.spring.app.common.FileManager;
 
 
 // === 서비스 선언 === //
@@ -19,6 +22,9 @@ public class BoardService_imple implements BoardService {
 	
 	@Autowired
 	private BoardDAO dao;
+	
+	@Autowired
+	private FileManager FileManager;
 
 	// 게시판 생성하기
 	@Override
@@ -76,10 +82,35 @@ public class BoardService_imple implements BoardService {
 		return boardList;
 	}
 	
-	// 게시글 등록하기
+	// 게시글 등록하기// 파일첨부가 있는 글쓰기 // 첨부파일이 있다면 첨부파일테이블(tbl_postFile) 테이블에 파일 정보 삽입  
 	@Override
-	public int addPost(PostVO postvo) {
-		int n = dao.addPost(postvo); 
+	public int addPost(PostVO postvo,PostFileVO postfilevo,List<Map<String, Object>> mapList) {
+		int n = dao.addPost(postvo); // 먼저 게시글 등록
+		int n2=0;
+		
+		if(n>0) { //게시글 등록이 성공했을 때만 첨부파일 등록
+			Map<String, Object> paraMap = new HashMap<>();
+			postvo = dao.getInfoPost(); // 등록되는 게시글의 번호를 알아오기 위해
+			paraMap.put("postNo", postvo.getPostNo()); // postNo 추가
+
+		    if (mapList != null) {
+		    	for (Map<String, Object> filename : mapList) {
+		        	Map<String, Object> fileMap = new HashMap<>(); // 개별 파일 정보 저장용
+		        	fileMap.put("postNo", postvo.getPostNo());
+		        	fileMap.put("newFileName", filename.get("newFileName"));
+		        	fileMap.put("originalFilename", filename.get("originalFilename")); // 원본 파일명 추가
+		        	fileMap.put("fileSize", ((byte[]) filename.get("bytes")).length); // 파일 크기 저장
+		        	
+		        	n2 = dao.addPostInsertFile(fileMap); // 첨부파일 테이블에 파일정보 삽입
+		        	
+		        	if(n2!=0) {
+			            System.out.println("파일이 저장 됐음! 저장된 파일명 : " + filename);
+		        	}
+		        }
+		    }
+			
+			
+		}
 		return n;
 	}
 
@@ -132,7 +163,71 @@ public class BoardService_imple implements BoardService {
 		
 		return postvo;
 	}
+	
+	// 실제 첨부파일을 삭제하기위해 첨부파일명을 알아오기.
+	@Override
+	public List<Map<String, Object>> getView_delete(String postNo) {
+		List<Map<String, Object>> postListmap = dao.getView_delete(postNo);
+		return postListmap;
+	}
 
+	// 파일첨부, 사진이미지가 들었는 경우의 글 삭제하기
+	@Override
+	public int postDel(Map<String, String> paraMap,List<Map<String, Object>> postListmap) {
+		dao.postFileDel(paraMap.get("postNo")); // postFile 테이블에서 행삭제하기
+	
+		int n = dao.postDel(paraMap.get("postNo")); // post 테이블에서 행삭제하기
+	
+		
+		// === 첨부파일 및 사진이미지 파일 삭제하기 시작 === //
+		
+	    if (postListmap != null && !postListmap.isEmpty()) { // 첨부파일이 있다면 삭제하기 
+	        String filepath = paraMap.get("filepath"); // 저장된 경로
+	        
+	        for (Map<String, Object> filename : postListmap) {
+	            if (filename != null) {
+	                try {
+	                    FileManager.doFileDelete((String) filename.get("filename"), filepath);// 삭제해야할 첨부파일이 저장된 경로와 삭제해야할 첨부파일명
+	                } catch (Exception e) {
+	                    e.printStackTrace();
+	                }
+	            }
+	        } // end of for (Map<String, Object> filename : postListmap) {}----------------
+			///////////////////////////////////////////
+			
+			// 글내용에 사진이미지가 들어가 있는 경우라면 사진이미지 파일도 삭제.
+			String photofilename = paraMap.get("photofilename");
+			
+			if(photofilename != null) {
+				String photo_upload_path = paraMap.get("photo_upload_path");
+				
+				if(photofilename.contains("/")) {
+					// 사진이미지가 2개 이상인 경우
+					
+					String[] arr_photofilename = photofilename.split("[/]");
+					
+					for(int i=0; i<arr_photofilename.length; i++) {
+						try {
+							FileManager.doFileDelete(arr_photofilename[i], photo_upload_path);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					
+				}
+				else {
+					// 사진이미지가 1개만 존재하는 경우
+					try {
+						FileManager.doFileDelete(photofilename, photo_upload_path);
+					} catch (Exception e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		} // end of if (postListmap != null && !postListmap.isEmpty()) {}-------------
+		// === 첨부파일 및 사진이미지 파일 삭제하기 끝 === //
+		return n;
+	}
 
 
 	

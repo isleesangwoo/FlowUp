@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.spring.app.board.domain.BoardVO;
+import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.board.domain.PostVO;
 
 public interface BoardService {
@@ -33,7 +34,7 @@ public interface BoardService {
 	List<Map<String, String>> getAccessibleBoardList(String employeeNo);
 
 	// 게시글 등록하기
-	int addPost(PostVO postvo);
+	int addPost(PostVO postvo,PostFileVO postfilevo,List<Map<String, Object>> mapList);
 
 	// 게시판 메인 페이지에 뿌려줄 모든 게시글 조회
 	List<PostVO> selectAllPost(Map<String, String> paraMap);
@@ -46,6 +47,12 @@ public interface BoardService {
 
 	// 글 조회수 증가는 없고 단순히 글 1개만 조회를 해오는 것
 	PostVO getView_no_increase_readCount(Map<String, String> paraMap);
+
+	// 실제 첨부파일을 삭제하기위해 첨부파일명을 알아오기.
+	List<Map<String, Object>> getView_delete(String postNo);
+
+	 // 파일첨부, 사진이미지가 들었는 경우의 글 삭제하기
+	int postDel(Map<String, String> paraMap,List<Map<String, Object>> postListmap);
 
 	
 	

@@ -28,7 +28,7 @@
                             <a href="#"><i class="fa-regular fa-pen-to-square"></i> 수정</a>
                         </span>
                         <span>
-                            <a href="#"><i class="fa-regular fa-trash-can"></i>삭제</a>
+                            <button type="button" id="postDel" class="btnDefaultDesignNone"><i class="fa-regular fa-trash-can"></i>삭제</button>
                         </span>
                     </span>
                 </span>
@@ -104,13 +104,13 @@
         </div>
 	        
 	        
-        
-        <div>
-	        게시글 번호 : ${postvo.postNo} <br>
-			게시판 번호 : ${postvo.fk_boardNo}<br>
-			작성자 번호 : ${postvo.fk_employeeNo}<br>
-		</div>
-		
+        <form name="postFrm">
+	        <div>
+		        게시글 번호 : <input type="text" name="postNo" value="${postvo.postNo}"><br>
+				게시판 번호 : ${postvo.fk_boardNo}<br>
+				작성자 번호 : ${postvo.fk_employeeNo}<br>
+			</div>
+		</form>
 	
 		
    </div>

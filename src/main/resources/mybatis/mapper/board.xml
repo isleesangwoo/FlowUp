@@ -164,6 +164,49 @@ ORDER BY createdAt DESC
         where postNo = to_number(#{postNo})
    </update>
 
+<!-- 등록되어지는 게시글의 번호를 알아오기 위해 -->
+	<select id="getInfoPost" resultType="PostVO">
+	select postNo, fk_boardNo, fk_employeeNo, name, subject, content,
+	               readCount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate, 
+	               commentCount, allowComments, status, isNotice, noticeEndDate
+	from tbl_post
+	WHERE ROWNUM =1
+	order by postNo desc
+	</select>
+
+<!--  파일첨부가 있는 글쓰기  // 첨부파일이 있다면 첨부파일테이블(tbl_postFile) 테이블에 파일 정보 삽입  -->
+	<insert id="addPostInsertFile" parameterType="map">
+      <!-- 원글쓰기인 경우 -->
+        insert into tbl_postFile(fileNo, fk_postNo, orgFilename, fileName, fileSize)  
+        values(postFileSeq.nextval,#{postNo},#{originalFilename}, #{newFileName}, #{fileSize})
+        
+   </insert>
+   
+<!-- 실제 첨부파일을 삭제하기위해 첨부파일명을 알아오기. -->
+   <resultMap type="HashMap" id="getView_delete_map">
+   		<result property="postNo" 			column="postNo" 		javaType="String" />
+   		<result property="filename" 		column="filename" 		javaType="String" />
+   		<result property="photofilename" 	column="photofilename"  javaType="String" />
+   </resultMap>
+   <select id="getView_delete" parameterType="String" resultMap="getView_delete_map">
+		select postNo, filename, substr(func_post_photo_upload_delete(postNo), 2) AS photofilename
+		from tbl_post p
+		full join tbl_postFile F
+		on p.postNo = F.fk_postNo
+		where postNo = #{postNo}
+   </select>
+   
+   <!-- 1개글 삭제하기-->
+   <delete id="postDel" parameterType="String">
+        delete from tbl_post
+        where postNo = #{postNo}
+   </delete>
+   
+   <!-- 1개글 삭제하기 -->
+   <delete id="postFileDel" parameterType="String">
+        delete from tbl_postFile
+        where fk_postNo = #{postNo}
+   </delete>
    
 </mapper>
 

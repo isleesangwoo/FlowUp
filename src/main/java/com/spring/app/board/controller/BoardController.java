@@ -1,5 +1,8 @@
 package com.spring.app.board.controller;
 
+import java.io.File;
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -7,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +19,10 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ModelAndViewDefiningException;
 
 import com.spring.app.board.domain.BoardVO;
+import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.board.domain.PostVO;
 import com.spring.app.board.service.BoardService;
+import com.spring.app.common.FileManager;
 import com.spring.app.common.MyUtil;
 import com.spring.app.employee.domain.EmployeeVO;
 
@@ -28,6 +34,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 
 
@@ -41,6 +49,9 @@ public class BoardController {
 	
 	@Autowired
 	private BoardService service;
+	
+	@Autowired  // Type 에 따라 알아서 Bean 을 주입해준다.
+	private FileManager fileManager; 
 	
 	@GetMapping("") //게시판 메인 페이지로 이동 (게시판그룹의 글 전체 조회요청)
 	public ModelAndView board(ModelAndView mav,HttpServletRequest request,
@@ -333,17 +344,96 @@ public class BoardController {
 	
   // 게시글 등록하기
   @PostMapping("addPost")
-  public String addPost(PostVO postvo) {
-	  int n = service.addPost(postvo); 
+  @ResponseBody
+  public String addPost(PostVO postvo,PostFileVO postfilevo,MultipartHttpServletRequest mtp_request) {
 	  
-	  if(n>0) {
-		  System.out.println("게시글 등록이 완료되었습니다!");
-	  }
-	  else {
-		  System.out.println("게시글 등록이 실패되었습니다");
-	  }
-	
-	  return "redirect:/board/board";
+	  List <MultipartFile> fileList = mtp_request.getFiles("file_arr"); // getFile은 1개만 받는 것이고 getFiles은 list로 여러개를 받음 file_arr 는 emailWrite.jsp의 317 라인 의 배열 값이다.
+	  // !! 주의 !! 복수개의 파일은 mtp_request.getFile 이 아니라 mtp_request.getFiles 이다.!!
+      // MultipartFile interface는 Spring에서 업로드된 파일을 다룰 때 사용되는 인터페이스로 파일의 이름과 실제 데이터, 파일 크기 등을 구할 수 있다.
+		
+	  List<Map<String, Object>> mapList = new ArrayList<>(); //  기존파일명,새로운 파일명,사이즈 다 받아오기위
+	  String originalFilename = "";
+	  byte[] bytes =null;	
+		/*
+		   1. 사용자가 보낸 첨부파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 한다.
+		   >>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기 
+		       우리는 WAS 의 /myspring/src/main/webapp/resources/files 라는 폴더를 생성해서 여기로 업로드 해주도록 할 것이다. 
+		 */
+		
+		// WAS 의 webapp 의 절대경로를 알아와야 한다.
+		HttpSession session = mtp_request.getSession();
+		String root = session.getServletContext().getRealPath("/");
+	    //	System.out.println("~~~ 확인용 webapp 의 절대경로 ==> " + root);
+		// ~~~ 확인용 webapp 의 절대경로 ==> C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\
+		
+		String path =  root+"board_resources"+File.separator+"files";  //File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자
+		
+		// path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 됨.
+		// System.out.println("~~~ 확인용 path ==> " + path); ~~~ 확인용 path ==> C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\resources\files
+		File dir = new File(path);
+        if(!dir.exists()) {
+            dir.mkdirs();
+        } // 만약 위의 디렉토리 경로가 없으면 만들라는 의미
+        
+        // >>>> 첨부파일을 위의 path 경로에 올리기 <<<< //
+        String[] arr_attachFilename = null; // 첨부파일명들을 기록하기 위한 용도  
+        
+        if(fileList != null && fileList.size() > 0) {
+        	arr_attachFilename = new String[fileList.size()];
+        	
+        	for(int i=0; i<fileList.size(); i++) {
+        		MultipartFile mtfile = fileList.get(i);
+        		
+        		try {
+                    //  파일 내용을 byte[]로 변환
+                    bytes = mtfile.getBytes();
+
+                    // 원본 파일명 가져오기
+                    originalFilename = mtfile.getOriginalFilename();
+
+                    // fileManager.doFileUpload()를 사용해서 유니크한 파일명으로 저장
+                    String newFileName = fileManager.doFileUpload(bytes, originalFilename, path);
+
+                    // 실제 저장된 파일명을 배열에 저장
+                    arr_attachFilename[i] = newFileName;
+                    
+                    Map<String, Object> Map = new HashMap<>();
+                    Map.put("bytes", bytes); 						// 파일 사이즈 
+                    Map.put("originalFilename", originalFilename);  // 기존 파일명 
+                    Map.put("newFileName", newFileName); 			// 새로운 파일명
+                    
+                    mapList.add(Map); // 파일 사이즈,기존파일명,새로운 파일명을 담은 리스트(파라맵리스트)
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            	
+            	
+        	} // end of for(int i=0; i<fileList.size(); i++) {}----------------------
+        	
+        	
+        } // end of if(fileList != null && fileList.size() > 0) {}-----------------
+        
+        JSONObject jsonObj = new JSONObject();
+        
+    	try {
+    		 int n = 0;
+    		  // === 글쓰기 등록하기, 일단 게시글 insert 이후 첨부파일의 여부는 service단에서 함  === //
+    		  n = service.addPost(postvo,postfilevo,mapList); 
+    		  
+    		  if(n>0) {
+    			  System.out.println("게시글 등록이 완료되었습니다!");
+    		  }
+    		  else {
+    			  System.out.println("게시글 등록이 실패되었습니다");
+    		  }
+    		  
+    		jsonObj.put("result", 1);
+    	}catch (Exception e) {
+			e.printStackTrace();
+			jsonObj.put("result", 0);
+		}
+        
+    	return jsonObj.toString();
   }
   
   // 게시글 하나 조회하기 (조회수 증가 포함)
@@ -407,6 +497,134 @@ public class BoardController {
 	  
 	  return mav;
   }
+  
+  //=== 스마트에디터. 글쓰기 또는 글수정시 드래그앤드롭을 이용한 다중 사진 파일 업로드 하기 === //
+  @PostMapping("image/multiplePhotoUpload")
+  public void multiplePhotoUpload(HttpServletRequest request, HttpServletResponse response) {
+	  /*
+	   1. 사용자가 보낸 파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 함.
+	   >>>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기
+	        WAS 의 webapp/board_resources/photo_upload 라는 폴더로 지정해준다.
+	  */
+	  // WAS 의 webapp 의 절대경로를 알아오기.
+	  HttpSession session = request.getSession();
+	  String root = session.getServletContext().getRealPath("/");
+	  String path = root + "board_resources"+File.separator+"photo_upload";
+	  // path 가 첨부파일들을 저장할 WAS(톰캣)의 폴더가 됨.
+	
+	  //  System.out.println("~~~ 확인용 path => " + path);
+      //  ~~~ 확인용 path => C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\resources\photo_upload
+	
+	  File dir = new File(path);
+	  if(!dir.exists()) {
+		  dir.mkdirs();
+	  }
+	
+	  try {
+		  String filename = request.getHeader("file-name"); // 파일명(문자열)을 받는다 - 일반 원본파일명
+		  // 네이버 스마트에디터를 사용한 파일업로드시 싱글파일업로드와는 다르게 멀티파일업로드는 파일명이 header 속에 담겨져 넘어오게 되어있다. 
+		
+		  //	System.out.println(">>> 확인용 filename ==> " + filename);
+		  // >>> 확인용 filename ==> berkelekle%EC%8B%AC%ED%94%8C%EB%9D%BC%EC%9A%B4%EB%93%9C01.jpg
+		
+		  InputStream is = request.getInputStream(); // is는 네이버 스마트 에디터를 사용하여 사진첨부하기 된 이미지 파일임.
+		
+		  // === 사진 이미지 파일 업로드 하기 === //
+		  String newFilename = fileManager.doFileUpload(is, filename, path);
+		  //System.out.println("### 확인용 newFilename ==> " + newFilename);
+		  //  ### 확인용 newFilename ==> 20250210165110401783618706200.jpg
+		
+		
+		  // === 웹브라우저 상에 업로드 되어진 사진 이미지 파일 이미지를 쓰기 === //
+		  String ctxPath = request.getContextPath(); //  
+		
+		  String strURL = "";
+		  strURL += "&bNewLine=true&sFileName="+newFilename; 
+		  strURL += "&sFileURL="+ctxPath+"/board_resources/photo_upload/"+newFilename;
+					
+		  PrintWriter out = response.getWriter();
+		  out.print(strURL);
+		
+	  } catch(Exception e) {
+		e.printStackTrace();
+	  }
+	
+  }
+	
+
+  // 글 삭제하기( 경로의 실제 파일 삭제와 db 행 삭제)
+  @PostMapping("postDel")
+  public  ModelAndView postDel(ModelAndView mav, @RequestParam String postNo, HttpServletRequest request){
+	  /*
+	    일단 삭제할 행을 테이블에서 지운다. 
+		그리고 
+		삭제에 필요한 것
+		String filepath = paraMap.get("filepath"); // 삭제해야할 첨부파일이 저장된 경로
+		String filename = paraMap.get("filename"); // 삭제해야할 첨부파일명
+		
+		FileManager.dofileDelete(filename, filepath);를 통해 실제 파일을 삭제한다.
+	  */
+	  
+	  // 실제 첨부파일을 삭제하기위해 첨부파일명을 알아오기.
+	  List<Map<String, Object>> postListmap = service.getView_delete(postNo);// 리스트맵으로 한 이유 : 이미지(스마트에디터)는 컬럼 하나에 "/" 구분자로 가능, 파일첨부는 여러개이지만 컬럼 하나 당 1개의 파일이기 때문에 여러행 반환.
+	  Map<String,String> paraMap = new HashMap<>();
+	  
+		  
+	  String filename = (String) postListmap.get(0).get("filename");
+		// 202502071215204988403314512900.pdf  이것이 바로 WAS(톰캣) 디스크에 저장된 '첨부 파일명' 이다. 
+	  
+		if(filename != null && !"".equals(filename)) { // 첨부파일이 존재하는 경우
+			 
+			
+			 // 첨부파일이 저장되어 있는 WAS(톰캣) 디스크 경로명을 알아와야만 다운로드를 해줄 수 있다.
+	         // 이 경로는 우리가 파일첨부를 위해서 /addEnd 에서 설정해두었던 경로와 똑같아야 한다.  
+	         // WAS 의 webapp 의 절대경로를 알아와야 한다. 
+	         HttpSession session = request.getSession(); 
+	         String root = session.getServletContext().getRealPath("/");  
+	         
+	         //System.out.println("~~~ 확인용 webapp 의 절대경로 => " + root);
+	         //~~~ 확인용 webapp 의 절대경로 => C:\GitHub\FlowUp\src\main\webapp\
+	         String filepath = root+"board_resources"+File.separator+"files";
+	         
+	         // file_path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+	         // System.out.println("~~~ 확인용 filepath => " + filepath);
+	         // ~~~ 확인용 filepath => C:\GitHub\FlowUp\src\main\webapp\resources\files
+	         
+	         paraMap.put("filepath", filepath); // 삭제해야할 첨부파일이 저장된 경로
+	         //paraMap.put("filename", filename); // 삭제해야할 첨부파일명
+		}
+		// === 파일첨부 또는 사진첨부 또는 파일첨부 및 사진첨부가 된 글이라면 글 삭제시 먼저 첨부파일을 삭제. 끝 === //
+		/////////////////////////////////////////////////////////////////////
+	  
+	  
+	  // === 글내용중에 사진이미지가 들어가 있는 경우라면 사진이미지 파일도 삭제해주어야 한다.
+	  String photofilename = (String) postListmap.get(0).get("photofilename");
+	  if(photofilename != null) {
+		  // 글내용중에 사진이미지가 들어가 있는 경우라면
+		
+		  HttpSession session = request.getSession(); 
+          String root = session.getServletContext().getRealPath("/"); 
+        
+          String photo_upload_path = root+"board_resources"+File.separator+"photo_upload";
+        
+          paraMap.put("photo_upload_path", photo_upload_path); // 삭제해야할 사진이미지 파일이 저장된 경로
+          paraMap.put("photofilename", photofilename);         // 삭제해야할 사진이미지 파일명
+	  }
+	
+	  // === 첨부파일이 추가된 경우 또는 사진이미지가 들어가 있는 경우 글삭제하기 === //
+	  paraMap.put("postNo", postNo); // 삭제할 글번호
+	  int n = service.postDel(paraMap,postListmap); // 파일첨부, 사진이미지가 들었는 경우의 글 삭제하기
+	  if(n==1) {
+		  mav.addObject("message", "글 삭제 성공!!");
+	      mav.addObject("loc", request.getContextPath()+"/board/board");
+	      mav.setViewName("msg");
+	  }
+	  
+	    //String filename = postListmap.get("filename");
+	    // 202502071215204988403314512900.pdf  이것이 바로 WAS(톰캣) 디스크에 저장된 '첨부 파일명' 이다. 
+	    return mav;
+    }
+	  	
 	
 	
 	

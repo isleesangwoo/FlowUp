@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Mapper;
 
 import com.spring.app.board.domain.BoardVO;
+import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.board.domain.PostVO;
 
 @Mapper
@@ -35,7 +36,7 @@ public interface BoardDAO {
 	// 글쓰기 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기
 	List<Map<String, String>> getAccessibleBoardList(String employeeNo);
 
-	// 게시글 등록하기
+	// 게시글 등록하기 // 파일첨부가 있는 글쓰기 // 첨부파일이 있다면 첨부파일테이블(tbl_postFile) 테이블에 파일 정보 삽입  
 	int addPost(PostVO postvo);
 
 	// 게시판 메인 페이지에 뿌려줄 모든 게시글 조회
@@ -49,6 +50,23 @@ public interface BoardDAO {
 
 	// 글조회수 1증가 하기 
 	int increase_readCount(String string);
+	
+	// 등록되어지는 게시글의 번호를 알아오기 위해
+	PostVO getInfoPost();
+	
+	// 파일첨부가 있는 글쓰기 // 첨부파일이 있다면 첨부파일테이블(tbl_postFile) 테이블에 파일 정보 삽입  
+	int addPostInsertFile(Map<String, Object>paraMap);
+
+	// 실제 첨부파일을 삭제하기위해 첨부파일명을 알아오기.
+	List<Map<String, Object>> getView_delete(String postNo);
+
+	// 파일첨부, 사진이미지가 들었는 경우의 글 삭제하기 /post 테이블에서 행삭제하기
+	int postDel(String postNo);
+	
+	//  파일첨부, 사진이미지가 들었는 경우의 글 삭제하기 /postFile 테이블에서 행삭제하기
+	int postFileDel(String postNo);
+
+	
 
 
 
