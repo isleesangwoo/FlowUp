@@ -50,7 +50,7 @@ function goView(postNo) {
     frm.postNo.value = postNo;
     frm.goBackURL.value = goBackURL;
    
-    frm.method = "post";
+    frm.method = "get";
     frm.action = ctxPath + "/board/goViewOnePost";
     frm.submit();
 }

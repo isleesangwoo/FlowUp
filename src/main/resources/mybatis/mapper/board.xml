@@ -106,11 +106,43 @@ ORDER BY createdAt DESC
     </association>
 </resultMap>
 <select id="selectAllPost" resultMap="selectAllPost_Map" parameterType="HashMap">
+	<!-- 	스마트에디터 이미지첨부 하기 전 전체 게시판 조회
 	SELECT 
     V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, V.subject, V.content, 
     V.readCount, V.regDate, V.commentCount, V.allowComments, V.status, 
     V.isNotice, V.noticeEndDate,
     b.boardNo, b.boardName
+	FROM 
+	    ( 
+	        SELECT row_number() OVER (ORDER BY postNo DESC) AS rno, 
+	               postNo, fk_boardNo, fk_employeeNo, name, subject, content,
+	               readCount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate, 
+	               commentCount, allowComments, status, isNotice, noticeEndDate
+	        FROM tbl_post
+	        WHERE status = 1
+	    ) V
+	JOIN tbl_board b ON V.fk_boardNo = b.boardNo
+	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno}) 
+	-->
+	<!-- 스마트에디터 이미지첨후 구현 후 전체게시판 조회 -->
+	SELECT 
+	    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, V.subject, 
+	    REGEXP_REPLACE(
+	        REGEXP_REPLACE(
+	            REGEXP_REPLACE(
+	                REGEXP_REPLACE(
+	                    REGEXP_REPLACE(V.content, '&lt;img[^&gt;]*?/?>', '', 1, 0, 'i'), 
+	                    <![CDATA[ '&nbsp;' ]]>, ' ', 1, 0, 'i'
+	                ),
+	                '&lt;br[^>]*>', ' ', 1, 0, 'i' 
+	            ),
+	            '&lt;/?p>', '', 1, 0, 'i' 
+	        ),
+	        '[\s]+', ' ', 1, 0, 'i'
+	    ) AS content, 
+	    V.readCount, V.regDate, V.commentCount, V.allowComments, V.status, 
+	    V.isNotice, V.noticeEndDate,
+	    b.boardNo, b.boardName
 	FROM 
 	    ( 
 	        SELECT row_number() OVER (ORDER BY postNo DESC) AS rno, 
@@ -143,6 +175,9 @@ ORDER BY createdAt DESC
 	    <result property="readCount" column="readCount"/>
 	    <result property="regDate" column="regDate"/>
 	    <result property="commentCount" column="commentCount"/>
+	    <result property="allowComments" column="allowComments"/>
+	    <result property="isNotice" column="isNotice"/>
+	    <result property="noticeEndDate" column="noticeEndDate"/>
 	
 	 	<!-- BoardVO의 필드 매핑 -->
 	    <association property="boardvo" javaType="BoardVO">
@@ -151,14 +186,23 @@ ORDER BY createdAt DESC
 	    </association>
 	</resultMap>
 	<select id="goViewOnePost" resultMap="goViewOnePost_Map" parameterType="HashMap">
-		select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount
+		select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount,P.allowComments,P.isNotice,P.noticeEndDate
 		from tbl_post P
 		join tbl_board B
 		on P.FK_BOARDNO = B.boardNo
 		where postNo = #{postNo}
 	</select>
 	
-	<!-- === #41. 글조회수 1증가 하기 === -->
+<!--  글 하나의 첨부파일 기존파일명,새로운 파일명 추출 -->
+	<select id="getFileOfOnePost" parameterType="HashMap" resultType="PostFileVO">
+		select P.postNo,P.fk_boardNo, f.fileNo, f.filename,f.orgfilename,ROUND(F.fileSize / (1024 * 1024), 2) AS fileSize
+		from tbl_post P
+        join tbl_postFile F
+        on p.postNo = f.fk_postNo
+		where postNo = #{postNo}
+	</select>
+	
+	<!-- ===  글조회수 1증가 하기 === -->
    <update id="increase_readCount" parameterType="String">
         update tbl_post set readCount = readCount + 1
         where postNo = to_number(#{postNo})
@@ -179,7 +223,6 @@ ORDER BY createdAt DESC
       <!-- 원글쓰기인 경우 -->
         insert into tbl_postFile(fileNo, fk_postNo, orgFilename, fileName, fileSize)  
         values(postFileSeq.nextval,#{postNo},#{originalFilename}, #{newFileName}, #{fileSize})
-        
    </insert>
    
 <!-- 실제 첨부파일을 삭제하기위해 첨부파일명을 알아오기. -->
@@ -207,6 +250,67 @@ ORDER BY createdAt DESC
         delete from tbl_postFile
         where fk_postNo = #{postNo}
    </delete>
+   
+<!--    파일다운로드에 필요한 컬럼 추출하기(파일고유번호,새로운파일명,기존파일명) -->
+   <select id="getWithFileDownload" parameterType="HashMap" resultType="PostFileVO">
+		select postNo, filename, substr(func_post_photo_upload_delete(postNo), 2) AS photofilename,orgFilename
+		from tbl_post p
+		full join tbl_postFile F
+		on p.postNo = F.fk_postNo
+		where postNo = #{postNo} and fileNo =#{fileNo}
+   </select>
+   
+<!--    게시글 수정 -->
+	<update id="updatePost">
+		<choose>
+	        <when test="isNotice == 1"> <!-- 공지사항 글로 수정할 경우 -->
+				update tbl_post set SUBJECT = #{subject}, CONTENT = #{content}, ALLOWCOMMENTS = #{allowComments},isNotice=#{isNotice},noticeEndDate=#{noticeEndDate}
+				where postNo = #{postNo}
+			</when>
+			<otherwise>   <!-- 공지사항 글이 아닌 경우 -->
+	            update tbl_post set SUBJECT = #{subject}, CONTENT = #{content}, ALLOWCOMMENTS = #{allowComments},isNotice=0,noticeEndDate=null
+				where postNo = #{postNo}
+	        </otherwise>
+        </choose>
+	</update>
+	
+<!-- 	첨부파일 테이블에 파일정보 수정 -->
+	<update id="updatePostInsertFile" parameterType="map">
+        update tbl_postFile set  orgFilename = #{originalFilename}, fileName = #{newFileName}, fileSize = #{fileSize}
+        where fk_postNo = #{postNo}
+   </update>
+   
+<!--   updatePostInsertFile 실행 전 해당 행이 있는지 확인하기 위함.	 -->
+	<select id="selectTblPostFile" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM tbl_postFile WHERE fk_postNo = #{postNo}
+	</select>
+	
+<!-- 	글 수정하기에서 postFile 테이블에서 행삭제하기 -->
+	<delete id="FileDelOfPostUpdate">
+		delete from tbl_postFile
+        where fk_postNo = #{postNo} and fileNo = #{fileNo}
+	</delete>
+	
+<!-- 	수정 전 이미지 목록 가져오기 (DB에서 조회) -->
+   <select id="getBeforeUpdateFileNames" resultType="String" parameterType="String">
+  		select NVL(SUBSTR(func_post_photo_upload_delete(postNo), 2), ' ') AS photofilename
+		from tbl_post p
+		full join tbl_postFile F
+		on p.postNo = F.fk_postNo
+		where postNo = #{postNo}
+   </select>
+   
+<!--    수정 후 새로운 이미지 목록 추출 (db에서 조회) -->
+	<select id="getAfterUpdateFileNames" resultType="String" parameterType="String">
+  		select NVL(SUBSTR(func_post_photo_upload_delete(postNo), 2), ' ') AS photofilename
+		from tbl_post p
+		full join tbl_postFile F
+		on p.postNo = F.fk_postNo
+		where postNo = #{postNo}
+   </select>
+   
+   
+   
    
 </mapper>
 

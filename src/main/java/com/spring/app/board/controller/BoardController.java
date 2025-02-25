@@ -1,15 +1,18 @@
 package com.spring.app.board.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Param;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -357,19 +360,17 @@ public class BoardController {
 		/*
 		   1. 사용자가 보낸 첨부파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 한다.
 		   >>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기 
-		       우리는 WAS 의 /myspring/src/main/webapp/resources/files 라는 폴더를 생성해서 여기로 업로드 해주도록 할 것이다. 
+		       우리는 WAS 의 /FlowUp/src/main/webapp/board_resources/files 라는 폴더를 생성해서 여기로 업로드 해주도록 할 것이다. 
 		 */
 		
 		// WAS 의 webapp 의 절대경로를 알아와야 한다.
 		HttpSession session = mtp_request.getSession();
 		String root = session.getServletContext().getRealPath("/");
 	    //	System.out.println("~~~ 확인용 webapp 의 절대경로 ==> " + root);
-		// ~~~ 확인용 webapp 의 절대경로 ==> C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\
 		
 		String path =  root+"board_resources"+File.separator+"files";  //File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자
 		
 		// path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 됨.
-		// System.out.println("~~~ 확인용 path ==> " + path); ~~~ 확인용 path ==> C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\resources\files
 		File dir = new File(path);
         if(!dir.exists()) {
             dir.mkdirs();
@@ -437,7 +438,7 @@ public class BoardController {
   }
   
   // 게시글 하나 조회하기 (조회수 증가 포함)
-  @PostMapping("goViewOnePost")
+  @GetMapping("goViewOnePost")
   public ModelAndView goViewOnePost(ModelAndView mav, HttpServletRequest request,@RequestParam String postNo,@RequestParam String goBackURL) {
 	  
 	  HttpSession session = request.getSession();
@@ -461,36 +462,35 @@ public class BoardController {
 
 	  // 위의 글목록보기 에서 session.setAttribute("readCountPermission", "yes"); 설정함.
 	  PostVO postvo = null;
+	  List<PostFileVO> postfilevo =null;
 
 	  if ("yes".equals((String) session.getAttribute("readCountPermission"))) {
 		  // 글목록보기인 /board 페이지를 클릭한 다음에 특정글을 조회해온 경우
 
 		  postvo = service.goViewOnePost(paraMap); // 게시글 하나 조회하기
 		  // 글 조회수 증가와 함께 글 1개를 조회를 해오는 것( 조회수 증가는 service 단에서 처리를 해줌.)
-
+		  
 		  session.removeAttribute("readCountPermission");
 		  // 중요함!! session 에 저장된 readCountPermission 을 삭제한다.
 	  }
 
 	  else {
 		  // 글목록에서 특정 글제목을 클릭하여 본 상태에서
-		  // 웹브라우저에서 새로고침(F5)을 클릭한 경우 웹브라우저에서 새로고침(F5)을 클릭한 경우");
+		  // 웹브라우저에서 새로고침(F5)을 클릭한 경우 
 		
 		  // 글 조회수 증가는 없고 단순히 글 1개만 조회를 해오는 것
 		  postvo = service.getView_no_increase_readCount(paraMap);
-		
- 
-  		  if (postvo == null) {
-			  mav.setViewName("redirect:/board/list");
-			  return mav;
+		  
+	  		  if (postvo == null) {
+				  mav.setViewName("redirect:/board/list");
+				  return mav;
+			  }
+	  		  
 		  }
-
-		  // 또는 redirect 해주기
-		  /*
-		     mav.setViewName("redirect:/board/list"); return mav;
-		   */
-		  }
-
+	  
+	  	  postfilevo = service.getFileOfOnePost(paraMap); // 글 하나의 첨부파일 테이블의 고유번호,기존파일명,새로운 파일명 추출
+	  	  
+	  	  mav.addObject("postfilevo", postfilevo);
 		  mav.addObject("postvo", postvo);
 		  mav.addObject("goBackURL", goBackURL); // 글 하나 클릭 시 클릭된 페이지의 해당 URL을 넘겨줌.
 		  mav.setViewName("mycontent/board/onePostView");
@@ -624,7 +624,288 @@ public class BoardController {
 	    // 202502071215204988403314512900.pdf  이것이 바로 WAS(톰캣) 디스크에 저장된 '첨부 파일명' 이다. 
 	    return mav;
     }
-	  	
+  
+  	//=== #161. 첨부파일 다운로드 받기 === //
+	@GetMapping("fileDownload")
+	public void fileDownload(HttpServletRequest request, HttpServletResponse response) {
+		
+		String postNo = request.getParameter("postNo"); // 첨부파일이 있는 글번호 
+		String fileNo = request.getParameter("fileNo"); // 첨부파일 테이블의 고유번호
+		
+		/*
+		    첨부파일이 있는 글번호에서
+		    202502071242164990019082166200.jpg 처럼
+		    이러한 fileName 값을 DB에서 가져와야 한다.
+		    또한 orgFilename 값도 DB에서 가져와야 한다.
+		*/
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("postNo", postNo);
+		paraMap.put("fileNo", fileNo);
+		
+		
+		// **** 웹브라우저에 출력하기 시작 **** //
+		// HttpServletResponse response 객체는 전송되어져온 데이터를 조작해서 결과물을 나타내고자 할때 쓰인다.
+		response.setContentType("text/html; charset=UTF-8");
+		
+		PrintWriter out = null;
+		// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+		
+		try {
+		    Integer.parseInt(postNo); 
+			
+		    PostFileVO postfilevo = service.getWithFileDownload(paraMap); // 파일다운로드에 필요한 컬럼 추출하기(게시글번호와 파일고유번호로 결과(행)이 하나만 나옴,새로운파일명,기존파일명)
+		    
+		    if(postfilevo == null || (postfilevo != null && postfilevo.getFileName() == null) ) { 
+		    	out = response.getWriter();
+				// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+				
+				out.println("<script type='text/javascript'>alert('파일다운로드가 불가합니다.'); history.back();</script>");
+				return;
+		    }
+		    
+		    else {
+		    	// 정상적으로 다운로드를 할 경우 
+		    	
+		    	String fileName = postfilevo.getFileName();
+		    	System.out.println(" fileName : " + fileName);
+		    	// 202502071242164990019082166200.jpg  이것이 바로 WAS(톰캣) 디스크에 저장된 파일명이다.
+		    	
+		    	String orgFilename = postfilevo.getOrgFilename(); 
+		    	System.out.println(" orgFilename : " + orgFilename);
+		    	// 쉐보레전면.jpg   다운로드시 보여줄 파일명
+		    	
+		    	/*
+				   첨부파일이 저장되어있는 WAS(톰캣) 디스크 경로명을 알아와야만 다운로드를 해줄 수 있다.
+				   이 경로는 우리가 파일첨부를 위해서 @PostMapping("add") 에서 설정해두었던 경로와 똑같아야 한다.    
+				*/
+				// WAS 의 webapp 의 절대경로를 알아와야 한다.
+				HttpSession session = request.getSession();
+				String root = session.getServletContext().getRealPath("/");
+				
+			//	System.out.println("~~~ 확인용 webapp 의 절대경로 ==> " + root);
+				// ~~~ 확인용 webapp 의 절대경로 ==> C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\
+				
+				String path = root+"board_resources"+File.separator+"files";  
+				/* File.separator 는 운영체제에서 사용하는 폴더와 파일의 구분자이다.
+			       운영체제가 Windows 이라면 File.separator 는  "\" 이고,
+			       운영체제가 UNIX, Linux, 매킨토시(맥) 이라면  File.separator 는 "/" 이다. 
+			    */
+				
+				// path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+				System.out.println("~~~ 확인용 path ==> " + path);
+				// ~~~ 확인용 path ==> C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\resources\files
+		    	
+				
+				// ***** file 다운로드 하기 ***** //
+				boolean flag = false; // file 다운로드 성공, 실패인지 여부를 알려주는 용도
+				flag = fileManager.doFileDownload(fileName, orgFilename, path, response);
+				// file 다운로드 성공시 flag 는 true,
+				// file 다운로드 실패시 flag 는 false 를 가진다.
+				
+				if(!flag) {
+					// 다운로드가 실패한 경우 메시지를 띄운다.
+					out = response.getWriter();
+					// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+					
+					out.println("<script type='text/javascript'>alert('파일다운로드가 실패되었습니다.'); history.back();</script>");
+				}
+		    	
+		    }
+			
+		} catch (NumberFormatException | IOException e) {
+			
+			try {
+				out = response.getWriter();
+				// out 은 웹브라우저에 기술하는 대상체라고 생각하자.
+				
+				out.println("<script type='text/javascript'>alert('파일다운로드가 불가합니다.'); history.back();</script>");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+			
+		}
+		
+	}
+  
+  // 게시글 수정하기
+  @PostMapping("updatePost")
+  @ResponseBody
+  public String updatePost(PostVO postvo,PostFileVO postfilevo,MultipartHttpServletRequest mtp_request) {
+	  System.out.println("일단 도착");
+	  String postNo = mtp_request.getParameter("postNo");
+	  String deleteFiles = mtp_request.getParameter("deleteFiles");
+	  //System.out.println("deleteFiles : " + deleteFiles );
+	  //System.out.println("postNo  : " + postNo); // postNo  : 100136
+	  
+	  
+	Map<String,String> paraMap = new HashMap<>();
+	
+	
+	if(deleteFiles != null && !"".equals(deleteFiles)) { // 첨부파일이 삭제요청이 존재하는 경우
+	
+	// 첨부파일이 저장되어 있는 WAS(톰캣) 디스크 경로명을 알아와야만 다운로드를 해줄 수 있다.
+	// 이 경로는 우리가 파일첨부를 위해서 /addEnd 에서 설정해두었던 경로와 똑같아야 한다.  
+	// WAS 의 webapp 의 절대경로를 알아와야 한다. 
+	HttpSession session = mtp_request.getSession(); 
+	String root = session.getServletContext().getRealPath("/");  
+	
+	//System.out.println("~~~ 확인용 webapp 의 절대경로 => " + root);
+	//~~~ 확인용 webapp 의 절대경로 => C:\GitHub\FlowUp\src\main\webapp\
+	String filepath = root+"board_resources"+File.separator+"files";
+	
+	// file_path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
+	// System.out.println("~~~ 확인용 filepath => " + filepath);
+	// ~~~ 확인용 filepath => C:\GitHub\FlowUp\src\main\webapp\resources\files
+	
+	paraMap.put("filepath", filepath); // 삭제해야할 첨부파일이 저장된 경로
+	//paraMap.put("filename", filename); // 삭제해야할 첨부파일명
+	
+	JSONArray deleteFilesArray = new JSONArray(deleteFiles);
+	paraMap.put("postNo", postNo); // 삭제할 글번호
+	  for (int i = 0; i < deleteFilesArray.length(); i++) { // 삭제 요청한 첨부파일 목록들
+	      JSONObject fileObj = deleteFilesArray.getJSONObject(i);
+	      
+	      String fileNo = fileObj.getString("fileNo");
+	      String fileName = fileObj.getString("fileName");
+	      String newFileName = fileObj.getString("newFileName");
+
+//	      System.out.println("파일 번호: " + fileNo);
+//	      System.out.println("기존 파일명: " + fileName);
+//	      System.out.println("새 파일명: " + newFileName);
+	      
+	      
+	      paraMap.put("fileNo", fileNo);
+	      paraMap.put("fileName", fileName);
+	      paraMap.put("newFileName", newFileName);
+		  int n = service.FileDelOfPostUpdate(paraMap); // 글 수정에서 첨부파일 삭제하기
+	  }
+	}// end of if(deleteFiles != null && !"".equals(deleteFiles)) {}----------------
+	
+	
+	// 수정 전 이미지 목록 가져오기 (DB에서 조회)
+    List<String> oldFileList = Arrays.asList(service.getBeforeUpdateFileNames(postNo).get(0).split("/"));
+	System.out.println("oldFileList : " + oldFileList);
+	
+	/////////////////////////////////////////////////////////////////////
+	  
+	  
+	  
+	  List <MultipartFile> fileList = mtp_request.getFiles("file_arr"); // getFile은 1개만 받는 것이고 getFiles은 list로 여러개를 받음 file_arr 는 emailWrite.jsp의 317 라인 의 배열 값이다.
+	  // !! 주의 !! 복수개의 파일은 mtp_request.getFile 이 아니라 mtp_request.getFiles 이다.!!
+      // MultipartFile interface는 Spring에서 업로드된 파일을 다룰 때 사용되는 인터페이스로 파일의 이름과 실제 데이터, 파일 크기 등을 구할 수 있다.
+		
+	  List<Map<String, Object>> mapList = new ArrayList<>(); //  기존파일명,새로운 파일명,사이즈 다 받아오기위
+	  String originalFilename = "";
+	  byte[] bytes =null;	
+		
+		// WAS 의 webapp 의 절대경로를 알아와야 한다.
+		HttpSession session = mtp_request.getSession();
+		String root = session.getServletContext().getRealPath("/");
+		
+		String path =  root+"board_resources"+File.separator+"files"; 
+		
+		File dir = new File(path);
+        if(!dir.exists()) {
+            dir.mkdirs();
+        } 
+        
+        // >>>> 첨부파일을 위의 path 경로에 올리기 <<<< //
+        String[] arr_attachFilename = null; // 첨부파일명들을 기록하기 위한 용도  
+        
+        if(fileList != null && fileList.size() > 0) {
+        	arr_attachFilename = new String[fileList.size()];
+        	
+        	for(int i=0; i<fileList.size(); i++) {
+        		MultipartFile mtfile = fileList.get(i);
+        		
+        		try {
+                    //  파일 내용을 byte[]로 변환
+                    bytes = mtfile.getBytes();
+
+                    // 원본 파일명 가져오기
+                    originalFilename = mtfile.getOriginalFilename();
+
+                    // fileManager.doFileUpload()를 사용해서 유니크한 파일명으로 저장
+                    String newFileName = fileManager.doFileUpload(bytes, originalFilename, path);
+
+                    // 실제 저장된 파일명을 배열에 저장
+                    arr_attachFilename[i] = newFileName;
+                    
+                    Map<String, Object> Map = new HashMap<>();
+                    Map.put("bytes", bytes); 						// 파일 사이즈 
+                    Map.put("originalFilename", originalFilename);  // 기존 파일명 
+                    Map.put("newFileName", newFileName); 			// 새로운 파일명
+                    
+                    mapList.add(Map); // 파일 사이즈,기존파일명,새로운 파일명을 담은 리스트(파라맵리스트)
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            	
+            	
+        	} // end of for(int i=0; i<fileList.size(); i++) {}----------------------
+        	
+        	
+        } // end of if(fileList != null && fileList.size() > 0) {}-----------------
+        System.out.println("여기까지는 오나..");
+        JSONObject jsonObj = new JSONObject();
+        
+    	try {
+    		 int n = 0;
+    		  // === 글수정하기, 일단 게시글 update 이후 첨부파일의 여부는 service단에서 함  === //
+    		  n = service.updatePost(postvo,postfilevo,mapList); 
+    		
+		    		  // 2️ 수정 후 새로운 이미지 목록 추출 (db에서 조회)
+		    		  List<String> newFileList = Arrays.asList(service.getAfterUpdateFileNames(postNo).get(0).split("/"));
+		    		  System.out.println("newFileList : " + newFileList);
+		    		  
+		    		  
+		    		  // 3 기존 목록과 새 목록 비교하여 삭제할 파일 찾기
+		    		    List<String> filesToDelete = new ArrayList<>();
+		    		    for (String oldFile : oldFileList) {
+		    		        if (!newFileList.contains(oldFile)) {
+		    		            filesToDelete.add(oldFile);
+		    		        }
+		    		    }
+		    		    System.out.println("filesToDelete : " + filesToDelete);
+    		            //filesToDelete : [2025022517021816086751960400.jpg, 2025022517021816086751960300.jpg]
+		    		   
+		    		    ////////////////////////
+		    		// 4️ 서버에서 필요 없는 파일 삭제
+		    		    for (String fileName : filesToDelete) {
+		    		    	System.out.println("fileName : " + fileName);
+		    		    	String filepath = root+"board_resources"+File.separator+"photo_upload";
+		    		    	System.out.println("filepath : " + filepath);
+		    		    	paraMap.put("photo_upload_path", filepath); // 삭제해야할 첨부파일이 저장된 경로
+		    		    	
+		    		    	//paraMap.put("postNo", postNo); // 삭제할 글번호
+		    		  	 service.postImgFileDel(paraMap,fileName); // 사진이미지가 들었는 경우 실제 경로의 파일 삭제하기
+//		    		        File file = new File("/absolute/path/to/uploads/" + fileName);
+//		    		        if (file.exists()) {
+//		    		            boolean deleted = file.delete();
+//		    		            if (deleted) {
+//		    		                System.out.println("삭제된 파일: " + fileName);
+//		    		            } else {
+//		    		                System.out.println("파일 삭제 실패: " + fileName);
+//		    		            }
+//		    		        }
+		    		    }
+    		 
+    		  if(n>0) {
+    			  System.out.println("게시글 수정이 완료되었습니다!");
+    		  }
+    		  else {
+    			  System.out.println("게시글 수정이 실패되었습니다");
+    		  }
+    		  
+    		jsonObj.put("result", 1);
+    	}catch (Exception e) {
+			e.printStackTrace();
+			jsonObj.put("result", 0);
+		}
+        
+    	return jsonObj.toString();
+  }	  	
 	
 	
 	

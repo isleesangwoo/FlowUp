@@ -66,6 +66,31 @@ public interface BoardDAO {
 	//  파일첨부, 사진이미지가 들었는 경우의 글 삭제하기 /postFile 테이블에서 행삭제하기
 	int postFileDel(String postNo);
 
+	// 파일다운로드에 필요한 컬럼 추출하기(파일고유번호,새로운파일명,기존파일명)
+	PostFileVO getWithFileDownload(Map<String, String> paraMap); // 있는 메소드 사용함(게시글 번호,새로운 파일명,기존파일명)
+
+	// 글 하나의 첨부파일 기존파일명,새로운 파일명 추출
+	List<PostFileVO> getFileOfOnePost(Map<String, String> paraMap);
+
+	// 게시글 수정
+	int updatePost(PostVO postvo);
+
+	// 첨부파일 테이블에 파일정보 수정
+	int updatePostInsertFile(Map<String, Object> fileMap);
+
+	//updatePostInsertFile 실행 전 해당 행이 있는지 확인하기 위함.	
+	int selectTblPostFile(String postNo);
+
+	// 글 수정하기에서 postFile 테이블에서 행삭제하기
+	int FileDelOfPostUpdate(String postNo, String fileNo);
+
+	// 수정 전 이미지 목록 가져오기 (DB에서 조회)
+	List<String> getBeforeUpdateFileNames(String postNo);
+	
+	// 수정 후 새로운 이미지 목록 추출 (db에서 조회)
+	List<String> getAfterUpdateFileNames(String postNo);
+
+
 	
 
 
