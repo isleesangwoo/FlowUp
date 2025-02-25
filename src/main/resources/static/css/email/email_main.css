@@ -442,7 +442,7 @@ button {
     background-color: #2985db;
 }
 
-#mailOneCheck {
+.mailOneCheck {
     appearance: none; /* 기본(네이티브) 모양을 제거 */
     box-sizing: border-box;
     background-clip: content-box;
@@ -454,7 +454,7 @@ button {
     margin-right: var(--size12);
 }
 
-#mailOneCheck:checked {
+.mailOneCheck:checked {
     border-color: #2985db;
     background-color: #2985db;
 }

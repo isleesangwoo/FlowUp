@@ -708,48 +708,6 @@ values(100020,'qwer1234$','이동훈',100000,100000,100000, 01087847311,1,'ehdgn
 
 -------------------------------- 메일 테이블 생성 --------------------------------
 
-create table tbl_board
-(seq           number                not null    -- 글번호
-,fk_userid     varchar2(20)          not null    -- 사용자ID
-,name          varchar2(20)          not null    -- 글쓴이 
-,subject       Nvarchar2(200)        not null    -- 글제목
-,content       Nvarchar2(2000)       not null    -- 글내용   -- clob (최대 4GB까지 허용) 
-,pw            varchar2(20)          not null    -- 글암호
-,readCount     number default 0      not null    -- 글조회수
-,regDate       date default sysdate  not null    -- 글쓴시간
-,status        number(1) default 1   not null    -- 글삭제여부   1:사용가능한 글,  0:삭제된글
-,commentCount  number default 0      not null    -- 댓글의 개수
-,constraint PK_tbl_board_seq primary key(seq)
-,constraint FK_tbl_board_fk_userid foreign key(fk_userid) references tbl_member(userid)
-,constraint CK_tbl_board_status check( status in(0,1) )
-);
--- Table TBL_BOARD이(가) 생성되었습니다.
-create sequence boardSeq
-start with 1
-increment by 1
-nomaxvalue
-nominvalue
-nocycle
-nocache;
-
-
-select *
-from tbl_board ;
-
-insert into tbl_mail(mailNo, fk_employeeNo, subject, content)
-values(10001, 100020, '메일 테스트', '안녕하세요 메일입니다');
-
-select mailNo, fk_employeeNo, subject, content
-from tbl_mail;
-
-select *
-from tbl_mail;
-
-select *
-from tbl_employee;
-
-commit;
-
 CREATE TABLE tbl_mail
 (mailNo           NUMBER                          NOT NULL -- 메일번호
 ,subject          VARCHAR2(100)                   NOT NULL -- 메일제목
@@ -769,40 +727,144 @@ CREATE TABLE tbl_mail
 ,constraint ck_tbl_mail_importantStatus check( importantStatus in(1,0) ) 
 );
 
+create sequence mailSeq
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+insert into tbl_mail(mailNo, fk_employeeNo, subject, content, readStatus, deleteStatus, saveStatus, importantStatus)
+values(100155, 100020, '임시저장 테스트', '임시저장 메일입니다', default, default, 1, default);
+
+BEGIN
+  FOR i IN 1..30 LOOP
+    INSERT INTO tbl_mail(
+      mailNo, 
+      fk_employeeNo, 
+      subject, 
+      content, 
+      readStatus, 
+      deleteStatus, 
+      saveStatus, 
+      importantStatus
+    )
+    VALUES (
+      100124 + i,              -- mailNo: 10003부터 시작
+      100020,                 -- fk_employeeNo: 예시 값
+      '쌍용 강북 교육 센터' || i,     -- subject: 번호가 붙은 제목
+      'Gclass 화이팅!' || i || '번째',  -- content: 번호가 붙은 내용
+      DEFAULT,                -- readStatus: 기본값 사용
+      DEFAULT,                -- deleteStatus: 1 (삭제됨)
+      DEFAULT,                -- saveStatus: 기본값 사용
+      DEFAULT                 -- importantStatus: 기본값 사용
+    );
+  END LOOP;
+  COMMIT;
+END;
+
+
+select mailNo, fk_employeeNo, subject, content
+from tbl_mail;
+
+select *
+from tbl_mail;
+
+select *
+from tbl_employee;
+
+SELECT M.mailNo, M.fk_employeeNo, M.subject, M.content, 
+       M.sendDate, M.readStatus, M.deleteStatus, M.saveStatus, M.importantStatus,
+       e.employeeNo, e.name
+FROM 
+    ( 
+        SELECT row_number() OVER (ORDER BY mailNo DESC) AS rno, 
+               mailNo, fk_employeeNo, subject, content,
+               to_char(sendDate, 'yyyy-mm-dd hh24:mi:ss') AS sendDate, 
+               readStatus, deleteStatus, saveStatus, importantStatus
+        FROM tbl_mail
+        WHERE deleteStatus = 0
+    ) M
+JOIN tbl_employee e
+  ON M.fk_employeeNo = e.employeeNo
+WHERE rno BETWEEN 1 AND 2;
+
+
+
 CREATE TABLE tbl_referenced
-(mailNo         number        NOT NULL -- 참조 이메일번호
+(refMailNo      NUMBER        NOT NULL -- 참조 이메일번호
 ,reference      NUMBER(1)     NOT NULL -- 참조수신여부 / 0:수신자, 1:참조자
 ,referenceName  VARCHAR2(20)  NOT NULL -- 참조/수신자이름
 ,referenceMail  VARCHAR2(50)  NOT NULL -- 참조/수신자이메일
 ,fk_mailNo      NUMBER        NOT NULL -- 메일번호
 ,fk_adrsBNo     NUMBER        NOT NULL -- 주소록 고유번호
 
-,constraint pk_tbl_referenced_mailNo primary key (mailNo)
-,constraint fk_tbl_tag_fk_mailNo foreign key(fk_mailNo) references tbl_mail(pk_mailNo)
-,constraint fk_tbl_tag_fk_adrsBNo foreign key(fk_adrsBNo) references tbl_addressBook(pk_mailNo)
+,constraint pk_tbl_referenced_refMailNo primary key (refMailNo)
+,constraint fk_tbl_referenced_fk_mailNo foreign key(fk_mailNo) references tbl_mail(mailNo)
+,constraint fk_tbl_addressBook_fk_adrsBNo foreign key(fk_adrsBNo) references tbl_addressBook(adrsBNo)
+,constraint ck_tbl_referenced_reference check( reference in(1,0) )
 );
 
+create sequence referencedSeq
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+select *
+from tbl_mailFile;
+
+select *
+from tbl_tag;
+
+drop table tbl_referenced;
 
 CREATE TABLE tbl_tag
-(tagNo      number(2)     NOT NULL -- 태그번호
-,color      varchar2(6)   NOT NULL -- 태그색
-,name       varchar2(20)  NOT NULL -- 태그이름
-,fk_mailNo  number        NOT NULL -- 메일번호
+(tagNo      NUMBER(2)     NOT NULL -- 태그번호
+,color      VARCHAR2(6)   NOT NULL -- 태그색
+,name       VARCHAR2(50)  NOT NULL -- 태그이름
+,fk_mailNo  NUMBER        NOT NULL -- 메일번호
 
 ,constraint pk_tbl_tag_tagNo primary key(tagNo)
-,constraint fk_tbl_tag_fk_mailNo foreign key(fk_mailNo) references tbl_mail(pk_mailNo)
+,constraint fk_tbl_tag_fk_mailNo foreign key(fk_mailNo) references tbl_mail(mailNo)
 );
 
-
 CREATE TABLE tbl_mailFile
-(fileNo        number         NOT NULL -- 첨부파일번호
-,fileName      varchar2(50)   NOT NULL -- 첨부파일명
-,orgFilename   varchar2(50)   NOT NULL -- 원래파일명
-,fileSize      varchar2(6)    NOT NULL -- 파일용량
+(fileNo        NUMBER         NOT NULL -- 첨부파일번호
+,fileName      VARCHAR2(50)   NOT NULL -- 첨부파일명
+,orgFilename   VARCHAR2(50)   NOT NULL -- 원래파일명
+,fileSize      VARCHAR2(6)    NOT NULL -- 파일용량
 ,fk_mailNo     NUMBER         NOT NULL -- 메일번호
 
 ,constraint pk_tbl_mailFile_fileNo primary key(fileNo)
-,constraint fk_tbl_mailFile_fk_mailNo foreign key(fk_mailNo) references tbl_mail(pk_mailNo)
+,constraint fk_tbl_mailFile_fk_mailNo foreign key(fk_mailNo) references tbl_mail(mailNo)
 );
 
+create sequence mailFileSeq
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
 
+rollback;
+
+commit;
+
+SELECT importantStatus FROM tbl_mail WHERE mailNo = 100150;
+
+
+SELECT mailNo, subject, fk_employeeNo, importantStatus
+FROM tbl_mail
+WHERE importantStatus = 1;
+
+
+FROM tbl_mail M
+JOIN tbl_employee E
+  ON M.fk_employeeNo = E.employeeNo
+WHERE M.importantStatus = 1
+  AND M.deleteStatus = 0
