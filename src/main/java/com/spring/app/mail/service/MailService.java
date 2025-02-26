@@ -24,6 +24,20 @@ public interface MailService {
 
 	// 중요메일함 조회
 	List<MailVO> selectImportantMail(String empNo);
+
+	// 읽음 상태 변경
+	int toggleReadMail(int mailNo);
+
+	// 읽은 메일 조회
+	List<MailVO> selectReadMail(String empNo);
+
+	/*
+	// 특정 메일 1개 조회
+	MailVO viewOneMail(Map<String, String> paraMap);
+
+	//
+	MailVO getViewOneMail(Map<String, String> paraMap);
+	*/
 	
 	
 

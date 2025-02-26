@@ -27,13 +27,25 @@ public interface MailDAO {
 	// 중요(별) 상태 조회
 	int getImportantStatus(int mailNo);
 
-	// 업데이트 된 중요 상태 업데이트
+	// 메일 중요 상태 업데이트
 	void updateImportantStatus(Map<String, Object> paramMap);
 
 	// 중요메일함 조회
 	List<MailVO> selectImportantMail(String empNo);
 
+	// 메일 읽음 상태 조회
+	int getReadStatus(int mailNo);
+	
+	// 메일 읽음 상태 업데이트
+	void updateReadStatus(Map<String, Object> paramMap);
 
+	// 읽은 메일 조회
+	List<MailVO> selectReadMail(String empNo);
+
+	/*
+	// 특정 메일 1개 조회
+	MailVO viewOneMail(Map<String, String> paraMap);
+	 */
 
 	
 }

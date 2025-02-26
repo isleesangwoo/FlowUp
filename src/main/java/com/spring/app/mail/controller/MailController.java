@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.app.board.domain.PostVO;
 import com.spring.app.common.MyUtil;
 import com.spring.app.employee.domain.EmployeeVO;
 import com.spring.app.mail.domain.MailVO;
@@ -150,13 +151,69 @@ public class MailController {
 		return mav;
 	}
 	
-    // Ajax 요청 중요(별) 상태 클릭
+	/*
+	// 메일 한개 조회
+	@PostMapping("viewOneMail")
+	public ModelAndView viewOneMail(ModelAndView mav, HttpServletRequest request,@RequestParam String mailNo,@RequestParam String goBackURL) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String login_userid = null;
+		if(loginuser != null) {
+			login_userid = loginuser.getEmployeeNo();
+			// login_userid 는 로그인 되어진 사용자의 userid 이다. 
+		}
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("mailNo", mailNo);
+		paraMap.put("login_userid", login_userid);
+		
+		MailVO mailvo = null;
+		
+		if ("yes".equals((String) session.getAttribute("readCountPermission"))) {
+			// 메일 페이지에서 특정 메일 클릭시
+
+			mailvo = service.viewOneMail(paraMap); // 메일 하나 조회하기
+
+			session.removeAttribute("readCountPermission");
+			// 중요함!! session 에 저장된 readCountPermission 을 삭제한다.
+		}
+
+		  else {
+			  mailvo = service.getViewOneMail(paraMap);
+			
+	 
+	  		  if (mailvo == null) {
+				  mav.setViewName("redirect:/board/list");
+				  return mav;
+			  }
+		
+		mav.addObject("mailvo", mailvo);
+		mav.addObject("goBackURL", goBackURL); // 글 하나 클릭 시 클릭된 페이지의 해당 URL을 넘겨줌.
+	  	mav.setViewName("mycontent/mail/viewOneMail");
+		
+	  	return mav;
+	}
+	*/
+	
+	
+    // Ajax 요청 중요(별) 상태 변경
     @PostMapping("/toggleImportant")
     @ResponseBody
     public String toggleImportant(@RequestParam("mailNo") int mailNo) {
         int importantStatus = service.toggleImportant(mailNo);
         // 숫자를 문자열로 변환하여 반환 (JSON 대신 간단히 문자열 사용)
         return String.valueOf(importantStatus);
+    }
+    
+    // Ajax 요청 읽음 상태 변경
+    @PostMapping("/toggleReadMail")
+    @ResponseBody
+    public String toggleReadMail(@RequestParam("mailNo") int mailNo) {
+        int readtStatus = service.toggleReadMail(mailNo);
+        // 숫자를 문자열로 변환하여 반환 (JSON 대신 간단히 문자열 사용)
+        return String.valueOf(readtStatus);
     }
     
     // Ajax 요청 중요메일함 조회

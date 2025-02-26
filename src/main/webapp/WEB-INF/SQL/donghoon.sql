@@ -868,3 +868,38 @@ JOIN tbl_employee E
   ON M.fk_employeeNo = E.employeeNo
 WHERE M.importantStatus = 1
   AND M.deleteStatus = 0
+  
+
+UPDATE tbl_mail
+SET importantStatus = #{importantStatus}
+WHERE mailNo = #{mailNo}
+
+
+	    SELECT ReadStatus 
+	    FROM tbl_mail
+	    WHERE mailNo = 100145
+        
+        UPDATE tbl_mail
+	    SET readStatus = 1
+	    WHERE mailNo = 100147
+        
+        commit;
+        
+        
+           
+		SELECT previousseq, 
+		       case when length(previoussubject) ; 30 then previoussubject 
+                    else substr(previoussubject, 1, 28)||'..' end AS previoussubject
+		     , seq, fk_userid, name, subject, content, readCount, regDate, pw
+		     , nextseq, 
+		       case when length(nextsubject) ; 30 then nextsubject 
+                    else substr(nextsubject, 1, 28)||'..' end AS nextsubject
+		FROM
+		 (
+		     select lag(seq) over(order by seq desc) AS previousseq
+		          , lag(subject) over(order by seq desc) AS previoussubject
+		          , seq, fk_userid, name, subject, content, readCount, regDate, pw  
+		          , lead(seq) over(order by seq desc) AS nextseq
+		          , lead(subject) over(order by seq desc) AS nextsubject
+		     from tbl_board
+		     where status = 1

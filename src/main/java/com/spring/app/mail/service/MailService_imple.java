@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.app.board.domain.PostVO;
 import com.spring.app.mail.domain.MailVO;
 import com.spring.app.mail.model.MailDAO;
 
@@ -80,7 +81,8 @@ public class MailService_imple implements MailService {
         return importantStatus;
 	}
 
-
+	
+	// 중요(별) 상태 메일 조회
 	@Override
 	public List<MailVO> selectImportantMail(String empNo) {
 
@@ -89,7 +91,46 @@ public class MailService_imple implements MailService {
 	}
 
 
+	// 읽음 상태 변경
+	@Override
+	public int toggleReadMail(int mailNo) {
+		
+        // 현재 readtStatus 조회
+        int currentStatus = dao.getReadStatus(mailNo);
+        // 1이면 0으로, 0이면 1로 토글
+        int readStatus = (currentStatus == 1) ? 0 : 1;
+        
+        // DB 업데이트
+        Map<String,Object> paramMap = new HashMap<>();
+        paramMap.put("mailNo", mailNo);
+        paramMap.put("readStatus", readStatus);
+        
+        dao.updateReadStatus(paramMap);
 
+        // 변경된 상태값 반환
+        return readStatus;
+	}
+
+
+	// 읽은 메일 조회
+	@Override
+	public List<MailVO> selectReadMail(String empNo) {
+
+        // DAO 호출
+        return dao.selectReadMail(empNo);
+	}
+
+
+	/*
+	// 특정 메일 1개 조회
+	@Override
+	public MailVO viewOneMail(Map<String, String> paraMap) {
+
+		MailVO mailvo = dao.viewOneMail(paraMap);  // 메일 1개 조회하기
+		
+		return mailvo;
+	}
+	 */
 
 
 	

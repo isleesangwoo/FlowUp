@@ -71,6 +71,37 @@
        <%-- 별(중요표시) 클릭시 변경 ajax 끝 --%>
        
        
+ 	  <%-- 메일 아이콘 클릭시 변경 ajax 시작 --%>
+      $(".toggle_mail").on("click", function(){
+          const $mail = $(this);
+          const mailNo = $mail.data("mailno");    // data_mailno 값
+          // const current = $star.data("important"); // 현재 상태
+
+          $.ajax({
+              url: "<%=request.getContextPath()%>/mail/toggleReadMail",
+              type: "POST",
+              data: { mailNo: mailNo },
+              success: function(readStatus) {
+                  // 서버가 반환한 새로운 상태("0" 또는 "1")
+                  if(readStatus === "1") {
+                      // 읽음 상태 => CSS 색 변경, 아이콘 변경 등
+                      $mail.removeClass("fa-regular fa-envelope").addClass("fa-regular fa-envelope-open")
+                      .css("color", "");
+                  } 
+                  else {
+                      // 안읽음 상태 => 기본 아이콘/색상
+                      $mail.removeClass("fa-regular fa-envelope-open").addClass("fa-regular fa-envelope")
+                      .css("color", "black");
+                  }
+              },
+              error: function() {
+                  alert("서버와 통신 중 오류가 발생했습니다.");
+              }
+          });
+       });
+       <%-- 메일 아이콘 클릭시 변경 ajax 끝 --%>
+       
+       
        <%-- 중요표시 메일만 조회 ajax 시작 --%>
        $("#importantMailLink").on("click", function(e){
     	   e.preventDefault(); // a 태그 이동 막기
@@ -86,13 +117,23 @@
     	       let html = "";
     	       $.each(data, function(index, mail){
 
-    	         // 별 아이콘: importantStatus=1이면 채워진 별, 0이면 빈 별
+    	         // 별 아이콘: importantStatus 1 이면 채워진 별, 0 이면 빈 별
     	         let starIcon = "";
-    	         if(mail.importantStatus === 1) {
-    	           starIcon = `<i class="fa-solid fa-star toggle_star" style="color: yellow;" 
+    	         if(mail.importantStatus == 1) {
+    	           starIcon = `<i class="fa-solid fa-star toggle_star" style="color: yellow; cursor: pointer;" 
     	                            data-mailno="${mail.mailNo}"></i>`;
     	         } else {
-    	           starIcon = `<i class="fa-regular fa-star toggle_star"
+    	           starIcon = `<i class="fa-regular fa-star toggle_star" style="cursor: pointer;"
+    	                            data-mailno="${mail.mailNo}"></i>`;
+    	         }
+    	         
+     	         // 메일 아이콘: readStatus 1 이면 열린 메일, 0 이면 닫힌 메일
+    	         let mailIcon = "";
+    	         if(mail.readStatus == 1) {
+    	        	 mailIcon = `<i class="fa-regular fa-envelope-open toggle_mail" style="cursor: pointer;"
+    	                            data-mailno="${mail.mailNo}"></i>`;
+    	         } else {
+    	        	 mailIcon = `<i class="fa-regular fa-envelope toggle_mail" style="color: black; cursor: pointer;"
     	                            data-mailno="${mail.mailNo}"></i>`;
     	         }
 
@@ -102,30 +143,20 @@
     	               <input type="checkbox" class="mailOneCheck" style="padding: 4px"/>
     	             </td>
     	             <td>
-    	               ${starIcon}
-    	               <i class="fa-regular fa-envelope"></i>
+    	               \${starIcon}
+    	               \${mailIcon}
     	               <i class="fa-solid fa-paperclip"></i>
     	             </td>
-    	             <td id="mailName">${mail.employeevo ? mail.employeevo.name : ''}</td>
-    	             <td id="mailTitle">${mail.subject}</td>
+    	             <td id="mailName">\${mail.employeevo ? mail.employeevo.name : '발신자 없음'}</td>
+    	             <td id="mailTitle">\${mail.subject}</td>
     	             <td id="right-content">
-    	               <span id="sendDate">${mail.sendDate}</span>
+    	               <span id="sendDate">\${mail.sendDate}</span>
     	               <span id="fileSize">67.1KB</span>
     	             </td>
     	           </tr>
     	         `;
     	       });
     	       
-    	       // 1) 우리가 만든 html 문자열을 콘솔에 출력
-    	       console.log("== HTML to be inserted ==", html);
-
-    	       // 2) 테이블에 삽입
-    	       $("#mailTable tbody").html(html);
-
-    	       // 3) 삽입 직후 DOM 내용도 콘솔에 찍어보기
-    	       console.log("== DOM after insert ==", $("#mailTable tbody").html());
-  
-
     	       // 새로 그린 아이콘에도 클릭 이벤트를 걸기
     	       $(".toggle_star").on("click", function(){
     	         const $star = $(this);
@@ -149,6 +180,8 @@
     	           }
     	         });
     	       });
+    	    	// 기존 목록 지우고 새 목록 삽입
+               $("#mailTable tbody").html(html);
     	     },
     	     error: function(err){
     	       console.log(err);
@@ -181,12 +214,15 @@
                      </td>
                      <td>
                        <i class="fa-regular fa-star"></i>
-                       <i class="fa-regular fa-envelope"></i>
+                       <i class="fa-regular fa-envelope" style="color:black"></i>
                        <i class="fa-solid fa-paperclip"></i>
                      </td>
-                     <td>${mail.employeevo ? mail.employeevo.name : ''}</td>
-                     <td>${mail.subject}</td>
-                     <td>${mail.sendDate}</td>
+    	             <td id="mailName">\${mail.employeevo ? mail.employeevo.name : ''}</td>
+    	             <td id="mailTitle">\${mail.subject}</td>
+    	             <td id="right-content">
+    	               <span id="sendDate">\${mail.sendDate}</span>
+    	               <span id="fileSize">67.1KB</span>
+    	             </td>
                    </tr>
                  `;
                });
@@ -445,7 +481,7 @@
                 </span>
                 <span>
                     <a href="#">
-                    	<i class="fa-regular fa-envelope-open"></i>
+                    	<i class="fa-regular -open"></i>
                         <span>읽음</span>
                     </a>
                 </span>
@@ -478,7 +514,7 @@
                             </ul>
                         </span>
                         <span id="re_btn" title="새로고침">
-                            <i class="fa-solid fa-rotate-right"></i>
+                        <a class="fa-solid fa-rotate-right" href="javascript:self.document.location.reload()"></a>
                         </span>
                         <span id="sortCnt_btn">
                             <span>20</span>
@@ -503,22 +539,38 @@
                       		<input type="checkbox" class="mailOneCheck" style="padding: 4px"/>
 	                   	</td>
 	                   	<td>
-                      	<!-- importantStatus가 1이면 채워진 별 아니면 빈 별 -->
-                    	<c:choose>
-	                        <c:when test="${mail.importantStatus == 1}">
-	                            <!-- 채워진 별 + 노란색 -->
-	                            <i class="fa-solid fa-star toggle_star" style="color: yellow;"
-	                               data-mailno="${mail.mailNo}">
-	                            </i>
-	                        </c:when>
-                        <c:otherwise>
-                            <!-- 빈 별 (기본) -->
-                            <i class="fa-regular fa-star toggle_star"
-                               data-mailno="${mail.mailNo}">
-                            </i>
-                        </c:otherwise>
-                    </c:choose>
-	                    	<i class="fa-regular fa-envelope"></i>
+	                      	<!-- importantStatus가 1이면 채워진 별 아니면 빈 별 -->
+	                    	<c:choose>
+		                        <c:when test="${mail.importantStatus == 1}">
+		                            <!-- 채워진 별 + 노란색 -->
+		                            <i class="fa-solid fa-star toggle_star" style="color: yellow; cursor: pointer;"
+		                               data-mailno="${mail.mailNo}">
+		                            </i>
+		                        </c:when>
+		                        <c:otherwise>
+		                            <!-- 빈 별 (기본) -->
+		                            <i class="fa-regular fa-star toggle_star" style="cursor: pointer;"
+		                               data-mailno="${mail.mailNo}">
+		                            </i>
+		                        </c:otherwise>
+	                    	</c:choose>
+	                    	
+	                    	<!-- readStatus가 1 이면 열린 메일 아니면 닫힌 메일 -->
+	                    	<c:choose>
+		                        <c:when test="${mail.readStatus == 1}">
+		                            <!-- 열린 메일 (검은색) -->
+		                            <i class="fa-regular fa-envelope-open toggle_mail" style="cursor: pointer;"
+		                               data-mailno="${mail.mailNo}">
+		                            </i>
+		                        </c:when>
+		                        <c:otherwise>
+		                            <!-- 닫힌 메일 (기본) -->
+		                            <i class="fa-regular fa-envelope toggle_mail" style="cursor: pointer; color: black;"
+		                               data-mailno="${mail.mailNo}">
+		                            </i>
+		                        </c:otherwise>
+	                    	</c:choose>
+	                    	
 	                    	<i class="fa-solid fa-paperclip"></i>
 	                 	</td>
                    		<td id="mailName">${mail.employeevo.name}</td>
