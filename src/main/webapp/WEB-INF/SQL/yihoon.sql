@@ -252,6 +252,8 @@ left join tbl_asset_class ass
 on De.fk_assetno = ass.assetno
 where Re.fk_employeeno = 100012;
 
+
+
 -- 상세 예약 테이블
 CREATE TABLE tbl_assetReservation (
    assetReservationNo           NUMBER(6)     NOT NULL,          -- 회의실 이용정보 ID
@@ -259,7 +261,8 @@ CREATE TABLE tbl_assetReservation (
    fk_employeeNo               NUMBER(6)     NOT NULL,          -- tbl_employee 사원 ID fk
    reservationStart            DATE          NULL,              -- 이용시작시간
    reservationEnd              DATE          NULL,              -- 이용끝시간
-   reservationDay              DATE          NULL               -- 예약한 날짜
+   reservationDay              DATE          NULL,              -- 예약한 날짜
+   reservationContents         NVARCHAR2(50) NULL               -- 예약한 이유
    ,CONSTRAINT PK_Reservation_ReservaNo PRIMARY KEY(assetReservationNo)                           -- 회의실 ID PK 지정
    ,CONSTRAINT FK_assetInfo_fk_assetDeNo FOREIGN KEY(fk_assetDetailNo) REFERENCES tbl_assetDetail(assetDetailNo) ON DELETE CASCADE    -- 회의실상세테이블에서 FK 가져옴
    ,CONSTRAINT FK_Reservation_fk_employeeNo FOREIGN KEY(fk_employeeNo) REFERENCES tbl_employee(employeeNo)   -- 사원테이블에서 FK 가져옴
@@ -267,9 +270,26 @@ CREATE TABLE tbl_assetReservation (
 
 drop table tbl_assetReservation purge;
 
-select assetReservationNo, fk_assetDetailNo, fk_employeeNo, reservationStart, reservationEnd, reservationDay
+select assetReservationNo, fk_assetDetailNo, fk_employeeNo, 
+       to_char(reservationStart, 'yyyy.mm.dd hh24:mi') as reservationStart, 
+       to_char(reservationEnd, 'yyyy.mm.dd hh24:mi') as reservationEnd, 
+       to_char(reservationDay, 'yyyy.mm.dd hh24:mi'), 
+       reservationContents
 from tbl_assetReservation
-where fk_employeeNo = 100012;
+where to_char(reservationEnd, 'yyyy.mm.dd') between '2025.02.24' and '2025.02.28'
+order by assetReservationNo;
+
+
+12:00
+14:30
+
+
+
+2:30
+
+5
+
+(reservationStart * 60) - (reservationEnd * 60) / 30 = 30분 단위로 끊은 것의 개수
 
 
 create sequence seq_roomReservationNo
@@ -285,3 +305,9 @@ nocache;
 -- ========== 예약 관련 테이블 생성 ========== --
 
 
+
+insert into tbl_assetReservation(assetReservationNo, fk_assetDetailNo, fk_employeeNo, reservationStart, reservationEnd, reservationContents, reservationDay)
+values(seq_roomReservationNo.nextval, 100014, 100012, to_date('2025-02-25 12:00', 'yyyy-mm-dd hh24:mi'), to_date('2025-02-25 14:30', 'yyyy-mm-dd hh24:mi'), '그냥~',  sysdate);
+
+
+commit;

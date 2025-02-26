@@ -3,6 +3,7 @@ package com.spring.app.reservation.service;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.app.reservation.domain.AssetReservationVO;
 import com.spring.app.reservation.domain.AssetVO;
 
 public interface ReservationService {
@@ -30,6 +31,15 @@ public interface ReservationService {
 
 	// 비품명을 추가해주는 메소드
 	int addFixtures(Map<String, Object> paraMap);
+
+	// 대분류에 딸린 자산들을 select 해주는 메소드
+	List<Map<String, String>> assetOneDeSelect(String assetNo);
+
+	// 자산추가를 해주는 메소드
+	int addAsset(Map<String, String> paraMap);
+
+	// 해당 페이지 내의 일자 구간 예약정보 불러오기
+	List<AssetReservationVO> selectassetReservationThis(AssetReservationVO assetreservationvo);
 
 	
 

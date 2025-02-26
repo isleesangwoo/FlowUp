@@ -81,7 +81,7 @@
 										
 											<c:if test="${assetDetailMap.fk_assetNo eq assetMap.assetNo}">
 											
-												<div>${assetDetailMap.assetName}</div> <!-- 상세 명 -->
+												<a href="<%= ctxPath%>/reservation/showReservationDeOne?assetDetailNo=${assetDetailMap.assetDetailNo}&assetName=${assetDetailMap.assetName}"><div>${assetDetailMap.assetName}</div></a> <!-- 상세 명 -->
 												
 											</c:if>	
 											
