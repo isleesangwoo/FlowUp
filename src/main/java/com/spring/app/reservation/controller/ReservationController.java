@@ -16,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.spring.app.reservation.domain.AssetReservationVO;
 import com.spring.app.reservation.domain.AssetVO;
 import com.spring.app.reservation.service.ReservationService;
 
@@ -295,9 +296,11 @@ public class ReservationController {
 	@GetMapping("showReservationDeOne")
 	public ModelAndView selectLeftBar_showReservationDeOne(HttpServletRequest request, 
 													       ModelAndView mav,
-													       @RequestParam String assetName) {
+													       @RequestParam String assetName,
+													       @RequestParam String assetDetailNo) {
 	
 	mav.addObject("assetName", assetName);
+	mav.addObject("assetDetailNo", assetDetailNo);
 		
 	mav.setViewName("mycontent/reservation/showReservationDeOne");
 	
@@ -305,6 +308,20 @@ public class ReservationController {
 	}
 	
 	
+	
+	// 해당 페이지 내의 일자 구간 예약정보 불러오기
+	@PostMapping("selectassetReservationThis")
+	@ResponseBody
+	public List<AssetReservationVO> selectassetReservationThis(AssetReservationVO assetreservationvo) {
+		
+		System.out.println("assetreservationvo 확인 : "+ assetreservationvo.getReservationStart());
+		
+		List<AssetReservationVO> reservationvoList = service.selectassetReservationThis(assetreservationvo);
+		
+		System.out.println("reservationvoList 해당 일자 구간 예약 개수 : " + reservationvoList.size());
+		
+		return reservationvoList;
+	}
 	
 	
 }

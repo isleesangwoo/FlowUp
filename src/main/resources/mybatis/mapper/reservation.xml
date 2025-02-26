@@ -138,6 +138,18 @@
 	</insert>
 
 
+	
+	<!-- 해당 페이지 내의 일자 구간 예약정보 불러오기 -->
+	<select id="selectassetReservationThis" parameterType="AssetReservationVO" resultType="AssetReservationVO">
+		select assetReservationNo, fk_assetDetailNo, fk_employeeNo, 
+		       to_char(reservationStart, 'yyyy.mm.dd hh24:mi') as reservationStart, 
+		       to_char(reservationEnd, 'yyyy.mm.dd hh24:mi') as reservationEnd, 
+		       to_char(reservationDay, 'yyyy.mm.dd hh24:mi'), 
+		       reservationContents
+		from tbl_assetReservation
+		where to_char(reservationEnd, 'yyyy.mm.dd') between #{reservationStart} and #{reservationEnd}
+		order by assetReservationNo
+	</select>
 
 </mapper>
 

@@ -63,15 +63,17 @@
 			</div>
 			<div id="assetModal" class="modal_containerAsset" style="padding:24px;">
 				<div class="assetModalTitle" >예약</div>
-				<div>
+				<div class="assetModal_body">
+					<input type="text" value="${requestScope.assetDetailNo}" name="fk_assetDetailNo" />
+					<input type="text" value="${sessionScope.loginuser.employeeNo}" name="fk_employeeNo" />
 					<div>
-						<label>예약일</label><span><input type="date" name="reservationStartDate" size="4" />~<input type="text" name="reservationEnd" /></span>
+						<label>예약일</label><span><input type="text" name="reservationStart" size="4" /> ~ <input type="text" name="reservationEnd" size="4" /></span>
 					</div>
 					<div>
-						<label>예약자</label><span>강이훈</span>
+						<label>예약자</label><span>${sessionScope.loginuser.name}</span>
 					</div>
 					<div>
-						<label>목적</label><span><input type="text" name="reason" /></span>
+						<label>목적</label><span><input type="text" name="reservationContents" /></span>
 					</div>
 				</div>
 				<div id="goReservation">확인</div>
@@ -87,6 +89,7 @@
 	// ====================== 날짜 리모컨 기능 생성 ====================== //
 	let today = new Date(); // 현재 날짜 저장
 	let currentDate = new Date(); // 오늘을 저장하는 변수
+	let currentDateBg = new Date(); // 오늘과 날이 같다면 배경색을 바꾸기 위한 저장 변수
 
 	// 이전 버튼 클릭 시
 	$('#prev').click(() => {
@@ -136,11 +139,11 @@
 			
 			const formattedDate1 = `\${String(currentDay.getMonth() + 1).padStart(2, '0')}.\${String(currentDay.getDate()).padStart(2, '0')}`;
 			
-			const formattedDateTarget = `\${String(currentDay.getFullYear())}-\${String(currentDay.getMonth() + 1).padStart(2, '0')}-\${String(currentDay.getDate()).padStart(2, '0')}`;
+			const formattedDateTarget = `\${String(currentDay.getFullYear())}.\${String(currentDay.getMonth() + 1).padStart(2, '0')}.\${String(currentDay.getDate()).padStart(2, '0')}`;
 	        weekDates.push(formattedDate);
 			weekDates1.push(formattedDate1);
 			
-			weekDatesTarget.push(formattedDateTarget);
+			weekDatesTarget.push(formattedDateTarget);          
 	    }
 		// 날짜 포맷팅
 		const startYear = startOfWeek.getFullYear();
@@ -176,6 +179,8 @@
 		$('.week_table_back_td').empty();
 		
 		
+		
+		/////////////////////////////////////////////////////// 주간 캘린더 내부 나타내기
 		let v_html2 = ``;
 		v_html2 += `<tr id="weekWrap">
 						<th class="time_wrap">
@@ -196,11 +201,18 @@
 		
 						
 		let targetCnt = 0;
+		const dataValue = `\${String(currentDateBg.getMonth() + 1).padStart(2, '0')}.\${String(currentDateBg.getDate()).padStart(2, '0')}(\${daysOfWeek[currentDateBg.getDay()]})`;
 		
 		weekDates.forEach(date => {
 			targetCnt++;
-	        v_html2 +=  `<td class="dateBar" id="\${date}">
-							<div class="schedule_wrap">`;
+			
+			if(date == dataValue){ // 만약 오늘 날자랑 td가 같으면 배경색을 #eee로 지정해주기 위해 .todayBg 생성
+				v_html2 +=  `<td class="dateBar todayBg" data-value="\${date}" >`
+			}
+			else {
+				v_html2 +=  `<td class="dateBar" data-value="\${date}" >`
+			}
+			v_html2 +=		`<div class="schedule_wrap">`;
 								
 								for(let i=0; i<26; i++) {
 				                    let timeStr = (9 + i/2);
@@ -216,16 +228,19 @@
 								
 			v_html2 +=		`</div>
 						</td>`;
-	    });
+						
 		
-						
-						
+	    }); // end of weekDates.forEach(date => {})--------------------
+		
+		
+		
 		v_html2 += `</tr>`;
 		
 	    // HTML에 추가
 	    $('.weekTitle').append(v_html);
 		$('.week_table_back_td').append(v_html2);
 	}
+	///////////////////////////////////////////////////////
 
 	// 페이지 로드 시 현재 날짜와 주간 캘린더 표시
 	updateDate();
@@ -239,13 +254,13 @@
 	    return !isNaN(number) && Number.isInteger(Number(number));
 	}
     // === 정수 체크 함수 === //
-
 	
 	
 	
 	
 	
 	
+	///////////////////////////////////////////////////////////
 	let isMouseDown = false;
     let startIndex = -1;
     let endIndex = -1;
@@ -270,8 +285,11 @@
             }
             // alert('Start: ' + $('input.clickTime').eq(startIndex).val() + ', End: ' + $('input.clickTime').eq(endIndex + 1).val());
 			
+            
+            // ======= 모달창 on ======= //
 			$('#assetModalBg').fadeIn();
 			$('.modal_containerAsset').fadeIn();
+			// ======= 모달창 on ======= //
 			
 			$('input[name="reservationStart"]').val($('input.clickTime').eq(startIndex).val());
 			$('input[name="reservationEnd"]').val($('input.clickTime').eq(endIndex + 1).val())
@@ -306,6 +324,94 @@
     function getBoxIndex(target) {
         return $('.box').index(target);
     }
+    
+    
+    
+    
+    // ======== 모달창 닫기 ======== //
+    $('#assetModalBg:not(.modal_containerAsset)').click(e=>{
+    	$('#assetModalBg').fadeOut();
+    	$('.modal_containerAsset').fadeOut();
+    })
+    // ======== 모달창 닫기 ======== //
+    
+    
+    
+    
+    $('#goReservation').click(e=>{
+    	
+    	
+    	
+    })
+    
+    
+    
+    
+    
+    
+    // ======== 현재 페이지에서의 예약 정보 ======== //
+    
+    const todayArr = $('#today').text().split("\~");
+    
+    
+    $.ajax({
+    	url:"<%=ctxPath%>/reservation/selectassetReservationThis",
+    	type:"post",
+    	data:{"reservationStart":todayArr[0].trim(),
+    		  "reservationEnd":todayArr[1].trim()},
+    	dataType:"json",
+    	success:function(json){
+    		console.log(JSON.stringify(json));
+    		/*
+    			[{"assetReservationNo":"100010","fk_assetDetailNo":"100014","fk_employeeNo":"100012","reservationStart":"2025.02.25 12:00","reservationEnd":"2025.02.25 14:30","reservationDay":null,"reservationContents":"그냥~"}]
+    		*/
+    		
+    		const boxArr = Array.from($('.box')); 
+    		
+    		$.each(json, function(index, item){
+    			
+    			$.each(boxArr, function(idx, elmt){
+    				
+					const startTimeOne = parseInt(((item.reservationStart).split(/\s+/g)[1]).split(':')[0]); // 12
+					const endTimeOne = parseInt(((item.reservationEnd).split(/\s+/g)[1]).split(':')[0]);    // 14
+					
+					const startTimeTwo = parseInt(((item.reservationStart).split(/\s+/g)[1]).split(':')[1]); // 00
+					const endTimeTwo = parseInt(((item.reservationEnd).split(/\s+/g)[1]).split(':')[1]);    // 30
+					
+					// 예약 시작시간과 끝시간의 차를 구해 30단위로 끊은 것의 개수 구하기
+					const timeSum = ((endTimeOne * 60 + endTimeTwo) - (startTimeOne * 60 + startTimeTwo)) / 30;
+
+    				
+    				if(item.reservationStart == $(elmt).find('.clickTime').val()){
+    					
+    					$(elmt).html(`<div class="reservationBox" style="height: calc(\${timeSum} * 30px);" 
+    									title="\${(item.reservationStart).split(/\s+/g)[1] +" ~ "+ (item.reservationEnd).split(/\s+/g)[1]}&#10;\${item.fk_employeeNo}&#10;\${item.reservationContents}">
+    								  	<div class="reservationBoxTitle">예약정보</div>
+    								  	<div class="reservationBoxContent">
+    								  		<div>\${(item.reservationStart).split(/\s+/g)[1] +" ~ "+ (item.reservationEnd).split(/\s+/g)[1]}</div>
+    								  		<div>\${item.fk_employeeNo}</div>
+    								  		<div>\${item.reservationContents}</div>
+    								  	<div>
+    								  </div>`);
+    				}
+    				
+
+    			}) // end of $.each(boxArr, function(idx, elmt){})--------------
+    			
+    		}) // end of $.each(json, function(index, item){})---------------
+    		
+    		
+    		
+    	},
+	    error: function(request, status, error){
+	 	    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	    } 
+    });
+    
+    
+    // ======== 현재 페이지에서의 예약 정보 ======== //
+    
+    
 
 </script>
 

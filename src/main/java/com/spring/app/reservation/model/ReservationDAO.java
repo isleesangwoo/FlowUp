@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.spring.app.reservation.domain.AssetReservationVO;
 import com.spring.app.reservation.domain.AssetVO;
 
 @Mapper //@Mapper 어노테이션을 붙여서 DAO 역할의 Mapper 인터페이스 파일을 만든다. 
@@ -42,6 +43,9 @@ public interface ReservationDAO {
 
 	// 자산추가를 해주는 메소드
 	int addAsset(Map<String, String> paraMap);
+
+	// 해당 페이지 내의 일자 구간 예약정보 불러오기
+	List<AssetReservationVO> selectassetReservationThis(AssetReservationVO assetreservationvo);
 
 	
 

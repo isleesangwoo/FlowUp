@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.app.reservation.domain.AssetReservationVO;
 import com.spring.app.reservation.domain.AssetVO;
 import com.spring.app.reservation.model.ReservationDAO;
 
@@ -126,6 +127,14 @@ public class ReservationService_imple implements ReservationService {
 	public int addAsset(Map<String, String> paraMap) {
 		int result = dao.addAsset(paraMap);
 		return result;
+	}
+
+
+	// 해당 페이지 내의 일자 구간 예약정보 불러오기
+	@Override
+	public List<AssetReservationVO> selectassetReservationThis(AssetReservationVO assetreservationvo) {
+		List<AssetReservationVO> reservationvoList = dao.selectassetReservationThis(assetreservationvo);
+		return reservationvoList;
 	}
 
 

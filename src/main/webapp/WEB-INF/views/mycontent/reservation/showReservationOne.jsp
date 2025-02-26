@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 
 <%@include file="./reservationLeftBar.jsp" %>
- 
+
 
  
 <%-- 각자 페이지에 해당되는 css 연결 --%>
@@ -532,6 +532,11 @@
 				  	  alert('저장되었습니다.');
 				  	  // ====== 다시 불러주기 ====== //
 					  $('#appendTrFinal').empty();
+				  	  
+					  $('#assetModalBg').fadeOut();
+					  $('.modal_containerAsset').fadeOut();
+
+					  // $('#left_bar').load(location.href+' #left_bar');
 					  
 					  selectAssetDe();
 				  	  // ====== 다시 불러주기 ====== //
