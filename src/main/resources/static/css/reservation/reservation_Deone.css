@@ -1,0 +1,127 @@
+.dateController {
+    width: 100%; 
+    margin: auto;
+}
+.dateTopBar {
+    display: flex;
+    gap: var(--size16);
+    align-items: center;
+    justify-content: space-between;
+	padding: 0px var(--size24);
+    margin-bottom: var(--size30);
+}
+.dateTopBtn {
+	display: flex;
+    gap: var(--size16);
+    align-items: center;
+    justify-content: center;
+}
+#today {
+	display: flex;
+	align-items: center;
+    font-size: var(--size24);
+    font-weight: 500;
+}
+
+#now {
+    box-sizing: border-box;
+    padding: calc(var(--size2) + var(--size2)) calc(var(--size2) + var(--size2));
+    margin-top: calc(var(--size2) + var(--size2));
+    font-size: var(--size12);
+}
+
+#now:hover {
+    background-color: #eee;
+}
+
+
+.week_table_back_form {
+	width: 100%;
+    vertical-align: middle;
+    unicode-bidi: isolate;
+    border-color: inherit;
+	border-collapse: collapse;
+	border-spacing: 0;
+	margin: 0;
+	table-layout: fixed !important;
+}
+
+.week_table_back_form thead th {
+	border-top: 1px solid #ddd;
+	border-bottom: 1px solid #ddd;
+	height: 30px;
+	text-align: center;
+	font-weight: normal;
+	font-size: 13px;
+}
+
+#weekWrap {
+	vertical-align: inherit;
+	unicode-bidi: isolate;
+	border-color: inherit;
+}
+
+.time_wrap {
+	border-color: inherit;
+	border-right: 1px solid #ddd;
+}
+
+.time {
+	position: relative;
+    text-align: right;
+    padding: 0 10px 0;
+    height: 60px;
+    line-height: 60px;
+    font-size: 12px;
+    font-weight: normal;
+}
+
+.dateBar {
+	border-color: inherit;
+	border-right: 1px solid #ddd;
+}
+
+.table_cell {
+	height: 60px;
+	display: grid;
+	grid-template-rows: 1fr 1fr;
+}
+
+
+.table_cell > div:nth-child(1) {
+	border-color: inherit;
+	border-bottom: 1px dotted #dbdbdb;
+}
+
+.table_cell > div:nth-child(2) {
+	border-color: inherit;
+	border-bottom: 1px solid #ddd;
+}
+
+.highlight {
+        background-color: rgba(242, 247, 253);
+}
+		
+
+#assetModal {
+	width: 700px;
+	height: 300px;
+	z-index: 100;
+	border-radius: 10px;
+	background-color: #fff;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	display: none;
+}
+
+
+.assetModalTitle {
+	font-size: var(--size20);
+}
+
+
+
+
+		

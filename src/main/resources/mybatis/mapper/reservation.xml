@@ -92,13 +92,52 @@
 	</select>
 	
 	
+	
 	<!-- 비품명을 추가해주는 메소드 -->
-	<insert id="addFixtures" parameterType="HashMap">
-		<foreach collection="arr_InformationTitle" index="i" open="(" separator="," close=")">
-			insert into tbl_assetInformation(assetInformationNo, fk_assetDetailNo, fk_assetNo, InformationTitle, InformationContents)
-			values(seq_assetInformationNo.nextval,dasdsa  , #{fk_assetNo}, ${arr_InformationTitle[i]}, dasdsa)
-		</foreach>
+<insert id="addFixtures" parameterType="map">
+    <foreach collection="arr_InformationTitle" item="assetDetailNo" index="index" separator=",">
+        INSERT INTO tbl_assetInformation (
+            assetInformationNo, 
+            fk_assetDetailNo, 
+            FK_ASSETNO,
+            as_InformationTitle, 
+            as_InformationContents
+        ) 
+        VALUES (
+            seq_assetInformationNo.NEXTVAL,  <!-- 시퀀스를 이용한 자동 증가 -->
+            #{assetDetailNo}, 
+            #{fk_assetNo}, 
+            #{arr_InformationTitle[index]}, 
+            #{arr_InformationContents[index]}
+        )
+    </foreach>
+</insert>
+
+
+
+
+
+
+
+
+
+	<!-- 대분류에 딸린 소분류들을 select 해주는 메소드 -->
+	<select id="assetOneDeSelect" parameterType="String" resultMap="assetDetailSelect_Map">
+		select assetDetailNo, fk_assetNo, assetName, assetDetailRegisterday, assetDetailChangeday
+		from tbl_assetDetail
+		where fk_assetNo = #{assetNo}
+	</select>
+
+
+
+
+	<!-- 자산추가를 해주는 메소드 -->
+	<insert id="addAsset" parameterType="HashMap">
+		insert into tbl_assetDetail(assetDetailNo, fk_assetNo, assetName, assetDetailRegisterday, assetDetailChangeday)
+		values(seq_assetDetailNo.nextval, #{fk_assetNo}, #{assetName}, sysdate, null)
 	</insert>
+
+
 
 </mapper>
 

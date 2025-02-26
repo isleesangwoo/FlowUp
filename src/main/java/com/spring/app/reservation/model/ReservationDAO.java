@@ -37,6 +37,12 @@ public interface ReservationDAO {
 	// 비품명을 추가해주는 메소드
 	int addFixtures(Map<String, Object> paraMap);
 
+	// 대분류에 딸린 소분류들을 select 해주는 메소드
+	List<Map<String, String>> assetOneDeSelect(String assetNo);
+
+	// 자산추가를 해주는 메소드
+	int addAsset(Map<String, String> paraMap);
+
 	
 
 }
