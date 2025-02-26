@@ -170,3 +170,19 @@ a {
 .top_btn_box{
 	margin-bottom: var(--size12);
 }
+
+
+#assetModal {
+	width: 500px;
+	height: 300px;
+	z-index: 100;
+	border-radius: 10px;
+	background-color: #fff;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	box-sizing: border-box;
+	padding: var(--size24);
+	display: none;
+}
