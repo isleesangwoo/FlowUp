@@ -40,7 +40,7 @@
    <link href="<%=ctxPath%>/css/main-section.css" rel="stylesheet">
 
    <!-- js -->
-   <script src="<%=ctxPath%>/js/util.js"></script>
+   <!--<script src="<%=ctxPath%>/js/util.js"></script>-->
    <script src="<%=ctxPath%>/js/header.js"></script>
    <script src="<%=ctxPath%>/js/dark_mode/dark.js"></script>
 
