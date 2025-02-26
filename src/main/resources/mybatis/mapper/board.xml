@@ -309,8 +309,43 @@ ORDER BY createdAt DESC
 		where postNo = #{postNo}
    </select>
    
-   
-   
+<!--    게시판 별 게시글 조회 :: 게시판/게시글 테이블 조인 -> 조건 boardNo 인 것만 조회 -->
+   <!--    게시글 하나 조회하기(조인함) -->
+	<resultMap id="selectPostBoardGroup_Map" type="PostVO">
+	 <!-- PostVO의 필드 매핑 -->
+	    <result property="postNo" column="postNo"/>
+	    <result property="fk_boardNo" column="fk_boardNo"/>
+	    <result property="fk_employeeNo" column="fk_employeeNo"/>
+	    <result property="name" column="name"/>
+	    <result property="subject" column="subject"/>
+	    <result property="content" column="content"/>
+	    <result property="readCount" column="readCount"/>
+	    <result property="regDate" column="regDate"/>
+	    <result property="commentCount" column="commentCount"/>
+	    <result property="allowComments" column="allowComments"/>
+	    <result property="isNotice" column="isNotice"/>
+	    <result property="noticeEndDate" column="noticeEndDate"/>
+	
+	 	<!-- BoardVO의 필드 매핑 -->
+	    <association property="boardvo" javaType="BoardVO">
+	        <result property="boardName" 	column="boardName"/>
+	        <result property="createdBy" 	column="createdBy"/>
+	    </association>
+	</resultMap>
+	<select id="selectPostBoardGroup" resultMap="selectPostBoardGroup_Map" parameterType="String">
+		select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount,P.allowComments,P.isNotice,P.noticeEndDate
+		from tbl_post P
+		join tbl_board B
+		on P.FK_BOARDNO = B.boardNo
+		where boardNo = #{boardNo}
+	</select>
+	
+<!-- 	게시판의 정보를 추출하기 위해(게시판명, 운영자 등등) -->
+	<select id="getBoardInfo" resultType="BoardVO" parameterType="String">
+	select boardName,createdBy,boardDesc,isPublic,createdAt
+	from tbl_board
+	where boardNo = to_number(#{boardNo})
+	</select>
    
 </mapper>
 

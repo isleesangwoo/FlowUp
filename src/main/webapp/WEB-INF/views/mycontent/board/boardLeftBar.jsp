@@ -115,7 +115,7 @@ $(document).ready(function() {
                v_html += `
                		
 	                <li>
-		                <a href='#'>`+board.boardName+`</a> 
+            	   		<a href='<%=ctxpath%>/board/selectPostBoardGroupView?boardNo=\${board.boardNo}'>`+board.boardName+`</a>  <%-- 게시판명 --%>
 			            <a href='<%=ctxpath%>/board/updateBoardView?boardNo=\${board.boardNo}' class='upateBoard'>
 			                <i class="fa-solid fa-gear" style="margin-right:9px;"></i> <%-- 게시판 수정 아이콘 --%> 
 		                </a>

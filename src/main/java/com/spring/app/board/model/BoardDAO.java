@@ -90,6 +90,12 @@ public interface BoardDAO {
 	// 수정 후 새로운 이미지 목록 추출 (db에서 조회)
 	List<String> getAfterUpdateFileNames(String postNo);
 
+	// 게시판 별 게시글 조회 :: 게시판/게시글 테이블 조인 -> 조건 boardNo 인 것만 조회
+	List<PostVO> selectPostBoardGroup(String boardNo);
+
+	// 게시판의 정보를 추출하기 위해(게시판명, 운영자 등등)
+	BoardVO getBoardInfo(String boardNo);
+
 
 	
 

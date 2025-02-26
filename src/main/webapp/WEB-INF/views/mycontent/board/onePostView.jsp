@@ -88,7 +88,7 @@
     </div> <!-- end of <div class="modal_container"> -->
     <!-- 글작성 폼 -->
 
-<!-- 오른쪽 바 -->
+	<!-- 오른쪽 바 -->
     <div id="right_bar">
         <div id="right_title_box">
             <span id="right_title">${postvo.boardvo.boardName} </span>

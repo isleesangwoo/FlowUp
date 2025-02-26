@@ -504,16 +504,13 @@ public class BoardController {
 	  /*
 	   1. 사용자가 보낸 파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 함.
 	   >>>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기
-	        WAS 의 webapp/board_resources/photo_upload 라는 폴더로 지정해준다.
+	        WAS 의 webapp/board_resources/photo_upload 라는 폴더로 지정.
 	  */
 	  // WAS 의 webapp 의 절대경로를 알아오기.
 	  HttpSession session = request.getSession();
 	  String root = session.getServletContext().getRealPath("/");
 	  String path = root + "board_resources"+File.separator+"photo_upload";
 	  // path 가 첨부파일들을 저장할 WAS(톰캣)의 폴더가 됨.
-	
-	  //  System.out.println("~~~ 확인용 path => " + path);
-      //  ~~~ 확인용 path => C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\resources\photo_upload
 	
 	  File dir = new File(path);
 	  if(!dir.exists()) {
@@ -523,16 +520,11 @@ public class BoardController {
 	  try {
 		  String filename = request.getHeader("file-name"); // 파일명(문자열)을 받는다 - 일반 원본파일명
 		  // 네이버 스마트에디터를 사용한 파일업로드시 싱글파일업로드와는 다르게 멀티파일업로드는 파일명이 header 속에 담겨져 넘어오게 되어있다. 
-		
-		  //	System.out.println(">>> 확인용 filename ==> " + filename);
-		  // >>> 확인용 filename ==> berkelekle%EC%8B%AC%ED%94%8C%EB%9D%BC%EC%9A%B4%EB%93%9C01.jpg
-		
+		  
 		  InputStream is = request.getInputStream(); // is는 네이버 스마트 에디터를 사용하여 사진첨부하기 된 이미지 파일임.
 		
 		  // === 사진 이미지 파일 업로드 하기 === //
 		  String newFilename = fileManager.doFileUpload(is, filename, path);
-		  //System.out.println("### 확인용 newFilename ==> " + newFilename);
-		  //  ### 확인용 newFilename ==> 20250210165110401783618706200.jpg
 		
 		
 		  // === 웹브라우저 상에 업로드 되어진 사진 이미지 파일 이미지를 쓰기 === //
@@ -574,21 +566,13 @@ public class BoardController {
 		// 202502071215204988403314512900.pdf  이것이 바로 WAS(톰캣) 디스크에 저장된 '첨부 파일명' 이다. 
 	  
 		if(filename != null && !"".equals(filename)) { // 첨부파일이 존재하는 경우
-			 
 			
-			 // 첨부파일이 저장되어 있는 WAS(톰캣) 디스크 경로명을 알아와야만 다운로드를 해줄 수 있다.
-	         // 이 경로는 우리가 파일첨부를 위해서 /addEnd 에서 설정해두었던 경로와 똑같아야 한다.  
-	         // WAS 의 webapp 의 절대경로를 알아와야 한다. 
 	         HttpSession session = request.getSession(); 
 	         String root = session.getServletContext().getRealPath("/");  
 	         
 	         //System.out.println("~~~ 확인용 webapp 의 절대경로 => " + root);
 	         //~~~ 확인용 webapp 의 절대경로 => C:\GitHub\FlowUp\src\main\webapp\
 	         String filepath = root+"board_resources"+File.separator+"files";
-	         
-	         // file_path 가 첨부파일이 저장될 WAS(톰캣)의 폴더가 된다.
-	         // System.out.println("~~~ 확인용 filepath => " + filepath);
-	         // ~~~ 확인용 filepath => C:\GitHub\FlowUp\src\main\webapp\resources\files
 	         
 	         paraMap.put("filepath", filepath); // 삭제해야할 첨부파일이 저장된 경로
 	         //paraMap.put("filename", filename); // 삭제해야할 첨부파일명
@@ -880,15 +864,6 @@ public class BoardController {
 		    		    	
 		    		    	//paraMap.put("postNo", postNo); // 삭제할 글번호
 		    		  	 service.postImgFileDel(paraMap,fileName); // 사진이미지가 들었는 경우 실제 경로의 파일 삭제하기
-//		    		        File file = new File("/absolute/path/to/uploads/" + fileName);
-//		    		        if (file.exists()) {
-//		    		            boolean deleted = file.delete();
-//		    		            if (deleted) {
-//		    		                System.out.println("삭제된 파일: " + fileName);
-//		    		            } else {
-//		    		                System.out.println("파일 삭제 실패: " + fileName);
-//		    		            }
-//		    		        }
 		    		    }
     		 
     		  if(n>0) {
@@ -906,6 +881,29 @@ public class BoardController {
         
     	return jsonObj.toString();
   }	  	
+  
+  // 게시판 '별' 게시글 조회
+  @GetMapping("selectPostBoardGroupView")
+  public ModelAndView selectPostBoardGroupView(ModelAndView mav,@RequestParam String boardNo) {
+	  
+	  System.out.println("게시판 번호(boardNo) : " + boardNo);
+	  
+	  // 게시판 별 게시글 조회 :: 게시판/게시글 테이블 조인 -> 조건 boardNo 인 것만 조회
+	  List<PostVO> groupPostMapList =  service.selectPostBoardGroup(boardNo);
+	  
+	  // 게시판의 정보를 추출하기 위해(게시판명, 운영자 등등)
+	  BoardVO boardInfoMap = service.getBoardInfo(boardNo);
+	  
+	  // 게시판의 게시글 건수 구하기 :> 게시판/게시글 조인 count(*)
+	  
+	  // 해당 게시판 클릭 시 글 상세페이지로 이동은 전체 게시판 참조.
+	  mav.addObject("groupPostMapList",groupPostMapList);
+	  mav.addObject("boardInfoMap",boardInfoMap);
+	  mav.setViewName("mycontent/board/selectPostBoardGroupView");
+	  
+	  
+	  return mav;
+  }
 	
 	
 	

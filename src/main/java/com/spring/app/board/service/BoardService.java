@@ -69,11 +69,17 @@ public interface BoardService {
 	// 수정 전 이미지 목록 가져오기 (DB에서 조회)
 	List<String> getBeforeUpdateFileNames(String postNo);
 
-	// 2️ 수정 후 새로운 이미지 목록 추출 (db에서 조회)
+	// 수정 후 새로운 이미지 목록 추출 (db에서 조회)
 	List<String> getAfterUpdateFileNames(String postNo);
 
 	// 수정하기에서 사진이미지가 들었는 경우 실제 경로의 파일 삭제하기
 	void postImgFileDel(Map<String, String> paraMap, String fileName);
+
+	// 게시판 별 게시글 조회 :: 게시판/게시글 테이블 조인 -> 조건 boardNo 인 것만 조회
+	List<PostVO> selectPostBoardGroup(String boardNo);
+
+	// 게시판의 정보를 추출하기 위해(게시판명, 운영자 등등)
+	BoardVO getBoardInfo(String boardNo);
 
 
 	

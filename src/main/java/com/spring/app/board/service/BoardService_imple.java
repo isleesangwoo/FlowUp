@@ -349,6 +349,20 @@ public class BoardService_imple implements BoardService {
 				}
 			}
 		}
+	}
+
+	// 게시판 별 게시글 조회 :: 게시판/게시글 테이블 조인 -> 조건 boardNo 인 것만 조회
+	@Override
+	public List<PostVO> selectPostBoardGroup(String boardNo) {
+		List<PostVO> groupPostMapList =  dao.selectPostBoardGroup(boardNo);
+		return groupPostMapList;
+	}
+
+	// 게시판의 정보를 추출하기 위해(게시판명, 운영자 등등)
+	@Override
+	public BoardVO getBoardInfo(String boardNo) {
+		BoardVO boardInfoMap = dao.getBoardInfo(boardNo);
+		return boardInfoMap;
 	}	
 	
 	
