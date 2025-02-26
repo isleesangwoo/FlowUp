@@ -1,5 +1,7 @@
 package com.spring.app.mail.domain;
 
+import com.spring.app.employee.domain.EmployeeVO;
+
 public class MailVO {
 
 	private String mailNo;           // 메일번호
@@ -12,6 +14,7 @@ public class MailVO {
 	private String sendDate;         // 전송날짜
 	private String fk_employeeNo;    // 사번 (직원 테이블 참조)
 	
+	private EmployeeVO employeevo;   // employee 테이블 조인
 	
 	public String getMailNo() {
 		return mailNo;
@@ -67,6 +70,14 @@ public class MailVO {
 	public void setFk_employeeNo(String fk_employeeNo) {
 		this.fk_employeeNo = fk_employeeNo;
 	}
+	public EmployeeVO getEmployeevo() {
+		return employeevo;
+	}
+	public void setEmployeevo(EmployeeVO employeevo) {
+		this.employeevo = employeevo;
+	}
+	
+	
 	
 	
 }
