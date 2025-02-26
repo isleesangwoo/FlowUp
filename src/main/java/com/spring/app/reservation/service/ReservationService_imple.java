@@ -138,6 +138,15 @@ public class ReservationService_imple implements ReservationService {
 	}
 
 
+
+	// 예약추가를 해주는 메소드
+	@Override
+	public int addReservation(AssetReservationVO assetreservationvo) {
+		int result = dao.addReservation(assetreservationvo);
+		return result;
+	}
+
+
 	
 	
 }

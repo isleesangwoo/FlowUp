@@ -41,6 +41,9 @@ public interface ReservationService {
 	// 해당 페이지 내의 일자 구간 예약정보 불러오기
 	List<AssetReservationVO> selectassetReservationThis(AssetReservationVO assetreservationvo);
 
+	// 예약추가를 해주는 메소드
+	int addReservation(AssetReservationVO assetreservationvo);
+
 	
 
 	

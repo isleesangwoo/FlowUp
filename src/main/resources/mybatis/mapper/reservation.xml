@@ -151,6 +151,14 @@
 		order by assetReservationNo
 	</select>
 
+
+
+	<!-- 예약추가를 해주는 메소드 -->
+	<insert id="addReservation" parameterType="AssetReservationVO">
+		insert into tbl_assetReservation(assetReservationNo, fk_assetDetailNo, fk_employeeNo, reservationStart, reservationEnd, reservationContents, reservationDay)
+		values(seq_roomReservationNo.nextval, to_number(#{fk_assetDetailNo}), to_number(#{fk_employeeNo}), to_date(#{reservationStart}, 'yyyy-mm-dd hh24:mi'), to_date(#{reservationEnd}, 'yyyy-mm-dd hh24:mi'), #{reservationContents},  sysdate)
+	</insert>
+
 </mapper>
 
 

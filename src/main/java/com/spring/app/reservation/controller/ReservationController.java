@@ -314,14 +314,42 @@ public class ReservationController {
 	@ResponseBody
 	public List<AssetReservationVO> selectassetReservationThis(AssetReservationVO assetreservationvo) {
 		
-		System.out.println("assetreservationvo 확인 : "+ assetreservationvo.getReservationStart());
+		// System.out.println("assetreservationvo 확인 : "+ assetreservationvo.getReservationStart());
 		
 		List<AssetReservationVO> reservationvoList = service.selectassetReservationThis(assetreservationvo);
 		
-		System.out.println("reservationvoList 해당 일자 구간 예약 개수 : " + reservationvoList.size());
+		// System.out.println("reservationvoList 해당 일자 구간 예약 개수 : " + reservationvoList.size());
 		
 		return reservationvoList;
 	}
+	
+	
+	
+	// 예약하기
+	@PostMapping("addReservation")
+	@ResponseBody
+	public String addReservation(AssetReservationVO assetreservationvo) {
+		
+		System.out.println("Fk_assetDetailNo 확인 : "+ assetreservationvo.getFk_assetDetailNo()); 		// Fk_assetDetailNo 확인 : 100015
+		System.out.println("Fk_employeeNo 확인 : "+ assetreservationvo.getFk_employeeNo());		 		// Fk_employeeNo 확인 : 100012
+		System.out.println("ReservationStart 확인 : "+ assetreservationvo.getReservationStart()); 		// ReservationStart 확인 : 2025.02.27 11:00
+		System.out.println("getReservationEnd 확인 : "+ assetreservationvo.getReservationEnd());         // getReservationEnd 확인 : 2025.02.27 13:30
+		System.out.println("ReservationContents 확인 : "+ assetreservationvo.getReservationContents());  // ReservationContents 확인 : dsa
+		
+		
+		
+		int result = service.addReservation(assetreservationvo); // 예약추가를 해주는 메소드
+
+	    JSONObject jsonObj = new JSONObject();
+	    if (result == 1) {
+	        jsonObj.put("result", 1);
+	    } else {
+	        jsonObj.put("result", 0);
+	    }
+		
+		return jsonObj.toString();
+	}
+	
 	
 	
 }
