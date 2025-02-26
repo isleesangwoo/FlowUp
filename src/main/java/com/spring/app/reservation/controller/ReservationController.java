@@ -1,5 +1,6 @@
 package com.spring.app.reservation.controller;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.spring.app.reservation.domain.AssetReservationVO;
 import com.spring.app.reservation.domain.AssetVO;
 import com.spring.app.reservation.service.ReservationService;
 
@@ -82,7 +84,7 @@ public class ReservationController {
 		
 		List<Map<String, String>> my_ReservationList = service.my_Reservation(employeeNo); // 내 예약 정보를 select 해주는 메소드
 		
-		System.out.println("ajax 들어옴?????????????" + my_ReservationList.size());
+		// System.out.println("ajax 들어옴?????????????" + my_ReservationList.size());
 		
 		JSONArray jsonArr = new JSONArray();  //  []
 		
@@ -134,10 +136,15 @@ public class ReservationController {
 														 @RequestParam String assetNo) {
 
 		AssetVO assetvo = service.assetOneSelect(assetNo); // 자산 하나에 해당하는 대분류 정보를 select 해주는 메소드
+		List<Map<String, String>> OneDeList = service.assetOneDeSelect(assetNo); // 대분류에 딸린 자산들을 select 해주는 메소드
 		
 		// ==== 대분류 정보 ==== //
 		mav.addObject("assetvo", assetvo);
 		// ==== 대분류 정보 ==== //
+		
+		// ==== 소분류 정보 ==== //
+		mav.addObject("OneDeList", OneDeList);
+		// ==== 소분류 정보 ==== //
 		
 		mav.setViewName("mycontent/reservation/showReservationOne");
 		
@@ -177,29 +184,144 @@ public class ReservationController {
 	@PostMapping("addFixtures")
 	@ResponseBody
 	public String addFixtures(@RequestParam String str_InformationTitle
-							 ,@RequestParam String fk_assetNo) {
-		
-		Map<String, Object> paraMap = new HashMap<>();
-		
-		String[] arr_InformationTitle = str_InformationTitle.split(",");
-		
-		paraMap.put("fk_assetNo", fk_assetNo);
-		paraMap.put("arr_InformationTitle", arr_InformationTitle);
-		
-		int result = service.addFixtures(paraMap); // 비품명을 추가해주는 메소드
-		
-		JSONObject jsonObj = new JSONObject();  //  {}
-		
-		if(result == 1) {
-			jsonObj.put("result", 1);
-		}
-		else {
-			jsonObj.put("result", 0);
-		}
-		
-		return jsonObj.toString();
+	                         ,@RequestParam String fk_assetNo
+	                         ,@RequestParam String totalAssetDetailNo
+	                         ,@RequestParam String totalInformationContents
+	                         ,HttpServletRequest request) {
+
+	    Map<String, Object> paraMap = new HashMap<>();
+	    
+	    // 받은 값들 출력 확인
+	    System.out.println("확인용 str_InformationTitle : " + str_InformationTitle); 
+	    System.out.println("확인용 totalAssetDetailNo : " + totalAssetDetailNo);
+	    System.out.println("확인용 totalInformationContents : " + totalInformationContents);
+
+	    // 받은 값을 배열로 변환
+	    String[] arr_InformationTitle = str_InformationTitle.split(",");
+	    String[] arr_InformationContents = totalInformationContents.split(",");
+	    String[] arr_AssetDetailNo = totalAssetDetailNo.split(","); // AssetDetailNo를 배열로 분리
+
+	    // System.out.println(arr_AssetDetailNo[0]);
+	    
+	    // 파라미터 맵에 추가
+	    paraMap.put("fk_assetNo", fk_assetNo);
+	    paraMap.put("arr_InformationTitle", arr_InformationTitle);
+	    paraMap.put("arr_InformationContents", arr_InformationContents);
+	    paraMap.put("arr_AssetDetailNo", arr_AssetDetailNo);
+
+	    System.out.println("확인용 arr_AssetDetailNo : " + Arrays.toString(arr_AssetDetailNo));
+	    
+	    // 서비스 호출
+	    int result = service.addFixtures(paraMap); // 서비스 메소드 실행
+
+	    JSONObject jsonObj = new JSONObject();
+	    if (result == 1) {
+	        jsonObj.put("result", 1);
+	    } else {
+	        jsonObj.put("result", 0);
+	    }
+
+	    return jsonObj.toString();
 	}
 	
 	
+	
+	
+	@PostMapping("addAsset")
+	@ResponseBody
+	public String addAsset(@RequestParam String assetName,
+						   @RequestParam String fk_assetNo) {
 		
+		Map<String, String> paraMap = new HashMap<>();
+		
+		paraMap.put("assetName", assetName);
+		paraMap.put("fk_assetNo", fk_assetNo);
+		
+	    int result = service.addAsset(paraMap); // 자산추가를 해주는 메소드
+
+	    JSONObject jsonObj = new JSONObject();
+	    if (result == 1) {
+	        jsonObj.put("result", 1);
+	    } else {
+	        jsonObj.put("result", 0);
+	    }
+		
+		return jsonObj.toString();
+	}
+
+	
+	
+	
+	@PostMapping("selectAssetDe")
+	@ResponseBody
+	public String selectAssetDe(@RequestParam String fk_assetNo) {
+		
+		
+		List<Map<String, String>> assetOneDeSelectList = service.assetOneDeSelect(fk_assetNo); // 자산상세를 select 해주는 메소드
+		
+		JSONArray jsonArr = new JSONArray();  //  []
+		
+		if(assetOneDeSelectList != null) {
+			
+			for(Map<String,String> listMap : assetOneDeSelectList) {
+				JSONObject jsonObj = new JSONObject();  //  {}
+				jsonObj.put("assetDetailNo", listMap.get("assetDetailNo"));
+				jsonObj.put("fk_assetNo", listMap.get("fk_assetNo"));
+				jsonObj.put("assetName", listMap.get("assetName"));
+				jsonObj.put("assetDetailRegisterday", listMap.get("assetDetailRegisterday"));
+				jsonObj.put("assetDetailChangeday", listMap.get("assetDetailChangeday"));
+				
+				jsonArr.put(jsonObj);
+			} // end of for --------------
+		}
+		
+		return jsonArr.toString();
+	}
+	
+		
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	////////////////////////////////////////////////////////////// 자산상세 페이지
+	@GetMapping("showReservationDeOne")
+	public ModelAndView selectLeftBar_showReservationDeOne(HttpServletRequest request, 
+													       ModelAndView mav,
+													       @RequestParam String assetName,
+													       @RequestParam String assetDetailNo) {
+	
+	mav.addObject("assetName", assetName);
+	mav.addObject("assetDetailNo", assetDetailNo);
+		
+	mav.setViewName("mycontent/reservation/showReservationDeOne");
+	
+	return mav;
+	}
+	
+	
+	
+	// 해당 페이지 내의 일자 구간 예약정보 불러오기
+	@PostMapping("selectassetReservationThis")
+	@ResponseBody
+	public List<AssetReservationVO> selectassetReservationThis(AssetReservationVO assetreservationvo) {
+		
+		System.out.println("assetreservationvo 확인 : "+ assetreservationvo.getReservationStart());
+		
+		List<AssetReservationVO> reservationvoList = service.selectassetReservationThis(assetreservationvo);
+		
+		System.out.println("reservationvoList 해당 일자 구간 예약 개수 : " + reservationvoList.size());
+		
+		return reservationvoList;
+	}
+	
+	
 }

@@ -3,7 +3,7 @@
 <!DOCTYPE html>
 
 <%@include file="./reservationLeftBar.jsp" %>
- 
+
 
  
 <%-- 각자 페이지에 해당되는 css 연결 --%>
@@ -113,7 +113,16 @@
 					</div>
 
 				</div>
-				<input type="hidden" name="totalFixtures"/>
+				<input type="text" name="totalFixturesName"/>
+				<input type="text" name="totalFixtures"/>
+				<input type="text" name="totalInformationContents"/>
+				<input type="text" name="totalAssetDetailNo"/>
+				<br>
+				<c:forEach var="assetDetailMap" items="${requestScope.OneDeList}">
+					<input type="hidden" name="assetDetailNo" value="${assetDetailMap.assetDetailNo}" />
+				</c:forEach>
+				
+				
 			</div>
 			<%-- 두번째 탭 내용물 --%>
 			
@@ -122,7 +131,7 @@
 				<div class="tab1_info">※ 자산에 대한 정보를 추가, 수정, 삭제할 수 있습니다.</div>
 				<div class="top_btn_box">
 					<!-- 비품 추가 버튼 -->
-					<div>
+					<div id="addAsset">
 						<i class="fa-solid fa-plus"></i>
 						<span>자산 추가</span>
 					</div>
@@ -134,24 +143,12 @@
 							<tr>
 								<th>코드</th>
 								<th>항목명</th>
-								<th>빔프로젝트</th>
+								<!--<th>빔프로젝트</th>-->
 								<th>설정</th>
 							</tr>
 						</thead>
-						<tbody>
-							<tr>
-								<td>100001</td>
-								<td>행복 1실</td>
-								<td>X</td>
-								<td><i class="fa-solid fa-gear"></i></td>
-							</tr>
+						<tbody id="appendTrFinal">
 							
-							<tr>
-								<td>100001</td>
-								<td>희망 2실</td>
-								<td>O</td>
-								<td><i class="fa-solid fa-gear"></i></td>
-							</tr>
 							
 						</tbody>
 					</table>
@@ -162,6 +159,15 @@
 					</div>
 					<!-- bottom 버튼 영역 -->
 				</div>
+				
+				<div id="assetModalBg" class="modal_bg">
+					
+				</div>
+				<div id="assetModal" class="modal_containerAsset">
+					<input type="text" name="assetName" />
+					<div id="goAddAsset">확인</div>
+				</div>
+				
 			</div>
 			<%-- 세번째 탭 내용물 --%>
 		</div>
@@ -299,8 +305,11 @@
   
   
   <%-- === 비품을 insert 하기 위한 것 === --%>
+  <!-- 비품추가하기 버튼 클릭시 -->
   let fixturesCnt = 0;  // 각자 다른 input태그의 name 값을 주기 위해 설정
+  let totalfixturesArr = [];
   let fixturesArr = []; // 위에서 만든 name값들을 배열에 담기 위함
+  let InformationContentsArr = [];
   
   $('#addFixtures').click(e=>{
 	  
@@ -314,18 +323,68 @@
 	  fixturesCnt++;
 	  
 	  $('#appendTrMiddle').append(`<tr class="addFixtures_tr">
-									 <td><input name="InformationTitle\${fixturesCnt}" type="text" /></td>
-									 <td><input name="InformationContents" type="checkbox" id="mailOneCheck" value="1" checked /></td>
+									 <td><input class="InformationTitle" name="InformationTitle\${fixturesCnt}" type="text" /></td>
+									 <td><input class="InformationContents\${fixturesCnt} InformationContents" name="InformationContents" type="checkbox" id="mailOneCheck" value="O" checked /></td>
 									 <td>생성중</td>
 								 </tr>`);
+								 
+								 
+	   totalfixturesArr.push(`InformationTitle\${fixturesCnt}`);
+	   let str_totalfixturesArr = totalfixturesArr.join(",");
+	 	  
+	   $('input[name="totalFixturesName"]').val(str_totalfixturesArr);
+	  //////////////////////////////////////////////////////////////// 비품명 들어갈 자리
 	  
-	  fixturesArr.push("InformationTitle"+fixturesCnt);
-	  let str_fixturesArr = fixturesArr.join(",");
-	  // console.log(str_fixturesArr);
+	  InformationContentsArr.push($(`.InformationContents\${fixturesCnt}`).val());
+	  let str_InformationContentsArr = InformationContentsArr.join(",");
 	  
-	  $('input[name="totalFixtures"]').val(str_fixturesArr);
+	  $('input[name="totalInformationContents"]').val(str_InformationContentsArr);
+	  //////////////////////////////////////////////////////////////// 체크박스 상태 들어갈 자리
 	  
   });
+  <!-- 비품추가하기 버튼 클릭시 -->
+  
+  
+  // === 소분류 pk === //
+  let assetDetailNoArr = [];
+  
+  const assetDetailNo_list = $('input[name="assetDetailNo"]');
+  
+  const assetDetailNo_arr = Array.from(assetDetailNo_list);
+  
+  assetDetailNo_arr.forEach(function(item, index){
+	
+	assetDetailNoArr.push($(item).val());
+	
+  });
+  let str_assetDetailNoArr = assetDetailNoArr.join(",");
+  $('input[name="totalAssetDetailNo"]').val(str_assetDetailNoArr);
+  // === 소분류 pk === //
+  
+  
+  
+  
+  // === 비품 체크박스 클릭 == //
+  $(document).on('click', 'input.InformationContents', e=>{
+	  InformationContentsArr = [];	
+	
+	  const informationContents_list = $('input.InformationContents');
+	  
+	  const informationContents_arr = Array.from(informationContents_list);
+	  
+	  informationContents_arr.forEach(function(item, index){
+		if (item.checked) {
+            $(item).val('O');  // 체크된 경우 값 1
+        } else {
+            $(item).val('X');  // 체크 안 된 경우 값 0
+        }
+				
+		InformationContentsArr.push($(item).val());
+	  });
+	  let str_InformationContentsArr = InformationContentsArr.join(",");
+	  $('input[name="totalInformationContents"]').val(str_InformationContentsArr);
+  });
+  // === 비품 체크박스 클릭 == //
   
   
   // === 비품 취소버튼 == //
@@ -344,9 +403,10 @@
   // === 비품 추가버튼 == //
   $('#insertFixtures').click(e=>{
 	  
+	
 	  let cnt = 0;
 	  let pass = false;
-	  let str_nameList = $('input[name="totalFixtures"]').val();
+	  let str_nameList = $('input[name="totalFixturesName"]').val();
 	  
 	  // ===== 배열에 있는 값들을 이용해 하는 유효성 검사 ===== //
 	  if(str_nameList != "") { // str_nameList 에 내용물이 있다는 것은 추가컬럼이 생겼다는 뜻
@@ -364,7 +424,25 @@
 			 alert("비품명을 입력해주세요", cnt);
 		  }
 		  else{
+			//////////////////////////////////////
+	 	    fixturesArr = [];	
+	 				
+	 	    const InformationTitle_list = $('input.InformationTitle');
+	 	  
+	 	    const InformationTitle_arr = Array.from(InformationTitle_list);
+	 	  
+	 	    InformationTitle_arr.forEach(function(item, index){
+	 		
+	 		  fixturesArr.push($(item).val());
+	 	    });
+	 	    let str_fixturesArr = fixturesArr.join(",");
+	 	    $('input[name="totalFixtures"]').val(str_fixturesArr);  
+	 	    //////////////////////////////////////
+			
 			 pass = true;
+			 
+			 
+				  
 		  }
 		  
 	  }
@@ -373,11 +451,15 @@
 	  
 	  if(pass) { // pass 상태가 true라면 ajax 데이터 전송
 		  
+		
+		
 		  $.ajax({
 			  url:"<%=ctxPath%>/reservation/addFixtures",
 			  type:"post",
 			  data:{"str_InformationTitle":$('input[name="totalFixtures"]').val(),
-				  	"fk_assetNo":"${requestScope.assetvo.assetNo}"},
+				  	"fk_assetNo":"${requestScope.assetvo.assetNo}",
+					"totalAssetDetailNo":$('input[name="totalAssetDetailNo"]').val(),
+					"totalInformationContents":$('input[name="totalInformationContents"]').val()},
 			  dataType:"json",
 			  success:function(json){
 				  
@@ -400,13 +482,110 @@
 		  
 	  }
 	  else if(!pass & str_nameList == "") {
-		  alert('비품추가하기 버튼을 클릭해주세요');
+		  alert('비품추가하기 버튼을 클릭 또는 비품명을 입력해주세요');
 	  }
 	  
   });
   // === 비품 추가버튼 == //
   <%-- === 비품을 insert 하기 위한 것 === --%>
 		  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  $('#addAsset').click(e=>{
+	
+	$('#assetModalBg').fadeIn();
+	$('.modal_containerAsset').fadeIn();
+	
+  });
+  
+  
+  $('#assetModalBg:not(#assetModal)').click(e=>{
+
+      $('#assetModalBg').fadeOut();
+	  $('.modal_containerAsset').fadeOut();
+
+  })
+  
+  
+  $('#goAddAsset').click(e=>{
+	
+	  if($('input[name="assetName"]').val() == "") {
+		  alert('자산명을 입력해주세요')
+	  }
+	  else{
+		  $.ajax({
+			url:"<%=ctxPath%>/reservation/addAsset",
+		    type:"post",
+		    data:{"assetName":$('input[name="assetName"]').val(),
+				  "fk_assetNo":"${requestScope.assetvo.assetNo}"},
+		    dataType:"json",
+		    success:function(json){
+				if(json.result == 1){
+				  	  alert('저장되었습니다.');
+				  	  // ====== 다시 불러주기 ====== //
+					  $('#appendTrFinal').empty();
+				  	  
+					  $('#assetModalBg').fadeOut();
+					  $('.modal_containerAsset').fadeOut();
+
+					  // $('#left_bar').load(location.href+' #left_bar');
+					  
+					  selectAssetDe();
+				  	  // ====== 다시 불러주기 ====== //
+				  }
+				  else{
+					  alert('자산등록에 실패하였습니다.');  
+				  }
+		    },
+		    error: function(request, status, error){
+		 	    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		    } 
+		  })
+	  }
+	
+  })
+  
+  
+  // ======= 자산정보들 불러주기 ======= //
+  selectAssetDe();
+  
+  function selectAssetDe() {
+	  $.ajax({
+		url:"<%=ctxPath%>/reservation/selectAssetDe",
+	    type:"post",
+	    data:{"fk_assetNo":"${requestScope.assetvo.assetNo}"},
+	    dataType:"json",
+	    success:function(json){
+			console.log(JSON.stringify(json));
+			
+			
+			
+			$.each(json, function(index, item){
+					
+				 $('#appendTrFinal').append(`<tr>
+												<td>\${item.assetDetailNo}</td>
+												<td>\${item.assetName}</td>
+												<!--<td>X</td>-->
+												<td><i class="fa-solid fa-gear"></i></td>
+											</tr>`);
+				 
+			 }) // end of $.each(json, function(index, item)) {} ------------------- 
+			
+		},
+	    error: function(request, status, error){
+	 	    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	    } 
+	  });
+  }
+  
 </script>
 
 <jsp:include page="../../footer/footer.jsp" /> 
