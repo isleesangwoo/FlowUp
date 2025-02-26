@@ -1,11 +1,13 @@
 package com.spring.app.reservation.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.app.reservation.domain.AssetReservationVO;
 import com.spring.app.reservation.domain.AssetVO;
 import com.spring.app.reservation.model.ReservationDAO;
 
@@ -81,8 +83,58 @@ public class ReservationService_imple implements ReservationService {
 	// 비품명을 추가해주는 메소드
 	@Override
 	public int addFixtures(Map<String, Object> paraMap) {
-		int result = dao.addFixtures(paraMap);
+		
+		
+        String[] arr_AssetDetailNo = (String[]) paraMap.get("arr_AssetDetailNo");
+        String[] arr_InformationTitle = (String[]) paraMap.get("arr_InformationTitle");
+        String[] arr_InformationContents = (String[]) paraMap.get("arr_InformationContents");
+        String fk_assetNo = (String) paraMap.get("fk_assetNo");
+
+        int result = 0;
+
+        for (int i = 0; i < arr_AssetDetailNo.length; i++) {
+            for (int j = 0; j < arr_InformationTitle.length; j++) {
+                // 데이터 삽입
+                Map<String, Object> insertMap = new HashMap<>();
+                insertMap.put("assetDetailNo", arr_AssetDetailNo[i]);
+                insertMap.put("fk_assetNo", fk_assetNo);
+                insertMap.put("InformationTitle", arr_InformationTitle[j]);
+                insertMap.put("InformationContents", arr_InformationContents[j]);
+
+                // DAO 호출
+                result += dao.addFixtures(insertMap);
+            }
+        }
+
+        // 모든 삽입 작업이 성공적으로 끝나면 1 반환
+        return result;
+    }
+	
+
+
+
+	// 대분류에 딸린 소분류들을 select 해주는 메소드
+	@Override
+	public List<Map<String, String>> assetOneDeSelect(String assetNo) {
+		List<Map<String, String>> OneDeList = dao.assetOneDeSelect(assetNo);
+		return OneDeList;
+	}
+
+
+
+	// 자산추가를 해주는 메소드
+	@Override
+	public int addAsset(Map<String, String> paraMap) {
+		int result = dao.addAsset(paraMap);
 		return result;
+	}
+
+
+	// 해당 페이지 내의 일자 구간 예약정보 불러오기
+	@Override
+	public List<AssetReservationVO> selectassetReservationThis(AssetReservationVO assetreservationvo) {
+		List<AssetReservationVO> reservationvoList = dao.selectassetReservationThis(assetreservationvo);
+		return reservationvoList;
 	}
 
 
