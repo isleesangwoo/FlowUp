@@ -73,7 +73,10 @@
 	</select>
 	
 	
-	
+	<insert id="insertApprover" parameterType="HashMap">
+		insert into tbl_approval(APPROVALNO, FK_DOCUMENTNO, FK_APPROVER, APPROVALORDER, APPROVALSTATUS)
+		values(seq_approval.nextval, #{documentNo}, #{fk_approver}, #{approvalorder}, default)
+	</insert>
 	
 </mapper>
 

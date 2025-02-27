@@ -32,6 +32,9 @@ public interface DocumentDAO {
 	// 조직도에 뿌려주기 위한 사원 목록 가져오기
 	List<EmployeeVO> getEmployeeList();
 
+	// 결재 라인 승인자 추가하기
+	int insertApprover(Map<String, String> paraMap);
+
 
 
 }

@@ -190,18 +190,34 @@
 	    		alert("결재 라인을 추가해주세요");
 			}
 	    	else {
+	    		const approval_line_arr = [];
+	    		
+	    		$("tbody#added_approval_line").children().each(function(item, index){
+	    			let approver = {selected_employee_no:$(this).find("td.selected_employee_no").html(),
+	    							selected_security_level:$(this).find("td.selected_security_level").html(),
+	    							selected_employee_name:$(this).find("td.selected_employee_name").html(),
+	    							selected_employee_departmentName:$(this).find("td.selected_employee_departmentName").html()}
+	    			
+	    			approval_line_arr.push(approver);
+	    		});
+	    		
+	    		approval_line_arr.sort((a, b) => Number(a.selected_security_level) - Number(b.selected_security_level));
+	    		
+	    		console.log(approval_line_arr);
 	    		
 	    		v_html = ``;
 	    		
-	    		$("tbody#added_approval_line").children().each(function(index){
+	    		$.each(approval_line_arr, function(index, element){
 		    		v_html += `<div>
 			    					<span>승인</span>
-			    					<input class='selected_security_level' type='hidden' val='\${$(this).find("td.selected_security_level").html()}'>
-			    					<input name='added_employee_no\${index}' type='hidden' val='\${$(this).find("td.selected_employee_no").html()}'>
-			    					<span>\${$(this).find("td.selected_employee_name").html()}</span>
+			    					<input class='selected_security_level' type='hidden' value='\${element.selected_security_level}'>
+			    					<input name='added_employee_no\${index}' type='hidden' value='\${element.selected_employee_no}'>
+			    					<span>\${element.selected_employee_name}</span>
 		    					</div>`;
 	    			
 	    		});
+	    		
+	    		v_html += `<input name='added_approval_count' type='hidden' value='\${$("tbody#added_approval_line").children().length}'/>`;
 	    		
 	    		
 	    		$("div#approval_line").html(v_html);
@@ -299,6 +315,10 @@
 			alert("연차 종료일을 입력하세요!");
 			return;
 		}
+		if($("div#approval_line").children().length == 0) {
+			alert("결재 라인을 추가해주세요!");
+			return;
+		}
 		
 		const queryString = $("form[name='annualDraftForm']").serialize();
 		console.log(queryString);
@@ -312,7 +332,7 @@
 				console.log(JSON.stringify(json));
 				if(json.n == "1"){
 					alert("결재 요청이 완료되었습니다.");
-					location.href="<%= ctxPath%>/document/";
+					location.href="<%= ctxPath%>/document/myDocumentList";
 				}
 				else {
 					alert("결재 요청이 실패되었습니다.");

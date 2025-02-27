@@ -46,6 +46,14 @@ CREATE table tbl_approval
 );
 -- Table TBL_APPROVAL이(가) 생성되었습니다.
 
+create sequence seq_approval
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
 CREATE table tbl_draft_annual
 (documentNo     NVARCHAR2(20)   not null
 ,useAmount      number          not null
@@ -154,6 +162,7 @@ select *
 from tbl_document
 where fk_employeeno = '100014';
 
-
+SELECT *
+  FROM all_sequences;
 
 

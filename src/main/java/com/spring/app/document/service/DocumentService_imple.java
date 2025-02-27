@@ -33,14 +33,24 @@ public class DocumentService_imple implements DocumentService {
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-");
 		
-		String documentNo = sdf.format(date) + seq_document;
+		String documentNo = sdf.format(date) + seq_document; // 문서번호
 		
-		paraMap.put("documentNo", documentNo);
+		paraMap.put("documentNo", documentNo); // 문서번호 넣어주기
 		
 		int n = mapper_dao.insertDocument(paraMap);
 		int m = 0;
 		if(n==1) {
 			m = mapper_dao.insertAnnualDraft(paraMap);
+		}
+		
+		int approval_count = Integer.parseInt(paraMap.get("added_approval_count"));
+		
+		int a = 1;
+		
+		for(int i=0; i<approval_count; i++) {
+			paraMap.put("fk_approver", paraMap.get("added_employee_no" + i));
+			paraMap.put("approvalorder", String.valueOf(approval_count-i));
+			a *= mapper_dao.insertApprover(paraMap);
 		}
 		
 		return n*m;
