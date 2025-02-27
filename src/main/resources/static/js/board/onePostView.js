@@ -1,99 +1,119 @@
 $(document).ready(()=>{
+	$("#reCommentCreate").hide();
+	
+	$("#commentElmt").click(function(){
+		$("#reCommentCreate").show();
+		//$btn.text("완료").addClass("reCommentCancel"); 
+	});
+	$(".recommentCancel").click(function(){
+		$("#reCommentCreate").hide();
+		//$btn.text("완료").removeClass("reCommentCancel"); 
+	});
+	
+	
+	// === 게시글 하나에 마우스 호버 시 시작 === //
+	$(".onePostElmt").hover(function(){
+		 $(this).css('background-color', '#f9f9f9');
+	 }, function(){
+		 $(this).css('background-color', '');
+	 });
+	// === 게시글 하나에 마우스 호버 시 끝 === //	
+	
 	let deleteFileList = []; // 삭제할 파일을 저장할 배열
 //	<%-- === jQuery 를 사용하여 드래그앤드롭(DragAndDrop)을 통한 파일 업로드 시작 === --%>
-			let file_arr = []; // 첨부된어진 파일 정보를 담아 둘 배열
+	let file_arr = []; // 첨부된어진 파일 정보를 담아 둘 배열
 
-	        // == 파일 Drag & Drop 만들기 == //
-		    $("div#update_fileDrop").on("dragenter", function(e){ /* "dragenter" 이벤트는 드롭대상인 박스 안에 Drag 한 파일이 최초로 들어왔을 때 */ 
-		        e.preventDefault();
-		        e.stopPropagation();
-		    }).on("dragover", function(e){ /* "dragover" 이벤트는 드롭대상인 박스 안에 Drag 한 파일이 머물러 있는 중일 때. 필수이벤트이다. dragover 이벤트를 적용하지 않으면 drop 이벤트가 작동하지 않음 */ 
-		        e.preventDefault();
-		        e.stopPropagation();
-		        $(this).css("background-color", "#ffd8d8");
-		    }).on("dragleave", function(e){ /* "dragleave" 이벤트는 Drag 한 파일이 드롭대상인 박스 밖으로 벗어났을 때  */
-		        e.preventDefault();
-		        e.stopPropagation();
-		        $(this).css("background-color", "#fff");
-		    }).on("drop", function(e){      /* "drop" 이벤트는 드롭대상인 박스 안에서 Drag 한것을 Drop(Drag 한 파일(객체)을 놓는것) 했을 때. 필수이벤트이다. */
-		        e.preventDefault();
-		
-		        var files = e.originalEvent.dataTransfer.files;  
-		        if(files != null && files != undefined){
-		        	for(let i=0; i<files.length; i++){
-		                const f = files[i];
-		                const fileName = f.name;  // 파일명
-		                const fileSize = f.size;  // 파일크기
-		            } // end of for------------------------
-		            
-		            let html = "";
-		            const f = files[0]; // 어차피 files.length 의 값이 1 이므로 위의 for문을 사용하지 않고 files[0] 을 사용하여 1개만 가져오면 된다. 
-		        	let fileSize = f.size/1024/1024;   /* 파일의 크기는 MB로 나타내기 위하여 /1024/1024 하였음 */
-		        	
-		        	if(fileSize >= 10) {
-		        		alert("10MB 이상인 파일은 업로드할 수 없습니다.");
-		        		$(this).css("background-color", "#fff");
-		        		return;
-		        	}
-		        	
-		        	else {
-		        		file_arr.push(f); //  드롭대상인 박스 안에 첨부파일을 드롭하면 파일들을 담아둘 배열인 file_arr 에 파일들을 저장시키도록 한다. 
-			        	const fileName = f.name; // 파일명	
-		        	
-		        	    fileSize = fileSize < 1 ? fileSize.toFixed(2) : fileSize.toFixed(1);
-		        	    
-		        	    html += 
-		                    "<div class='fileList'>" +
-		                        "<span class='delete'>&times;</span>" +  // &times; 는 x 로 보여주는 것이다.  
-		                        "<span class='fileName'> "+fileName+"</span>" +
-		                        "<span class='fileSize'> ("+fileSize+"MB)</span>" +
-		                        "<span class='clear'></span>" +  // <span class='clear'></span> 의 용도는 CSS 에서 float:right; 를 clear: both; 하기 위한 용도이다. 
-		                    "</div>";
-			            $(this).append(html);
-		        	}
-		        }// end of if(files != null && files != undefined)--------------------------
-		        
-		        $(this).css("background-color", "#fff");
-		    });
-			
-			
-			
-			// == Drop 되어진 파일목록 제거하기 == // 
-		    $(document).on("click", "span.delete", function(e){
-		    	let idx = $("span.delete").index($(e.target));
-		    	//alert("인덱스 : " + idx );
-				var fileNo = $(this).siblings(".fileNo").text(); // `.delete`와 같은 `.fileList` 안에 있는 `.fileNo` 찾기
-				var fileName = $(this).siblings(".fileName").text();
-				var newFileName = $(this).siblings(".newFileName").text();
-		    	file_arr.splice(idx,1); // 드롭대상인 박스 안에 첨부파일을 드롭하면 파일들을 담아둘 배열인 file_arr 에서 파일을 제거시키도록 한다. 
-		   
-				deleteFileList.push({
-				            fileNo: fileNo,
-				            fileName: fileName,
-				            newFileName: newFileName
-				        });
-				    
-	            $(e.target).parent().remove(); // <div class='fileList'> 태그를 삭제하도록 한다. 	    
-		    });
+    // == 파일 Drag & Drop 만들기 == //
+    $("div#update_fileDrop").on("dragenter", function(e){ /* "dragenter" 이벤트는 드롭대상인 박스 안에 Drag 한 파일이 최초로 들어왔을 때 */ 
+        e.preventDefault();
+        e.stopPropagation();
+    }).on("dragover", function(e){ /* "dragover" 이벤트는 드롭대상인 박스 안에 Drag 한 파일이 머물러 있는 중일 때. 필수이벤트이다. dragover 이벤트를 적용하지 않으면 drop 이벤트가 작동하지 않음 */ 
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).css("background-color", "#ffd8d8");
+    }).on("dragleave", function(e){ /* "dragleave" 이벤트는 Drag 한 파일이 드롭대상인 박스 밖으로 벗어났을 때  */
+        e.preventDefault();
+        e.stopPropagation();
+        $(this).css("background-color", "#fff");
+    }).on("drop", function(e){      /* "drop" 이벤트는 드롭대상인 박스 안에서 Drag 한것을 Drop(Drag 한 파일(객체)을 놓는것) 했을 때. 필수이벤트이다. */
+        e.preventDefault();
 
+        var files = e.originalEvent.dataTransfer.files;  
+        if(files != null && files != undefined){
+        	for(let i=0; i<files.length; i++){
+                const f = files[i];
+                const fileName = f.name;  // 파일명
+                const fileSize = f.size;  // 파일크기
+            } // end of for------------------------
+            
+            let html = "";
+            const f = files[0]; // 어차피 files.length 의 값이 1 이므로 위의 for문을 사용하지 않고 files[0] 을 사용하여 1개만 가져오면 된다. 
+        	let fileSize = f.size/1024/1024;   /* 파일의 크기는 MB로 나타내기 위하여 /1024/1024 하였음 */
+        	
+        	if(fileSize >= 10) {
+        		alert("10MB 이상인 파일은 업로드할 수 없습니다.");
+        		$(this).css("background-color", "#fff");
+        		return;
+        	}
+        	
+        	else {
+        		file_arr.push(f); //  드롭대상인 박스 안에 첨부파일을 드롭하면 파일들을 담아둘 배열인 file_arr 에 파일들을 저장시키도록 한다. 
+	        	const fileName = f.name; // 파일명	
+        	
+        	    fileSize = fileSize < 1 ? fileSize.toFixed(2) : fileSize.toFixed(1);
+        	    
+        	    html += 
+                    "<div class='fileList'>" +
+                        "<span class='delete'>&times;</span>" +  // &times; 는 x 로 보여주는 것이다.  
+                        "<span class='fileName'> "+fileName+"</span>" +
+                        "<span class='fileSize'> ("+fileSize+"MB)</span>" +
+                        "<span class='clear'></span>" +  // <span class='clear'></span> 의 용도는 CSS 에서 float:right; 를 clear: both; 하기 위한 용도이다. 
+                    "</div>";
+	            $(this).append(html);
+        	}
+        }// end of if(files != null && files != undefined)--------------------------
+        
+        $(this).css("background-color", "#fff");
+    });
 	
-			//전역변수
-		    var obj = [];
+	
+	
+	// == Drop 되어진 파일목록 제거하기 == // 
+    $(document).on("click", "span.delete", function(e){
+    	let idx = $("span.delete").index($(e.target));
+    	//alert("인덱스 : " + idx );
+		var fileNo = $(this).siblings(".fileNo").text(); // `.delete`와 같은 `.fileList` 안에 있는 `.fileNo` 찾기
+		var fileName = $(this).siblings(".fileName").text();
+		var newFileName = $(this).siblings(".newFileName").text();
+    	file_arr.splice(idx,1); // 드롭대상인 박스 안에 첨부파일을 드롭하면 파일들을 담아둘 배열인 file_arr 에서 파일을 제거시키도록 한다. 
+   
+		deleteFileList.push({
+		            fileNo: fileNo,
+		            fileName: fileName,
+		            newFileName: newFileName
+		        });
 		    
-		    //스마트에디터 프레임생성
-		    nhn.husky.EZCreator.createInIFrame({
-		        oAppRef: obj,
-		        elPlaceHolder: "updateContent",
-		        sSkinURI: ctxPath+"/smarteditor/SmartEditor2Skin.html",
-		        htParams : {
-		            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
-		            bUseToolbar : true,            
-		            // 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
-		            bUseVerticalResizer : true,    
-		            // 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
-		            bUseModeChanger : true,
-		        }
-		    });
+        $(e.target).parent().remove(); // <div class='fileList'> 태그를 삭제하도록 한다. 	    
+    });
+
+
+	//전역변수
+    var obj = [];
+    
+    //스마트에디터 프레임생성
+    nhn.husky.EZCreator.createInIFrame({
+        oAppRef: obj,
+        elPlaceHolder: "updateContent",
+        sSkinURI: ctxPath+"/smarteditor/SmartEditor2Skin.html",
+        htParams : {
+            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
+            bUseToolbar : true,            
+            // 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
+            bUseVerticalResizer : true,    
+            // 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+            bUseModeChanger : true,
+        }
+    });
 			
 	$("#update_isNoticeElmt").hide(); // 공지사항 등록 미체크시 hide 상태
 	if($("input[name='isNotice']").is(':checked') == true){ // 체크박스에 체크가 되었을 경우

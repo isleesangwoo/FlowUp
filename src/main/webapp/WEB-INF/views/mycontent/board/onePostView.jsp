@@ -130,8 +130,15 @@
         
         <!-- 게시글 하나 내용보여주기 시작  -->
        	<div id="onePostHeader" class="padding">
-       		<span id="postSubject">제목 : ${postvo.subject}</span>
-       		<span id="postCommentCount">[${postvo.commentCount}]</span>
+       		<div style="display: flex; justify-content: space-between;">
+	       		<div>
+		       		<span id="postSubject">제목 : ${postvo.subject}</span>
+		       		<span id="postCommentCount">[${postvo.commentCount}]</span>
+	       		</div>
+	       		<div id="likeBtn">
+	       			<button type="button" class="btnDefaultDesignNone"><i class="fa-solid fa-heart" id="heartIcon"></i></button>
+	       		</div> <%-- 좋아요 버튼 --%>
+       		</div>
        		<div>
        			<span id="postCreatBy">${postvo.name}</span>
        			<span id="postRegDate">${postvo.regDate}</span>
@@ -174,17 +181,56 @@
 	        		
 	        </div>
 	        
+			<!-- 대댓글 UI 시작 -->
+			<div id="reCommentCreate" >
+	        	<span id="profile"> P </span>
+	        	<div id="commentEdit">
+	        		<input type="text" name="content" placeholder="댓글을 남겨보세요" id="reCommentContent">
+	        		<div id="commentBottom">
+	        			<button id="commentEnterBtn" class="btnDefaultDesignNone">등록</button>
+	        		</div>
+	        	</div>
+	        </div>
+			<!-- 대댓글 UI 끝 -->
         </div>
+        
         <div id="commentCreate" class="padding">
         	<span id="profile"> P </span>
         	<div id="commentEdit">
-        		<input type="text" name="content" placeholder="댓글을 남겨보세요">
+        		<input type="text" name="content" placeholder="댓글을 남겨보세요" id="commentContent">
         		<div id="commentBottom">
-        			<div><i class="fa-solid fa-paperclip"></i></div>
-        			<div><button id="commentEnterBtn" class="btnDefaultDesignNone">등록</button></div>
+        			<button id="commentEnterBtn" class="btnDefaultDesignNone">등록</button>
         		</div>
         	</div>
         </div>
+        	<table id="preoOrNextPostElmt">
+        		<tr class="onePostElmt">
+        			<td>이전글</td>
+        			<td>이전글내용입니다이전글내용입니다이전글내용입니다이전글내용입니다이전글내용입니다이전글내용입니다이전글내용입니다</td>
+        			<td>이상우</td>
+        			<td>2025-02-27</td>
+        			<td>23</td>
+					<td>14</td>
+        		</tr>
+        		<tr class="onePostElmt">
+        			<td> <span class="currentPost"><i class="fa-solid fa-angles-right"></i> 현재글</span></td>
+        			<td><span class="currentPost">현재글내용입니다현재글내용입니다현재글내용입니다현재글내용입니다현재글내용입니다현재글내용입니다현재글내용입니다</span></td>
+        			<td>이상우</td>
+        			<td>2025-02-27</td>
+        			<td>23</td>
+					<td>14</td>
+        		</tr>
+        		<tr class="onePostElmt">
+        			<td>다음글</td>
+        			<td>다음글내용입니다다음글내용입니다다음글내용입니다다음글내용입니다다음글내용입니다다음글내용입니다다음글내용입니다</td>
+        			<td>이상우</td>
+        			<td>2025-02-24</td>
+        			<td>23</td>
+					<td>14</td>
+        		</tr>
+        	</table>
+<%--     <div style="margin-bottom: 1%;">이전글&nbsp;제목&nbsp;&nbsp;<span class="move" onclick="goView('${requestScope.boardvo.previousseq}')">${requestScope.boardvo.previoussubject}</span></div>  --%>
+<%-- 	 <div style="margin-bottom: 1%;">다음글&nbsp;제목&nbsp;&nbsp;<span class="move" onclick="goView('${requestScope.boardvo.nextseq}')">${requestScope.boardvo.nextsubject}</span></div> --%>
 	        
 	     <div id="noticeEndDate" style="display: none;">${postvo.noticeEndDate}</div>   
         <form name="postFrm">

@@ -124,7 +124,9 @@
 	display: inline-block;
 	font-size: var(--size24)
 }
-
+#heartIcon{
+	font-size: 50px;
+}
 #postCreatBy, #postRegDate {
 	font-size: var(--size14)
 }
@@ -248,6 +250,10 @@
 	display: flex;
 	border-bottom: 1px solid #c8c8c8;
 }
+#reCommentCreate{
+	display: flex;
+	padding: var(--size22) 0 var(--size22) var(--size22);
+}
 
 #commentEdit {
 	display: flex;
@@ -259,7 +265,14 @@
 	margin-left: 20px;
 }
 
-input[name='content'] {
+#commentContent {
+	width: 100%;
+	outline: none;
+	border: none;
+	padding: var(--size10) var(--size16);
+}
+
+#reCommentContent {
 	width: 100%;
 	outline: none;
 	border: none;
@@ -273,8 +286,20 @@ input[name='content'] {
 	cursor: pointer;
 }
 
-#commentBottom { /*파일첨부, 댓글등록 버튼*/
-	display: flex;
-	justify-content: space-between;
+#commentBottom { /*  댓글등록 버튼*/
 	padding: 0 var(--size16) var(--size10) var(--size16);
+	margin-left: auto;
+}
+#preoOrNextPostElmt{
+	width: 100%;
+	border-bottom: solid 1px #c8c8c8;
+}
+.onePostElmt td:nth-child(1) {
+	padding: var(--size12) var(--size22);
+}
+.onePostElmt td:last-child {
+	padding-right: var(--size12);
+}
+.currentPost{
+	padding-left:var(--size12);
 }
