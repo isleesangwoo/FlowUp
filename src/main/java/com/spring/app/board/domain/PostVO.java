@@ -16,6 +16,7 @@ public class PostVO {
 	private String noticeEndDate ;     // 공지사항 종료일 (공지글일 경우 사용)
 	
 	private BoardVO boardvo; // 조인을 위해
+	private PostFileVO postfilevo; // 조인을 위해
 	
 	
 	public String getPostNo() {
@@ -103,6 +104,12 @@ public class PostVO {
 	}
 	public void setBoardvo(BoardVO boardvo) {
 		this.boardvo = boardvo;
+	}
+	public PostFileVO getPostfilevo() {
+		return postfilevo;
+	}
+	public void setPostfilevo(PostFileVO postfilevo) {
+		this.postfilevo = postfilevo;
 	}
 	
 	

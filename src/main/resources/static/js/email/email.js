@@ -62,5 +62,26 @@ $(document).ready(()=>{
            $(this).addClass('active-menu-item');
        });
    });
+   
+   
+   
+   /* 체크박스 체크 처리 메서드 */
+   // 마스터 체크박스 클릭 시
+   $('#mailListAllCheck').on('click', function(){
+     // 마스터 체크 상태에 따라 모든 개별 체크박스의 체크 상태 변경
+     var isChecked = $(this).prop('checked');
+     $('input.mailOneCheck').prop('checked', isChecked);
+   });
 
+   // 개별 체크박스 클릭 시
+   $('input.mailOneCheck').on('click', function(){
+     // 모든 개별 체크박스 중 체크된 개수가 전체와 같으면 마스터 체크, 아니면 해제
+     if ($('input.mailOneCheck:checked').length === $('input.mailOneCheck').length) {
+       $('#mailListAllCheck').prop('checked', true);
+     } else {
+       $('#mailListAllCheck').prop('checked', false);
+     }
+   });
+
+   
 }) // end of $(document).ready(()=>{})---------

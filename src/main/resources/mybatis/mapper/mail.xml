@@ -6,10 +6,156 @@
 <!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="com.spring.app.mail.model.MailDAO">
    
-   <select id="mailListAll" resultType="MailVO">
-	  select mailNo, fk_employeeNo, subject, content
-	  from tbl_mail
-   </select>
+   	<select id="mailListAll" resultType="MailVO">
+  		select mailNo, fk_employeeNo, subject, content
+ 		from tbl_mail
+   	</select>
+   
+   	<!-- === 총 메일 개수 구하기 === --> 
+   	<select id="getTotalCount"  resultType="int">
+   		select count(*)
+   		from tbl_mail
+    	where deleteStatus = 0
+   	</select>
+   
+   	<!-- === 받은 메일 목록 조회 === -->
+   	<resultMap id="selectMailList_Map" type="MailVO">
+	<!-- MailVO의 필드 매핑 -->
+	    <result property="mailNo" 			column="mailNo"/>
+	    <result property="fk_employeeNo" 	column="fk_employeeNo"/>
+	    <result property="subject" 			column="subject"/>
+	    <result property="content" 			column="content"/>
+	    <result property="sendDate" 		column="sendDate"/>
+	    <result property="readStatus" 		column="readStatus"/>
+	    <result property="deleteStatus" 	column="deleteStatus"/>
+	    <result property="saveStatus" 		column="saveStatus"/>
+	    <result property="importantStatus" 	column="importantStatus"/>
+
+ 	<!-- EmployeeVO의 필드 매핑 -->
+	    <association property="employeevo" javaType="EmployeeVO">
+	        <result property="employeeNo" column="employeeNo"/>
+	        <result property="name" column="name"/>
+	    </association>
+	</resultMap>
+
+	<select id="selectMailList" resultMap="selectMailList_Map" parameterType="HashMap">
+		SELECT M.mailNo, M.fk_employeeNo, M.subject, M.content, 
+		       M.sendDate, M.readStatus, M.deleteStatus, M.saveStatus, M.importantStatus,
+		       e.employeeNo, e.name
+		FROM 
+		    ( 
+		        SELECT row_number() OVER (ORDER BY mailNo DESC) AS rno, 
+		               mailNo, fk_employeeNo, subject, content,
+		               to_char(sendDate, 'yyyy-mm-dd hh24:mi') AS sendDate,
+		               readStatus, deleteStatus, saveStatus, importantStatus
+		        FROM tbl_mail
+		        WHERE deleteStatus = 0
+		        <!-- saveStatus 값이 null이 아니고 빈 문자열("")도 아닐 경우에만 조건을 추가 -->
+                <if test="saveStatus != null and saveStatus != '' ">
+            		AND saveStatus = #{saveStatus}
+      			</if>
+		    ) M
+		JOIN tbl_employee e
+		  ON M.fk_employeeNo = e.employeeNo
+		
+		<!-- startRno와 endRno가 null이 아닐 때만 페이징 조건을 적용 -->
+	    <if test="startRno != null and endRno != null">
+        	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+    	</if>
+   	</select>
+   
+   
+	<!-- 안 읽은 메일 개수(unread) 조회 -->
+	<select id="getUnreadCount" resultType="int">
+	  	SELECT COUNT(*)
+	  	FROM tbl_mail
+	  	WHERE readStatus = 0
+	    AND deleteStatus = 0
+	</select>
+	
+	
+	<!-- 현재 메일의 importantStatus 조회 -->
+	<select id="getImportantStatus" parameterType="int" resultType="int">
+	    SELECT importantStatus 
+	    FROM tbl_mail
+	    WHERE mailNo = #{mailNo}
+	</select>
+	
+	<!-- 별 클릭시 importantStatus 값을 업데이트 -->
+	<update id="updateImportantStatus" parameterType="map">
+	    UPDATE tbl_mail
+	    SET importantStatus = #{importantStatus}
+	    WHERE mailNo = #{mailNo}
+	</update>
+	
+	<!-- 현재 메일의 ReadStatus 조회 -->
+	<select id="getReadStatus" parameterType="int" resultType="int">
+	    SELECT readStatus 
+	    FROM tbl_mail
+	    WHERE mailNo = #{mailNo}
+	</select>
+	
+	<!-- 메일 아이콘 클릭시 ReadStatus 값을 업데이트 -->
+	<update id="updateReadStatus" parameterType="map">
+	    UPDATE tbl_mail
+	    SET readStatus = #{readStatus}
+	    WHERE mailNo = #{mailNo}
+	</update>
+
+	<!-- 중요 메일함 조회 -->
+	<select id="selectImportantMail" parameterType="String" resultMap="selectMailList_Map">
+	    SELECT M.mailNo, M.fk_employeeNo, M.subject, M.content
+	          ,to_char(M.sendDate, 'yyyy-mm-dd hh24:mi') AS sendDate
+			  ,M.readStatus ,M.deleteStatus ,M.saveStatus ,M.importantStatus
+	          ,E.employeeNo AS employeeNo
+	          ,E.name AS name
+	    FROM tbl_mail M
+	    JOIN tbl_employee E
+	      ON M.fk_employeeNo = E.employeeNo
+	    WHERE M.importantStatus = 1
+	      AND M.deleteStatus = 0
+	      <!--
+		      특정 유저 empNo를 발신자나 수신자 기준으로 필터할때 추가하기
+		      발신자가 empNo 인 경우
+	          AND M.fk_employeeNo = #{empNo}
+	      -->
+	    ORDER BY M.mailNo DESC
+	</select>
+	
+	
+	<!-- 메일 하나 조회하기 -->
+	<!--
+	<resultMap id="viewOneMail_Map" type="MailVO">
+	-->
+ 		<!-- MailVO의 필드 매핑 -->
+ 		<!--
+	    <result property="mailNo" 		 column="mailNo"/>
+	    <result property="fk_employeeNo" column="fk_employeeNo"/>
+	    <result property="name" 		 column="name"/>
+	    <result property="subject" 		 column="subject"/>
+	    <result property="content" 		 column="content"/>
+	    <result property="readCount" 	 column="readCount"/>
+	    <result property="regDate" 		 column="regDate"/>
+	    <result property="commentCount"  column="commentCount"/>
+		-->
+	
+	 	<!-- BoardVO의 필드 매핑 -->
+	 	<!--
+	    <association property="employeevo"  javaType="EmployeeVO">
+	        <result property="employeeNo" 	column="employeeNo"/>
+	        <result property="name" 		column="name"/>
+	    </association>
+	</resultMap>
+	<select id="viewOneMail" resultMap="goViewOnePost_Map" parameterType="HashMap">
+		select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount
+		from tbl_mail M
+		join tbl_employee E
+		on M.FK_MAILNO = E.boardNo
+		where mailNo = #{mailNo}
+	</select>
+	
+	 -->
+
 
 </mapper>
 

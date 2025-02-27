@@ -75,32 +75,42 @@
         <%-- 이곳에 각 해당되는 뷰 페이지를 작성 시작 --%>
 		<div id="postContainer"> <!-- 게시글 보여주는 요소 전체 박스-->
 			<div style="width:80%; border: solid 1px orange;">
-			
-				<c:forEach var="post" items="${postAllList}">
-					<div class="onePostElmt">
-						<div style="display: flex; justify-content: space-between;">
-							<div class="article_wrap">
-								<span class="postBoard">${post.boardvo.boardName}</span>
-								<span onclick="goView('${post.postNo}')">
-									<span class="postSubject">${post.subject}</span><span class="postCommentCount">[댓개수] ${post.commentCount}</span>
-									<span class="postContent">${post.content}</span>
-								</span>
+			 <c:if test="${postAllList[0] != null}"> <%-- 게시글이 있다면 --%>
+			 	<div id="allPostElmt">
+					<c:forEach var="post" items="${postAllList}">
+						<div class="onePostElmt">
+							<div style="display: flex; justify-content: space-between;">
+								<div class="article_wrap">
+									<span class="postBoard">${post.boardvo.boardName}</span>
+									<span onclick="goView('${post.postNo}')">
+										<span class="postSubject">${post.subject}</span><span class="postCommentCount">[댓개수] ${post.commentCount}</span>
+										<span class="postContent">${post.content}</span>
+									</span>
+								</div>
+								<div>
+									<div class="postLikeBtn"><i class="fa-regular fa-heart"></i></div>
+									<div class="likeCount">10</div> <!-- 좋아요도 조인해야긋네..~ -->
+								</div>
 							</div>
-							<div>
-								<div class="postLikeBtn"><i class="fa-regular fa-heart"></i></div>
-								<div class="likeCount">10</div> <!-- 좋아요도 조인해야긋네..~ -->
-							</div>
+							
+							<span id="profileImg">프사</span><!-- 프사도 조인해야긋네~.. -->
+							<span id="postCreateBy">${post.name}</span>
+							<span id="postCreateAt">${post.regDate}</span>
 						</div>
-						
-						<span id="profileImg">프사</span><!-- 프사도 조인해야긋네~.. -->
-						<span id="postCreateBy">${post.name}</span>
-						<span id="postCreateAt">${post.regDate}</span>
-					</div>
-				</c:forEach>
-				<%-- === #103. 페이지바 보여주기 === --%>
+					</c:forEach>
+				</div>
+				<%-- === 페이지바 보여주기 === --%>
 			    <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
 			    	${requestScope.pageBar}
 			    </div>
+			  </c:if>
+			  <c:if test="${postAllList[0] == null}"> <%-- 게시글이 없다면 --%>
+				  <div style="text-align: center; margin: 150px 0;">
+				  	<p>작성된 글이 없습니다.</p>
+				  	<p>새로운 정보, 기분 좋은 소식을 동료들과 공유하세요.</p>
+				  	<button type="button" class="writePostBtn">글쓰기</button>
+				  </div>
+			  </c:if>
 			</div>
 			
 			<%-- 게시판 별 게시글 조회 --%>

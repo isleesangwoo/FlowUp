@@ -1,6 +1,7 @@
 package com.spring.app.mail.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
@@ -14,6 +15,37 @@ public interface MailDAO {
 	// 전체 메일
 	List<MailVO> mailListAll();
 
-	// 메일 작성
+	// 받은 메일 개수 조회
+	int getTotalCount();
+
+	// 받은 메일 목록 조회
+	List<MailVO> selectMailList(Map<String, String> paraMap);
+
+	// 안 읽은 메일 개수 조회
+	int getUnreadCount();
+
+	// 중요(별) 상태 조회
+	int getImportantStatus(int mailNo);
+
+	// 메일 중요 상태 업데이트
+	void updateImportantStatus(Map<String, Object> paramMap);
+
+	// 중요메일함 조회
+	List<MailVO> selectImportantMail(String empNo);
+
+	// 메일 읽음 상태 조회
+	int getReadStatus(int mailNo);
+	
+	// 메일 읽음 상태 업데이트
+	void updateReadStatus(Map<String, Object> paramMap);
+
+	// 읽은 메일 조회
+	List<MailVO> selectReadMail(String empNo);
+
+	/*
+	// 특정 메일 1개 조회
+	MailVO viewOneMail(Map<String, String> paraMap);
+	 */
+
 	
 }
