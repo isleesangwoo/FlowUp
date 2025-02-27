@@ -66,25 +66,35 @@
 				'display':'block'
 			})
 			
-			// 조직도에 뿌려주기 위한 사원 목록 가져오기
+			// 모달 조직도에 뿌려주기 위한 사원 목록 가져오기
 			$.ajax({
 				url:"<%= ctxPath%>/document/getEmployeeList",
 				dataType:"json",
 				success: function(json){
 					let departmentName = json[0].departmentName;
-					let v_html = `<ul><li class='departmentName'>\${departmentName}</li><ul class='closed ml-1'>`;
+					let v_html = `<ul>
+									<li class='departmentName'>\${departmentName}</li>
+									<ul class='closed ml-1'>`;
 					
 					$.each(json, function(index, item){
 						if(departmentName == item.departmentName) {
-							v_html += `<li class='employee_name'>\${item.name}</li>`;
+							v_html += `<li class='employee_name'>\${item.name}</li>
+										<li class='employee_no' style='display:none'>\${item.employeeNo}</li>
+										<li class='security_level' style='display:none'>\${item.securityLevel}</li>`;
 						}
 						else {
 							departmentName = item.departmentName
-							v_html += `</ul><li class='departmentName'>\${departmentName}</li><ul class='closed ml-1'><li class='employee_name'>\${item.name}</li>`;
+							v_html += `</ul>
+											<li class='departmentName'>\${departmentName}</li>
+											<ul class='closed ml-1'>
+												<li class='employee_name'>\${item.name}</li>
+												<li class='employee_no' style='display:none'>\${item.employeeNo}</li>
+												<li class='security_level' style='display:none'>\${item.securityLevel}</li>`;
 						}
 					});
 					
-					v_html += `</ul></ul>`;
+					v_html += `</ul>
+								</ul>`;
 					
 					$("div#organization_chart").html(v_html);
 					
@@ -99,72 +109,130 @@
 	    }) // end of $('#goMail').click(e=>{})-----------
 	    
 	    
+	    // 모달에서 조직도에서 사원을 클릭했을 때
 		$("div#organization_chart").on('click', "li.employee_name", function(e) {
 			$("li.employee_name").removeClass("selected");
 			$(e.target).addClass("selected");
 			$("button#add_approval_btn").css({"pointer-events":"auto"});
 			$("input#selected_employee_name").val($(e.target).html());
 			$("input#selected_employee_departmentName").val($(e.target).parent().prev().html());
+			$("input#selected_employee_no").val($(e.target).next().html());
+			$("input#selected_security_level").val($(e.target).next().next().html());
 			
 		});
 		
 		
+		// 모달에서 조직도에서 부서를 클릭했을 때
 		$("div#organization_chart").on('click', "li.departmentName", function(e) {
 	    	console.log($(e.target).html());
 	    	$(e.target).next().toggle('closed');
 		});
 		
 		
+		// 모달에서 사원을 결재 라인으로 추가 하는 버튼
 		$("button#add_approval_btn").on('click', function(e) {
-			if($("input#selected_employee_name").val() == ""){
-				alert("dddd");
+			
+			if($("tbody#added_approval_line").children().length > 2) {
+				alert("더 이상 추가할 수 없습니다.");
 			}
 			else {
-				let v_html=`<tr>
-								<td>결재</td>
-								<td>\${$('input#selected_employee_name').val()}</td>
-								<td>\${$('input#selected_employee_departmentName').val()}</td>
-								<td>예정</td>
-								<td class='delete_approver'>삭제</td>
-							</tr>`;
 				
-				$("tbody#added_approval_line").after(v_html);
+				let isExist = false; // 이미 추가된 사원인지 확인하는 변수
 				
-				$("input#selected_employee_name").val("");
-				$("input#selected_employee_departmentName").val("");
-				$("li.employee_name").removeClass("selected");
-				$("button#add_approval_btn").css({"pointer-events":""});
+				// 이미 추가된 사원인지 확인하는 for 문
+				$("tbody#added_approval_line").find("td.selected_employee_no").each(function(){
+					if($('input#selected_employee_no').val() == $(this).html()) {
+						// for 문 안에서 선택된 사원번호와 추가된 사원번호가 같은지 확인
+						
+						alert("이미 추가된 사원입니다.");
+						isExist = true;
+						return;
+					}
+				});
+				
+				// 추가되지 않은 사원이라면
+				if(!isExist) {
+					
+					let v_html=`<tr>
+									<td>결재</td>
+									<td class='selected_employee_no' style='display: none'>\${$('input#selected_employee_no').val()}</td>
+									<td class='selected_security_level' style='display: none'>\${$('input#selected_security_level').val()}</td>
+									<td class='selected_employee_name'>\${$('input#selected_employee_name').val()}</td>
+									<td class='selected_employee_departmentName'>\${$('input#selected_employee_departmentName').val()}</td>
+									<td>예정</td>
+									<td class='delete_approver'>삭제</td>
+								</tr>`;
+					
+					$("tbody#added_approval_line").append(v_html);
+				}
 			}
+			
+			$("input#selected_employee_name").val("");
+			$("input#selected_employee_departmentName").val("");
+			$("input#selected_employee_no").val("");
+			$("input#selected_security_level").val("");
+			// 선택되서 임시 저장된 데이터 초기화
+			
+			$("li.employee_name").removeClass("selected");	// 선택해제
+			$("button#add_approval_btn").css({"pointer-events":""});	// 결재 라인 추가 버튼 비활성화
 		});
 		
 		
+		// 모달에서 결재 라인에 추가된 사원을 삭제하는 버튼
 		$("tbody#added_approval_line").on('click', "td.delete_approver", function(e) {
-			alert("Dd");
 			$(e.target).parent().remove();
 		});
 	   
 
-	    $('.modal_bg:not(.modal_container_document)').click(e=>{
-
-	        $('#approval_line_bg').fadeOut();
-	        $('.approval_line_modal_container').css({
-	        	'display':''
-			})
-
-	    })
-	    
-		$('.close').click(e=>{
-			
-			$('#approval_line_modal').fadeOut();
-			$('.approval_line_modal_container').css({
-				'width': '0%'
-			})
-			
-			
-		}); // end of $('.close').click(e=>{})---------- 
+	    // 모달에서 확인 버튼을 클릭했을 때 결재라인이 추가되도록하기
+	    $("button#submit_approval_line").click(e=>{
+	    	if($("tbody#added_approval_line").children().length < 1) {
+	    		alert("결재 라인을 추가해주세요");
+			}
+	    	else {
+	    		
+	    		v_html = ``;
+	    		
+	    		$("tbody#added_approval_line").children().each(function(index){
+		    		v_html += `<div>
+			    					<span>승인</span>
+			    					<input class='selected_security_level' type='hidden' val='\${$(this).find("td.selected_security_level").html()}'>
+			    					<input name='added_employee_no\${index}' type='hidden' val='\${$(this).find("td.selected_employee_no").html()}'>
+			    					<span>\${$(this).find("td.selected_employee_name").html()}</span>
+		    					</div>`;
+	    			
+	    		});
+	    		
+	    		
+	    		$("div#approval_line").html(v_html);
+	    		
+	    		close_modal();
+	    	}
+	    });
 		
+	    
+	    // 모달에서 취소 버튼을 클릭했을 때 모달이 사라지게 하기
+		$("button#cancel_approval_line").click(e=>{
+			close_modal();
+		});
+		
+		
+		// 모달 바깥 부분을 클릭했을 때 모달이 사라지게 하기
+	    $('.modal_bg:not(.modal_container_document)').click(e=>{
+	    	close_modal();
+	    });
+	    
+	    
 	}); // end of $(document).ready(funtion(){})-----------------------------------
 
+	
+	// 모달창을 사라지게 하기
+	function close_modal() {
+		$('#approval_line_bg').fadeOut();
+        $('.approval_line_modal_container').css({
+        	'display':''
+		});
+	}
 	
 	// 사용연차 개수 계산하기
 	function calAnnualAmount(){
@@ -256,6 +324,7 @@
 		}); // end of $.ajax({})----------------
 		
 		
+		
 	} // end of function annualDraft(){}---------------------------------------------
 	
 	
@@ -302,6 +371,7 @@
 	
 	<!-- 결재라인 모달 -->
 	<div id="approval_line_bg" class="modal_bg">
+		<!-- 모달창을 띄웠을때의 뒷 배경 -->
 	</div>
 	<div id="approval_line_container" class="approval_line_modal_container">
 		<div>
@@ -351,8 +421,14 @@
 				</div>
 			</div>
 		</div>
+		<div>
+			<button id="submit_approval_line">확인</button>
+			<button id="cancel_approval_line">취소</button>
+		</div>
 		<input id="selected_employee_name"/>
 		<input id="selected_employee_departmentName"/>
+		<input id="selected_employee_no"/>
+		<input id="selected_security_level"/>
 	</div>
 		
 
@@ -365,33 +441,41 @@
 		<button>미리보기</button>
 		<button id="approval_line_btn">결재 정보</button>
 	</div>
-		<div style="border: solid 1px gray">
+		<div style="border: solid 1px gray; width: 1000px;">
 			<form name="annualDraftForm">
 				<input type="hidden" name="documentType" value="휴가신청서" />
 				<input type="hidden" name="temp" value="0" />
 				<h1 style="text-align: center">연차신청서</h1>
-				<table>
-					<tbody>
-						<tr>
-							<td>기안자</td>
-							<td>${sessionScope.loginuser.name}</td>
-						</tr>
-						<tr>
-							<td>기안부서</td>
-							<td>${sessionScope.loginuser.departmentName}</td>
-						</tr>
-						<tr>
-							<td>기안일</td>
-							<td><%= today%></td>
-						</tr>
-						<tr>
-							<td>문서번호</td>
-							<td></td>
-						</tr>
-					</tbody>
-				</table>
+				<div style="display: inline-block; width: 300px">
+					<table>
+						<tbody>
+							<tr>
+								<td>기안자</td>
+								<td>${sessionScope.loginuser.name}</td>
+							</tr>
+							<tr>
+								<td>기안부서</td>
+								<td>${sessionScope.loginuser.departmentName}</td>
+							</tr>
+							<tr>
+								<td>기안일</td>
+								<td><%= today%></td>
+							</tr>
+							<tr>
+								<td>문서번호</td>
+								<td></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
 				
-				<table class="mt-5">
+				<div id="approval_line" style="text-align: right; display: inline-block; width: 690px">
+				
+					<!-- 결재 라인이 들어올 곳 -->
+					
+				</div>
+				
+				<table class="mt-5" style="width: 1000px;">
 					<tbody>
 						<tr>
 							<td>제목</td>

@@ -106,11 +106,36 @@ ORDER BY createdAt DESC
     </association>
 </resultMap>
 <select id="selectAllPost" resultMap="selectAllPost_Map" parameterType="HashMap">
+	<!-- 	스마트에디터 이미지첨부 하기 전 전체 게시판 조회
 	SELECT 
     V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, V.subject, V.content, 
     V.readCount, V.regDate, V.commentCount, V.allowComments, V.status, 
     V.isNotice, V.noticeEndDate,
     b.boardNo, b.boardName
+	FROM 
+	    ( 
+	        SELECT row_number() OVER (ORDER BY postNo DESC) AS rno, 
+	               postNo, fk_boardNo, fk_employeeNo, name, subject, content,
+	               readCount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate, 
+	               commentCount, allowComments, status, isNotice, noticeEndDate
+	        FROM tbl_post
+	        WHERE status = 1
+	    ) V
+	JOIN tbl_board b ON V.fk_boardNo = b.boardNo
+	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno}) 
+	-->
+	<!-- 스마트에디터 이미지첨후 구현 후 전체게시판 조회 -->
+	SELECT 
+	    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, 
+	    case when length( V.subject) > 40 then substr(subject, 0, 40) || '...' else subject end as subject, 
+	    CASE 
+        WHEN LENGTH(REGEXP_REPLACE(V.content, '&lt;[^>]*>', '')) > 80 
+        THEN SUBSTR(REGEXP_REPLACE(V.content, '&lt;[^>]*>', ''), 1, 80) || '...' 
+        ELSE REGEXP_REPLACE(V.content,'&lt;[^>]*>', '') 
+    END AS content,
+	    V.readCount, V.regDate, V.commentCount, V.allowComments, V.status, 
+	    V.isNotice, V.noticeEndDate,
+	    b.boardNo, b.boardName
 	FROM 
 	    ( 
 	        SELECT row_number() OVER (ORDER BY postNo DESC) AS rno, 
@@ -131,6 +156,13 @@ ORDER BY createdAt DESC
       where status = 1
    </select>
    
+   <!-- === 해당 게시판의 총 게시물 건수(totalCount) 구하기 === --> 
+   <select id="getBoardGroupPostTotalCount"  resultType="int" parameterType="String">
+      select count(*)
+      from tbl_post
+      where status = 1 and fk_boardNo= #{boardNo}
+   </select>
+   
 <!--    게시글 하나 조회하기(조인함) -->
 	<resultMap id="goViewOnePost_Map" type="PostVO">
 	 <!-- PostVO의 필드 매핑 -->
@@ -143,6 +175,9 @@ ORDER BY createdAt DESC
 	    <result property="readCount" column="readCount"/>
 	    <result property="regDate" column="regDate"/>
 	    <result property="commentCount" column="commentCount"/>
+	    <result property="allowComments" column="allowComments"/>
+	    <result property="isNotice" column="isNotice"/>
+	    <result property="noticeEndDate" column="noticeEndDate"/>
 	
 	 	<!-- BoardVO의 필드 매핑 -->
 	    <association property="boardvo" javaType="BoardVO">
@@ -151,19 +186,186 @@ ORDER BY createdAt DESC
 	    </association>
 	</resultMap>
 	<select id="goViewOnePost" resultMap="goViewOnePost_Map" parameterType="HashMap">
-		select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount
+		select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount,P.allowComments,P.isNotice,P.noticeEndDate
 		from tbl_post P
 		join tbl_board B
 		on P.FK_BOARDNO = B.boardNo
 		where postNo = #{postNo}
 	</select>
 	
-	<!-- === #41. 글조회수 1증가 하기 === -->
+<!--  글 하나의 첨부파일 기존파일명,새로운 파일명 추출 -->
+	<select id="getFileOfOnePost" parameterType="HashMap" resultType="PostFileVO">
+		select P.postNo,P.fk_boardNo, f.fileNo, f.filename,f.orgfilename,ROUND(F.fileSize / (1024 * 1024), 2) AS fileSize
+		from tbl_post P
+        join tbl_postFile F
+        on p.postNo = f.fk_postNo
+		where postNo = #{postNo}
+	</select>
+	
+	<!-- ===  글조회수 1증가 하기 === -->
    <update id="increase_readCount" parameterType="String">
         update tbl_post set readCount = readCount + 1
         where postNo = to_number(#{postNo})
    </update>
 
+<!-- 등록되어지는 게시글의 번호를 알아오기 위해 -->
+	<select id="getInfoPost" resultType="PostVO">
+	select postNo, fk_boardNo, fk_employeeNo, name, subject, content,
+	               readCount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate, 
+	               commentCount, allowComments, status, isNotice, noticeEndDate
+	from tbl_post
+	WHERE ROWNUM =1
+	order by postNo desc
+	</select>
+
+<!--  파일첨부가 있는 글쓰기  // 첨부파일이 있다면 첨부파일테이블(tbl_postFile) 테이블에 파일 정보 삽입  -->
+	<insert id="addPostInsertFile" parameterType="map">
+      <!-- 원글쓰기인 경우 -->
+        insert into tbl_postFile(fileNo, fk_postNo, orgFilename, fileName, fileSize)  
+        values(postFileSeq.nextval,#{postNo},#{originalFilename}, #{newFileName}, #{fileSize})
+   </insert>
+   
+<!-- 실제 첨부파일을 삭제하기위해 첨부파일명을 알아오기. -->
+   <resultMap type="HashMap" id="getView_delete_map">
+   		<result property="postNo" 			column="postNo" 		javaType="String" />
+   		<result property="filename" 		column="filename" 		javaType="String" />
+   		<result property="photofilename" 	column="photofilename"  javaType="String" />
+   </resultMap>
+   <select id="getView_delete" parameterType="String" resultMap="getView_delete_map">
+		select postNo, filename, substr(func_post_photo_upload_delete(postNo), 2) AS photofilename
+		from tbl_post p
+		full join tbl_postFile F
+		on p.postNo = F.fk_postNo
+		where postNo = #{postNo}
+   </select>
+   
+   <!-- 1개글 삭제하기-->
+   <delete id="postDel" parameterType="String">
+        delete from tbl_post
+        where postNo = #{postNo}
+   </delete>
+   
+   <!-- 1개글 삭제하기 -->
+   <delete id="postFileDel" parameterType="String">
+        delete from tbl_postFile
+        where fk_postNo = #{postNo}
+   </delete>
+   
+<!--    파일다운로드에 필요한 컬럼 추출하기(파일고유번호,새로운파일명,기존파일명) -->
+   <select id="getWithFileDownload" parameterType="HashMap" resultType="PostFileVO">
+		select postNo, filename, substr(func_post_photo_upload_delete(postNo), 2) AS photofilename,orgFilename
+		from tbl_post p
+		full join tbl_postFile F
+		on p.postNo = F.fk_postNo
+		where postNo = #{postNo} and fileNo =#{fileNo}
+   </select>
+   
+<!--    게시글 수정 -->
+	<update id="updatePost">
+		<choose>
+	        <when test="isNotice == 1"> <!-- 공지사항 글로 수정할 경우 -->
+				update tbl_post set SUBJECT = #{subject}, CONTENT = #{content}, ALLOWCOMMENTS = #{allowComments},isNotice=#{isNotice},noticeEndDate=#{noticeEndDate}
+				where postNo = #{postNo}
+			</when>
+			<otherwise>   <!-- 공지사항 글이 아닌 경우 -->
+	            update tbl_post set SUBJECT = #{subject}, CONTENT = #{content}, ALLOWCOMMENTS = #{allowComments},isNotice=0,noticeEndDate=null
+				where postNo = #{postNo}
+	        </otherwise>
+        </choose>
+	</update>
+	
+<!-- 	첨부파일 테이블에 파일정보 수정 -->
+	<update id="updatePostInsertFile" parameterType="map">
+        update tbl_postFile set  orgFilename = #{originalFilename}, fileName = #{newFileName}, fileSize = #{fileSize}
+        where fk_postNo = #{postNo}
+   </update>
+   
+<!--   updatePostInsertFile 실행 전 해당 행이 있는지 확인하기 위함.	 -->
+	<select id="selectTblPostFile" parameterType="String" resultType="int">
+		SELECT COUNT(*) FROM tbl_postFile WHERE fk_postNo = #{postNo}
+	</select>
+	
+<!-- 	글 수정하기에서 postFile 테이블에서 행삭제하기 -->
+	<delete id="FileDelOfPostUpdate">
+		delete from tbl_postFile
+        where fk_postNo = #{postNo} and fileNo = #{fileNo}
+	</delete>
+	
+<!-- 	수정 전 이미지 목록 가져오기 (DB에서 조회) -->
+   <select id="getBeforeUpdateFileNames" resultType="String" parameterType="String">
+  		select NVL(SUBSTR(func_post_photo_upload_delete(postNo), 2), ' ') AS photofilename
+		from tbl_post p
+		full join tbl_postFile F
+		on p.postNo = F.fk_postNo
+		where postNo = #{postNo}
+   </select>
+   
+<!--    수정 후 새로운 이미지 목록 추출 (db에서 조회) -->
+	<select id="getAfterUpdateFileNames" resultType="String" parameterType="String">
+  		select NVL(SUBSTR(func_post_photo_upload_delete(postNo), 2), ' ') AS photofilename
+		from tbl_post p
+		full join tbl_postFile F
+		on p.postNo = F.fk_postNo
+		where postNo = #{postNo}
+   </select>
+   
+<!--    게시판 별 게시글 조회 :: 게시판/게시글 테이블 조인 -> 조건 boardNo 인 것만 조회 -->
+   <!--    게시글 하나 조회하기(조인함) -->
+	<resultMap id="selectPostBoardGroup_Map" type="PostVO">
+	 <!-- PostVO의 필드 매핑 -->
+	    <result property="postNo" column="postNo"/>
+	    <result property="fk_boardNo" column="fk_boardNo"/>
+	    <result property="fk_employeeNo" column="fk_employeeNo"/>
+	    <result property="name" column="name"/>
+	    <result property="subject" column="subject"/>
+	    <result property="content" column="content"/>
+	    <result property="readCount" column="readCount"/>
+	    <result property="regDate" column="regDate"/>
+	    <result property="commentCount" column="commentCount"/>
+	    <result property="allowComments" column="allowComments"/>
+	    <result property="isNotice" column="isNotice"/>
+	    <result property="noticeEndDate" column="noticeEndDate"/>
+	
+	 	<!-- BoardVO의 필드 매핑 -->
+	    <association property="boardvo" javaType="BoardVO">
+	    	<result property="boardNo" 	column="boardNo"/>
+	        <result property="boardName" 	column="boardName"/>
+	        <result property="createdBy" 	column="createdBy"/>
+	    </association>
+	</resultMap>
+	<select id="selectPostBoardGroup" resultMap="selectPostBoardGroup_Map" parameterType="map">
+<!-- 	select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount,P.allowComments,P.isNotice,P.noticeEndDate
+		from tbl_post P
+		join tbl_board B
+		on P.FK_BOARDNO = B.boardNo
+		where boardNo = #{boardNo}
+		order by p.postNo desc  필요없음-->
+		
+		SELECT  
+	    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, V.subject,V.content, 
+	    V.readCount, V.regDate, V.commentCount, V.allowComments,
+	    V.isNotice, V.noticeEndDate,
+	    b.boardNo, b.boardName,B.createdBy
+	FROM 
+	    ( 
+	        SELECT row_number() OVER (ORDER BY postNo DESC) AS rno, 
+	               postNo, fk_boardNo, fk_employeeNo, name, subject, content,
+	               readCount, to_char(regDate, 'yyyy-mm-dd') AS regDate, 
+	               commentCount, allowComments,  isNotice, noticeEndDate
+	        FROM tbl_post
+	        WHERE status = 1 and fk_boardNo = #{boardNo}
+	    ) V
+	JOIN tbl_board b ON V.fk_boardNo = b.boardNo
+	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+	order by V.postNo desc
+	</select>
+	
+<!-- 	게시판의 정보를 추출하기 위해(게시판명, 운영자 등등) -->
+	<select id="getBoardInfo" resultType="BoardVO" parameterType="String">
+	select boardName,createdBy,boardDesc,isPublic,createdAt
+	from tbl_board
+	where boardNo = to_number(#{boardNo})
+	</select>
    
 </mapper>
 

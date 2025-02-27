@@ -13,7 +13,82 @@
 <%-- 각자 페이지에 해당되는 js 연결 --%>
 <script src="<%=ctxPath%>/js/board/onePostView.js"></script>
 
-<!-- 오른쪽 바 -->
+<!-- 글작성 폼 -->
+    <div id="modalEditPost" class="modal_bg">
+    </div>
+    <div class="modalEditPostContainer">
+	    <div style="padding: var(--size22);">
+	        <!-- 여기에 글작성 폼을 만들어주세요!! -->
+			<span id="modal_title">글수정</span>
+			
+			<div id="modal_content_page">
+				<form name="updatePostFrm" enctype="multipart/form-data">
+					<span>To.</span>
+					${postvo.boardvo.boardName}
+					<hr>
+					<table>
+						<tr>
+							<td>제목</td>
+							<td><input type="text" name="subject" id="subject"value="${postvo.subject}" maxlength="60"></td>
+						</tr>
+						<tr>
+							<td>파일첨부</td>
+							<td>
+								<div id="update_fileDrop" class="fileDrop border border-secondary">
+									<p>이 곳에 파일을 드래그 하세요.</p>
+									 <c:forEach var="item" items="${postfilevo}">
+										 <div class='fileList'>
+						                        <span class='delete'>&times;</span>
+						                        <span class='fileName'>${item.orgFilename}</span>
+						                        <span class='newFileName'  style="display: none">${item.fileName}</span>
+						                        <span class='fileNo' style="display: none">${item.fileNo}</span>
+						                        <span class='fileSize'>(${item.fileSize}MB)</span> <%-- 매퍼에서 바이트를 메가바이트로 변환 해줌 --%>
+						                        <span class='clear'></span>
+					                     </div>
+				                     </c:forEach>
+								</div>
+							</td>
+						</tr>
+						<tr>
+						     <td>내 용</td>
+						     <td style="width: 767px; border: solid 1px red;">
+						 	    <textarea name="content" id="updateContent" rows="10" cols="100" style="width:766px; height:412px;">${postvo.content}</textarea>
+						     </td>
+					  	</tr>
+					  	<tr>
+					  		<td>댓글작성</td>
+					  		<td>
+					  			<input type="radio" id="update_allowYes" name="allowComments" value="1"
+								       ${postvo.allowComments eq 1 ? 'checked' : ''}>
+								<label for="update_allowYes" style="margin:0;">허용</label>
+								
+								<input type="radio" id="update_allowNo" name="allowComments" value="0"
+								       ${postvo.allowComments eq 0 ? 'checked' : ''}>
+								<label for="update_allowNo" style="margin:0;">허용하지 않음</label>
+					  		</td>
+					  	</tr>
+					  	<tr>
+					  		<td>공지로 등록</td>
+					  		<td>
+					  			<input type="checkbox" id="update_isnotice" name="isNotice" value=1 ${postvo.isNotice eq 1 ? 'checked' : ''}>
+								<label for="update_isnotice" style="margin:0;">공지로 등록</label>
+								<div id="update_isNoticeElmt"> <!-- 미체크시 hide 상태임 -->
+									<input type="text" name="startNotice" id="update_datepicker" maxlength="10" autocomplete='off' size="4" readonly/> 
+									-
+									<input type="text" name="noticeEndDate" id="update_toDate" maxlength="10" autocomplete='off' size="4" readonly/>
+								</div> 
+					  		</td>
+					  	</tr>
+					</table>
+					
+					<button type="button" id="updatePostBtn">수정</button>
+				</form>
+			</div>
+		</div>
+    </div> <!-- end of <div class="modal_container"> -->
+    <!-- 글작성 폼 -->
+
+	<!-- 오른쪽 바 -->
     <div id="right_bar">
         <div id="right_title_box">
             <span id="right_title">${postvo.boardvo.boardName} </span>
@@ -25,10 +100,10 @@
             	<span id="tool_box_left">
                     <span>
                         <span id="re_btn">
-                            <a href="#"><i class="fa-regular fa-pen-to-square"></i> 수정</a>
+                            <button type="button" id="postUpdate" class="btnDefaultDesignNone" ><i class="fa-regular fa-pen-to-square"></i> 수정</button>
                         </span>
                         <span>
-                            <a href="#"><i class="fa-regular fa-trash-can"></i>삭제</a>
+                            <button type="button" id="postDel" class="btnDefaultDesignNone"><i class="fa-regular fa-trash-can"></i>삭제</button>
                         </span>
                     </span>
                 </span>
@@ -65,6 +140,14 @@
         <div id="onePostContent" class="padding">
         	${postvo.content}
         </div>
+        
+        <c:forEach var="item" items="${postfilevo}">
+	        <div class="file"><i class="fa-solid fa-paperclip"></i>
+	         	<a href="<%= ctxPath%>/board/fileDownload?postNo=${postvo.postNo}&fileNo=${item.fileNo}" class="fileLink">${item.orgFilename}</a>
+	         	<span class='fileSize'>(${item.fileSize}MB)</span> <%-- 매퍼에서 바이트를 메가바이트로 변환 해줌 --%>
+	        </div>
+        </c:forEach>
+        
         <div id="ViewOption" class="padding">
         	<span class="tranBlock">댓글 ${postvo.commentCount}개</span>
         	<span class="tranBlock">조회 ${postvo.readCount}</span>
@@ -103,14 +186,17 @@
         	</div>
         </div>
 	        
-	        
-        
-        <div>
-	        게시글 번호 : ${postvo.postNo} <br>
-			게시판 번호 : ${postvo.fk_boardNo}<br>
-			작성자 번호 : ${postvo.fk_employeeNo}<br>
-		</div>
-		
+	     <div id="noticeEndDate" style="display: none;">${postvo.noticeEndDate}</div>   
+        <form name="postFrm">
+	        <div>
+		        게시글 번호 : <input type="text" name="postNo" value="${postvo.postNo}"><br> <%-- 필요한 것임 지우지말 것 --%>
+		        댓글 허용 여부 : ${postvo.allowComments}<br>
+		        공지글 여부 : ${postvo.isNotice}<br>
+		        공지글 종료일 : ${postvo.noticeEndDate}<br>
+				게시판 번호 : ${postvo.fk_boardNo}<br>
+				작성자 번호 : ${postvo.fk_employeeNo}<br>
+			</div>
+		</form>
 	
 		
    </div>

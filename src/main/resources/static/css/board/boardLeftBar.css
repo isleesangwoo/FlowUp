@@ -1,0 +1,125 @@
+/* === 모달 시작 === */
+.modal_bg{
+    display: none;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    background-color: rgba(0,0,0,0.2);
+}
+
+.modal_container{
+    position: fixed;
+    top: 0px;
+    right: 0px;
+    width: 0%;
+    height: 100vh;
+    z-index: 11;
+    background-color: #fff;
+    transition: all 0.5s cubic-bezier(0.23, 1, 0.320, 1);
+}
+
+#modal_title {
+    font-size: var(--size24);
+    padding-bottom: var(--size12);
+    display: block;
+}
+/* === 모달 끝 === */
+
+
+#main_section {
+    display: flex;
+    box-sizing: border-box;
+}
+#left_bar {
+    position: sticky;
+    top: var(--size60);
+    width: var(--size250);
+    height: 100vh;
+    background-color: #eff4fc;
+    box-sizing: border-box;
+    padding: var(--size20);
+    border-right: 1px solid #c8c8c8;
+    flex-shrink: 0;
+}
+
+#writePostBtn {
+    width: 100%;
+    height: var(--size44);
+    font-size: var(--size18);
+    transition-duration: 150ms;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: calc(var(--size2) + var(--size2));
+    align-items: center;
+    text-wrap: nowrap;
+    background-color: #2985db;
+    border-color: #056ac9;
+    color: #fff;
+    margin-bottom: var(--size10);
+}
+
+.board_menu_container{
+    width: 100%;
+    height: auto;
+}
+
+.board_menu_container > ul li {
+    width: 100%;
+    height: var(--size38);
+    font-size: var(--size15);
+    user-select: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding-left: var(--size10);
+}
+
+.board_menu_container > ul > li > a {
+    color: #333;
+    text-decoration: none;
+}
+
+.board_menu_container > ul > li:hover {
+    background-color: var(--baseColor1);
+}
+
+
+
+/* 현재 페이지에 이렇게 넣어주세요! */
+.board_menu_container > ul li:nth-child(1){
+    background-color: #dae8f8 !important;
+    color: #056ac9;
+    font-weight: 600;
+}
+
+.board_menu_container > ul li:nth-child(1) > a {
+    color: #056ac9;
+}
+
+/* 게시판 설정하기 링크 */
+.upateBoard{
+	display:inline-block;
+	margin-left: auto;
+}
+
+/* 게시판 추가하기 링크 */
+#addBoardContainer {
+    position: absolute;
+    bottom: 60px;
+    width: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+   
+}
+
+#addBoard{
+ 	text-decoration: none;
+}
+
+
+

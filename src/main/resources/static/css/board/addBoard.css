@@ -1,52 +1,37 @@
-
-#right_bar{
-    width: 100%;
-    height: auto;
-    border: 0px solid red;
+#right_bar {
+	width: 100%;
+	height: auto;
+	border: 0px solid red;
 }
 
 #right_title_box {
-    box-sizing: border-box;
-    padding: var(--size24) var(--size24) var(--size18) var(--size24);
-    border-bottom: 1px solid #c8c8c8;
+	box-sizing: border-box;
+	padding: var(--size24) var(--size24) var(--size18) var(--size24);
+	border-bottom: 1px solid #c8c8c8;
 }
 
 #right_title {
-    font-size: var(--size22);
+	font-size: var(--size22);
 }
-
-
 
 /* ------------------------------  */
-
-#addBoardGroupFrmTag{
+#addBoardGroupFrmTag {
 	border: solid 1px blue;
 }
-#addBoardGroupFrmButtonTag{
+
+#addBoardGroupFrmButtonTag {
 	text-align: center;
 	margin: 30px 0;
 }
-.w_max{
-	min-width:90%;
+
+.w_max {
+	min-width: 90%;
 	min-width: 900px;
 	border: solid 1px red;
 }
-.columnTitle{ /* 테이블 각 tr의 첫 번째 td */
-	min-width:140px;
+
+.columnTitle { /* 테이블 각 tr의 첫 번째 td */
+	min-width: 140px;
 	padding: 10px 10px;
 	vertical-align: top;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
