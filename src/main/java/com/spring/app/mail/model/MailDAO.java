@@ -42,10 +42,8 @@ public interface MailDAO {
 	// 읽은 메일 조회
 	List<MailVO> selectReadMail(String empNo);
 
-	/*
 	// 특정 메일 1개 조회
-	MailVO viewOneMail(Map<String, String> paraMap);
-	 */
+	MailVO viewMail(Map<String, String> paraMap);
 
 	
 }

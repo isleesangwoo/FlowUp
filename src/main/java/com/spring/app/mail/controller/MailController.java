@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.spring.app.board.domain.PostVO;
+import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.common.MyUtil;
 import com.spring.app.employee.domain.EmployeeVO;
 import com.spring.app.mail.domain.MailVO;
@@ -151,9 +151,9 @@ public class MailController {
 		return mav;
 	}
 	
-	/*
+	
 	// 메일 한개 조회
-	@PostMapping("viewOneMail")
+	@PostMapping("viewMail")
 	public ModelAndView viewOneMail(ModelAndView mav, HttpServletRequest request,@RequestParam String mailNo,@RequestParam String goBackURL) {
 		
 		HttpSession session = request.getSession();
@@ -170,32 +170,27 @@ public class MailController {
 		paraMap.put("login_userid", login_userid);
 		
 		MailVO mailvo = null;
+		List<PostFileVO> mailfilevo = null;
 		
-		if ("yes".equals((String) session.getAttribute("readCountPermission"))) {
-			// 메일 페이지에서 특정 메일 클릭시
-
-			mailvo = service.viewOneMail(paraMap); // 메일 하나 조회하기
-
-			session.removeAttribute("readCountPermission");
-			// 중요함!! session 에 저장된 readCountPermission 을 삭제한다.
-		}
-
-		  else {
-			  mailvo = service.getViewOneMail(paraMap);
+		mailvo = service.viewMail(paraMap);
 			
 	 
-	  		  if (mailvo == null) {
-				  mav.setViewName("redirect:/board/list");
-				  return mav;
-			  }
+		if (mailvo == null) {
+			mav.setViewName("redirect:/mail/viewMail");
+			return mav;
+		}
 		
+		mailfilevo = service.getMailFile(paraMap); // 글 하나의 첨부파일 테이블의 고유번호,기존파일명,새로운 파일명 추출
+		 
+		mav.addObject("mailfilevo", mailfilevo);
 		mav.addObject("mailvo", mailvo);
 		mav.addObject("goBackURL", goBackURL); // 글 하나 클릭 시 클릭된 페이지의 해당 URL을 넘겨줌.
-	  	mav.setViewName("mycontent/mail/viewOneMail");
+	  	mav.setViewName("mycontent/mail/viewMail");
 		
-	  	return mav;
+	  	
+		return mav;
 	}
-	*/
+	
 	
 	
     // Ajax 요청 중요(별) 상태 변경
@@ -233,7 +228,7 @@ public class MailController {
         return importantList;
     }
     
-    // Ajax 요청 임시보관함 클릭
+    // Ajax 요청 임시보관함 조회
     @GetMapping("/saveMail")
     @ResponseBody
     public List<MailVO> saveMail(@RequestParam("saveStatus") int saveStatus) {

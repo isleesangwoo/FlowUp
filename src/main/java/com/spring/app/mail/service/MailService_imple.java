@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.board.domain.PostVO;
 import com.spring.app.mail.domain.MailVO;
 import com.spring.app.mail.model.MailDAO;
@@ -120,17 +121,29 @@ public class MailService_imple implements MailService {
         return dao.selectReadMail(empNo);
 	}
 
-
-	/*
+	
 	// 특정 메일 1개 조회
 	@Override
-	public MailVO viewOneMail(Map<String, String> paraMap) {
+	public MailVO viewMail(Map<String, String> paraMap) {
 
-		MailVO mailvo = dao.viewOneMail(paraMap);  // 메일 1개 조회하기
+		MailVO mailvo = dao.viewMail(paraMap);  // 메일 1개 조회하기
 		
 		return mailvo;
 	}
-	 */
+
+
+	// 한개 메일 첨부파일의 파일명, 기존파일명, 새로운파일명, 파일사이즈 얻어오기
+	@Override
+	public List<PostFileVO> getMailFile(Map<String, String> paraMap) {
+
+		
+		
+		
+		return null;
+	}
+
+
+	
 
 
 	

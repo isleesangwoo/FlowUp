@@ -481,7 +481,7 @@
                 </span>
                 <span>
                     <a href="#">
-                    	<i class="fa-regular -open"></i>
+                    	<i class="fa-regular fa-envelope-open"></i>
                         <span>읽음</span>
                     </a>
                 </span>

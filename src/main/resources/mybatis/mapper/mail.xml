@@ -41,7 +41,8 @@
 	<select id="selectMailList" resultMap="selectMailList_Map" parameterType="HashMap">
 		SELECT M.mailNo, M.fk_employeeNo, M.subject, M.content, 
 		       M.sendDate, M.readStatus, M.deleteStatus, M.saveStatus, M.importantStatus,
-		       e.employeeNo, e.name
+		       e.employeeNo, e.name,
+		       f.Filesize
 		FROM 
 		    ( 
 		        SELECT row_number() OVER (ORDER BY mailNo DESC) AS rno, 
@@ -57,6 +58,8 @@
 		    ) M
 		JOIN tbl_employee e
 		  ON M.fk_employeeNo = e.employeeNo
+	  	JOIN tbl_mailFile f
+  		  ON M.mailNo = f.fk_mailNo
 		
 		<!-- startRno와 endRno가 null이 아닐 때만 페이징 조건을 적용 -->
 	    <if test="startRno != null and endRno != null">
@@ -124,11 +127,11 @@
 	
 	
 	<!-- 메일 하나 조회하기 -->
-	<!--
-	<resultMap id="viewOneMail_Map" type="MailVO">
-	-->
+	
+	<resultMap id="viewMail" type="MailVO">
+	
  		<!-- MailVO의 필드 매핑 -->
- 		<!--
+ 		
 	    <result property="mailNo" 		 column="mailNo"/>
 	    <result property="fk_employeeNo" column="fk_employeeNo"/>
 	    <result property="name" 		 column="name"/>
@@ -137,25 +140,22 @@
 	    <result property="readCount" 	 column="readCount"/>
 	    <result property="regDate" 		 column="regDate"/>
 	    <result property="commentCount"  column="commentCount"/>
-		-->
 	
-	 	<!-- BoardVO의 필드 매핑 -->
-	 	<!--
+	 	<!-- EmployeeVO의 필드 매핑 -->
+	 	
 	    <association property="employeevo"  javaType="EmployeeVO">
 	        <result property="employeeNo" 	column="employeeNo"/>
 	        <result property="name" 		column="name"/>
 	    </association>
 	</resultMap>
-	<select id="viewOneMail" resultMap="goViewOnePost_Map" parameterType="HashMap">
-		select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount
+	<select id="viewMail" resultMap="viewMail_Map" parameterType="HashMap">
+		select M.mailNo,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount
 		from tbl_mail M
-		join tbl_employee E
-		on M.FK_MAILNO = E.boardNo
+		join tbl_employee e
+		on M.fk_employeeNo = e.employeeNo
 		where mailNo = #{mailNo}
 	</select>
 	
-	 -->
-
 
 </mapper>
 

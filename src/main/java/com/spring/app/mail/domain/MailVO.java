@@ -12,6 +12,7 @@ public class MailVO {
 	private String saveStatus;       // 저장여부 / 0:일반상태, 1:임시저장
 	private String importantStatus;  // 중요표시 / 0:기본, 1:중요
 	private String sendDate;         // 전송날짜
+	
 	private String fk_employeeNo;    // 사번 (직원 테이블 참조)
 	
 	private EmployeeVO employeevo;   // employee 테이블 조인
