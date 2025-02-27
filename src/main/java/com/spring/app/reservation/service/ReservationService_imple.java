@@ -147,6 +147,15 @@ public class ReservationService_imple implements ReservationService {
 	}
 
 
+
+	// 자산 소분류 삭제
+	@Override
+	public int deleteAssetNo(String assetDetailNo) {
+		int result = dao.deleteAssetNo(assetDetailNo);
+		return result;
+	}
+
+
 	
 	
 }

@@ -60,55 +60,10 @@
 
 	      <div class="board_menu_container">
 	          <ul>
-				<%-- 대분류에가 있는 경우 --%>
-				<c:if test="${not empty requestScope.assetList}">
-					<c:forEach var="assetMap" items="${requestScope.assetList}" varStatus="index">
-						<li>
-		                    <div>
-								<div class="assetTitleBtn" style="justify-content: space-between; display: flex;">
-									<span style="pointer-events: none;">${assetMap.assetTitle}</span>
-									<span>
-										<a href="<%= ctxPath%>/reservation/showReservationOne?assetNo=${assetMap.assetNo}"><i class="fa-solid fa-gear"></i></a>
-										<i class="fa-solid fa-trash disableBoardIcon deleteAsset" id="${assetMap.assetNo}"></i>
-									</span>
-								</div> <!-- 대분류 명 -->
-								
-								<%-- 대분류에 대한 상세 자산이 있는 경우 --%>
-								<c:if test="${not empty requestScope.assetDetailList}">
-									
-									<div class="assetDetailList" style="display:none;">
-										<c:forEach var="assetDetailMap" items="${requestScope.assetDetailList}">
-										
-											<c:if test="${assetDetailMap.fk_assetNo eq assetMap.assetNo}">
-											
-												<a href="<%= ctxPath%>/reservation/showReservationDeOne?assetDetailNo=${assetDetailMap.assetDetailNo}&assetName=${assetDetailMap.assetName}"><div>${assetDetailMap.assetName}</div></a> <!-- 상세 명 -->
-												
-											</c:if>	
-											
-										</c:forEach>
-									</div>
-									
-								</c:if>
-								<%-- 대분류에 대한 상세 자산이 있는 경우 --%>
-								<%-- 대분류에 대한 상세 자산이 없는 경우 --%>
-								<c:if test="${empty requestScope.assetDetailList}">
-									<div class="assetDetailList" style="display:none;">
-										<div>자산이 없습니다.</div>
-									</div>
-								</c:if>
-								<%-- 대분류에 대한 상세 자산이 없는 경우 --%>
-							</div>
-		                </li>
-					</c:forEach>
-	            </c:if>
-				<%-- 대분류에가 있는 경우 --%>
-				<%-- 대분류에가 없는 경우 --%>
-	            <c:if test="${empty requestScope.assetList}">
-					<li>
-	                    <div>등록된 자산이 없습니다.</div>
-	                </li>
-				</c:if>
-				<%-- 대분류에가 없는 경우 --%>
+				
+				
+				<!--  여기 들어옴  -->
+				
 	          </ul>
 	      </div>
 	  </div>
@@ -195,7 +150,7 @@
 		  
 		  
 		  // ================ 소분류 토글 ================ //
-		  $('div.assetTitleBtn').click(e=>{
+		  $(document).on('click', 'div.assetTitleBtn', e=>{
 			  
 			  if (!$(e.target).hasClass('fa-gear')) {
 			  		$(e.target).next().toggle();
@@ -215,7 +170,7 @@
 		  
 		  
 		  // ================ 대분류 삭제 ================ //
-			$('.deleteAsset').click(e => {
+			$(document).on('click', '.deleteAsset', e => {
 				
 				const thisAssetNo = $(e.target).attr('id'); 
 					
@@ -228,7 +183,7 @@
 				        dataType: "json",
 				        success: function(json) {
 				            if (json.result == 1) {
-				            	location.reload(true);
+				            	resetLeftBar();
 				            }
 				            if (json.result == 0) {
 				                alert('삭제가 실패되었습니다.');
@@ -243,7 +198,8 @@
 
 			});
 		  // ================ 대분류 삭제 ================ //
-
+		  
+		  
 		  
 		  
 		  

@@ -48,6 +48,29 @@ public class ReservationController {
 	
 	
 	
+	// 자산 대분류 조회하기
+	@GetMapping("selectReservationTitle")
+	@ResponseBody
+	public List<Map<String, String>> selectReservationTitle() {
+		
+		List<Map<String, String>> reservationTitleList = service.tbl_assetSelect();
+		
+		return reservationTitleList;
+	}
+	
+	
+	@GetMapping("selectReservationSubTitle")
+	@ResponseBody
+	public List<Map<String, String>> selectReservationSubTitle() {
+		
+		List<Map<String, String>> reservationSubTitleList = service.tbl_assetDetailSelect();
+		
+		return reservationSubTitleList;
+	}
+	
+	
+	
+	
 	// 자산 예약 대분류 생성
 	@PostMapping("reservationAdd") 
 	public ModelAndView reservationAdd(ModelAndView mav, 
@@ -278,6 +301,25 @@ public class ReservationController {
 		return jsonArr.toString();
 	}
 	
+	
+	
+	// 자산 소분류 삭제
+	@PostMapping("deleteAssetNo")
+	@ResponseBody
+	public String deleteAssetNo(@RequestParam String assetDetailNo) {
+		
+		int result = service.deleteAssetNo(assetDetailNo); // 자산 소분류 삭제
+		
+		JSONObject jsonObj = new JSONObject();
+	    if (result == 1) {
+	        jsonObj.put("result", 1);
+	    } else {
+	        jsonObj.put("result", 0);
+	    }
+		
+		return jsonObj.toString();
+	}
+	
 		
 	
 	
@@ -349,6 +391,30 @@ public class ReservationController {
 		
 		return jsonObj.toString();
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	//////////////////////////////////////////////////////////////자산 대분류 상세 페이지
+	@GetMapping("assetDetailPage")
+	public ModelAndView assetDetailPage(ModelAndView mav, @RequestParam String assetNo, @RequestParam String assetTitle) {
+		
+		
+		mav.addObject("assetNo", assetNo);
+		mav.addObject("assetTitle", assetTitle);
+		
+		mav.setViewName("mycontent/reservation/assetDetailPage");
+		
+		return mav;
+	}
+	
+	
+	
+	
 	
 	
 	

@@ -73,6 +73,9 @@
 							<i class="fa-solid fa-plus"></i>
 							<span>비품추가하기</span>
 						</div>
+						<div>
+							<div>선택하세요</div>
+						</div>
 						<!-- 비품 추가 버튼 -->
 					</div>
 					<div>
@@ -145,6 +148,7 @@
 								<th>항목명</th>
 								<!--<th>빔프로젝트</th>-->
 								<th>설정</th>
+								<th>삭제</th>
 							</tr>
 						</thead>
 						<tbody id="appendTrFinal">
@@ -164,7 +168,7 @@
 					
 				</div>
 				<div id="assetModal" class="modal_containerAsset">
-					<input type="text" name="assetName" />
+					<label class="assetNameTitle">자산명</label><input type="text" name="assetName" />
 					<div id="goAddAsset">확인</div>
 				</div>
 				
@@ -466,7 +470,7 @@
 				  if(json.result == 1){
 				  	  alert('저장되었습니다.');
 				  	  // ====== 다시 불러주기 ====== //
-				  	  
+				  	  // resetLeftBar();
 				  	  // ====== 다시 불러주기 ====== //
 				  }
 				  else{
@@ -536,9 +540,9 @@
 					  $('#assetModalBg').fadeOut();
 					  $('.modal_containerAsset').fadeOut();
 
-					  // $('#left_bar').load(location.href+' #left_bar');
+					  resetLeftBar(); // 왼쪽바 새로고침
 					  
-					  selectAssetDe();
+					  selectAssetDe(); // 자산 새로 불러주기
 				  	  // ====== 다시 불러주기 ====== //
 				  }
 				  else{
@@ -558,13 +562,15 @@
   selectAssetDe();
   
   function selectAssetDe() {
+	  $('#appendTrFinal').empty();
+	  
 	  $.ajax({
 		url:"<%=ctxPath%>/reservation/selectAssetDe",
 	    type:"post",
 	    data:{"fk_assetNo":"${requestScope.assetvo.assetNo}"},
 	    dataType:"json",
 	    success:function(json){
-			console.log(JSON.stringify(json));
+			// console.log(JSON.stringify(json));
 			
 			
 			
@@ -575,6 +581,7 @@
 												<td>\${item.assetName}</td>
 												<!--<td>X</td>-->
 												<td><i class="fa-solid fa-gear"></i></td>
+												<td><i class="fa-solid fa-trash trashbtn" id="\${item.assetDetailNo}" style="cursor:pointer;"></i></td>
 											</tr>`);
 				 
 			 }) // end of $.each(json, function(index, item)) {} ------------------- 
@@ -585,6 +592,134 @@
 	    } 
 	  });
   }
+  
+  
+  
+  
+//================ 대분류 소분류 뿌려주기 ================ //
+  function resetLeftBar() {
+	  let assetDetailListArr;
+	  
+	  $.ajax({
+	  	  url: "<%= ctxPath%>/reservation/selectReservationSubTitle",
+	      type: "get",
+	      dataType: "json",
+	      success: function(json) {
+	          // console.log(JSON.stringify(json))
+	          
+	          	  assetDetailListArr = json;
+	          
+	          	  // alert(assetDetailListArr)
+	          
+	          	  
+	          
+	      },
+	      error: function(request, status, error) {
+	          alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+	      }
+	  });
+	  
+	  // ================ 소분류 끝나고 대분류 조회 시작 후 뿌려주기 ================ //
+	  let TitleArr;
+	  let html = ``;
+	  
+	  $.ajax({
+	  	  url: "<%= ctxPath%>/reservation/selectReservationTitle",
+	      type: "get",
+	      dataType: "json",
+	      success: function(json) {
+	          // console.log(JSON.stringify(json))
+	          
+	          TitleArr = JSON.stringify(json);
+	          
+	          // alert(TitleArr)
+	          
+			  $('.board_menu_container > ul').empty();
+		
+	          $.each(json, function(index, Title){
+	        	    let detailListHtml = ''; // 자산 상세 리스트를 저장할 빈 문자열 초기화
+	        	          
+	        	    // assetDetailListArr 배열을 순회하면서 자산 세부 항목들을 생성
+	        	    $.each(assetDetailListArr, function(i, subTitle){
+	        	        // 실제 if문을 넣어서 조건을 처리합니다.
+	        	        if (Title.assetNo == subTitle.fk_assetNo) {
+	        	            // 조건이 맞으면 해당 항목을 detailListHtml에 추가
+	        	            detailListHtml += `<a href='<%= ctxPath %>/reservation/showReservationDeOne?assetDetailNo=\${subTitle.assetDetailNo}&assetName=\${subTitle.assetName}'>
+	        	                                   <div>\${subTitle.assetName}</div>
+	        	                                </a>`;
+	        	        } else {
+	        	            
+	        	        	// detailListHtml += `<div>없습니다.</div>`
+	        	        }
+	        	    });
+
+	        	    // 자산 상세 HTML을 최종적으로 추가
+	        	    
+	        	    
+	        	    $('.board_menu_container > ul').append(`
+	        	        <li>
+	        	            <div>
+	        	                <div class="assetTitleBtn" style="justify-content: space-between; display: flex;">
+	        	                <span><a href='<%= ctxPath %>/reservation/assetDetailPage?assetNo=\${Title.assetNo}&assetTitle=\${Title.assetTitle}'>\${Title.assetTitle}</a></span>
+	        	                    <span>
+	        	                        <a href="<%= ctxPath %>/reservation/showReservationOne?assetNo=\${Title.assetNo}">
+	        	                            <i class="fa-solid fa-gear"></i>
+	        	                        </a>
+	        	                        <i class="fa-solid fa-trash disableBoardIcon deleteAsset" id="\${Title.assetNo}"></i>
+	        	                    </span>
+	        	                </div> <!-- 대분류 명 -->
+	        	                <div class="assetDetailList" id="\${Title.assetNo}" style="display:none;">
+	        	                    \${detailListHtml} <!-- 동적으로 생성된 자산 세부 항목들 -->
+	        	                </div>
+	        	            </div>
+	        	        </li>
+	        	    `);
+	        	});
+
+	      },
+	      error: function(request, status, error) {
+	          alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+	      }
+	  });
+  }
+  resetLeftBar();
+  // ================ 대분류 소분류 뿌려주기 ================ //
+  
+  
+  
+  $(document).on('click', '.trashbtn', function(e){
+	  
+	  // alert($(e.target).attr('id'))
+	  
+	  if(confirm("삭제시 코드 "+$(e.target).attr('id')+"에 대한 예약 정보가 사라집니다. 정말 삭제하시겠습니까?")){
+	  
+		  $.ajax({
+			  url:"<%= ctxPath%>/reservation/deleteAssetNo",
+			  type:"post",
+			  data:{"assetDetailNo":$(e.target).attr('id')},
+			  dataType:"json",
+			  success:function(json){
+				  
+				  if(json.result == 1) {
+					  alert('삭제가 완료되었습니다.')
+					  
+					  resetLeftBar();
+					  selectAssetDe();
+				  }
+				  else{
+					  alert('삭제가 실패되었습니다.')
+				  }
+				  
+				  
+			  },
+			  error: function(request, status, error){
+			 	  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  } 
+		  })
+	  
+	  }
+	  
+  }); // end of $(document).on('click', 'trashbtn', e=>{})----------- 
   
 </script>
 

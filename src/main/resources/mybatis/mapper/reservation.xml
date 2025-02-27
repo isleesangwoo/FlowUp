@@ -147,7 +147,7 @@
 		       to_char(reservationDay, 'yyyy.mm.dd hh24:mi'), 
 		       reservationContents
 		from tbl_assetReservation
-		where to_char(reservationEnd, 'yyyy.mm.dd') between #{reservationStart} and #{reservationEnd}
+		where fk_assetDetailNo = #{fk_assetDetailNo} and (to_char(reservationEnd, 'yyyy.mm.dd') between #{reservationStart} and #{reservationEnd})
 		order by assetReservationNo
 	</select>
 
@@ -158,6 +158,14 @@
 		insert into tbl_assetReservation(assetReservationNo, fk_assetDetailNo, fk_employeeNo, reservationStart, reservationEnd, reservationContents, reservationDay)
 		values(seq_roomReservationNo.nextval, to_number(#{fk_assetDetailNo}), to_number(#{fk_employeeNo}), to_date(#{reservationStart}, 'yyyy-mm-dd hh24:mi'), to_date(#{reservationEnd}, 'yyyy-mm-dd hh24:mi'), #{reservationContents},  sysdate)
 	</insert>
+
+
+
+	<!-- 자산 소분류 삭제 -->
+	<delete id="deleteAssetNo" parameterType="String">
+		delete from tbl_assetDetail where assetDetailNo = #{assetDetailNo}
+	</delete>
+
 
 </mapper>
 

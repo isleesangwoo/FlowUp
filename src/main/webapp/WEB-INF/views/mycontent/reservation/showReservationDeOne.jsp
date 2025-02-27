@@ -297,7 +297,7 @@
 			// ======= 모달창 on ======= //
 			
 			$('input[name="reservationStart"]').val($('input.clickTime').eq(startIndex).val());
-			$('input[name="reservationEnd"]').val($('input.clickTime').eq(endIndex + 1).val())
+			$('input[name="reservationEnd"]').val($('input.clickTime').eq(endIndex).val())
 			
             highlightBoxes();
         }
@@ -354,7 +354,8 @@
 	    	url:"<%=ctxPath%>/reservation/selectassetReservationThis",
 	    	type:"post",
 	    	data:{"reservationStart":todayArr[0].trim(),
-	    		  "reservationEnd":todayArr[1].trim()},
+	    		  "reservationEnd":todayArr[1].trim(),
+	    		  "fk_assetDetailNo":${requestScope.assetDetailNo}},
 	    	dataType:"json",
 	    	success:function(json){
 	    		console.log(JSON.stringify(json));
@@ -458,6 +459,116 @@
     })
 	// ======== 예약하러 넘어가기 ======== //
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	//================ 대분류 소분류 뿌려주기 ================ //
+  function resetLeftBar() {
+	  let assetDetailListArr;
+	  
+	  $.ajax({
+	  	  url: "<%= ctxPath%>/reservation/selectReservationSubTitle",
+	      type: "get",
+	      dataType: "json",
+	      success: function(json) {
+	          console.log(JSON.stringify(json))
+	          
+	          	  assetDetailListArr = json;
+	          
+	          	  // alert(assetDetailListArr)
+	          
+	          	  
+	          
+	      },
+	      error: function(request, status, error) {
+	          alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+	      }
+	  });
+	  
+	  // ================ 소분류 끝나고 대분류 조회 시작 후 뿌려주기 ================ //
+	  let TitleArr;
+	  let html = ``;
+	  
+	  $.ajax({
+	  	  url: "<%= ctxPath%>/reservation/selectReservationTitle",
+	      type: "get",
+	      dataType: "json",
+	      success: function(json) {
+	          // console.log(JSON.stringify(json))
+	          
+	          TitleArr = JSON.stringify(json);
+	          
+	          // alert(TitleArr)
+	          
+			  $('.board_menu_container > ul').empty();
+		
+	          $.each(json, function(index, Title){
+	        	    let detailListHtml = ''; // 자산 상세 리스트를 저장할 빈 문자열 초기화
+	        	          
+	        	    // assetDetailListArr 배열을 순회하면서 자산 세부 항목들을 생성
+	        	    $.each(assetDetailListArr, function(i, subTitle){
+	        	        // 실제 if문을 넣어서 조건을 처리합니다.
+	        	        if (Title.assetNo == subTitle.fk_assetNo) {
+	        	            // 조건이 맞으면 해당 항목을 detailListHtml에 추가
+	        	            detailListHtml += `<a href='<%= ctxPath %>/reservation/showReservationDeOne?assetDetailNo=\${subTitle.assetDetailNo}&assetName=\${subTitle.assetName}'>
+	        	                                   <div>\${subTitle.assetName}</div>
+	        	                                </a>`;
+	        	        } else {
+	        	            
+	        	        	// detailListHtml += `<div>없습니다.</div>`
+	        	        }
+	        	    });
+
+	        	    // 자산 상세 HTML을 최종적으로 추가
+	        	    
+	        	    
+	        	    $('.board_menu_container > ul').append(`
+	        	        <li>
+	        	            <div>
+	        	                <div class="assetTitleBtn" style="justify-content: space-between; display: flex;">
+	        	                <span><a href='<%= ctxPath %>/reservation/assetDetailPage?assetNo=\${Title.assetNo}&assetTitle=\${Title.assetTitle}'>\${Title.assetTitle}</a></span>
+	        	                    <span>
+	        	                        <a href="<%= ctxPath %>/reservation/showReservationOne?assetNo=\${Title.assetNo}">
+	        	                            <i class="fa-solid fa-gear"></i>
+	        	                        </a>
+	        	                        <i class="fa-solid fa-trash disableBoardIcon deleteAsset" id="\${Title.assetNo}"></i>
+	        	                    </span>
+	        	                </div> <!-- 대분류 명 -->
+	        	                <div class="assetDetailList" id="\${Title.assetNo}" style="display:none;">
+	        	                    \${detailListHtml} <!-- 동적으로 생성된 자산 세부 항목들 -->
+	        	                </div>
+	        	            </div>
+	        	        </li>
+	        	    `);
+	        	});
+
+	      },
+	      error: function(request, status, error) {
+	          alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+	      }
+	  });
+  }
+  resetLeftBar();
+  // ================ 대분류 소분류 뿌려주기 ================ //
 </script>
 
 <jsp:include page="../../footer/footer.jsp" /> 

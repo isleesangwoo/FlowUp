@@ -1,0 +1,121 @@
+
+	
+	.dateController {
+        width: 100%; 
+        margin: auto;
+    }
+
+    .dateTopBar {
+        display: flex;
+        gap: var(--size16);
+        align-items: center;
+        justify-content: space-between;
+		padding: 0px var(--size24);
+        margin-bottom: var(--size30);
+    }
+	
+	.dateTopBtn {
+		display: flex;
+        gap: var(--size16);
+        align-items: center;
+        justify-content: center;
+	}
+    #today {
+        font-size: var(--size24);
+        font-weight: 500;
+    }
+
+    #now {
+        box-sizing: border-box;
+        padding: calc(var(--size2) + var(--size2)) calc(var(--size2) + var(--size2));
+        margin-top: calc(var(--size2) + var(--size2));
+        font-size: var(--size12);
+    }
+
+    #now:hover {
+        background-color: #eee;
+    }
+
+    .calendar_container {
+        position: relative;
+    }
+
+    table {
+        border-collapse : collapse;
+        font-size: var(--size14);
+    }
+
+    .time_table_back_form {
+        border: 1px solid #ddd;
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+	
+	.my_table {
+		border: 1px solid #ddd;
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        border-spacing: 0;
+	}
+	
+	.my_table tr th {
+		height: var(--size30);
+        font-weight: bold;
+		text-align: left;
+		padding-left: var(--size8);
+	}
+
+    .time_table_back_form tr th,
+    .info {
+        height: var(--size30);
+        font-weight: normal;
+		text-align: center;
+    }
+
+    .info {
+        vertical-align: middle;
+        overflow: hidden;
+        text-align: center;
+        border-left: 0;
+    }
+
+    .info span{
+        display: block;
+        color: #333;
+        text-align: left;
+        margin: 2px 5px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    
+    /* 여기부터는 예약 바 생성 */
+    
+    .time_table {
+    	width: calc(100% - 120px);
+    	height: calc(100% - var(--size30));
+    	position: absolute;
+	    top: var(--size30);
+	    left: 120px;
+    }
+    
+    #timeLine {
+    	position: absolute;
+	    width: 1px;
+	    background: red;
+	    height: calc(100% - var(--size30));
+	    top: var(--size30);
+	    left: 500px;
+    }
+    
+    
+    
+    
+    
+    /* 여기까지는 예약 바 생성 */

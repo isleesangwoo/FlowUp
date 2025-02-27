@@ -50,6 +50,9 @@ public interface ReservationDAO {
 	// 예약추가를 해주는 메소드
 	int addReservation(AssetReservationVO assetreservationvo);
 
+	// 자산 소분류 삭제
+	int deleteAssetNo(String assetDetailNo);
+
 	
 
 }
