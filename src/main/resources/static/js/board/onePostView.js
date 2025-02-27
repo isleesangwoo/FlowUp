@@ -12,11 +12,11 @@ $(document).ready(()=>{
 	
 	
 	// === 게시글 하나에 마우스 호버 시 시작 === //
-	$(".onePostElmt").hover(function(){
-		 $(this).css('background-color', '#f9f9f9');
-	 }, function(){
-		 $(this).css('background-color', '');
-	 });
+//	$(".onePostElmt").hover(function(){
+//		 $(this).css('background-color', '#f9f9f9');
+//	 }, function(){
+//		 $(this).css('background-color', '');
+//	 });
 	// === 게시글 하나에 마우스 호버 시 끝 === //	
 	
 	let deleteFileList = []; // 삭제할 파일을 저장할 배열
@@ -353,3 +353,21 @@ $(document).ready(()=>{
 	 	}); // end of $(document).on("click", "#updatePostBtn", function(){}-----------
 
 }) // end of $(document).ready(()=>{})---------
+
+
+
+// Function Declaration
+
+
+// === #42. 이전글제목, 다음글제목 보기 === //
+  function goView(postNo) {
+	const goBackURL = $("input[name='goBackURL']").val();
+	   const frm = document.postFrm_2;
+	   frm.postNo.value = postNo;
+	   frm.goBackURL.value = goBackURL;
+	   frm.method = "post";
+	   
+	   //이전글제목보기, 다음글제목보기를 할때 글조회수 증가를 하기 위한 것
+       frm.action =ctxPath+"/board/goViewOnePost_2"; 
+       frm.submit();
+  }// end of function goView(seq){}-------------------------

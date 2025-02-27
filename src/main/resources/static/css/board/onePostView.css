@@ -303,3 +303,11 @@
 .currentPost{
 	padding-left:var(--size12);
 }
+
+.onePostElmt {
+    background-color: white;
+    transition: background-color 0.3s; 
+}
+.onePostElmt:hover {
+    background-color: #f9f9f9; 
+}

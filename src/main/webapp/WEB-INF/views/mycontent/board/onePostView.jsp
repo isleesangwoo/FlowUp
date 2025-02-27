@@ -8,9 +8,9 @@
 
 <script>
 	var ctxPath = "<%= request.getContextPath() %>";
-	const goBackURL = "<%= request.getAttribute("goBackURL") %>";
 </script>
 <%-- 각자 페이지에 해당되는 js 연결 --%>
+<input type="hidden" id="goBackURL" value="<%= request.getAttribute("goBackURL") %>">
 <script src="<%=ctxPath%>/js/board/onePostView.js"></script>
 
 <!-- 글작성 폼 -->
@@ -204,30 +204,34 @@
         	</div>
         </div>
         	<table id="preoOrNextPostElmt">
-        		<tr class="onePostElmt">
+        	<c:if test="${postvo.previouspostNo ne null}">
+        		<tr class="onePostElmt" onclick="goView('${postvo.previouspostNo}')">
         			<td>이전글</td>
-        			<td>이전글내용입니다이전글내용입니다이전글내용입니다이전글내용입니다이전글내용입니다이전글내용입니다이전글내용입니다</td>
-        			<td>이상우</td>
-        			<td>2025-02-27</td>
-        			<td>23</td>
+        			<td>${postvo.previoussubject}</td>
+        			<td>${postvo.previousname}</td>
+        			<td>${postvo.previousregDate}</td>
+        			<td>${postvo.previousreadCount}</td>
 					<td>14</td>
         		</tr>
-        		<tr class="onePostElmt">
+        	</c:if>	
+        		<tr class="onePostElmt" id="currentPost" style="background-color: #f2f2f2; ">
         			<td> <span class="currentPost"><i class="fa-solid fa-angles-right"></i> 현재글</span></td>
-        			<td><span class="currentPost">현재글내용입니다현재글내용입니다현재글내용입니다현재글내용입니다현재글내용입니다현재글내용입니다현재글내용입니다</span></td>
-        			<td>이상우</td>
-        			<td>2025-02-27</td>
-        			<td>23</td>
-					<td>14</td>
+        			<td><span class="currentPost">${postvo.subject}</span></td>
+        			<td>${postvo.name}</td>
+        			<td>${postvo.regDate}</td>
+        			<td>${postvo.readCount}</td>
+					<td>좋아요개발중</td>
         		</tr>
-        		<tr class="onePostElmt">
+        	<c:if test="${postvo.nextpostNo ne null}">	
+        		<tr class="onePostElmt" onclick="goView('${postvo.nextpostNo}')">
         			<td>다음글</td>
-        			<td>다음글내용입니다다음글내용입니다다음글내용입니다다음글내용입니다다음글내용입니다다음글내용입니다다음글내용입니다</td>
-        			<td>이상우</td>
-        			<td>2025-02-24</td>
-        			<td>23</td>
+        			<td>${postvo.nextsubject}</td>
+        			<td>${postvo.name}</td>
+        			<td>${postvo.nextregDate}</td>
+        			<td>${postvo.nextreadCount}</td>
 					<td>14</td>
         		</tr>
+        	</c:if>		
         	</table>
 <%--     <div style="margin-bottom: 1%;">이전글&nbsp;제목&nbsp;&nbsp;<span class="move" onclick="goView('${requestScope.boardvo.previousseq}')">${requestScope.boardvo.previoussubject}</span></div>  --%>
 <%-- 	 <div style="margin-bottom: 1%;">다음글&nbsp;제목&nbsp;&nbsp;<span class="move" onclick="goView('${requestScope.boardvo.nextseq}')">${requestScope.boardvo.nextsubject}</span></div> --%>
@@ -236,6 +240,7 @@
         <form name="postFrm">
 	        <div>
 		        게시글 번호 : <input type="text" name="postNo" value="${postvo.postNo}"><br> <%-- 필요한 것임 지우지말 것 --%>
+		        상세보기 페이지 이전 url : <input type="text" name="goBackURL" value="<%= request.getAttribute("goBackURL") %>"/><%-- 필요한 것임 지우지말 것 --%>
 		        댓글 허용 여부 : ${postvo.allowComments}<br>
 		        공지글 여부 : ${postvo.isNotice}<br>
 		        공지글 종료일 : ${postvo.noticeEndDate}<br>
@@ -243,7 +248,11 @@
 				작성자 번호 : ${postvo.fk_employeeNo}<br>
 			</div>
 		</form>
-	
+	<%-- 이전글제목 보기, 다음글제목 보기시 POST 방식으로 넘기기 위한것 --%>
+	<form name="postFrm_2">
+	   <input type="hidden" name="postNo" />
+	   <input type="hidden" name="goBackURL" />
+	</form>
 		
    </div>
 

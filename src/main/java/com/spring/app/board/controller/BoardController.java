@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ModelAndViewDefiningException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.spring.app.board.domain.BoardVO;
 import com.spring.app.board.domain.PostFileVO;
@@ -438,8 +443,40 @@ public class BoardController {
   }
   
   // 게시글 하나 조회하기 (조회수 증가 포함)
-  @GetMapping("goViewOnePost")
-  public ModelAndView goViewOnePost(ModelAndView mav, HttpServletRequest request,@RequestParam String postNo,@RequestParam String goBackURL) {
+  @RequestMapping("goViewOnePost")
+  public ModelAndView goViewOnePost(ModelAndView mav, HttpServletRequest request) {
+	  
+	  String postNo = request.getParameter("postNo");
+	  String goBackURL = request.getParameter("goBackURL");
+	  String checkAll_or_boardGroup = request.getParameter("checkAll_or_boardGroup");
+	  // 글 상세페이지의 이전/다음글 을 전체게시판 기준으로 조회할지, 해당게시판 조건으로 조회할지
+	  // 1이면 해당게시판을 조건으로, 값이 없으면 전체게시판(조건없음)
+	  
+	  String fk_boardNo = request.getParameter("fk_boardNo");
+	  
+	  
+	  
+	  Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+		// redirect 되어서 넘어온 데이터가 있는지 꺼내어 와본다.
+	  
+		if(inputFlashMap != null) { // redirect 되어서 넘어온 데이터가 있다라면 
+			
+			@SuppressWarnings("unchecked") // 경고 표시를 하지 말라는 뜻이다. 
+			Map<String, String> redirect_map = (Map<String, String>) inputFlashMap.get("redirect_map");
+			// "redirect_map" 값은  /view_2 에서  redirectAttr.addFlashAttribute("키", 밸류값); 을 할때 준 "키" 이다. 
+			// "키" 값을 주어서 redirect 되어서 넘어온 데이터를 꺼내어 온다. 
+			// "키" 값을 주어서 redirect 되어서 넘어온 데이터의 값은 Map<String, String> 이므로 Map<String, String> 으로 casting 해준다. 
+			
+			postNo = redirect_map.get("postNo");
+			
+			try {
+				goBackURL = URLDecoder.decode(redirect_map.get("goBackURL"), "UTF-8"); // 한글데이터가 포함되어 있으면 반드시 한글로 복구해 주어야 한다. 
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}  
+			// === view_2 에서 redirect 해온것을 처리해주기 끝 === //
+		}
+		
 	  
 	  HttpSession session = request.getSession();
 	  EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
@@ -454,8 +491,10 @@ public class BoardController {
 	  Map<String, String> paraMap = new HashMap<>();
 	  paraMap.put("postNo", postNo);
 	  paraMap.put("login_userid", login_userid);
-	  
-	  
+	  paraMap.put("checkAll_or_boardGroup", checkAll_or_boardGroup);
+	  paraMap.put("fk_boardNo", fk_boardNo);
+	  System.out.println("checkAll_or_boardGroup : "+checkAll_or_boardGroup);
+	  System.out.println("fk_boardNo : "+fk_boardNo);
 	  
 	  //  웹브라우저에서 페이지 새로고침을 할 경우 update문이 실행되니 select만 하고 글조회수 증가인 update문은 실행x
      
@@ -987,7 +1026,7 @@ public class BoardController {
 		pageBar += "</ul>";	
 		
 		mav.addObject("pageBar", pageBar);
-		 
+		
 		mav.addObject("totalCount", totalCount);   // 페이징 처리시 보여주는 순번을 나타내기 위한 것
 		mav.addObject("currentShowPageNo", currentShowPageNo); // 페이징 처리시 보여주는 순번을 나타내기 위한 것
 		mav.addObject("sizePerPage", sizePerPage); // 페이징 처리시 보여주는 순번을 나타내기 위한 것
@@ -1002,13 +1041,47 @@ public class BoardController {
 		////////////////////////////////////////
       //mav.setViewName("mycontent/board/board");
       
-
+		mav.addObject("boardNo", boardNo);
 	  mav.addObject("boardInfoMap",boardInfoMap);
 	  mav.setViewName("mycontent/board/selectPostBoardGroupView");
 	  
 	  
 	  return mav;
   }
+  
+  // 이전글제목보기, 다음글제목보기를 할때 글조회수 증가하기 위한 것
+  @PostMapping("goViewOnePost_2")
+  public ModelAndView view_2(ModelAndView mav, 
+				           @RequestParam(defaultValue = "") String postNo,
+				           @RequestParam(defaultValue = "") String goBackURL,
+				           HttpServletRequest request,
+				           RedirectAttributes redirectArr) {
+	
+		try {
+			goBackURL = URLEncoder.encode(goBackURL, "UTF-8");
+			
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		
+		
+		HttpSession session = request.getSession();
+		session.setAttribute("readCountPermission", "yes");
+	
+		// redirect(GET방식) 시 데이터를 넘길때 GET 방식이 아닌 POST 방식처럼 데이터를 넘기려면 RedirectAttributes 를 사용
+		Map<String, String> redirect_map = new HashMap<>();
+		redirect_map.put("postNo", postNo);
+		redirect_map.put("goBackURL", goBackURL);
+		
+		redirectArr.addFlashAttribute("redirect_map", redirect_map);
+		// redirectAttr.addFlashAttribute("키", 밸류값); 으로 사용하는데 오로지 1개의 데이터만 담을 수 있으므로 여러개의 데이터를 담으려면 Map 을 사용해야 한다. 
+		
+		System.out.println("1redirect_map : " + redirect_map);
+		
+		mav.setViewName("redirect:/board/goViewOnePost"); // 실제로 redirect:/board/view 은 POST 방식이 아닌 GET 방식이다.
+		
+		return mav;
+	}
 	
 	
 	
