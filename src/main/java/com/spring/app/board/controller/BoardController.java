@@ -498,50 +498,51 @@ public class BoardController {
 	  return mav;
   }
   
-  //=== 스마트에디터. 글쓰기 또는 글수정시 드래그앤드롭을 이용한 다중 사진 파일 업로드 하기 === //
-  @PostMapping("image/multiplePhotoUpload")
-  public void multiplePhotoUpload(HttpServletRequest request, HttpServletResponse response) {
-	  /*
-	   1. 사용자가 보낸 파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 함.
-	   >>>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기
-	        WAS 의 webapp/board_resources/photo_upload 라는 폴더로 지정.
-	  */
-	  // WAS 의 webapp 의 절대경로를 알아오기.
-	  HttpSession session = request.getSession();
-	  String root = session.getServletContext().getRealPath("/");
-	  String path = root + "board_resources"+File.separator+"photo_upload";
-	  // path 가 첨부파일들을 저장할 WAS(톰캣)의 폴더가 됨.
-	
-	  File dir = new File(path);
-	  if(!dir.exists()) {
-		  dir.mkdirs();
-	  }
-	
-	  try {
-		  String filename = request.getHeader("file-name"); // 파일명(문자열)을 받는다 - 일반 원본파일명
-		  // 네이버 스마트에디터를 사용한 파일업로드시 싱글파일업로드와는 다르게 멀티파일업로드는 파일명이 header 속에 담겨져 넘어오게 되어있다. 
-		  
-		  InputStream is = request.getInputStream(); // is는 네이버 스마트 에디터를 사용하여 사진첨부하기 된 이미지 파일임.
-		
-		  // === 사진 이미지 파일 업로드 하기 === //
-		  String newFilename = fileManager.doFileUpload(is, filename, path);
-		
-		
-		  // === 웹브라우저 상에 업로드 되어진 사진 이미지 파일 이미지를 쓰기 === //
-		  String ctxPath = request.getContextPath(); //  
-		
-		  String strURL = "";
-		  strURL += "&bNewLine=true&sFileName="+newFilename; 
-		  strURL += "&sFileURL="+ctxPath+"/board_resources/photo_upload/"+newFilename;
-					
-		  PrintWriter out = response.getWriter();
-		  out.print(strURL);
-		
-	  } catch(Exception e) {
-		e.printStackTrace();
-	  }
-	
-  }
+  // 이거  CommonController 로 옮겼음. attach_photo.js 도 매핑url  수정함
+//  //=== 스마트에디터. 글쓰기 또는 글수정시 드래그앤드롭을 이용한 다중 사진 파일 업로드 하기 === // 
+//  @PostMapping("image/multiplePhotoUpload")
+//  public void multiplePhotoUpload(HttpServletRequest request, HttpServletResponse response) {
+//	  /*
+//	   1. 사용자가 보낸 파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 함.
+//	   >>>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기
+//	        WAS 의 webapp/board_resources/photo_upload 라는 폴더로 지정.
+//	  */
+//	  // WAS 의 webapp 의 절대경로를 알아오기.
+//	  HttpSession session = request.getSession();
+//	  String root = session.getServletContext().getRealPath("/");
+//	  String path = root + "board_resources"+File.separator+"photo_upload";
+//	  // path 가 첨부파일들을 저장할 WAS(톰캣)의 폴더가 됨.
+//	
+//	  File dir = new File(path);
+//	  if(!dir.exists()) {
+//		  dir.mkdirs();
+//	  }
+//	
+//	  try {
+//		  String filename = request.getHeader("file-name"); // 파일명(문자열)을 받는다 - 일반 원본파일명
+//		  // 네이버 스마트에디터를 사용한 파일업로드시 싱글파일업로드와는 다르게 멀티파일업로드는 파일명이 header 속에 담겨져 넘어오게 되어있다. 
+//		  
+//		  InputStream is = request.getInputStream(); // is는 네이버 스마트 에디터를 사용하여 사진첨부하기 된 이미지 파일임.
+//		
+//		  // === 사진 이미지 파일 업로드 하기 === //
+//		  String newFilename = fileManager.doFileUpload(is, filename, path);
+//		
+//		
+//		  // === 웹브라우저 상에 업로드 되어진 사진 이미지 파일 이미지를 쓰기 === //
+//		  String ctxPath = request.getContextPath(); //  
+//		
+//		  String strURL = "";
+//		  strURL += "&bNewLine=true&sFileName="+newFilename; 
+//		  strURL += "&sFileURL="+ctxPath+"/board_resources/photo_upload/"+newFilename;
+//					
+//		  PrintWriter out = response.getWriter();
+//		  out.print(strURL);
+//		
+//	  } catch(Exception e) {
+//		e.printStackTrace();
+//	  }
+//	
+//  }
 	
 
   // 글 삭제하기( 경로의 실제 파일 삭제와 db 행 삭제)
@@ -884,20 +885,124 @@ public class BoardController {
   
   // 게시판 '별' 게시글 조회
   @GetMapping("selectPostBoardGroupView")
-  public ModelAndView selectPostBoardGroupView(ModelAndView mav,@RequestParam String boardNo) {
-	  
-	  System.out.println("게시판 번호(boardNo) : " + boardNo);
-	  
-	  // 게시판 별 게시글 조회 :: 게시판/게시글 테이블 조인 -> 조건 boardNo 인 것만 조회
-	  List<PostVO> groupPostMapList =  service.selectPostBoardGroup(boardNo);
-	  
+  public ModelAndView selectPostBoardGroupView(ModelAndView mav,@RequestParam String boardNo,HttpServletRequest request,
+          											@RequestParam(defaultValue = "1") String currentShowPageNo) {
 	  // 게시판의 정보를 추출하기 위해(게시판명, 운영자 등등)
 	  BoardVO boardInfoMap = service.getBoardInfo(boardNo);
 	  
-	  // 게시판의 게시글 건수 구하기 :> 게시판/게시글 조인 count(*)
-	  
 	  // 해당 게시판 클릭 시 글 상세페이지로 이동은 전체 게시판 참조.
-	  mav.addObject("groupPostMapList",groupPostMapList);
+	  
+	  
+	  HttpSession session = request.getSession();
+		session.setAttribute("readCountPermission", "yes");
+		/*
+		session 에  "readCountPermission" 키값으로 저장된 value값은 "yes" 이다.
+		session 에  "readCountPermission" 키값에 해당하는 value값 "yes"를 얻으려면 
+		반드시 웹브라우저에서 주소창에 "/board/list" 이라고 입력해야만 얻어올 수 있음. 
+		*/
+		
+		// 총 게시물 건수(totalCount)를 구하기
+		int totalCount = 0;   // 총 게시물 건수
+		int sizePerPage = 20;  // 한 페이지당 보여줄 게시물 건수
+		int totalPage = 0;    // 총 페이지수(웹브라우저상에서 보여줄 총 페이지 개수, 페이지바)
+		
+		int n_currentShowPageNo = 0; 
+		
+		// 해당 게시판의 총 게시물 건수(totalCount) 구하기
+		totalCount = service.getBoardGroupPostTotalCount(boardNo);
+		
+		totalPage = (int) Math.ceil((double)totalCount/sizePerPage);
+		// 총 게시물 건수(totalCount)가 124 개 이라면 총 페이지수(totalPage)는 13 페이지가 되어야 함.
+		// (double)124/10 ==> 12.4 ==> Math.ceil(12.4) ==> 13.0 ==> 13 
+		
+		try {
+			  n_currentShowPageNo = Integer.parseInt(currentShowPageNo);
+		
+			  if(n_currentShowPageNo < 1 || n_currentShowPageNo > totalPage) {
+				// get 방식이므로 사용자가 currentShowPageNo 에 입력한 값이 0 또는 음수 또는 입력한 값이 실제 데이터베이스에 존재하는 페이지수 보다 더 큰값을 입력하여 장난친 경우 
+				 n_currentShowPageNo = 1;
+			  }
+			  
+		} catch(NumberFormatException e) {
+			// get 방식이므로 currentShowPageNo 에 입력한 값이 숫자가 아닌 문자를 입력하거나 int 범위를 초과한 경우
+			n_currentShowPageNo = 1;
+		}
+		 
+		 int startRno = ((n_currentShowPageNo - 1) * sizePerPage) + 1; // 시작 행번호
+		 int endRno = startRno + sizePerPage - 1; // 끝 행번호 
+		 
+		 Map<String, String> paraMap = new HashMap<>();
+
+		 paraMap.put("boardNo", boardNo); 
+		 paraMap.put("startRno", String.valueOf(startRno));
+		 paraMap.put("endRno", String.valueOf(endRno)); 
+		 
+
+		 // 게시판 별 게시글 조회 :: 게시판/게시글 테이블 조인 -> 조건 boardNo 인 것만 조회
+		 List<PostVO> groupPostMapList =  service.selectPostBoardGroup(paraMap);
+		 mav.addObject("groupPostMapList",groupPostMapList);
+		 System.out.println("조회된 게시글 수: " + (groupPostMapList != null ? groupPostMapList.size() : "null"));
+		 // === 페이지바 만들기 === //
+		 int blockSize = 10;
+		 // blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수
+		 //1  2  3  4  5  6  7  8  9 10 [다음][마지막]  -- 1개블럭
+		 
+		 int loop = 1; //loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수까지만 증가하는 용도
+	     
+		 
+		 int pageNo = ((n_currentShowPageNo - 1)/blockSize) * blockSize + 1;
+		 
+		String pageBar = "<ul style='list-style:none;'>";
+		String url = "selectPostBoardGroupView";
+		
+		// === [맨처음][이전] 만들기 === //
+		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?currentShowPageNo=1&boardNo="+boardNo+"'>[맨처음]</a></li>";
+		
+		if(pageNo != 1) {
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+(pageNo-1)+"&boardNo="+boardNo+"'>[이전]</a></li>"; 
+		}
+		
+		
+		while( !(loop > blockSize || pageNo > totalPage) ) {
+			
+			if(pageNo == Integer.parseInt(currentShowPageNo)) {
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</li>"; 
+			}
+			else {
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"&boardNo="+boardNo+"'>"+pageNo+"</a></li>"; 
+			}
+			
+			loop++;
+			pageNo++;
+		}// end of while-------------------------------
+		
+		
+		// === [다음][마지막] 만들기 === //
+		if(pageNo <= totalPage) {
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"'>[다음]</a></li>"; 	
+		}
+		
+		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+totalPage+"&boardNo="+boardNo+"'>[마지막]</a></li>";
+					
+		pageBar += "</ul>";	
+		
+		mav.addObject("pageBar", pageBar);
+		 
+		mav.addObject("totalCount", totalCount);   // 페이징 처리시 보여주는 순번을 나타내기 위한 것
+		mav.addObject("currentShowPageNo", currentShowPageNo); // 페이징 처리시 보여주는 순번을 나타내기 위한 것
+		mav.addObject("sizePerPage", sizePerPage); // 페이징 처리시 보여주는 순번을 나타내기 위한 것
+      
+		
+		
+		
+		// 페이징 처리된 후 특정 글을 클릭하여 글을 본 후 사용자가 목록보기 버튼을 클릭했을 때 돌아갈페이지를 알려주기위해 넘김 
+		String currentURL = MyUtil.getCurrentURL(request);
+		mav.addObject("goBackURL", currentURL);
+		
+		////////////////////////////////////////
+      //mav.setViewName("mycontent/board/board");
+      
+
 	  mav.addObject("boardInfoMap",boardInfoMap);
 	  mav.setViewName("mycontent/board/selectPostBoardGroupView");
 	  

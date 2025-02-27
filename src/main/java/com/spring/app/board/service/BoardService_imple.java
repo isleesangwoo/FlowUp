@@ -353,8 +353,8 @@ public class BoardService_imple implements BoardService {
 
 	// 게시판 별 게시글 조회 :: 게시판/게시글 테이블 조인 -> 조건 boardNo 인 것만 조회
 	@Override
-	public List<PostVO> selectPostBoardGroup(String boardNo) {
-		List<PostVO> groupPostMapList =  dao.selectPostBoardGroup(boardNo);
+	public List<PostVO> selectPostBoardGroup(Map<String, String> paraMap) {
+		List<PostVO> groupPostMapList =  dao.selectPostBoardGroup(paraMap);
 		return groupPostMapList;
 	}
 
@@ -363,6 +363,13 @@ public class BoardService_imple implements BoardService {
 	public BoardVO getBoardInfo(String boardNo) {
 		BoardVO boardInfoMap = dao.getBoardInfo(boardNo);
 		return boardInfoMap;
+	}
+
+	//해당 게시판의 총 게시물 건수(totalCount) 구하기
+	@Override
+	public int getBoardGroupPostTotalCount(String boardNo) {
+		int totalCount = dao.getBoardGroupPostTotalCount(boardNo);
+		return totalCount;
 	}	
 	
 	

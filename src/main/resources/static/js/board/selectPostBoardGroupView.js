@@ -2,9 +2,9 @@ $(document).ready(()=>{
 	
 	// === 게시글 하나에 마우스 호버 시 시작 === //
 	$(".onePostElmt").hover(function(){
-		 $(this).css('color', '#808080');
+		 $(this).css('background-color', '#f9f9f9');
 	 }, function(){
-		 $(this).css('color', '');
+		 $(this).css('background-color', '');
 	 });
 	// === 게시글 하나에 마우스 호버 시 끝 === //	
 	 

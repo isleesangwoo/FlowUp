@@ -126,20 +126,13 @@ ORDER BY createdAt DESC
 	-->
 	<!-- 스마트에디터 이미지첨후 구현 후 전체게시판 조회 -->
 	SELECT 
-	    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, V.subject, 
-	    REGEXP_REPLACE(
-	        REGEXP_REPLACE(
-	            REGEXP_REPLACE(
-	                REGEXP_REPLACE(
-	                    REGEXP_REPLACE(V.content, '&lt;img[^&gt;]*?/?>', '', 1, 0, 'i'), 
-	                    <![CDATA[ '&nbsp;' ]]>, ' ', 1, 0, 'i'
-	                ),
-	                '&lt;br[^>]*>', ' ', 1, 0, 'i' 
-	            ),
-	            '&lt;/?p>', '', 1, 0, 'i' 
-	        ),
-	        '[\s]+', ' ', 1, 0, 'i'
-	    ) AS content, 
+	    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, 
+	    case when length( V.subject) > 40 then substr(subject, 0, 40) || '...' else subject end as subject, 
+	    CASE 
+        WHEN LENGTH(REGEXP_REPLACE(V.content, '&lt;[^>]*>', '')) > 80 
+        THEN SUBSTR(REGEXP_REPLACE(V.content, '&lt;[^>]*>', ''), 1, 80) || '...' 
+        ELSE REGEXP_REPLACE(V.content,'&lt;[^>]*>', '') 
+    END AS content,
 	    V.readCount, V.regDate, V.commentCount, V.allowComments, V.status, 
 	    V.isNotice, V.noticeEndDate,
 	    b.boardNo, b.boardName
@@ -161,6 +154,13 @@ ORDER BY createdAt DESC
       select count(*)
       from tbl_post
       where status = 1
+   </select>
+   
+   <!-- === 해당 게시판의 총 게시물 건수(totalCount) 구하기 === --> 
+   <select id="getBoardGroupPostTotalCount"  resultType="int" parameterType="String">
+      select count(*)
+      from tbl_post
+      where status = 1 and fk_boardNo= #{boardNo}
    </select>
    
 <!--    게시글 하나 조회하기(조인함) -->
@@ -328,16 +328,36 @@ ORDER BY createdAt DESC
 	
 	 	<!-- BoardVO의 필드 매핑 -->
 	    <association property="boardvo" javaType="BoardVO">
+	    	<result property="boardNo" 	column="boardNo"/>
 	        <result property="boardName" 	column="boardName"/>
 	        <result property="createdBy" 	column="createdBy"/>
 	    </association>
 	</resultMap>
-	<select id="selectPostBoardGroup" resultMap="selectPostBoardGroup_Map" parameterType="String">
-		select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount,P.allowComments,P.isNotice,P.noticeEndDate
+	<select id="selectPostBoardGroup" resultMap="selectPostBoardGroup_Map" parameterType="map">
+<!-- 	select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount,P.allowComments,P.isNotice,P.noticeEndDate
 		from tbl_post P
 		join tbl_board B
 		on P.FK_BOARDNO = B.boardNo
 		where boardNo = #{boardNo}
+		order by p.postNo desc  필요없음-->
+		
+		SELECT  
+	    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, V.subject,V.content, 
+	    V.readCount, V.regDate, V.commentCount, V.allowComments,
+	    V.isNotice, V.noticeEndDate,
+	    b.boardNo, b.boardName,B.createdBy
+	FROM 
+	    ( 
+	        SELECT row_number() OVER (ORDER BY postNo DESC) AS rno, 
+	               postNo, fk_boardNo, fk_employeeNo, name, subject, content,
+	               readCount, to_char(regDate, 'yyyy-mm-dd') AS regDate, 
+	               commentCount, allowComments,  isNotice, noticeEndDate
+	        FROM tbl_post
+	        WHERE status = 1 and fk_boardNo = #{boardNo}
+	    ) V
+	JOIN tbl_board b ON V.fk_boardNo = b.boardNo
+	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+	order by V.postNo desc
 	</select>
 	
 <!-- 	게시판의 정보를 추출하기 위해(게시판명, 운영자 등등) -->

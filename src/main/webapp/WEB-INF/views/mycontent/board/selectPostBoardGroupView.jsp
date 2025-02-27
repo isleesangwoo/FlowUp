@@ -12,7 +12,7 @@
 <!-- 오른쪽 바 -->
     <div id="right_bar">
         <div id="right_title_box">
-            <span id="right_title">${boardInfoMap.boardName}</span>
+            <span id="right_title">${boardInfoMap.boardName} </span><span id="totalCount">글 [${totalCount}]</span>
 
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
             <div id="boardInfoElmt">
@@ -41,19 +41,48 @@
         
         <%-- 이곳에 각 해당되는 뷰 페이지를 작성 시작 --%>
 		<div id="postContainer"> <!-- 게시글 보여주는 요소 전체 박스-->
-			
-		asdfasdf
+		<table>
+            <tr>
+                <td>번호</td>
+                <td>제목</td>
+                <td>작성자</td>
+                <td>작성일</td>
+                <td>조회</td>
+                <td>좋아요</td>
+            </tr>
+            <c:forEach var="postList" items="${groupPostMapList}" varStatus="status">
+            	<tr class="onePostElmt">
+		         	<td>
+		             	${ (totalCount) - (currentShowPageNo - 1) * (sizePerPage) - (status.index) }
+		            </td>       
+	                <td onclick="goView('${postList.postNo}')">${postList.subject}</td>
+	                <td>${postList.name}</td>
+	                <td>${postList.regDate}</td>
+	                <td>${postList.readCount}</td>
+	                <td>데이터6</td>
+	            </tr>
+            </c:forEach>
+    	</table>
 		</div>
+		<%-- === 페이지바 보여주기 === --%>
+	    <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+	    	${requestScope.pageBar}
+	    </div>
+	    
 		<%-- 이곳에 각 해당되는 뷰 페이지를 작성 끝 --%>
         
     </div>
     <!-- 오른쪽 바 -->
+
+<!-- onClick="goView" 로 클릭된 함수에 폼을 같이 넘겨주기위함. 함수에서 폼의 input에 값을 넣어줌.-->   	
+<form name="goViewFrm">
+   <input type="hidden" name="postNo" />
+   <input type="hidden" name="goBackURL" />
+</form>
 	
 	
 	
-	
-	
-	<div>
+	<div style="display: none;">
 <c:forEach var="postList" items="${groupPostMapList}">
 <br>
 게시판 이름 : ${postList.boardvo.boardName}<br>

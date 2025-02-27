@@ -334,7 +334,7 @@
     	var tempFile,
     		sUploadURL;
     	
-    	sUploadURL= '/flowUp/board/image/multiplePhotoUpload'; 	//upload URL
+    	sUploadURL= '/flowUp/common/image/multiplePhotoUpload'; 	//upload URL
     	
     	//파일을 하나씩 보내고, 결과를 받음.
     	for(var j=0, k=0; j < nImageInfoCnt; j++) {

@@ -10,6 +10,9 @@
     padding: var(--size24) var(--size24) var(--size18) var(--size24);
     border-bottom: 1px solid #c8c8c8;
 }
+#totalCount{
+	font-size: var(--size16);
+}
 
 #right_title {
     font-size: var(--size22);
@@ -132,8 +135,22 @@
 /* 게시글 보여주는 요소 시작 */
 #postContainer{
 	width: 100%;
-	border: solid 1px red;
 	display:flex;
+}
+
+#postContainer table {
+    width: 100%;
+    border-collapse: collapse;
+}
+#postContainer td {
+    padding: 8px;
+    text-align: center;
+}
+#postContainer tr:nth-child(1) {
+    border-bottom: 1px solid #c8c8c8;
+}
+#postContainer td {
+    border: none;
 }
 
 
@@ -145,3 +162,41 @@
 	outline: none;
 	cursor: pointer;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

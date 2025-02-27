@@ -29,7 +29,7 @@
 					<table>
 						<tr>
 							<td>제목</td>
-							<td><input type="text" name="subject" id="subject"value="${postvo.subject}"></td>
+							<td><input type="text" name="subject" id="subject"value="${postvo.subject}" maxlength="60"></td>
 						</tr>
 						<tr>
 							<td>파일첨부</td>
