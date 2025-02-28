@@ -15,9 +15,22 @@ public class PostVO {
 	private String isNotice;           // 공지글 여부 (1: 공지글, 0: 일반글)
 	private String noticeEndDate ;     // 공지사항 종료일 (공지글일 경우 사용)
 	
+	private String previouspostNo;      // 이전글번호
+	private String previoussubject;  	// 이전글제목
+	private String previousname;		// 이전글 작성자
+	private String previousregDate;		// 이전글 작성일
+	private String previousreadCount;	// 이전글 조회수
+	
+	private String nextpostNo;          // 다음글번호
+	private String nextsubject;      	// 다음글제목
+	private String nextname;			//다음글 작성자
+	private String nextregDate;			// 다음글 작성일
+	private String nextreadCount;		// 다음글조회수
+	
+	
+
 	private BoardVO boardvo; // 조인을 위해
 	private PostFileVO postfilevo; // 조인을 위해
-	
 	
 	public String getPostNo() {
 		return postNo;
@@ -111,6 +124,71 @@ public class PostVO {
 	public void setPostfilevo(PostFileVO postfilevo) {
 		this.postfilevo = postfilevo;
 	}
+	
+	
+	
+	public String getPreviouspostNo() {
+		return previouspostNo;
+	}
+	public void setPreviouspostNo(String previouspostNo) {
+		this.previouspostNo = previouspostNo;
+	}
+	public String getPrevioussubject() {
+		return previoussubject;
+	}
+	public void setPrevioussubject(String previoussubject) {
+		this.previoussubject = previoussubject;
+	}
+	public String getNextpostNo() {
+		return nextpostNo;
+	}
+	public void setNextpostNo(String nextpostNo) {
+		this.nextpostNo = nextpostNo;
+	}
+	public String getNextsubject() {
+		return nextsubject;
+	}
+	public void setNextsubject(String nextsubject) {
+		this.nextsubject = nextsubject;
+	}
+	public String getPreviousname() {
+		return previousname;
+	}
+	public void setPreviousname(String previousname) {
+		this.previousname = previousname;
+	}
+	public String getPreviousregDate() {
+		return previousregDate;
+	}
+	public void setPreviousregDate(String previousregDate) {
+		this.previousregDate = previousregDate;
+	}
+	public String getPreviousreadCount() {
+		return previousreadCount;
+	}
+	public void setPreviousreadCount(String previousreadCount) {
+		this.previousreadCount = previousreadCount;
+	}
+	public String getNextname() {
+		return nextname;
+	}
+	public void setNextname(String nextname) {
+		this.nextname = nextname;
+	}
+	public String getNextregDate() {
+		return nextregDate;
+	}
+	public void setNextregDate(String nextregDate) {
+		this.nextregDate = nextregDate;
+	}
+	public String getNextreadCount() {
+		return nextreadCount;
+	}
+	public void setNextreadCount(String nextreadCount) {
+		this.nextreadCount = nextreadCount;
+	}
+	
+	
 	
 	
 	

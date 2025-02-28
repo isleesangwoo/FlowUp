@@ -63,7 +63,8 @@ function goView(postNo) {
 	const frm = document.goViewFrm;
     frm.postNo.value = postNo;
     frm.goBackURL.value = goBackURL;
-   
+    frm.checkAll_or_boardGroup.value = "1"; // 글 상세페이지의 이전/다음글 을 전체게시판 기준으로 조회할지, 해당게시판 조건으로 조회할지
+	// 1이면 해당게시판을 조건으로, 값이 없으면 전체게시판(조건없음)
     frm.method = "get";
     frm.action = ctxPath + "/board/goViewOnePost";
     frm.submit();
