@@ -411,13 +411,7 @@ div.hoverDiv:hover {
 				
 				
 				$.each(json, (index,item)=>{
-					
-					
-		//			console.log("확인용 startTime : " + item.startTime);
-					// 확인용 startTime : 2025-02-18 09:54
-		//			console.log("확인용 endTime : " + item.endTime);
-					// 확인용 endTime : 2025-02-18 15:46
-					
+
 					const selectDay = item.startTime.substring(8, 10); 
 					
 					const starthour = (item.startTime).substring(11, 13); 
@@ -430,22 +424,7 @@ div.hoverDiv:hover {
 					const endCell = Number(endhour) * 6 + Math.floor(Number(endmin)/10);   // 18:41 라면 @@@@@@@@@@@@@|@@@@@@@@@@@@@|@@@@@@@@@@@@|113|114|115|  => 112
 					                  
 					const totalCellCnt = endCell - startCell +1;                                              
-					                                                        
-					for(let workCell=startCell; workCell<=endCell; workCell++) {
-						
-					//	console.log("확인용 selectDay : " +selectDay);
-					//	console.log("확인용 workCell : " +workCell);
-						
-					//	$("table td."+workCell).css({"background-color":"red"});
-						
-					//	$("table."+selectDay+" td").css({"background-color":"blue"});
-						
-	//					$("table."+selectDay+" td."+workCell).css({"background-color":"green"});
-					}
-					
 				
-					
-					
 					let v_html = ``;
 					
 					for(let k=0; k<144; k++) {
@@ -478,19 +457,7 @@ div.hoverDiv:hover {
 		        		
 		        	}
 					
-					
 					$("table."+selectDay+" tbody").html(v_html);
-					
-					
-					
-					
-					/* $("table."+selectDay+" td."+startCell).css({
-						'position' : 'releate'
-					}).html(`
-								<div title="출근시간" style="width: calc(\${tableWidth}px / 144 * \${totalCellCnt}); background-color: #80ff80; padding:10px; z-index:100; border-radius:50px;" >
-									
-								</div>
-							`); */
 					
 				});
 				
@@ -665,14 +632,20 @@ div.hoverDiv:hover {
 
 <div style="display: flex;">
 
-	<div
-		style="width: var(--size250);; height: 100vh; border-right: solid 1px #000;">
+	<div style="width: var(--size250);; height: 100vh; border-right: solid 1px #000; flex-shrink: 0;">
 
 		<jsp:include page="../../common/commute_btn.jsp" />
 
 	</div>
 
-	<div style="width: 100%; padding: 5px;">
+	<div style="width: 100%; padding: 20px;">
+	
+		<div class="ml-1 mr-1 mb-5">
+			
+			<div style="font-size:14pt;">내 근태현황</div>
+			
+		</div>
+	
 		<div class="dateController">
 			<div class="dateTopBar">
 
