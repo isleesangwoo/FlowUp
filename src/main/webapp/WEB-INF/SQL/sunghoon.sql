@@ -46,6 +46,14 @@ CREATE table tbl_approval
 );
 -- Table TBL_APPROVAL이(가) 생성되었습니다.
 
+create sequence seq_approval
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
 CREATE table tbl_draft_annual
 (documentNo     NVARCHAR2(20)   not null
 ,useAmount      number          not null
@@ -154,6 +162,26 @@ select *
 from tbl_document
 where fk_employeeno = '100014';
 
+SELECT *
+  FROM all_sequences;
 
 
+select *
+from tbl_document D JOIN tbl_draft_annual A
+ON d.documentNo = A.documentNo;
 
+select d.documentNo, fk_employeeNo, subject, draftDate, status, securityLevel, temp, documentType, approvalDate
+     , useAmount, reason, startDate, endDate, annualType
+from tbl_document D JOIN tbl_draft_annual A
+ON d.documentNo = A.documentNo B JOIN tbl_employee E
+ON d.fk_employeeNo = E.employeeNo
+where d.documentNo = '2025-100002';
+
+select approvalNo, fk_documentNo, fk_approver, approvalOrder, approvalStatus, to_char(executionDate, 'yyyy-mm-dd') as executionDate
+from tbl_approval
+where fk_documentNo = '2025-100030';
+
+
+select *
+from tbl_document D JOIN tbl_draft_annual A
+ON d.documentNo = A.documentNo;
