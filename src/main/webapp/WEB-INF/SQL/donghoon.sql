@@ -856,13 +856,13 @@ select M.mailNo, M.subject, M.content, M.sendDate,
        e.name, e.email,
        r.reference, r.referenceName, r.referenceMail
 from tbl_mail M
-join tbl_mailFile f
+left join tbl_mailFile f
   on M.mailNo = f.fk_mailNo
-join tbl_reference r
+left join tbl_reference r
   on M.mailNo = r.fk_mailNo
 join tbl_employee e
   on M.fk_employeeNo = e.employeeNo
-where mailNo = 100145;
+where M.mailNo = 100145;
 ----------------------------------------------------------------
 
 create sequence mailFileSeq

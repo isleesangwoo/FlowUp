@@ -83,5 +83,19 @@ $(document).ready(()=>{
      }
    });
 
+
    
 }) // end of $(document).ready(()=>{})---------
+
+
+// Function Declaration
+function goView(mailNo) {
+	
+	const frm = document.goViewFrm;
+    frm.postNo.value = mailNo;
+    frm.goBackURL.value = goBackURL;
+   
+    frm.method = "get";
+    frm.action = ctxPath + "/mail/viewMail";
+    frm.submit();
+}

@@ -58,7 +58,7 @@
 		    ) M
 		JOIN tbl_employee e
 		  ON M.fk_employeeNo = e.employeeNo
-	  	JOIN tbl_mailFile f
+	  	LEFT JOIN tbl_mailFile f
   		  ON M.mailNo = f.fk_mailNo
 		
 		<!-- startRno와 endRno가 null이 아닐 때만 페이징 조건을 적용 -->
@@ -127,34 +127,49 @@
 	
 	
 	<!-- 메일 하나 조회하기 -->
-	
 	<resultMap id="viewMail" type="MailVO">
-	
- 		<!-- MailVO의 필드 매핑 -->
- 		
-	    <result property="mailNo" 		 column="mailNo"/>
-	    <result property="fk_employeeNo" column="fk_employeeNo"/>
-	    <result property="name" 		 column="name"/>
-	    <result property="subject" 		 column="subject"/>
-	    <result property="content" 		 column="content"/>
-	    <result property="readCount" 	 column="readCount"/>
-	    <result property="regDate" 		 column="regDate"/>
+	    <!-- MailVO의 필드 매핑 -->
+	    <result property="mailNo"        column="mailNo"/>
+	    <result property="subject"       column="subject"/>
+	    <result property="content"       column="content"/>
+	    <result property="sendDate"      column="sendDate"/>
+	    <result property="readCount"     column="readCount"/>
+	    <result property="regDate"       column="regDate"/>
 	    <result property="commentCount"  column="commentCount"/>
+	    
+	    <!-- 첨부파일 관련 필드 매핑 -->
+	    <result property="fileSize"      column="fileSize"/>
+	    <result property="orgFileName"   column="orgFileName"/>
+	    <result property="fileName"      column="fileName"/>
 	
-	 	<!-- EmployeeVO의 필드 매핑 -->
-	 	
-	    <association property="employeevo"  javaType="EmployeeVO">
-	        <result property="employeeNo" 	column="employeeNo"/>
-	        <result property="name" 		column="name"/>
+	    <!-- 참조 정보 관련 필드 매핑 -->
+	    <result property="reference"     column="reference"/>
+	    <result property="referenceName" column="referenceName"/>
+	    <result property="referenceMail" column="referenceMail"/>
+	    
+	    <!-- EmployeeVO의 필드 매핑 -->
+	    <association property="employeevo" javaType="EmployeeVO">
+	        <result property="employeeNo" column="employeeNo"/>
+	        <result property="name"       column="name"/>
+	        <result property="email"      column="email"/>
 	    </association>
 	</resultMap>
-	<select id="viewMail" resultMap="viewMail_Map" parameterType="HashMap">
-		select M.mailNo,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount
-		from tbl_mail M
-		join tbl_employee e
-		on M.fk_employeeNo = e.employeeNo
-		where mailNo = #{mailNo}
+
+	<select id="viewMail" resultMap="viewMail" parameterType="HashMap">
+	    select M.mailNo, M.subject, M.content, M.sendDate,
+	           f.fileSize, f.orgFileName, f.fileName,
+	           e.employeeNo, e.name, e.email,
+	           r.reference, r.referenceName, r.referenceMail
+	    from tbl_mail M
+	    left join tbl_mailFile f
+	      on M.mailNo = f.fk_mailNo
+	    left join tbl_reference r
+	      on M.mailNo = r.fk_mailNo
+	    join tbl_employee e
+	      on M.fk_employeeNo = e.employeeNo
+	    where M.mailNo = #{mailNo}
 	</select>
+
 	
 
 </mapper>

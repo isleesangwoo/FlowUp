@@ -153,7 +153,7 @@ public class MailController {
 	
 	
 	// 메일 한개 조회
-	@PostMapping("viewMail")
+	@GetMapping("viewMail")
 	public ModelAndView viewOneMail(ModelAndView mav, HttpServletRequest request,@RequestParam String mailNo,@RequestParam String goBackURL) {
 		
 		HttpSession session = request.getSession();
@@ -175,10 +175,30 @@ public class MailController {
 		mailvo = service.viewMail(paraMap);
 			
 	 
-		if (mailvo == null) {
-			mav.setViewName("redirect:/mail/viewMail");
-			return mav;
+		if ("yes".equals((String) session.getAttribute("readCountPermission"))) {
+			// 글목록보기인 /board 페이지를 클릭한 다음에 특정글을 조회해온 경우
+
+			mailvo = service.viewMail(paraMap); // 게시글 하나 조회하기
+			// 글 조회수 증가와 함께 글 1개를 조회를 해오는 것( 조회수 증가는 service 단에서 처리를 해줌.)
+		  
+			session.removeAttribute("readCountPermission");
+			// 중요함!! session 에 저장된 readCountPermission 을 삭제한다.
 		}
+
+		else {
+			// 글목록에서 특정 글제목을 클릭하여 본 상태에서
+			// 웹브라우저에서 새로고침(F5)을 클릭한 경우 
+		
+			// 글 조회수 증가는 없고 단순히 글 1개만 조회를 해오는 것
+			mailvo = service.viewMail(paraMap);
+		  
+	  		if (mailvo == null) {
+	  			mav.setViewName("redirect:/mail/viewMail");
+	  			return mav;
+	  		}
+	  		  
+		}
+		
 		
 		mailfilevo = service.getMailFile(paraMap); // 글 하나의 첨부파일 테이블의 고유번호,기존파일명,새로운 파일명 추출
 		 

@@ -574,10 +574,13 @@
 	                    	<i class="fa-solid fa-paperclip"></i>
 	                 	</td>
                    		<td id="mailName">${mail.employeevo.name}</td>
-                   		<td id="mailTitle">${mail.subject}</td>
+                   		
+                   		<td id="mailTitle" >
+                   			<span onclick="goView('${mail.subject}')">${mail.subject}</span>
+                   		</td>
 					    <td id="right-content">
 					        <span id="sendDate">${mail.sendDate}</span>
-					        <span id="fileSize">67.1KB</span>
+					        <span id="fileSize">${MailFileVO.fileSize}</span>
 					    </td>
 	               		</tr>
 	           </c:forEach>
@@ -592,5 +595,13 @@
     </div>
     <!-- 오른쪽 바 -->
 	<%-- 이곳에 각 해당되는 뷰 페이지를 작성해주세요 --%>
+	
+<form name="goViewFrm">
+   <input type="text" name="mailNo" />
+   <input type="text" name="goBackURL" />
+</form>	     
+    
+	
+	
 	
 <jsp:include page="../../footer/footer.jsp" /> 
