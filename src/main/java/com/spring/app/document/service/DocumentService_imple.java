@@ -9,6 +9,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.app.document.domain.ApprovalVO;
 import com.spring.app.document.domain.DocumentVO;
 import com.spring.app.document.model.DocumentDAO;
 import com.spring.app.employee.domain.EmployeeVO;
@@ -33,14 +34,24 @@ public class DocumentService_imple implements DocumentService {
 		Date date = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-");
 		
-		String documentNo = sdf.format(date) + seq_document;
+		String documentNo = sdf.format(date) + seq_document; // 문서번호
 		
-		paraMap.put("documentNo", documentNo);
+		paraMap.put("documentNo", documentNo); // 문서번호 넣어주기
 		
 		int n = mapper_dao.insertDocument(paraMap);
 		int m = 0;
 		if(n==1) {
 			m = mapper_dao.insertAnnualDraft(paraMap);
+		}
+		
+		int approval_count = Integer.parseInt(paraMap.get("added_approval_count"));
+		
+		int a = 1;
+		
+		for(int i=0; i<approval_count; i++) {
+			paraMap.put("fk_approver", paraMap.get("added_employee_no" + i));
+			paraMap.put("approvalorder", String.valueOf(approval_count-i));
+			a *= mapper_dao.insertApprover(paraMap);
 		}
 		
 		return n*m;
@@ -80,6 +91,24 @@ public class DocumentService_imple implements DocumentService {
 		
 		List<EmployeeVO> employeeList = mapper_dao.getEmployeeList();
 		return employeeList;
+	}
+
+
+	// 문서함에서 문서 1개 보여주기
+	@Override
+	public Map<String, String> documentView(Map<String, String> paraMap) {
+		
+		Map<String, String> document = mapper_dao.documentView(paraMap);
+		return document;
+	}
+
+
+	// 문서함에서 보여줄 결재자 리스트 가져오기
+	@Override
+	public List<ApprovalVO> getApprovalList(String documentNo) {
+		
+		List<ApprovalVO> approvalList = mapper_dao.getApprovalList(documentNo);
+		return approvalList;
 	}
 
 	

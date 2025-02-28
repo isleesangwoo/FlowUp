@@ -9,12 +9,32 @@
 
 <jsp:include page="document_main.jsp" />
 
+<style type="text/css">
+	
+	.document:hover {
+		cursor: pointer;
+		background-color: gray;
+	}
+	
+</style>
+
 <script type="text/javascript">
 
 	$(document).ready(function(){
 		
+		<%-- /*
+		$("table#myDocumentList").on("click", "tr.document" ,function(e){
+			location.href="<%= ctxPath%>/document/documentView";
+		});
+		*/ --%>
+		
+		$("table#myDocumentList").on("click", "td.document_check" ,function(e){
+			e.stopPropagation();
+			alert("YYY");
+		});
 		
 	}); // end of $(document).ready(function(){})-------------------------------------------------
+	
 	
 </script>
 
@@ -25,7 +45,7 @@
 			<button>문서 삭제</button>
 		</div>
 		
-		<table class="table">
+		<table id="myDocumentList" class="table">
 			<thead>
 				<tr>
 					<th>
@@ -54,8 +74,8 @@
 			<tbody>
 				<c:if test="${not empty requestScope.myDocumentList}">
 					<c:forEach var="myDocument" items="${requestScope.myDocumentList}">
-						<tr>
-							<td>
+						<tr class="document" onclick="location.href='<%= ctxPath%>/document/documentView?documentNo=${myDocument.documentNo}&documentType=${myDocument.documentType}';">
+							<td class="document_check">
 								<input type="checkbox" />
 							</td>
 							<td>
