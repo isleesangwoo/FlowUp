@@ -206,39 +206,34 @@ public class ReservationController {
 	
 	@PostMapping("addFixtures")
 	@ResponseBody
-	public String addFixtures(@RequestParam String str_InformationTitle
-	                         ,@RequestParam String fk_assetNo
-	                         ,@RequestParam String totalAssetDetailNo
-	                         ,@RequestParam String totalInformationContents
+	public String addFixtures(@RequestParam String str_informationTitle
+	                         ,@RequestParam String fk_assetdetailno
+	                         ,@RequestParam String str_release
 	                         ,HttpServletRequest request) {
 
 	    Map<String, Object> paraMap = new HashMap<>();
 	    
 	    // 받은 값들 출력 확인
-	    System.out.println("확인용 str_InformationTitle : " + str_InformationTitle); 
-	    System.out.println("확인용 totalAssetDetailNo : " + totalAssetDetailNo);
-	    System.out.println("확인용 totalInformationContents : " + totalInformationContents);
+	    System.out.println("확인용 str_informationTitle : " + str_informationTitle); 
+	    System.out.println("확인용 fk_assetdetailno : " + fk_assetdetailno);
+	    System.out.println("확인용 str_informationtitle : " + str_release);
 
 	    // 받은 값을 배열로 변환
-	    String[] arr_InformationTitle = str_InformationTitle.split(",");
-	    String[] arr_InformationContents = totalInformationContents.split(",");
-	    String[] arr_AssetDetailNo = totalAssetDetailNo.split(","); // AssetDetailNo를 배열로 분리
+	    String[] arr_informationTitle = str_informationTitle.split(",");   // 비품 이름들 배열로 분리
+	    String[] arr_release = str_release.split(",");					   // 비품 공개여부 배열로 분리
 
-	    // System.out.println(arr_AssetDetailNo[0]);
 	    
 	    // 파라미터 맵에 추가
-	    paraMap.put("fk_assetNo", fk_assetNo);
-	    paraMap.put("arr_InformationTitle", arr_InformationTitle);
-	    paraMap.put("arr_InformationContents", arr_InformationContents);
-	    paraMap.put("arr_AssetDetailNo", arr_AssetDetailNo);
+	    paraMap.put("arr_informationTitle", arr_informationTitle); // 비품 이름들 배열
+	    paraMap.put("arr_release", arr_release);				   // 비품 공개여부 배열
+	    paraMap.put("fk_assetdetailno", fk_assetdetailno);
 
-	    System.out.println("확인용 arr_AssetDetailNo : " + Arrays.toString(arr_AssetDetailNo));
 	    
 	    // 서비스 호출
 	    int result = service.addFixtures(paraMap); // 서비스 메소드 실행
 
 	    JSONObject jsonObj = new JSONObject();
-	    if (result == 1) {
+	    if (result > 0) {
 	        jsonObj.put("result", 1);
 	    } else {
 	        jsonObj.put("result", 0);
@@ -392,6 +387,15 @@ public class ReservationController {
 		return jsonObj.toString();
 	}
 	
+	
+	@GetMapping("selectInformation")
+	@ResponseBody
+	public List<Map<String, String>> selectInformation(@RequestParam String fk_assetdetailno) {
+		
+		List<Map<String, String>> informationList = service.middleTapInfo(fk_assetdetailno); // 상세에 해당하는 비품정보들을 불러주는 메소드
+		
+		return informationList;
+	}
 	
 	
 	

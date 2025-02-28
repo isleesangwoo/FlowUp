@@ -1,184 +1,171 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+	pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 
-<%@include file="./reservationLeftBar.jsp" %>
+<%@include file="./reservationLeftBar.jsp"%>
 
 
- 
+
 <%-- 각자 페이지에 해당되는 css 연결 --%>
-<link href="<%=ctxPath%>/css/reservation/reservation_main.css" rel="stylesheet"> 
-<link href="<%=ctxPath%>/css/reservation/reservation_one.css" rel="stylesheet"> 
+<link href="<%=ctxPath%>/css/reservation/reservation_main.css"
+	rel="stylesheet">
+<link href="<%=ctxPath%>/css/reservation/reservation_one.css"
+	rel="stylesheet">
 
 <%-- 각자 페이지에 해당되는 js 연결 --%>
 <script src="<%=ctxPath%>/js/reservation/reservation.js"></script>
 
-	
-	<!-- 오른쪽 바 -->
-    <div id="right_bar">
-        <div id="right_title_box">
-            <span id="right_title">${requestScope.assetvo.assetTitle}</span>
-        </div>
+
+<!-- 오른쪽 바 -->
+<div id="right_bar">
+	<div id="right_title_box">
+		<span id="right_title">${requestScope.assetvo.assetTitle}</span>
+	</div>
 
 
 
-		<ul class="tab">
-		  <li class="tab__item active">
-		    <a href="#tab1">이용안내</a>
-		  </li>
-		  <li class="tab__item">
-		    <a href="#tab2">자산정보 관리</a>
-		  </li>
-		  <li class="tab__item">
-		    <a href="#tab3">자산관리</a>
-		  </li>
-		</ul>
+	<ul class="tab">
+		<li class="tab__item active"><a href="#tab1">이용안내</a></li>
+		<li class="tab__item"><a href="#tab2">자산정보 관리</a></li>
+		<li class="tab__item"><a href="#tab3">자산관리</a></li>
+	</ul>
 
 
 
-		
 
-		<!-- 탭 내용 영역 -->
-		<div class="tab__content-wrapper">
-		
-			<%-- 첫번째 탭 내용물 --%>
-		  	<div id="tab1" class="tab__content active">
-				<div class="tab1_info">※ 첫 페이지에 나오는 안내문을 작성할 수 있습니다.</div>
-				<div>
-					<div style="width: 100%; height: auto; border: 0px solid red;">
+
+	<!-- 탭 내용 영역 -->
+	<div class="tab__content-wrapper">
+
+		<%-- 첫번째 탭 내용물 --%>
+		<div id="tab1" class="tab__content active">
+			<div class="tab1_info">※ 첫 페이지에 나오는 안내문을 작성할 수 있습니다.</div>
+			<div>
+				<div style="width: 100%; height: auto; border: 0px solid red;">
 					<form name="addReserFrm" enctype="multipart/form-data">
 						<!-- 스마트 에디터 -->
-						<textarea name="assetInfoUpdate" id="assetInfoUpdate" rows="10" cols="100" style="width:100%; height:500px;">${requestScope.assetvo.assetInfo}</textarea>
+						<textarea name="assetInfoUpdate" id="assetInfoUpdate" rows="10"
+							cols="100" style="width: 100%; height: 500px;">${requestScope.assetvo.assetInfo}</textarea>
 						<!-- 스마트 에디터 -->
 					</form>
-					</div>
-					
-					<!-- bottom 버튼 영역 -->
-					<div class="bottom_btn_box">
-						<button class="okBtn">확인</button> <button class="resetBtn">취소</button>
-					</div>
-					<!-- bottom 버튼 영역 -->
 				</div>
-			</div>
-			<%-- 첫번째 탭 내용물 --%>
-			
-			<%-- 두번째 탭 내용물 --%>
-		  	<div id="tab2" class="tab__content">
-				<div class="tab1_info">※ 자산에 대한 추가 정보란을 삽입할 수 있으며, 변경된 내용은 ‘자산 관리’ 탭에 적용됩니다.</div>
-				<div>
-					
-					<div class="top_btn_box">
-						<!-- 비품 추가 버튼 -->
-						<div id="addFixtures">
-							<i class="fa-solid fa-plus"></i>
-							<span>비품추가하기</span>
-						</div>
-						<div>
-							<div>선택하세요</div>
-						</div>
-						<!-- 비품 추가 버튼 -->
-					</div>
-					<div>
-						<table  class="baseTable">
-							<thead>
-								<tr>
-									<th>필드명</th>
-									<th>공개 / 비공개 여부</th>
-									<th>삭제</th>
-									
-								</tr>
-							</thead>
-							<tbody id="appendTrMiddle">
-								<tr>
-									<td>ID값</td>
-									<td><input type="checkbox" id="mailOneCheck" style="pointer-events: none;" checked /></td>
-									<td>삭제불가</td>
-								</tr>
-								
-								<tr>
-									<td>항목명</td>
-									<td><input type="checkbox" id="mailOneCheck" style="pointer-events: none;" checked/></td>
-									<td>삭제불가</td>
-								</tr>
 
-								<!-- tbl_assetInformation 테이블 컬럼이 들어올 자리 -->
-								<!-- tbl_assetInformation 테이블 컬럼이 들어올 자리 -->
-								<!-- tbl_assetInformation 테이블 컬럼이 들어올 자리 -->
-								
-							</tbody>
-						</table>
-						
-						<!-- bottom 버튼 영역 -->
-						<div class="bottom_btn_box">
-							<button class="okBtn" id="insertFixtures">확인</button> <button class="resetBtn" id="resetFixtures">취소</button>
-						</div>
-						<!-- bottom 버튼 영역 -->
-					</div>
-
+				<!-- bottom 버튼 영역 -->
+				<div class="bottom_btn_box">
+					<button class="okBtn">확인</button>
+					<button class="resetBtn">취소</button>
 				</div>
-				<input type="text" name="totalFixturesName"/>
-				<input type="text" name="totalFixtures"/>
-				<input type="text" name="totalInformationContents"/>
-				<input type="text" name="totalAssetDetailNo"/>
-				<br>
-				<c:forEach var="assetDetailMap" items="${requestScope.OneDeList}">
-					<input type="hidden" name="assetDetailNo" value="${assetDetailMap.assetDetailNo}" />
-				</c:forEach>
-				
-				
+				<!-- bottom 버튼 영역 -->
 			</div>
-			<%-- 두번째 탭 내용물 --%>
-			
-			<%-- 세번째 탭 내용물 --%>
-		  	<div id="tab3" class="tab__content">
-				<div class="tab1_info">※ 자산에 대한 정보를 추가, 수정, 삭제할 수 있습니다.</div>
+		</div>
+		<%-- 첫번째 탭 내용물 --%>
+
+		<%-- 두번째 탭 내용물 --%>
+		<div id="tab2" class="tab__content">
+			<div class="tab1_info">※ 자산에 대한 추가 정보란을 삽입할 수 있으며, 변경된 내용은 ‘자산
+				관리’ 탭에 적용됩니다.</div>
+			<div>
+
 				<div class="top_btn_box">
 					<!-- 비품 추가 버튼 -->
-					<div id="addAsset">
-						<i class="fa-solid fa-plus"></i>
-						<span>자산 추가</span>
+					<div id="addFixtures">
+						<i class="fa-solid fa-plus"></i> <span>비품추가하기</span>
 					</div>
+					<div class="selectHere"></div>
 					<!-- 비품 추가 버튼 -->
 				</div>
 				<div>
 					<table class="baseTable">
 						<thead>
 							<tr>
-								<th>코드</th>
-								<th>항목명</th>
-								<!--<th>빔프로젝트</th>-->
-								<th>설정</th>
+								<th>필드명</th>
+								<th>공개 / 비공개 여부</th>
 								<th>삭제</th>
+
 							</tr>
 						</thead>
-						<tbody id="appendTrFinal">
-							
-							
+						<tbody id="appendTrMiddle">
+
+							<tr>
+								<td colspan="3"
+									style="text-align: center; height: 100px; vertical-align: middle; color: #999;">비품추가를
+									원하는 자산을 선택해주세요</td>
+							</tr>
+
+							<!-- tbl_assetInformation 테이블 컬럼이 들어올 자리 -->
+							<!-- tbl_assetInformation 테이블 컬럼이 들어올 자리 -->
+							<!-- tbl_assetInformation 테이블 컬럼이 들어올 자리 -->
+
 						</tbody>
 					</table>
-					
+
 					<!-- bottom 버튼 영역 -->
 					<div class="bottom_btn_box">
-						<button class="okBtn">확인</button> <button class="resetBtn">취소</button>
+						<button class="okBtn" id="insertFixtures">확인</button>
+						<button class="resetBtn" id="resetFixtures">취소</button>
 					</div>
 					<!-- bottom 버튼 영역 -->
 				</div>
-				
-				<div id="assetModalBg" class="modal_bg">
-					
-				</div>
-				<div id="assetModal" class="modal_containerAsset">
-					<label class="assetNameTitle">자산명</label><input type="text" name="assetName" />
-					<div id="goAddAsset">확인</div>
-				</div>
-				
-			</div>
-			<%-- 세번째 탭 내용물 --%>
-		</div>
 
-		
-    </div>
-    <!-- 오른쪽 바 -->
+			</div>
+			<input type="hidden" name="totalFixturesName" /> 
+			<input type="hidden" name="totalFixtures" /> 
+			<input type="hidden" name="totalInformationContents" /> 
+
+
+		</div>
+		<%-- 두번째 탭 내용물 --%>
+
+		<%-- 세번째 탭 내용물 --%>
+		<div id="tab3" class="tab__content">
+			<div class="tab1_info">※ 자산에 대한 정보를 추가, 수정, 삭제할 수 있습니다.</div>
+			<div class="top_btn_box">
+				<!-- 비품 추가 버튼 -->
+				<div id="addAsset">
+					<i class="fa-solid fa-plus"></i> <span>자산 추가</span>
+				</div>
+				<!-- 비품 추가 버튼 -->
+			</div>
+			<div>
+				<table class="baseTable">
+					<thead>
+						<tr>
+							<th>코드</th>
+							<th>항목명</th>
+							<!--<th>빔프로젝트</th>-->
+							<th>설정</th>
+							<th>삭제</th>
+						</tr>
+					</thead>
+					<tbody id="appendTrFinal">
+
+
+					</tbody>
+				</table>
+
+				<!-- bottom 버튼 영역 -->
+				<!--
+					<div class="bottom_btn_box">
+						<button class="okBtn">확인</button> <button class="resetBtn">취소</button>
+					</div>
+					-->
+				<!-- bottom 버튼 영역 -->
+			</div>
+
+			<div id="assetModalBg" class="modal_bg"></div>
+			<div id="assetModal" class="modal_containerAsset">
+				<label class="assetNameTitle">자산명</label><input type="text"
+					name="assetName" />
+				<div id="goAddAsset">확인</div>
+			</div>
+
+		</div>
+		<%-- 세번째 탭 내용물 --%>
+	</div>
+
+
+</div>
+<!-- 오른쪽 바 -->
 
 <script type="text/javascript">
 	//1. 탭 버튼과 탭 내용 부분들을 querySelectorAll을 사용해 변수에 담는다.
@@ -275,6 +262,10 @@
   // ================ 대분류 등록버튼 ================ //
   
   
+  
+  
+  
+  <%-- ============== 2번째 탭 ============== --%>
   <%-- === 해당 페이지 들어오자마자 ajax 자산정보 관리 불러옴 === --%>
   $.ajax({
 	 url:"<%= ctxPath%>/reservation/middleTapInfo",
@@ -317,6 +308,12 @@
   
   $('#addFixtures').click(e=>{
 	  
+	  if($('#selectAsset').val() == '선택하세요'){
+		  alert('비품추가를 원하는 자산을 먼저 선택해주세요');
+		  return;
+	  }
+	  
+	  
 	  // == 한번에 3개 이상 넘어가면 안 이뻐서 제한 == //
 	  if(fixturesCnt > 2) {
 		  alert('비품은 한번에 3개까지 추가할 수 있습니다.');
@@ -328,7 +325,7 @@
 	  
 	  $('#appendTrMiddle').append(`<tr class="addFixtures_tr">
 									 <td><input class="InformationTitle" name="InformationTitle\${fixturesCnt}" type="text" /></td>
-									 <td><input class="InformationContents\${fixturesCnt} InformationContents" name="InformationContents" type="checkbox" id="mailOneCheck" value="O" checked /></td>
+									 <td><input class="InformationContents\${fixturesCnt} InformationContents" name="InformationContents" type="checkbox" id="mailOneCheck" value="0" checked /></td>
 									 <td>생성중</td>
 								 </tr>`);
 								 
@@ -378,9 +375,9 @@
 	  
 	  informationContents_arr.forEach(function(item, index){
 		if (item.checked) {
-            $(item).val('O');  // 체크된 경우 값 1
+            $(item).val('0');  // 체크된 경우 값 0
         } else {
-            $(item).val('X');  // 체크 안 된 경우 값 0
+            $(item).val('1');  // 체크 안 된 경우 값 1
         }
 				
 		InformationContentsArr.push($(item).val());
@@ -393,11 +390,9 @@
   
   // === 비품 취소버튼 == //
   $('#resetFixtures').click(e=>{
-	  fixturesCnt = 0;
-	  fixturesArr = [];
 	  
-	  $('.addFixtures_tr').remove();
-	  $('input[name="totalFixtures"]').val("");
+	  inputReset(); // 모든 배열, input태그를 reset해주는 메소드
+	  
 	  
   });
   // === 비품 취소버튼 == //
@@ -460,17 +455,19 @@
 		  $.ajax({
 			  url:"<%=ctxPath%>/reservation/addFixtures",
 			  type:"post",
-			  data:{"str_InformationTitle":$('input[name="totalFixtures"]').val(),
-				  	"fk_assetNo":"${requestScope.assetvo.assetNo}",
-					"totalAssetDetailNo":$('input[name="totalAssetDetailNo"]').val(),
-					"totalInformationContents":$('input[name="totalInformationContents"]').val()},
+			  data:{"str_informationTitle":$('input[name="totalFixtures"]').val(),					/* 비품 이름들 str */
+					"fk_assetdetailno":$('#selectAsset').val(),										/* 비품 이름 넣을 pk */
+					"str_release":$('input[name="totalInformationContents"]').val()},               /* 비품 공개여부 str */
 			  dataType:"json",
 			  success:function(json){
 				  
 				  if(json.result == 1){
 				  	  alert('저장되었습니다.');
 				  	  // ====== 다시 불러주기 ====== //
-				  	  // resetLeftBar();
+				  	  
+				  	  inputReset(); // input, 배열 모든 거 리셋
+				  	  appendInformation(); // 정보들 다시 쌓아주기 
+				  	  
 				  	  // ====== 다시 불러주기 ====== //
 				  }
 				  else{
@@ -489,6 +486,7 @@
 		  alert('비품추가하기 버튼을 클릭 또는 비품명을 입력해주세요');
 	  }
 	  
+	 
   });
   // === 비품 추가버튼 == //
   <%-- === 비품을 insert 하기 위한 것 === --%>
@@ -502,7 +500,7 @@
   
   
   
-  
+  // === 비품추가 모달창 띄우기 === //
   $('#addAsset').click(e=>{
 	
 	$('#assetModalBg').fadeIn();
@@ -517,6 +515,7 @@
 	  $('.modal_containerAsset').fadeOut();
 
   })
+  // === 비품추가 모달창 띄우기 === //
   
   
   $('#goAddAsset').click(e=>{
@@ -572,7 +571,7 @@
 	    success:function(json){
 			// console.log(JSON.stringify(json));
 			
-			
+			let t_html = ``;
 			
 			$.each(json, function(index, item){
 					
@@ -584,8 +583,19 @@
 												<td><i class="fa-solid fa-trash trashbtn" id="\${item.assetDetailNo}" style="cursor:pointer;"></i></td>
 											</tr>`);
 				 
+				 t_html += `<option value="\${item.assetDetailNo}">\${item.assetName}</option>`;
+				 
 			 }) // end of $.each(json, function(index, item)) {} ------------------- 
 			
+			 
+			 $('.selectHere').append(`
+					 <select id="selectAsset" style="font-size: 14px;">
+					 	<option hidden>선택하세요</option>
+					 	\${t_html}
+					 </select>
+			 `);
+			 
+			 
 		},
 	    error: function(request, status, error){
 	 	    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -595,8 +605,34 @@
   
   
   
+  // ======= 두번째 탭에서 select 태그 변경 ======= //
+  $(document).on('change', '#selectAsset', e=>{
+	  // alert( $(e.target).val())
+	  appendInformation();
+	  
+  })
+  // ======= 두번째 탭에서 select 태그 변경 ======= //
   
-//================ 대분류 소분류 뿌려주기 ================ //
+  
+  // ======= 두번째 탭에서 삭제버튼 (비품 하나 삭제하기) ======= //
+  $(document).on('click', '.midDeleteOne', e=>{
+	  
+	  alert($(e.target).attr('id'))
+	  /*
+	  $.ajax({
+		  url:"<%= ctxPath%>/reservation/midDeleteOne",
+	  })
+	  */
+  }); // end of $(document).on('click', '.midDeleteOne', e=>{})----------
+//======= 두번째 탭에서 삭제버튼 (비품 하나 삭제하기) ======= //
+  
+  <%-- ============== 2번째 탭 ============== --%>
+  
+  
+  
+  
+  <%-- ============== 3번째 탭 ============== --%>
+  //================ 대분류 소분류 뿌려주기 ================ //
   function resetLeftBar() {
 	  let assetDetailListArr;
 	  
@@ -694,7 +730,7 @@
 	  if(confirm("삭제시 코드 "+$(e.target).attr('id')+"에 대한 예약 정보가 사라집니다. 정말 삭제하시겠습니까?")){
 	  
 		  $.ajax({
-			  url:"<%= ctxPath%>/reservation/deleteAssetNo",
+			  url:"<%=ctxPath%>/reservation/deleteAssetNo",
 			  type:"post",
 			  data:{"assetDetailNo":$(e.target).attr('id')},
 			  dataType:"json",
@@ -720,7 +756,79 @@
 	  }
 	  
   }); // end of $(document).on('click', 'trashbtn', e=>{})----------- 
+  <%-- ============== 3번째 탭 ============== --%>
+  
+  
+  
+  
+  
+  function inputReset() {
+	  fixturesCnt = 0;
+	  fixturesArr = [];
+	  InformationContentsArr = [];
+	  totalfixturesArr = [];
+	  
+	  $('.addFixtures_tr').remove();
+	  $('input[name="totalFixtures"]').val("");
+	  $('input[name="totalFixturesName"]').val("");
+	  $('input[name="totalInformationContents"]').val("");
+  }
+  
+  
+  
+  function appendInformation() {
+	  $.ajax({
+		 url:"<%= ctxPath%>/reservation/selectInformation",
+		 data:{"fk_assetdetailno": $('#selectAsset').val()},
+		 type:"get",
+		 dataType:"json",
+		 success:function(json) {
+			 console.log(JSON.stringify(json));
+			 // 타이틀 공개여부
+			 $('#appendTrMiddle').empty();
+			 
+			 
+			 $('#appendTrMiddle').append(`
+				 <tr>
+					<td>ID값</td>
+					<td><input type="checkbox" id="mailOneCheck" style="pointer-events: none;" checked /></td>
+					<td>삭제불가</td>
+				 </tr>
+				
+				 <tr>
+					<td>항목명</td>
+					<td><input type="checkbox" id="mailOneCheck" style="pointer-events: none;" checked/></td>
+					<td>삭제불가</td>
+				 </tr>
+			 `);
+			 
+			 
+			 let appendList = ``;
+			 
+			 $.each(json, function(index, item){
+				 appendList+= `<tr>
+							     <td>\${item.InformationTitle}</td>`;
+
+									if(item.release == '0') {
+										appendList+= `<td><input type="checkbox" id="mailOneCheck" style="pointer-events: none;" checked /></td>`;
+									}
+									else{
+										appendList+= `<td><input type="checkbox" id="mailOneCheck" style="pointer-events: none;" /></td>`;
+									}
+							
+				 appendList+= `<td><span class="midDeleteOne" id="\${item.fk_assetDetailNo}">삭제</span></td>
+						 </tr>`;
+			 
+			 })
+			 $('#appendTrMiddle').append(`\${appendList}`);
+			 
+		 },
+		 error: function(request, status, error){
+	 	     alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	     } 
+	  });
+  }
   
 </script>
 
-<jsp:include page="../../footer/footer.jsp" /> 
+<jsp:include page="../../footer/footer.jsp" />

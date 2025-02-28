@@ -81,37 +81,23 @@
 	<resultMap type="HashMap" id="middleTapInfo_Map">
 	   	<result property="assetInformationNo"  column="assetInformationNo"  javaType="String"/>
 	   	<result property="fk_assetDetailNo"    column="fk_assetDetailNo" 	javaType="String"/>
-	   	<result property="fk_assetNo"          column="fk_assetNo" 		    javaType="String"/>
 	   	<result property="InformationTitle"    column="InformationTitle" 	javaType="String"/>
 	   	<result property="InformationContents" column="InformationContents" javaType="String"/>
+	   	<result property="release" 			   column="release" 			javaType="String"/>
    </resultMap>
 	<select id="middleTapInfo" parameterType="String" resultMap="middleTapInfo_Map">
-		select assetInformationNo, fk_assetDetailNo, fk_assetNo, InformationTitle, InformationContents
+		select assetinformationno, fk_assetdetailno, informationtitle, informationcontents, release
 		from tbl_assetInformation
-		where fk_assetNo = #{assetNo}
+		where fk_assetdetailno = #{fk_assetdetailno}
 	</select>
 	
 	
 	
 	<!-- 비품명을 추가해주는 메소드 -->
-<insert id="addFixtures" parameterType="map">
-    <foreach collection="arr_InformationTitle" item="assetDetailNo" index="index" separator=",">
-        INSERT INTO tbl_assetInformation (
-            assetInformationNo, 
-            fk_assetDetailNo, 
-            FK_ASSETNO,
-            as_InformationTitle, 
-            as_InformationContents
-        ) 
-        VALUES (
-            seq_assetInformationNo.NEXTVAL,  <!-- 시퀀스를 이용한 자동 증가 -->
-            #{assetDetailNo}, 
-            #{fk_assetNo}, 
-            #{arr_InformationTitle[index]}, 
-            #{arr_InformationContents[index]}
-        )
-    </foreach>
-</insert>
+	<insert id="addFixtures" parameterType="HashMap">
+	    insert into tbl_assetInformation (ASSETINFORMATIONNO, FK_ASSETDETAILNO, INFORMATIONTITLE, RELEASE)
+	    values (seq_assetInformationNo.nextval, #{fk_assetdetailno}, #{informationtitle}, #{release} )
+	</insert>
 
 
 

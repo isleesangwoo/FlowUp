@@ -187,7 +187,12 @@ drop table tbl_assetInformation;
 
 desc tbl_assetDetail;
 
-ALTER TABLE tbl_assetInformation ADD disclosure NUMBER(1) DEFAULT 0 NOT NULL;
+ALTER TABLE tbl_assetInformation ADD release NUMBER(1) DEFAULT 0 NOT NULL;
+desc tbl_assetInformation;
+
+
+select *
+from tbl_assetInformation;
 
 -- 비품 정보 테이블
 CREATE TABLE tbl_assetInformation (
@@ -197,6 +202,7 @@ CREATE TABLE tbl_assetInformation (
    InformationTitle             NVARCHAR2(50) NULL,                 -- 회의실 비품 이름
    InformationContents          CHAR(1)      DEFAULT 'X',          -- 회의실 비품 유무
    CONSTRAINT PK_tbl_assetInfo_assetInfoNo PRIMARY KEY (assetInformationNo),  -- 회의실 ID PK 지정
+   release                      NUMBER(1)    DEFAULT 0    NOT NULL, -- 공개여부
    CONSTRAINT FK_assetInfo_fk_assetDetailNo FOREIGN KEY (fk_assetDetailNo) REFERENCES tbl_assetDetail(assetDetailNo) ON DELETE CASCADE,  -- 회의실상세테이블에서 FK 가져옴
    CONSTRAINT FK_tbl_assetInfo_fk_assetNo FOREIGN KEY (fk_assetNo) REFERENCES tbl_asset(assetNo) ON DELETE CASCADE  -- 회의실 테이블에서 FK 가져옴
 );
@@ -311,3 +317,39 @@ values(seq_roomReservationNo.nextval, 100014, 100012, to_date('2025-02-25 12:00'
 
 
 commit;
+
+
+
+
+
+desc tbl_assetInformation;
+
+
+
+select ASSETINFORMATIONNO, FK_ASSETDETAILNO, INFORMATIONTITLE, INFORMATIONCONTENTS, RELEASE
+from tbl_assetInformation
+where FK_ASSETDETAILNO = 100030;
+
+insert into tbl_assetInformation(ASSETINFORMATIONNO, FK_ASSETDETAILNO, INFORMATIONTITLE, INFORMATIONCONTENTS, RELEASE)
+values(seq_assetInformationNo.nextval, 100030, '화이트보드', 'O', 0);
+
+
+insert into tbl_assetInformation(ASSETINFORMATIONNO, FK_ASSETDETAILNO, INFORMATIONTITLE, INFORMATIONCONTENTS, RELEASE)
+values(seq_assetInformationNo.nextval, 100030, '빔프로젝트', 'X', 1);
+
+commit;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -53,6 +53,9 @@ public interface ReservationDAO {
 	// 자산 소분류 삭제
 	int deleteAssetNo(String assetDetailNo);
 
+	// 상세에 해당하는 비품정보들을 불러주는 메소드
+	List<Map<String, String>> selectInformation(String fk_assetdetailno);
+
 	
 
 }

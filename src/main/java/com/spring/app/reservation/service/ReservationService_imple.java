@@ -84,29 +84,18 @@ public class ReservationService_imple implements ReservationService {
 	@Override
 	public int addFixtures(Map<String, Object> paraMap) {
 		
+		int result = 0;
 		
-        String[] arr_AssetDetailNo = (String[]) paraMap.get("arr_AssetDetailNo");
-        String[] arr_InformationTitle = (String[]) paraMap.get("arr_InformationTitle");
-        String[] arr_InformationContents = (String[]) paraMap.get("arr_InformationContents");
-        String fk_assetNo = (String) paraMap.get("fk_assetNo");
+		String[] arr_informationTitle = (String[]) paraMap.get("arr_informationTitle");
+		String[] arr_release = (String[]) paraMap.get("arr_release");
+		
+		for(int i=0; i<arr_informationTitle.length; i++) {
+			paraMap.put("informationtitle",arr_informationTitle[i]);
+			paraMap.put("release",arr_release[i]);
+			
+			result = dao.addFixtures(paraMap);			
+		}
 
-        int result = 0;
-
-        for (int i = 0; i < arr_AssetDetailNo.length; i++) {
-            for (int j = 0; j < arr_InformationTitle.length; j++) {
-                // 데이터 삽입
-                Map<String, Object> insertMap = new HashMap<>();
-                insertMap.put("assetDetailNo", arr_AssetDetailNo[i]);
-                insertMap.put("fk_assetNo", fk_assetNo);
-                insertMap.put("InformationTitle", arr_InformationTitle[j]);
-                insertMap.put("InformationContents", arr_InformationContents[j]);
-
-                // DAO 호출
-                result += dao.addFixtures(insertMap);
-            }
-        }
-
-        // 모든 삽입 작업이 성공적으로 끝나면 1 반환
         return result;
     }
 	
@@ -153,6 +142,15 @@ public class ReservationService_imple implements ReservationService {
 	public int deleteAssetNo(String assetDetailNo) {
 		int result = dao.deleteAssetNo(assetDetailNo);
 		return result;
+	}
+
+
+
+	// 상세에 해당하는 비품정보들을 불러주는 메소드
+	@Override
+	public List<Map<String, String>> selectInformation(String fk_assetdetailno) {
+		List<Map<String, String>> informationList = dao.selectInformation(fk_assetdetailno);
+		return informationList;
 	}
 
 
