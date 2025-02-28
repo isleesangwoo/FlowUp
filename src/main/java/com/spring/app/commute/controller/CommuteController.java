@@ -294,16 +294,12 @@ public class CommuteController {
 			
 			
 			Map<String,String> map = service.getEmployeeInfo(fk_employeeNo);
-			map.get("positionName");
 			
 			Map<String, String> paramap = new HashMap<>();
 			paramap.put("year", year);
 			paramap.put("fk_employeeNo", fk_employeeNo);
 			
 			AnnualVO avo = service.getAnnualInfo(paramap);
-			
-			System.out.println(avo.getTotalAnnual());
-			
 			
 			mav.addObject("map", map);
 			mav.addObject("avo", avo);
