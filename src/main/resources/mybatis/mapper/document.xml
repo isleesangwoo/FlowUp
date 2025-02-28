@@ -78,6 +78,40 @@
 		values(seq_approval.nextval, #{documentNo}, #{fk_approver}, #{approvalorder}, default)
 	</insert>
 	
+
+	<resultMap type="HashMap" id="documentView_Map">
+		<result column="documentNo"		property="documentNo"		javaType="String" />
+		<result column="fk_employeeNo"	property="fk_employeeNo"	javaType="String" />
+		<result column="subject"		property="subject"			javaType="String" />
+		<result column="draftDate"		property="draftDate"		javaType="String" />
+		<result column="status"			property="status"			javaType="String" />
+		<result column="securityLevel"	property="securityLevel"	javaType="String" />
+		<result column="temp"			property="temp"				javaType="String" />
+		<result column="documentType"	property="documentType"		javaType="String" />
+		<result column="approvalDate"	property="approvalDate"		javaType="String" />
+		<result column="useAmount"		property="useAmount"		javaType="String" />
+		<result column="reason"			property="reason"			javaType="String" />
+		<result column="startDate"		property="startDate"		javaType="String" />
+		<result column="endDate"		property="endDate"			javaType="String" />
+		<result column="annualType"		property="annualType"		javaType="String" />
+	</resultMap>
+	<select id="documentView" parameterType="HashMap" resultMap="documentView_Map">
+		select d.documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, securityLevel, temp, documentType, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate
+		<if test="documentType == '휴가신청서'">
+		     , useAmount, reason, to_char(startDate, 'yyyy-mm-dd') as startDate, to_char(endDate, 'yyyy-mm-dd') as endDate, annualType
+		from tbl_document D JOIN tbl_draft_annual A
+		</if>
+		ON d.documentNo = A.documentNo
+		where d.documentNo = #{documentNo}
+	</select>
+	
+	
+	<select id="getApprovalList" parameterType="String" resultType="ApprovalVO">
+		select approvalNo, fk_documentNo, fk_approver, approvalOrder, approvalStatus, to_char(executionDate, 'yyyy-mm-dd') as executionDate
+		from tbl_approval
+		where fk_documentNo = #{documentNo}
+	</select>
+	
 </mapper>
 
 

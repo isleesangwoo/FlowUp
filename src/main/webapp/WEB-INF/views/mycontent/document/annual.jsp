@@ -39,7 +39,7 @@
 		overflow: hidden;
 	}
 	
-	.closed {
+	.closed { 
 		display: none;
 	}
 	
@@ -175,7 +175,7 @@
 			
 			$("li.employee_name").removeClass("selected");	// 선택해제
 			$("button#add_approval_btn").css({"pointer-events":""});	// 결재 라인 추가 버튼 비활성화
-		});
+		}); 
 		
 		
 		// 모달에서 결재 라인에 추가된 사원을 삭제하는 버튼

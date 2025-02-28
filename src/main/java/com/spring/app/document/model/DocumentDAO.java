@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.spring.app.document.domain.ApprovalVO;
 import com.spring.app.document.domain.DocumentVO;
 import com.spring.app.employee.domain.EmployeeVO;
 
@@ -34,6 +35,12 @@ public interface DocumentDAO {
 
 	// 결재 라인 승인자 추가하기
 	int insertApprover(Map<String, String> paraMap);
+
+	// 문서함에서 문서 1개 보여주기
+	Map<String, String> documentView(Map<String, String> paraMap);
+
+	// 문서함에서 보여줄 결재자 리스트 가져오기
+	List<ApprovalVO> getApprovalList(String documentNo);
 
 
 

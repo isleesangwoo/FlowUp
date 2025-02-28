@@ -166,3 +166,22 @@ SELECT *
   FROM all_sequences;
 
 
+select *
+from tbl_document D JOIN tbl_draft_annual A
+ON d.documentNo = A.documentNo;
+
+select d.documentNo, fk_employeeNo, subject, draftDate, status, securityLevel, temp, documentType, approvalDate
+     , useAmount, reason, startDate, endDate, annualType
+from tbl_document D JOIN tbl_draft_annual A
+ON d.documentNo = A.documentNo B JOIN tbl_employee E
+ON d.fk_employeeNo = E.employeeNo
+where d.documentNo = '2025-100002';
+
+select approvalNo, fk_documentNo, fk_approver, approvalOrder, approvalStatus, to_char(executionDate, 'yyyy-mm-dd') as executionDate
+from tbl_approval
+where fk_documentNo = '2025-100030';
+
+
+select *
+from tbl_document D JOIN tbl_draft_annual A
+ON d.documentNo = A.documentNo;

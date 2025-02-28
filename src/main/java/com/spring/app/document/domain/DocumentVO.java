@@ -7,7 +7,7 @@ public class DocumentVO {
 	private String subject;			// 제목
 	private String draftDate;		// 기안날짜
 	private String approvalDate;	// 승인날짜
-	private String status;			// 승인여부
+	private String status;			// 승인여부(0:처리전,1:결재,2:반려,3:보류)
 	private String securityLevel;	// 보안등급
 	private String temp;			// 임시저장여부
 	private String documentType;	// 양식이름
