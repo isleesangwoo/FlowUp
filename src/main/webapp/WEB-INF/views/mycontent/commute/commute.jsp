@@ -487,6 +487,7 @@ div.hoverDiv:hover {
 			success:function(json) {
     	
 				let total_sec = 0;
+				let monthOvertime_sec = 0;
 				
 				$.each(json, (index,item)=>{
 					
@@ -494,14 +495,18 @@ div.hoverDiv:hover {
 					
 					const weekWorktime = secToHour(worktime_sec);
 
-					
 					const todayWeekNo = String(new Date().getWeek()).padStart(2, '0');
 				
+					const plusMinus = worktime_sec - (40 * 60 * 60);
+					
+					if( plusMinus > 0 ) {
+						monthOvertime_sec = monthOvertime_sec + plusMinus;
+					}
+					
 					if(item.weekNo == todayWeekNo ) {
 						
 						$("div#thisWeekWorktime").html(weekWorktime);
 						
-						const plusMinus = worktime_sec - (40 * 60 * 60);
 						
 						if( plusMinus > 0 ) {
 							$("div#thisWeekWorktime_plus").html(secToHour(plusMinus));
@@ -510,20 +515,17 @@ div.hoverDiv:hover {
 							$("div#thisWeekWorktime_minus").html(secToHour(plusMinus * (-1) ));
 						}
 						
-						
 					}
-					
 					
 					total_sec = total_sec + worktime_sec;
 					
-					
-					
 				});
-				
+
 				const monthWorktime = secToHour(total_sec);
-				
 				$("div#thisMonthWorktime").html(monthWorktime);
 				
+				const monthOvertime = secToHour(monthOvertime_sec);
+				$("div#thisMonthOvertime").html(monthOvertime);
 					
 			},
 			error: function(request, status, error){
@@ -704,7 +706,7 @@ div.hoverDiv:hover {
 					
 					<div style="margin:0 auto; width:150px; text-align: center;">
 						<div style="color: #999;">이번달 연장</div>
-						<div style="color: #999; font-size: 20px;">00:00:00</div>
+						<div id="thisMonthOvertime" style="color: #999; font-size: 20px;">00:00:00</div>
 					</div>
 					
 					<div style="margin:0 auto; width:150px; text-align: center;">
