@@ -2,8 +2,10 @@ package com.spring.app.commute.controller;
 
 
 import java.lang.reflect.Array;
+import java.security.PublicKey;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -20,14 +22,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.app.commute.domain.AnnualVO;
 import com.spring.app.commute.domain.CommuteVO;
 import com.spring.app.commute.service.CommuteService;
 import com.spring.app.employee.domain.DepartmentVO;
 import com.spring.app.employee.domain.EmployeeVO;
+import com.spring.app.employee.domain.PositionVO;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.Getter;
 
 @Controller
 @RequestMapping(value="/commute/*")
@@ -248,28 +253,74 @@ public class CommuteController {
 	@PostMapping("downloadExcel")
 	public String downloadExcelFile(@RequestParam(defaultValue = "") String year_month, @RequestParam(defaultValue = "") String fk_employeeNo, Model model) {
 
-		if(fk_employeeNo == null || "".equals(fk_employeeNo.trim())) {
-			System.out.println("로그인 안한것 같은데..?");
+		if(fk_employeeNo != null || year_month != null ) {
+			
+			
+			Map<String,String> map = service.getEmployeeInfo(fk_employeeNo);
+			
+			
+			Map<String, String> paraMap = new HashMap<>();
+			paraMap.put("positionName", map.get("positionName"));
+			paraMap.put("name", map.get("name"));
+			paraMap.put("fk_employeeNo", fk_employeeNo);
+			paraMap.put("year_month", year_month);
+			
+			service.commuteList_to_Excel(paraMap, model);
+			
+			return "excelDownloadView"; // "excelDownloadView"은 ViewConfiguration의 19번째줄 메소드 이름이다..
+		}
+		else {
+			return "mycontent/commute/commute";
+		}
+	}
+		
+		
+	@GetMapping("myAnnual")
+	public ModelAndView myAnnual(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+		
+		HttpSession session = request.getSession();
+
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		if (loginuser == null) {
+			mav.setViewName("mycontent/employee/login");
+		}
+		else {
+			LocalDate now = LocalDate.now();
+			int n_year = now.getYear();
+			String year = ""+n_year;
+			
+			String fk_employeeNo = loginuser.getEmployeeNo();
+			
+			
+			Map<String,String> map = service.getEmployeeInfo(fk_employeeNo);
+			map.get("positionName");
+			
+			Map<String, String> paramap = new HashMap<>();
+			paramap.put("year", year);
+			paramap.put("fk_employeeNo", fk_employeeNo);
+			
+			AnnualVO avo = service.getAnnualInfo(paramap);
+			
+			System.out.println(avo.getTotalAnnual());
+			
+			
+			mav.addObject("map", map);
+			mav.addObject("avo", avo);
+			mav.setViewName("mycontent/commute/myAnnual");
 			
 		}
-		if (year_month == null || "".equals(year_month.trim())) {
-			System.out.println("조회 날짜가 없는거 이상한데..?");
-		}
 		
-		
-		System.out.println("확인용 : fk_employeeNo " + fk_employeeNo);
-
-		Map<String, String> paraMap = new HashMap<>();
-		paraMap.put("fk_employeeNo", fk_employeeNo);
-		paraMap.put("year_month", year_month);
-		
-		
-		
-		
-		service.commuteList_to_Excel(paraMap, model);
-
-		return "excelDownloadView"; // "excelDownloadView"은 ViewConfiguration의 19번째줄 메소드 이름이다..
+		return mav;
 	}
+		
+		
+		
+		
+		
+		
+
+	
 	
 	
 	
