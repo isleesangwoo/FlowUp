@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ModelAndViewDefiningException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.spring.app.board.domain.BoardVO;
 import com.spring.app.board.domain.PostFileVO;
@@ -438,8 +443,41 @@ public class BoardController {
   }
   
   // 게시글 하나 조회하기 (조회수 증가 포함)
-  @GetMapping("goViewOnePost")
-  public ModelAndView goViewOnePost(ModelAndView mav, HttpServletRequest request,@RequestParam String postNo,@RequestParam String goBackURL) {
+  @RequestMapping("goViewOnePost")
+  public ModelAndView goViewOnePost(ModelAndView mav, HttpServletRequest request) {
+	  
+	  String postNo = request.getParameter("postNo");
+	  String goBackURL = request.getParameter("goBackURL");
+	  String checkAll_or_boardGroup = request.getParameter("checkAll_or_boardGroup");
+	  // 글 상세페이지의 이전/다음글 을 전체게시판 기준으로 조회할지, 해당게시판 조건으로 조회할지
+	  // 1이면 해당게시판을 조건으로, 값이 없으면 전체게시판(조건없음)
+	  
+	  String fk_boardNo = request.getParameter("fk_boardNo");
+	  
+	  
+	  /* goViewOnePost_2 에서  //redirectArr.addFlashAttribute("redirect_map", redirect_map); 로 값을 옮겨준(넣어준) 경우
+	  Map<String, ?> inputFlashMap = RequestContextUtils.getInputFlashMap(request);
+		// redirect 되어서 넘어온 데이터가 있는지 꺼내어 와본다.
+	  
+		if(inputFlashMap != null) { // redirect 되어서 넘어온 데이터가 있다라면 
+			System.out.println("inputFlashMap : " + inputFlashMap);
+			@SuppressWarnings("unchecked") // 경고 표시를 하지 말라는 뜻이다. 
+			Map<String, String> redirect_map = (Map<String, String>) inputFlashMap.get("redirect_map");
+			// "redirect_map" 값은  /view_2 에서  redirectAttr.addFlashAttribute("키", 밸류값); 을 할때 준 "키" 이다. 
+			// "키" 값을 주어서 redirect 되어서 넘어온 데이터를 꺼내어 온다. 
+			// "키" 값을 주어서 redirect 되어서 넘어온 데이터의 값은 Map<String, String> 이므로 Map<String, String> 으로 casting 해준다. 
+			
+			postNo = redirect_map.get("postNo");
+			checkAll_or_boardGroup = redirect_map.get("checkAll_or_boardGroup");
+			fk_boardNo = redirect_map.get("fk_boardNo");
+			try {
+				goBackURL = URLDecoder.decode(redirect_map.get("goBackURL"), "UTF-8"); // 한글데이터가 포함되어 있으면 반드시 한글로 복구해 주어야 한다. 
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}  
+			// === view_2 에서 redirect 해온것을 처리해주기 끝 === //
+		}
+	  */
 	  
 	  HttpSession session = request.getSession();
 	  EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
@@ -449,17 +487,13 @@ public class BoardController {
 		login_userid = loginuser.getEmployeeNo();
 		// login_userid 는 로그인 되어진 사용자의 userid 이다. 
 	  }
-		
 	
 	  Map<String, String> paraMap = new HashMap<>();
 	  paraMap.put("postNo", postNo);
 	  paraMap.put("login_userid", login_userid);
+	  paraMap.put("checkAll_or_boardGroup", checkAll_or_boardGroup);
+	  paraMap.put("fk_boardNo", fk_boardNo);	// 이전/다음 글 계속 클릭하여 이동 시 현재 게시판그룹을 유지시켜주기 위해
 	  
-	  
-	  
-	  //  웹브라우저에서 페이지 새로고침을 할 경우 update문이 실행되니 select만 하고 글조회수 증가인 update문은 실행x
-     
-
 	  // 위의 글목록보기 에서 session.setAttribute("readCountPermission", "yes"); 설정함.
 	  PostVO postvo = null;
 	  List<PostFileVO> postfilevo =null;
@@ -471,25 +505,23 @@ public class BoardController {
 		  // 글 조회수 증가와 함께 글 1개를 조회를 해오는 것( 조회수 증가는 service 단에서 처리를 해줌.)
 		  
 		  session.removeAttribute("readCountPermission");
-		  // 중요함!! session 에 저장된 readCountPermission 을 삭제한다.
 	  }
 
 	  else {
+		  postvo = service.getView_no_increase_readCount(paraMap); // 글 조회수 증가는 없고 단순히 글 1개만 조회를 해오는 것
 		  // 글목록에서 특정 글제목을 클릭하여 본 상태에서
 		  // 웹브라우저에서 새로고침(F5)을 클릭한 경우 
-		
-		  // 글 조회수 증가는 없고 단순히 글 1개만 조회를 해오는 것
-		  postvo = service.getView_no_increase_readCount(paraMap);
 		  
 	  		  if (postvo == null) {
-				  mav.setViewName("redirect:/board/list");
+				  mav.setViewName("redirect:/board/");
 				  return mav;
 			  }
 	  		  
 		  }
-	  
+	  	
 	  	  postfilevo = service.getFileOfOnePost(paraMap); // 글 하나의 첨부파일 테이블의 고유번호,기존파일명,새로운 파일명 추출
 	  	  
+	  	  mav.addObject("checkAll_or_boardGroup", checkAll_or_boardGroup);
 	  	  mav.addObject("postfilevo", postfilevo);
 		  mav.addObject("postvo", postvo);
 		  mav.addObject("goBackURL", goBackURL); // 글 하나 클릭 시 클릭된 페이지의 해당 URL을 넘겨줌.
@@ -497,52 +529,6 @@ public class BoardController {
 	  
 	  return mav;
   }
-  
-  // 이거  CommonController 로 옮겼음. attach_photo.js 도 매핑url  수정함
-//  //=== 스마트에디터. 글쓰기 또는 글수정시 드래그앤드롭을 이용한 다중 사진 파일 업로드 하기 === // 
-//  @PostMapping("image/multiplePhotoUpload")
-//  public void multiplePhotoUpload(HttpServletRequest request, HttpServletResponse response) {
-//	  /*
-//	   1. 사용자가 보낸 파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 함.
-//	   >>>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기
-//	        WAS 의 webapp/board_resources/photo_upload 라는 폴더로 지정.
-//	  */
-//	  // WAS 의 webapp 의 절대경로를 알아오기.
-//	  HttpSession session = request.getSession();
-//	  String root = session.getServletContext().getRealPath("/");
-//	  String path = root + "board_resources"+File.separator+"photo_upload";
-//	  // path 가 첨부파일들을 저장할 WAS(톰캣)의 폴더가 됨.
-//	
-//	  File dir = new File(path);
-//	  if(!dir.exists()) {
-//		  dir.mkdirs();
-//	  }
-//	
-//	  try {
-//		  String filename = request.getHeader("file-name"); // 파일명(문자열)을 받는다 - 일반 원본파일명
-//		  // 네이버 스마트에디터를 사용한 파일업로드시 싱글파일업로드와는 다르게 멀티파일업로드는 파일명이 header 속에 담겨져 넘어오게 되어있다. 
-//		  
-//		  InputStream is = request.getInputStream(); // is는 네이버 스마트 에디터를 사용하여 사진첨부하기 된 이미지 파일임.
-//		
-//		  // === 사진 이미지 파일 업로드 하기 === //
-//		  String newFilename = fileManager.doFileUpload(is, filename, path);
-//		
-//		
-//		  // === 웹브라우저 상에 업로드 되어진 사진 이미지 파일 이미지를 쓰기 === //
-//		  String ctxPath = request.getContextPath(); //  
-//		
-//		  String strURL = "";
-//		  strURL += "&bNewLine=true&sFileName="+newFilename; 
-//		  strURL += "&sFileURL="+ctxPath+"/board_resources/photo_upload/"+newFilename;
-//					
-//		  PrintWriter out = response.getWriter();
-//		  out.print(strURL);
-//		
-//	  } catch(Exception e) {
-//		e.printStackTrace();
-//	  }
-//	
-//  }
 	
 
   // 글 삭제하기( 경로의 실제 파일 삭제와 db 행 삭제)
@@ -570,9 +556,6 @@ public class BoardController {
 			
 	         HttpSession session = request.getSession(); 
 	         String root = session.getServletContext().getRealPath("/");  
-	         
-	         //System.out.println("~~~ 확인용 webapp 의 절대경로 => " + root);
-	         //~~~ 확인용 webapp 의 절대경로 => C:\GitHub\FlowUp\src\main\webapp\
 	         String filepath = root+"board_resources"+File.separator+"files";
 	         
 	         paraMap.put("filepath", filepath); // 삭제해야할 첨부파일이 저장된 경로
@@ -754,10 +737,7 @@ public class BoardController {
 	      String fileNo = fileObj.getString("fileNo");
 	      String fileName = fileObj.getString("fileName");
 	      String newFileName = fileObj.getString("newFileName");
-
-//	      System.out.println("파일 번호: " + fileNo);
-//	      System.out.println("기존 파일명: " + fileName);
-//	      System.out.println("새 파일명: " + newFileName);
+	      
 	      
 	      
 	      paraMap.put("fileNo", fileNo);
@@ -770,7 +750,6 @@ public class BoardController {
 	
 	// 수정 전 이미지 목록 가져오기 (DB에서 조회)
     List<String> oldFileList = Arrays.asList(service.getBeforeUpdateFileNames(postNo).get(0).split("/"));
-	System.out.println("oldFileList : " + oldFileList);
 	
 	/////////////////////////////////////////////////////////////////////
 	  
@@ -832,7 +811,6 @@ public class BoardController {
         	
         	
         } // end of if(fileList != null && fileList.size() > 0) {}-----------------
-        System.out.println("여기까지는 오나..");
         JSONObject jsonObj = new JSONObject();
         
     	try {
@@ -842,7 +820,6 @@ public class BoardController {
     		
 		    		  // 2️ 수정 후 새로운 이미지 목록 추출 (db에서 조회)
 		    		  List<String> newFileList = Arrays.asList(service.getAfterUpdateFileNames(postNo).get(0).split("/"));
-		    		  System.out.println("newFileList : " + newFileList);
 		    		  
 		    		  
 		    		  // 3 기존 목록과 새 목록 비교하여 삭제할 파일 찾기
@@ -852,15 +829,12 @@ public class BoardController {
 		    		            filesToDelete.add(oldFile);
 		    		        }
 		    		    }
-		    		    System.out.println("filesToDelete : " + filesToDelete);
     		            //filesToDelete : [2025022517021816086751960400.jpg, 2025022517021816086751960300.jpg]
 		    		   
 		    		    ////////////////////////
 		    		// 4️ 서버에서 필요 없는 파일 삭제
 		    		    for (String fileName : filesToDelete) {
-		    		    	System.out.println("fileName : " + fileName);
 		    		    	String filepath = root+"board_resources"+File.separator+"photo_upload";
-		    		    	System.out.println("filepath : " + filepath);
 		    		    	paraMap.put("photo_upload_path", filepath); // 삭제해야할 첨부파일이 저장된 경로
 		    		    	
 		    		    	//paraMap.put("postNo", postNo); // 삭제할 글번호
@@ -941,7 +915,6 @@ public class BoardController {
 		 // 게시판 별 게시글 조회 :: 게시판/게시글 테이블 조인 -> 조건 boardNo 인 것만 조회
 		 List<PostVO> groupPostMapList =  service.selectPostBoardGroup(paraMap);
 		 mav.addObject("groupPostMapList",groupPostMapList);
-		 System.out.println("조회된 게시글 수: " + (groupPostMapList != null ? groupPostMapList.size() : "null"));
 		 // === 페이지바 만들기 === //
 		 int blockSize = 10;
 		 // blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수
@@ -987,7 +960,7 @@ public class BoardController {
 		pageBar += "</ul>";	
 		
 		mav.addObject("pageBar", pageBar);
-		 
+		
 		mav.addObject("totalCount", totalCount);   // 페이징 처리시 보여주는 순번을 나타내기 위한 것
 		mav.addObject("currentShowPageNo", currentShowPageNo); // 페이징 처리시 보여주는 순번을 나타내기 위한 것
 		mav.addObject("sizePerPage", sizePerPage); // 페이징 처리시 보여주는 순번을 나타내기 위한 것
@@ -1002,12 +975,47 @@ public class BoardController {
 		////////////////////////////////////////
       //mav.setViewName("mycontent/board/board");
       
-
+		mav.addObject("boardNo", boardNo);
 	  mav.addObject("boardInfoMap",boardInfoMap);
 	  mav.setViewName("mycontent/board/selectPostBoardGroupView");
 	  
 	  
 	  return mav;
+  }
+  
+  // 이전글제목보기, 다음글제목보기를 할때 글조회수 증가하기 위한 것
+  @PostMapping("goViewOnePost_2")
+  public String view_2(ModelAndView mav, 
+				           @RequestParam(defaultValue = "") String postNo,
+				           @RequestParam(defaultValue = "") String goBackURL,
+				           HttpServletRequest request,
+				           RedirectAttributes redirectArr) {
+	  	String checkAll_or_boardGroup = request.getParameter("checkAll_or_boardGroup");
+	  	String fk_boardNo = request.getParameter("fk_boardNo");
+		try {
+			goBackURL = URLEncoder.encode(goBackURL, "UTF-8");
+			
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		
+		
+		HttpSession session = request.getSession();
+		session.setAttribute("readCountPermission", "yes");
+	
+		// redirect(GET방식) 시 데이터를 넘길때 GET 방식이 아닌 POST 방식처럼 데이터를 넘기려면 RedirectAttributes 를 사용
+		Map<String, String> redirect_map = new HashMap<>();
+		redirect_map.put("postNo", postNo);
+		redirect_map.put("goBackURL", goBackURL);
+		redirect_map.put("checkAll_or_boardGroup", checkAll_or_boardGroup);
+		redirect_map.put("fk_boardNo", fk_boardNo);
+		
+		//redirectArr.addAttribute("redirect_map", redirect_map); // url에 파라미터가 들어가서 수명이 유지됨.
+		//redirectArr.addFlashAttribute("redirect_map", redirect_map); // url에 보이지 않아 값이 휘발성임
+		//mav.addObject(redirect_map);
+		
+		//mav.setViewName("redirect:/board/goViewOnePost"); // 실제로 redirect:/board/view 은 POST 방식이 아닌 GET 방식이다.
+		return "redirect:/board/goViewOnePost?postNo=" + postNo + "&goBackURL=" + goBackURL + "&checkAll_or_boardGroup="+checkAll_or_boardGroup+"&fk_boardNo="+fk_boardNo;
   }
 	
 	
