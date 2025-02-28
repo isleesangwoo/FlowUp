@@ -27,5 +27,17 @@ public interface EmployeeService {
 	// === 부서번호, 부서명 알아오기 === //
 	List<Map<String, String>> departmentno_select();
 
+	// === 직급번호, 직급명 알아오기 === //
+	List<Map<String, String>> positionno_select();
+
+	// === 부서번호별 팀번호 알아오기 === 
+	List<Map<String, String>> teamNo_seek_BydepartmentNo(String departmentNo);
+
+	//로그아웃 처리하기
+	ModelAndView logout(ModelAndView mav, HttpServletRequest request);
+	
+	// === 내 정보 수정하기 === //
+	int updateInfoEnd(EmployeeVO empvo);
+	
 
 }
