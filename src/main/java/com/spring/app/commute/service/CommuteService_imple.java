@@ -25,9 +25,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import com.spring.app.commute.domain.AnnualVO;
 import com.spring.app.commute.domain.CommuteVO;
 import com.spring.app.commute.model.CommuteDAO;
 import com.spring.app.employee.domain.DepartmentVO;
+import com.spring.app.employee.domain.EmployeeVO;
 
 @Service
 public class CommuteService_imple implements CommuteService {
@@ -209,7 +211,7 @@ public class CommuteService_imple implements CommuteService {
 		
 		Cell tltle_header_A2 = tltle_header_2.createCell(0);
 		tltle_header_A2.setCellStyle(title_infoStyle);
-		tltle_header_A2.setCellValue("사원 " + paraMap.get("employeeNo"));
+		tltle_header_A2.setCellValue(paraMap.get("positionName") + " " + paraMap.get("name"));
 		
 		Cell tltle_header_B2 = tltle_header_2.createCell(1);
 		tltle_header_B2.setCellStyle(title_infoStyle);
@@ -333,24 +335,58 @@ public class CommuteService_imple implements CommuteService {
 			bodyCell.setCellStyle(infoStyle);
 			
 			bodyCell = bodyRow.createCell(3);
-			bodyCell.setCellValue(dailyCommute.get("worksec"));
+			bodyCell.setCellValue(secToHour(Integer.parseInt(dailyCommute.get("worksec"))));
 			bodyCell.setCellStyle(infoStyle);
+		
 			
-			bodyCell = bodyRow.createCell(4);
-			bodyCell.setCellValue("00:00:00");
-			bodyCell.setCellStyle(infoStyle);
-			
-			bodyCell = bodyRow.createCell(5);
-			bodyCell.setCellValue("00:00:00");
-			bodyCell.setCellStyle(infoStyle);
-			
+			if(Integer.parseInt(dailyCommute.get("worksec")) > 8*60*60) {
+				bodyCell = bodyRow.createCell(4);
+				bodyCell.setCellValue("08:00:00");
+				bodyCell.setCellStyle(infoStyle);
+				
+				bodyCell = bodyRow.createCell(5);
+				bodyCell.setCellValue(secToHour(Integer.parseInt(dailyCommute.get("worksec")) - 8*60*60));
+				bodyCell.setCellStyle(infoStyle);
+			}
+			else {
+				bodyCell = bodyRow.createCell(4);
+				bodyCell.setCellValue(secToHour(Integer.parseInt(dailyCommute.get("worksec"))));
+				bodyCell.setCellStyle(infoStyle);
+				
+				bodyCell = bodyRow.createCell(5);
+				bodyCell.setCellValue("00:00:00");
+				bodyCell.setCellStyle(infoStyle);
+			}
+
 			bodyCell = bodyRow.createCell(6);
 			bodyCell.setCellValue("00:00:00");
 			bodyCell.setCellStyle(infoStyle);
 			
-			bodyCell = bodyRow.createCell(7);
-			bodyCell.setCellValue("-");
-			bodyCell.setCellStyle(infoStyle);
+			if(dailyCommute.get("rest") == "0") {
+				bodyCell = bodyRow.createCell(7);
+				bodyCell.setCellValue("-");
+				bodyCell.setCellStyle(infoStyle);
+			}
+			else if(dailyCommute.get("rest") == "1") {
+				bodyCell = bodyRow.createCell(7);
+				bodyCell.setCellValue("연차 사용");
+				bodyCell.setCellStyle(infoStyle);
+			}
+			else if(dailyCommute.get("rest") == "2") {
+				bodyCell = bodyRow.createCell(7);
+				bodyCell.setCellValue("오전 반차 사용");
+				bodyCell.setCellStyle(infoStyle);
+			}
+			else if(dailyCommute.get("rest") == "3") {
+				bodyCell = bodyRow.createCell(7);
+				bodyCell.setCellValue("오후 반차 사용");
+				bodyCell.setCellStyle(infoStyle);
+			}
+			else {
+				bodyCell = bodyRow.createCell(7);
+				bodyCell.setCellValue("-");
+				bodyCell.setCellStyle(infoStyle);
+			}
 			
 			
 			
@@ -375,7 +411,7 @@ public class CommuteService_imple implements CommuteService {
 				bodyCell.setCellStyle(title_infoStyle);
 				
 				bodyCell = bodyRow.createCell(1);
-				bodyCell.setCellValue(worksec_week);
+				bodyCell.setCellValue(secToHour(worksec_week));
 				bodyCell.setCellStyle(title_infoStyle);
 				
 				bodyCell = bodyRow.createCell(2);
@@ -389,7 +425,7 @@ public class CommuteService_imple implements CommuteService {
 					
 					overtime_month = overtime_month + overtime_week;
 					
-					bodyCell.setCellValue(overtime_week); // 주간 연장근무시간
+					bodyCell.setCellValue(secToHour(overtime_week)); // 주간 연장근무시간
 				}
 				else {
 					bodyCell.setCellValue("00:00:00");
@@ -419,7 +455,6 @@ public class CommuteService_imple implements CommuteService {
 		    }// switch
 
 		    
-		   
 		    
 		} // for
 
@@ -431,7 +466,7 @@ public class CommuteService_imple implements CommuteService {
 		bodyCell.setCellStyle(title_infoStyle);
 
 		bodyCell = bodyRow.createCell(1);
-		bodyCell.setCellValue(worksec_week);
+		bodyCell.setCellValue(secToHour(worksec_week));
 		bodyCell.setCellStyle(title_infoStyle);
 
 		bodyCell = bodyRow.createCell(2);
@@ -445,7 +480,7 @@ public class CommuteService_imple implements CommuteService {
 
 			overtime_month = overtime_month + overtime_week;
 
-			bodyCell.setCellValue(overtime_week); // 주간 연장근무시간
+			bodyCell.setCellValue(secToHour(overtime_week)); // 주간 연장근무시간
 		} else {
 			bodyCell.setCellValue("00:00:00");
 		}
@@ -469,9 +504,9 @@ public class CommuteService_imple implements CommuteService {
 
 		sheet.addMergedRegion(new CellRangeAddress(rowLocation, rowLocation, 4, 6));
 
-		tltle_header_B2.setCellValue(worksec_month); // 월간 총 근무시간
+		tltle_header_B2.setCellValue(secToHour(worksec_month)); // 월간 총 근무시간
 
-		tltle_header_C2.setCellValue(overtime_month); // 월간 연장 근무 시간
+		tltle_header_C2.setCellValue(secToHour(overtime_month)); // 월간 연장 근무 시간
 
 		model.addAttribute("locale", Locale.KOREA);
 		model.addAttribute("workbook", workbook);
@@ -484,8 +519,53 @@ public class CommuteService_imple implements CommuteService {
 	
 	
 	
-	
-	
+	// 초를 시분초로 바꾸는 메소드
+	private String secToHour(int total_sec) {
+		
+		int hour = total_sec / 3600;
+		int min = (total_sec % 3600) / 60;
+		int sec = total_sec % 60;
+		
+		String s_hour = "";
+		String s_min = "";
+		String s_sec = "";
+		
+		if(hour < 10) {
+			s_hour = "0"+hour;
+		}
+		else {
+			s_hour = ""+hour;
+		}
+		
+		if(min < 10) {
+			s_min = "0"+min;
+		}
+		else {
+			s_min = ""+min;
+		}
+		
+		if(sec < 10) {
+			s_sec = "0"+sec;
+		}
+		else {
+			s_sec = ""+sec;
+		}
+		
+		return s_hour + ":" + s_min + ":" + s_sec;
+	}
+
+	@Override
+	public Map<String,String> getEmployeeInfo(String fk_employeeNo) {
+		Map<String,String> map = dao.getEmployeeInfo(fk_employeeNo);
+		return map;
+	}
+
+	@Override
+	public AnnualVO getAnnualInfo(Map<String, String> paramap) {
+		AnnualVO avo = dao.getAnnualInfo(paramap);
+		return avo;
+	}
+
 	
 	
 	

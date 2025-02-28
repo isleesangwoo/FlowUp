@@ -20,10 +20,6 @@
 }
 
 #writePostBtn {
-	display: inline-block;
-	text-decoration:none;
-	text-align: center;
-	line-height:var(--size44);
     width: 100%;
     height: var(--size44);
     font-size: var(--size18);
@@ -83,20 +79,23 @@
   <div id="left_bar">
 
       <!-- === 글작성 버튼 === -->
-      <a href="<%= ctxpath%>/employee/updateMypageInfo" id="writePostBtn">
+      <button id="writePostBtn">
           <i class="fas fa-address-book"></i>
-          <span id="goWrite">내정보수정</span>
-      </a>
+          <span id="goWrite">연락처 추가</span>
+      </button>
       <!-- === 글작성 버튼 === -->
 
       <div class="board_menu_container">
           <ul>
+              <li>
+                  <a href="#">주소록</a>
+              </li>
+              <li>
+              	<a href="#">외부 주소록</a>
+              </li>
           	  <li>
-          		  <a href="#">비밀번호 변경</a>
+          		  <a href="#">부서 주소록</a>
           	  </li>
-			  <li>
-           		  <a href="<%= ctxpath%>/employee/logout">로그아웃</a>
-           	  </li>
           </ul>
       </div>
   </div>
