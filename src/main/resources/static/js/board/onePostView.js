@@ -361,9 +361,10 @@ $(document).ready(()=>{
 
 // === #42. 이전글제목, 다음글제목 보기 === //
   function goView(postNo) {
-	const goBackURL = $("input[name='goBackURL']").val();
+	   const goBackURL = $("input[name='goBackURL']").val();
 	   const frm = document.postFrm_2;
 	   frm.postNo.value = postNo;
+	   console.log("postNo : " + postNo);
 	   frm.goBackURL.value = goBackURL;
 	   frm.method = "post";
 	   

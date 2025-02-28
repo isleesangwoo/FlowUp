@@ -111,12 +111,18 @@
 
                 <span id="tool_box_right">
                     <span>
+                    <span id="preOrNextBtn">
+                    <c:if test="${postvo.previouspostNo ne null}">
                         <span id="re_btn">
-                            <a href="#"><i class="fa-solid fa-arrow-left"></i>이전</a>
+                            <button type="button" onclick="goView('${postvo.previouspostNo}')" class="btnDefaultDesignNone"><i class="fa-solid fa-caret-left"></i>이전</button>
                         </span>
+                    </c:if>   
+                    <c:if test="${postvo.nextpostNo ne null}"> 
                         <span id="sortCnt_btn">
-                            <a href="#">다음<i class="fa-solid fa-arrow-right"></i></a>
+                            <button type="button" onclick="goView('${postvo.nextpostNo}')" class="btnDefaultDesignNone">다음<i class="fa-solid fa-caret-right"></i></button> 
                         </span>
+                    </c:if>  
+                    </span>   
                         <span>
                             <button type="button" onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'" class="btnDefaultDesignNone">
                             	<i class="fa-solid fa-list"></i> 목록
@@ -204,43 +210,41 @@
         	</div>
         </div>
         	<table id="preoOrNextPostElmt">
-        	<c:if test="${postvo.previouspostNo ne null}">
-        		<tr class="onePostElmt" onclick="goView('${postvo.previouspostNo}')">
-        			<td>이전글</td>
-        			<td>${postvo.previoussubject}</td>
-        			<td>${postvo.previousname}</td>
-        			<td>${postvo.previousregDate}</td>
-        			<td>${postvo.previousreadCount}</td>
-					<td>14</td>
-        		</tr>
-        	</c:if>	
-        		<tr class="onePostElmt" id="currentPost" style="background-color: #f2f2f2; ">
-        			<td> <span class="currentPost"><i class="fa-solid fa-angles-right"></i> 현재글</span></td>
-        			<td><span class="currentPost">${postvo.subject}</span></td>
-        			<td>${postvo.name}</td>
-        			<td>${postvo.regDate}</td>
-        			<td>${postvo.readCount}</td>
-					<td>좋아요개발중</td>
-        		</tr>
-        	<c:if test="${postvo.nextpostNo ne null}">	
-        		<tr class="onePostElmt" onclick="goView('${postvo.nextpostNo}')">
-        			<td>다음글</td>
-        			<td>${postvo.nextsubject}</td>
-        			<td>${postvo.name}</td>
-        			<td>${postvo.nextregDate}</td>
-        			<td>${postvo.nextreadCount}</td>
-					<td>14</td>
-        		</tr>
-        	</c:if>		
+	        	<c:if test="${postvo.previouspostNo ne null}">
+	        		<tr class="onePostElmt" onclick="goView('${postvo.previouspostNo}')">
+	        			<td>이전글</td>
+	        			<td>${postvo.previoussubject}</td>
+	        			<td>${postvo.previousname}</td>
+	        			<td>${postvo.previousregDate}</td>
+	        			<td>${postvo.previousreadCount}</td>
+						<td>14</td>
+	        		</tr>
+	        	</c:if>	
+	        		<tr class="onePostElmt" id="currentPost" style="background-color: #f2f2f2; ">
+	        			<td> <span class="currentPost"><i class="fa-solid fa-angles-right"></i> 현재글</span></td>
+	        			<td><span class="currentPost">${postvo.subject}</span></td>
+	        			<td>${postvo.name}</td>
+	        			<td>${postvo.regDate}</td>
+	        			<td>${postvo.readCount}</td>
+						<td>좋아요개발중</td>
+	        		</tr>
+	        	<c:if test="${postvo.nextpostNo ne null}">	
+	        		<tr class="onePostElmt" onclick="goView('${postvo.nextpostNo}')">
+	        			<td>다음글</td>
+	        			<td>${postvo.nextsubject}</td>
+	        			<td>${postvo.name}</td>
+	        			<td>${postvo.nextregDate}</td>
+	        			<td>${postvo.nextreadCount}</td>
+						<td>14</td>
+	        		</tr>
+	        	</c:if>		
         	</table>
-<%--     <div style="margin-bottom: 1%;">이전글&nbsp;제목&nbsp;&nbsp;<span class="move" onclick="goView('${requestScope.boardvo.previousseq}')">${requestScope.boardvo.previoussubject}</span></div>  --%>
-<%-- 	 <div style="margin-bottom: 1%;">다음글&nbsp;제목&nbsp;&nbsp;<span class="move" onclick="goView('${requestScope.boardvo.nextseq}')">${requestScope.boardvo.nextsubject}</span></div> --%>
-	        
 	     <div id="noticeEndDate" style="display: none;">${postvo.noticeEndDate}</div>   
         <form name="postFrm">
 	        <div>
 		        게시글 번호 : <input type="text" name="postNo" value="${postvo.postNo}"><br> <%-- 필요한 것임 지우지말 것 --%>
-		        상세보기 페이지 이전 url : <input type="text" name="goBackURL" value="<%= request.getAttribute("goBackURL") %>"/><%-- 필요한 것임 지우지말 것 --%>
+		        상세보기 페이지 이전 url : <input type="text" name="goBackURL" value="<%= request.getAttribute("goBackURL") %>"/><%-- 필요한 것임 지우지말 것 --%><br>
+		        전체 or 게시판별 게시글 구분 번호 : <input type="text" name="checkAll_or_boardGroup" value="${checkAll_or_boardGroup}"> <%-- 필요한 것임 지우지말 것 --%><br>
 		        댓글 허용 여부 : ${postvo.allowComments}<br>
 		        공지글 여부 : ${postvo.isNotice}<br>
 		        공지글 종료일 : ${postvo.noticeEndDate}<br>
@@ -252,6 +256,8 @@
 	<form name="postFrm_2">
 	   <input type="hidden" name="postNo" />
 	   <input type="hidden" name="goBackURL" />
+	   <input type="text" name="fk_boardNo" value="${postvo.fk_boardNo}"/>
+	   <input type="text" name="checkAll_or_boardGroup" value="${checkAll_or_boardGroup}"> <%-- 필요한 것임 지우지말 것 --%>
 	</form>
 		
    </div>

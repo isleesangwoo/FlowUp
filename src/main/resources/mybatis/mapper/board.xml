@@ -226,7 +226,7 @@ ORDER BY createdAt DESC
              join tbl_board B
              on P.FK_BOARDNO = B.boardNo
 		     where p.status = 1
-		     <if test="checkAll_or_boardGroup == 1"> and B.boardNo=#{fk_boardNo}</if>
+		     <if test="checkAll_or_boardGroup == 1"> and B.boardNo=to_number(#{fk_boardNo})</if>
 			) V
 		WHERE V.postNo = to_number(#{postNo})
 	</select>
