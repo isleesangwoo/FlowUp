@@ -470,9 +470,3 @@ header:nth-child(1) {
     display: flex;
     justify-content: space-between;
 }
-
-/* 이지혜 css 추가*/
-.fa-circle-user {
-	
-	color: black;
-}

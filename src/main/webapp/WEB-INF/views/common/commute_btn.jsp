@@ -375,9 +375,9 @@
 	    	
 	    });
 	    
-		$("#myCommuteChart").click(e=>{
+		$("#myCommuteTable").click(e=>{
 	    	
-			location.href="<%= ctxPath%>/commute/myAnnual";
+			
 			
 	    });
  		
@@ -388,7 +388,7 @@
 		});
 		  
 		
-	 	$("div.deptCommuteChart").click(e=>{
+	 	$("div.deptCommuteCart").click(e=>{
 		    	
 			const $btn = $(e.target);
 		    	
@@ -577,7 +577,7 @@
 			            		<div style="margin-bottom:10px;">
 			            			<div>${dvo.departmentName}</div>
 				            		<div class="deptCommuteTable hhover">&nbsp;&nbsp;&nbsp;부서 근태현황</div>
-				            		<div class="deptCommuteChart hhover">&nbsp;&nbsp;&nbsp;부서 근태통계</div>
+				            		<div class="deptCommuteCart hhover">&nbsp;&nbsp;&nbsp;부서 근태통계</div>
 				            		<input type="hidden" value="${dvo.departmentNo}" />
 			            		</div>
 			            		
@@ -590,7 +590,7 @@
 		            		<div>
 				            	<div>${sessionScope.loginuser.departmentName}</div>
 				            	<div class="deptCommuteTable hhover">&nbsp;&nbsp;&nbsp;부서 근태현황</div>
-				            	<div class="deptCommuteChart hhover">&nbsp;&nbsp;&nbsp;부서 근태통계</div>
+				            	<div class="deptCommuteCart hhover">&nbsp;&nbsp;&nbsp;부서 근태통계</div>
 				            	<input type="hidden" value="" />
 		            		</div>
 		            		

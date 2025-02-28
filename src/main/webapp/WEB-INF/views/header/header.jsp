@@ -177,7 +177,7 @@
                 </div>
                 <div class="top_header_r top_header">
                     <div class="top_ikon">
-                        <a class="goMypage" href="<%= ctxPath%>/employee/mypage"><i class="fa-solid fa-circle-user"></i></a>
+                        
                     </div>
                     <div class="top_ikon">
                         

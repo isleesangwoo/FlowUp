@@ -746,7 +746,7 @@ div.hoverDiv:hover {
 		<div id=weeklyDisplay></div>
 
 
-		<div></div>
+
 	</div>
 
 </div>

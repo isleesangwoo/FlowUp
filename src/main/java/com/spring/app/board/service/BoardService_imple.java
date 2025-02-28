@@ -134,6 +134,8 @@ public class BoardService_imple implements BoardService {
 		PostVO postvo = dao.goViewOnePost(paraMap);  // 글 1개 조회하기
 		
 		String login_userid = paraMap.get("login_userid");
+		// paraMap.get("login_userid") 은 로그인을 한 상태이라면 로그인한 사용자의 userid 이고,
+		// 로그인을 하지 않은 상태이라면  paraMap.get("login_userid") 은 null 이다.
 		
 		if(login_userid != null &&
 				postvo != null &&
@@ -141,7 +143,7 @@ public class BoardService_imple implements BoardService {
 //		if(login_userid == null &&
 //				postvo != null &&
 //		  !"100014".equals(postvo.getFk_employeeNo() )) { 이거는 로그인이 안돼서 테스트용도
-		  // 글조회수 증가는 로그인을 한 상태에서 다른 사람의 글을 읽을때만 증가.
+		  // 글조회수 증가는 로그인을 한 상태에서 다른 사람의 글을 읽을때만 증가하도록 한다.
 			
 		  int n = dao.increase_readCount(paraMap.get("postNo")); // 글조회수 1증가 하기 
 		
