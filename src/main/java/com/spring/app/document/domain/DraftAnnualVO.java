@@ -8,7 +8,7 @@ public class DraftAnnualVO {
 	private String reason;		// 사유
 	private String startDate;	// 시작 날짜
 	private String endDate;		// 끝 날짜
-	private String annualType;	// 연차 종류
+	private String annualType;	// 연차 종류 (1:휴가,2:오전반차,3:오후반차)
 	
 	public String getDocumentNo() {
 		return documentNo;

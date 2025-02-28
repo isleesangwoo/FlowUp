@@ -142,16 +142,25 @@
     width: 100%;
     border-collapse: collapse;
 }
-#postContainer td {
-    padding: 8px;
-    text-align: center;
-}
 #postContainer tr:nth-child(1) {
     border-bottom: 1px solid #c8c8c8;
 }
 #postContainer td {
     border: none;
 }
+#postContainer td:nth-child(1){
+	padding: var(--size8) var(--size36) var(--size8) var(--size22);
+}
+#postContainer td:not(:nth-child(1)) {
+    padding: var(--size8);
+    text-align: center;
+}
+#postContainer td:nth-child(2){
+	width : 1100px;
+	text-align: left;
+}
+
+
 
 
 

@@ -78,6 +78,8 @@
 <form name="goViewFrm">
    <input type="hidden" name="postNo" />
    <input type="hidden" name="goBackURL" />
+   <input type="hidden" name="checkAll_or_boardGroup" />
+   <input type="hidden" name="fk_boardNo" value='${boardNo}' /> <!-- 이전/다음 글 할 때 전체 게시판은 조건이 필요없지만 게시판 별 게시글의 이전/다음글은 boardNo가 필요함 -->
 </form>
 	
 	

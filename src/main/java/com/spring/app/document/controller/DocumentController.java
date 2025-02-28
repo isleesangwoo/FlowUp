@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.app.document.domain.ApprovalVO;
 import com.spring.app.document.domain.DocumentVO;
 import com.spring.app.document.service.DocumentService;
 import com.spring.app.employee.domain.EmployeeVO;
@@ -200,4 +201,17 @@ public class DocumentController {
 		
 	}
 	
+	
+	@GetMapping("documentView")
+	public ModelAndView documentView(ModelAndView mav, @RequestParam Map<String, String> paraMap) {
+		
+		Map<String, String> document = service.documentView(paraMap);
+		List<ApprovalVO> approvalList = service.getApprovalList(paraMap.get("documentNo"));
+		
+		mav.addObject("document", document);
+		mav.addObject("approvalList", approvalList);
+		mav.setViewName("mycontent/document/documentView");
+		
+		return mav;
+	}
 }
