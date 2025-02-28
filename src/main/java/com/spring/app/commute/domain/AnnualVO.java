@@ -2,56 +2,88 @@ package com.spring.app.commute.domain;
 
 public class AnnualVO {
 
-	private String seq_annual;		// 연차 고유번호
+	private String annualNo;		// 연차 고유번호
+	private String fk_employeeNo;	// 사번
 	private String year;			// 적용 연도
-	private String occur;			// 발생 연차
-	private String over;			// 이월 연차
-	private String add;				// 조정 연차
-	private String used;     		// 소진 연차
+	private String occurAnnual;		// 발생 연차
+	private String overAnnual;		// 이월 연차
+	private String addAnnual;		// 조정 연차
+	private String usedAnnual;     	// 소진 연차
+	
+	
+	private String totalAnnual;		// 총 연차
+	private String remainderAnnual;	// 잔여 연차
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	public String getSeq_annual() {
-		return seq_annual;
+	public String getTotalAnnual() {
+		
+		int n_occurAnnual = Integer.parseInt(occurAnnual);
+		int n_overAnnual = Integer.parseInt(overAnnual);
+		int n_addAnnual = Integer.parseInt(addAnnual);
+		int n_totalAnnual = n_occurAnnual + n_overAnnual + n_addAnnual;
+		
+		totalAnnual = "" + n_totalAnnual;
+		
+		return totalAnnual;
 	}
-	public void setSeq_annual(String seq_annual) {
-		this.seq_annual = seq_annual;
+
+	public String getRemainderAnnual() {
+		
+		int n_totalAnnual = Integer.parseInt(getTotalAnnual());
+		int n_usedAnnual = Integer.parseInt(usedAnnual);
+		int n_remainderAnnual = n_totalAnnual - n_usedAnnual;
+		
+		remainderAnnual = "" + n_remainderAnnual;
+		
+		return remainderAnnual;
+	}
+	
+	
+	
+	
+
+	public String getFk_employeeNo() {
+		return fk_employeeNo;
+	}
+	public void setFk_employeeNo(String fk_employeeNo) {
+		this.fk_employeeNo = fk_employeeNo;
 	}
 	public String getYear() {
 		return year;
 	}
+	public String getAnnualNo() {
+		return annualNo;
+	}
+	public void setAnnualNo(String annualNo) {
+		this.annualNo = annualNo;
+	}
 	public void setYear(String year) {
 		this.year = year;
 	}
-	public String getOccur() {
-		return occur;
+	public String getOccurAnnual() {
+		return occurAnnual;
 	}
-	public void setOccur(String occur) {
-		this.occur = occur;
+	public void setOccurAnnual(String occurAnnual) {
+		this.occurAnnual = occurAnnual;
 	}
-	public String getOver() {
-		return over;
+	public String getOverAnnual() {
+		return overAnnual;
 	}
-	public void setOver(String over) {
-		this.over = over;
+	public void setOverAnnual(String overAnnual) {
+		this.overAnnual = overAnnual;
 	}
-	public String getAdd() {
-		return add;
+	public String getAddAnnual() {
+		return addAnnual;
 	}
-	public void setAdd(String add) {
-		this.add = add;
+	public void setAddAnnual(String addAnnual) {
+		this.addAnnual = addAnnual;
 	}
-	public String getUsed() {
-		return used;
+	public String getUsedAnnual() {
+		return usedAnnual;
 	}
-	public void setUsed(String used) {
-		this.used = used;
+	public void setUsedAnnual(String usedAnnual) {
+		this.usedAnnual = usedAnnual;
 	}
 
 	

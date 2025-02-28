@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.springframework.ui.Model;
 
+import com.spring.app.commute.domain.AnnualVO;
 import com.spring.app.commute.domain.CommuteVO;
 import com.spring.app.employee.domain.DepartmentVO;
+import com.spring.app.employee.domain.EmployeeVO;
 
 public interface CommuteService {
 	
@@ -37,8 +39,14 @@ public interface CommuteService {
 	// 서머리에 출력될 주간 근무시간 가져오기
 	List<Map<String, String>> getWorktime(Map<String, String> paramap);
 
-	
+	// 한 사원의 근태 정보를 가져오며 엑셀을 다운받는 form을 생성 하는 메소드
 	void commuteList_to_Excel(Map<String, String> paraMap, Model model);
+
+	// 사원번호로 그 사원의 정보를 가져오는 메소드
+	Map<String,String> getEmployeeInfo(String fk_employeeNo);
+
+	// 사원번호를 받아 그 사원의 연차정보를 가져오는 메소드
+	AnnualVO getAnnualInfo(Map<String, String> paramap);
 
 
 
