@@ -112,7 +112,6 @@
 			<input type="hidden" name="totalFixtures" /> 
 			<input type="hidden" name="totalInformationContents" /> 
 
-
 		</div>
 		<%-- 두번째 탭 내용물 --%>
 
@@ -159,6 +158,41 @@
 				<div id="goAddAsset">확인</div>
 			</div>
 
+			
+			
+			
+			
+			<div id="assetModalBg2" class="modal_bg"></div>
+			<div id="assetModal2" class="modal_containerAssetFix">
+				<div>
+					<label class="assetNameTitle">ID값</label> <span class="fixNo"></span>
+				</div>
+				
+				<div>
+					<label class="assetNameTitle">항목명</label><input class="assetName" type="text" name="assetName" />
+				</div>
+				
+				<table class="baseTable" style="margin-top:12px;">
+					<thead>
+						<tr>
+							<th>자산명</th>
+							<th>공개 / 비공개 여부</th>
+							<th>유무 상태</th>
+						</tr>
+					</thead>
+					<tbody class="informationTitleAppend">
+						<!-- 여기는 추가된 항목들 목록 -->
+						
+						<!-- 여기는 추가된 항목들 목록 -->
+					</tbody>
+				</table>
+				
+				
+				<div class="bottom_btn_box">
+					<button class="okBtn" id="GofixInfo">확인</button>
+					<button class="resetBtn" id="closeAssetModal2">취소</button>
+				</div>
+			</div>
 		</div>
 		<%-- 세번째 탭 내용물 --%>
 	</div>
@@ -517,6 +551,7 @@
   })
   // === 비품추가 모달창 띄우기 === //
   
+
   
   $('#goAddAsset').click(e=>{
 	
@@ -563,6 +598,7 @@
   function selectAssetDe() {
 	  $('#appendTrFinal').empty();
 	  
+	  
 	  $.ajax({
 		url:"<%=ctxPath%>/reservation/selectAssetDe",
 	    type:"post",
@@ -579,7 +615,7 @@
 												<td>\${item.assetDetailNo}</td>
 												<td>\${item.assetName}</td>
 												<!--<td>X</td>-->
-												<td><i class="fa-solid fa-gear"></i></td>
+												<td><i style="cursor:pointer;" class="fa-solid fa-gear fixbtn" id="\${item.assetDetailNo}"></i></td>
 												<td><i class="fa-solid fa-trash trashbtn" id="\${item.assetDetailNo}" style="cursor:pointer;"></i></td>
 											</tr>`);
 				 
@@ -587,7 +623,7 @@
 				 
 			 }) // end of $.each(json, function(index, item)) {} ------------------- 
 			
-			 
+			 $('.selectHere').empty();
 			 $('.selectHere').append(`
 					 <select id="selectAsset" style="font-size: 14px;">
 					 	<option hidden>선택하세요</option>
@@ -617,12 +653,32 @@
   // ======= 두번째 탭에서 삭제버튼 (비품 하나 삭제하기) ======= //
   $(document).on('click', '.midDeleteOne', e=>{
 	  
-	  alert($(e.target).attr('id'))
-	  /*
+	  // alert($(e.target).attr('id'));
+	  
 	  $.ajax({
 		  url:"<%= ctxPath%>/reservation/midDeleteOne",
+		  type:"post",
+		  data:{"assetInformationNo":$(e.target).attr('id')},
+		  dataType:"json",
+		  success:function(json){
+			
+			if(json.result == 1){
+				alert('비품삭제에 성공했습니다.')
+				 
+				//selectAssetDe(); // 자산 새로 불러주기
+				appendInformation(); // 비품 새로고침
+			}
+			else {
+				alert('해당 비품삭제에 실패했습니다.')
+			}
+			  
+		  },
+		  error: function(request, status, error){
+  	 	      alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+  	      } 
+		  
 	  })
-	  */
+	  
   }); // end of $(document).on('click', '.midDeleteOne', e=>{})----------
 //======= 두번째 탭에서 삭제버튼 (비품 하나 삭제하기) ======= //
   
@@ -756,6 +812,190 @@
 	  }
 	  
   }); // end of $(document).on('click', 'trashbtn', e=>{})----------- 
+  
+  
+  
+  
+  // ============ 수정버튼 클릭시 해당 비품 불러와서 modal 띄우기 ============ //
+  $(document).on('click', '.fixbtn', e=>{
+  
+	// 모달창 title 값 뿌려두기 //
+	$('.fixNo').text($(e.target).attr('id'));
+	$('input.assetName').val($(e.target).parent().prev().text());
+	// 모달창 title 값 뿌려두기 //
+	
+	$('.informationTitleAppend').empty();
+	
+	// alert($(e.target).attr('id'))
+	$.ajax({
+	  url:"<%=ctxPath%>/reservation/fixSelectAssetNo",
+	  type:"post",
+	  data:{"fk_assetDetailNo":$(e.target).attr('id')},
+	  dataType:"json",
+	  success:function(json){
+		console.log(JSON.stringify(json))
+		/*
+		[{"assetInformationNo":"100006","InformationContents":"X","release":"0","assetDetailNo":"100029","InformationTitle":"확인","assetName":"Edge"}
+		,{"assetInformationNo":"100009","InformationContents":"X","release":"0","assetDetailNo":"100029","InformationTitle":"테스트","assetName":"Edge"}]
+		*/
+		
+		let c_html = ``;
+		let appendcheck = ``;
+		
+		if(json.length == 0) { // 비품이 존재하지 않는 경우
+			c_html += `<tr><td colspan="3" style="text-align: center; color:#999;">등록된 비품이 없습니다.</td></tr>`;
+		}
+		else{ // 비품이 존재하는 경우
+
+			$.each(json, function(index, item){
+				
+				c_html += `<tr>
+		                   	 <td> <input type="text" name="InformationTitle" value="\${item.InformationTitle}"/> <input type="hidden" name="assetInformationNo" value="\${item.assetInformationNo}" /></td>`;
+				
+				if(item.release == '0') { // 공개 / 비공개 여부가 0인 경우
+					c_html+= `<td><input type="checkbox" name="release" id="mailOneCheck" checked /></td>`;
+				}
+				else{ // 공개 / 비공개 여부가 1인 경우
+					c_html+= `<td><input type="checkbox" name="release" id="mailOneCheck" /></td>`;
+				}
+				
+				
+	            c_html += `<td> <input type="text" name="InformationContents" value="\${item.InformationContents}"/> </td></tr>`;
+		    });
+		}
+		
+		$('.informationTitleAppend').append(c_html);
+		
+		
+		$('#assetModalBg2').fadeIn();
+		$('#assetModal2').fadeIn();
+		  
+	  },
+	  error: function(request, status, error){
+	 	  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	  } 
+  })
+	
+	
+	
+  }) // end of $(document).on('click', '.fixbtn', e=>{})----------------
+  // ============ 수정버튼 클릭시 해당 비품 불러와서 modal 띄우기 ============ //
+  
+  
+  // === 비품수정창 모달창 닫기 === //
+  $('#assetModalBg2:not(#assetModal2)').click(e=>{
+    $('#assetModalBg2').fadeOut();
+    $('#assetModal2').fadeOut();
+  })
+  
+  $('#closeAssetModal2').click(e=>{
+	$('#assetModalBg2').fadeOut();
+	$('#assetModal2').fadeOut();
+  })
+  // === 비품수정창 모달창 닫기 === //
+  
+  
+  
+  
+  $('#GofixInfo').click(e=>{
+	// alert('go!')
+	
+	// alert($('.fixNo').text())      				// 자산명 변경시 pk
+	// alert($('input.assetName').val()) 			// 자산명 변경시 자산명
+	
+	//////////////// 비품들 정보 구하기 ///////////////
+	InformationTitle_arr = Array.from( $('input[name="InformationTitle"]'));
+	InformationTitle_arr_str = [];
+	
+	InformationContents_arr = Array.from($('input[name="InformationContents"]'));
+	InformationContents_arr_str = [];
+	
+	assetInformationNo_arr = Array.from($('input:hidden[name="assetInformationNo"]'));
+	assetInformationNo_arr_str = [];
+	
+	for(let i=0; i<InformationTitle_arr.length; i++){
+		// console.log(InformationTitle_arr[i])
+		InformationTitle_arr_str.push($(InformationTitle_arr[i]).val())         // 비품명
+		InformationContents_arr_str.push($(InformationContents_arr[i]).val())	// 비품 상태
+		assetInformationNo_arr_str.push($(assetInformationNo_arr[i]).val())		// 비품 pk
+	}
+	InformationTitle_str = InformationTitle_arr_str.join(",");			// 비품명
+	InformationContents_str = InformationContents_arr_str.join(",");	// 비품 상태
+	assetInformationNo_str = assetInformationNo_arr_str.join(",");		// 비품 pk
+	// alert(InformationTitle_str) // 비품명
+	
+	/////////////////////// 아래는 체크박스를 위한 것
+	
+	release_arr = Array.from($('input[name="release"]'));
+	release_arr_str = [];
+	
+	release_arr.forEach(function(item, index){
+		if (item.checked) {
+            $(item).val('0');  // 체크된 경우 값 0
+        } else {
+            $(item).val('1');  // 체크 안 된 경우 값 1
+        }
+		
+		release_arr_str.push($(item).val());
+	})
+	
+	release_str = release_arr_str.join(",");							// 비품 공개유무
+	//////////////// 비품들 정보 구하기 ///////////////
+	
+	//console.log("InformationTitle_str 확인 : ", InformationTitle_str);
+	//console.log("InformationContents_str 확인 : ", InformationContents_str);
+	//console.log("release_str 확인 : ", release_str);
+	/*
+		InformationTitle_str 확인 :  화이트보드,빔프로젝트
+		InformationContents_str 확인 :  O,X
+		release_str 확인 :  0,1
+	*/
+	
+	
+	
+	$.ajax({
+		url:"<%= ctxPath%>/reservation/GofixInfo",
+		data:{"assetDetailNo": $('.fixNo').text(),
+			  "assetName":$('input.assetName').val(),
+		  	  "InformationTitle_str":InformationTitle_str,
+		  	  "InformationContents_str":InformationContents_str,
+		      "release_str":release_str,
+		  	  "assetInformationNo_str":assetInformationNo_str},
+		type:"post",
+		dataType:"json",
+		success:function(json) {
+			console.log(JSON.stringify(json));
+			
+			if(json.result == 1){
+				alert('비품수정이 완료되었습니다.')
+				
+				$('#assetModalBg2').fadeOut();
+				$('#assetModal2').fadeOut();
+				
+				//// 새로고침 ////
+				selectAssetDe();
+				$('#appendTrMiddle').empty();
+				$('#appendTrMiddle').append(`
+				 <tr>
+                    <td colspan="3"
+                       style="text-align: center; height: 100px; vertical-align: middle; color: #999;">비품추가를
+                       원하는 자산을 선택해주세요</td>
+                 </tr>
+				`);
+			}
+			else{
+				alert('비품 수정에 실패하였습니다.')
+			}
+			
+		},
+		error: function(request, status, error){
+	 	    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	    } 
+	})
+		
+  }) // end of $('#GofixInfo').click(e=>{})-----------
+  
+  
   <%-- ============== 3번째 탭 ============== --%>
   
   
@@ -816,7 +1056,7 @@
 										appendList+= `<td><input type="checkbox" id="mailOneCheck" style="pointer-events: none;" /></td>`;
 									}
 							
-				 appendList+= `<td><span class="midDeleteOne" id="\${item.fk_assetDetailNo}">삭제</span></td>
+				 appendList+= `<td><span class="midDeleteOne" id="\${item.assetInformationNo}">삭제</span></td>
 						 </tr>`;
 			 
 			 })

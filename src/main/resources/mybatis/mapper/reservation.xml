@@ -84,6 +84,9 @@
 	   	<result property="InformationTitle"    column="InformationTitle" 	javaType="String"/>
 	   	<result property="InformationContents" column="InformationContents" javaType="String"/>
 	   	<result property="release" 			   column="release" 			javaType="String"/>
+	   	
+	   	<result property="assetDetailNo" 	   column="assetDetailNo" 		javaType="String"/>
+	   	<result property="assetName" 		   column="assetName" 			javaType="String"/>
    </resultMap>
 	<select id="middleTapInfo" parameterType="String" resultMap="middleTapInfo_Map">
 		select assetinformationno, fk_assetdetailno, informationtitle, informationcontents, release
@@ -101,9 +104,37 @@
 
 
 
+	<!-- 비품 하나를 삭제해주는 메소드 -->
+	<delete id="midDeleteOne" parameterType="String">
+		delete from tbl_assetInformation where assetInformationNo = #{assetInformationNo}
+	</delete>
 
 
 
+
+	<!-- 자산 하나에 해당하는 비품들 조회하기 -->
+	<select id="fixSelectAssetNo" parameterType="String" resultMap="middleTapInfo_Map">
+		select assetDetailNo, assetName, assetInformationNo, InformationTitle, InformationContents, release
+		from tbl_assetDetail ad join tbl_assetInformation ai
+		on ad.assetDetailNo = ai.fk_assetDetailNo
+		where assetDetailNo = #{fk_assetDetailNo}
+	</select>
+
+
+	<!-- 자산명을 수정해주는 메소드 -->
+	<update id="updateAssetDetailName" parameterType="HashMap">
+		update tbl_assetDetail set assetName = #{assetName}
+		where assetDetailNo = #{assetDetailNo}
+	</update>
+	
+	
+	<!-- 비품내용들을 수정해주는 메소드 -->
+	<update id="GofixInfo" parameterType="HashMap">
+		update tbl_assetInformation set InformationTitle = #{InformationTitle}, 
+										InformationContents = #{InformationContents}, 
+										release = #{release}
+		where assetInformationNo = #{assetInformationNo}
+	</update>
 
 
 

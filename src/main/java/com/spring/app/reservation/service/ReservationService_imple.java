@@ -154,6 +154,59 @@ public class ReservationService_imple implements ReservationService {
 	}
 
 
+
+	
+	// 비품 하나를 삭제해주는 메소드
+	@Override
+	public int midDeleteOne(String assetInformationNo) {
+		int result = dao.midDeleteOne(assetInformationNo);
+		return result;
+	}
+
+
+
+	// 자산 하나에 해당하는 비품들 조회하기
+	@Override
+	public List<Map<String, String>> fixSelectAssetNo(String fk_assetDetailNo) {
+		List<Map<String, String>> fixSelectAssetNoList = dao.fixSelectAssetNo(fk_assetDetailNo);
+		return fixSelectAssetNoList;
+	}
+
+
+
+	// 자산명을 수정해주는 메소드
+	@Override
+	public int updateAssetDetailName(Map<String, String> paraMapAsset) {
+		int result = dao.updateAssetDetailName(paraMapAsset);
+		return result;
+	}
+
+
+
+	// 비품내용들을 수정해주는 메소드
+	@Override
+	public int GofixInfo(Map<String, Object> paraMapArr) {
+		
+		int result = 0;
+		
+		String[] InformationTitle_arr = (String[]) paraMapArr.get("InformationTitle_arr");
+		String[] InformationContents_arr = (String[]) paraMapArr.get("InformationContents_arr");
+		String[] release_arr = (String[]) paraMapArr.get("release_arr");
+		String[] assetInformationNo_arr = (String[]) paraMapArr.get("assetInformationNo_arr");
+		
+		for(int i=0; i<InformationTitle_arr.length; i++) {
+			paraMapArr.put("InformationTitle",InformationTitle_arr[i]);
+			paraMapArr.put("InformationContents",InformationContents_arr[i]);
+			paraMapArr.put("release",release_arr[i]);
+			paraMapArr.put("assetInformationNo",assetInformationNo_arr[i]);
+			
+			result = dao.GofixInfo(paraMapArr);	// 비품내용들을 수정해주는 메소드
+		}
+
+		return result;
+	}
+
+
 	
 	
 }

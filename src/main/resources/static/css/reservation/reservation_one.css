@@ -170,13 +170,14 @@ a {
 
 
 
-#assetModal {
-	width: 500px;
+#assetModal, #assetModal2 {
+	min-width: 500px;
+	width: auto;
 	height: auto;
 	z-index: 100;
 	border-radius: 10px;
 	background-color: #fff;
-	position: absolute;
+	position: fixed;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
@@ -200,7 +201,7 @@ a {
 
 
 
-#assetModal > input {
+#assetModal > input, #assetModal2 > div input {
 	display: inline-block;
     box-sizing: border-box;
     border: 1px solid #dbdbdb;
@@ -227,4 +228,8 @@ a {
 	display: flex;
 	gap: 12px;
 	align-items: center;
+}
+
+.midDeleteOne {
+	cursor: pointer;
 }

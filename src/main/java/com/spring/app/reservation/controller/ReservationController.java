@@ -245,6 +245,28 @@ public class ReservationController {
 	
 	
 	
+	
+	// 비품 하나를 삭제해주는 메소드
+	@PostMapping("midDeleteOne")
+	@ResponseBody
+	public String midDeleteOne(@RequestParam String assetInformationNo) {
+		
+		int result = service.midDeleteOne(assetInformationNo); // 비품 하나를 삭제해주는 메소드
+		
+		JSONObject jsonObj = new JSONObject();
+	    if (result == 1) {
+	        jsonObj.put("result", 1);
+	    } else {
+	        jsonObj.put("result", 0);
+	    }
+
+	    return jsonObj.toString();
+	}
+	
+	
+	
+	
+	
 	@PostMapping("addAsset")
 	@ResponseBody
 	public String addAsset(@RequestParam String assetName,
@@ -318,8 +340,77 @@ public class ReservationController {
 		
 	
 	
+	// 자산 하나에 해당하는 비품들 조회하기
+	@PostMapping("fixSelectAssetNo")
+	@ResponseBody
+	public List<Map<String,String>> fixSelectAssetNo(@RequestParam String fk_assetDetailNo) {
+		
+		List<Map<String,String>> fixSelectAssetNoList = service.fixSelectAssetNo(fk_assetDetailNo); // 자산 하나에 해당하는 비품들 조회하기
+		
+		return fixSelectAssetNoList;
+	}
 	
 	
+	// 자산 하나에 해당하는 비품 수정하기
+	@PostMapping("GofixInfo")
+	@ResponseBody
+	public String GofixInfo(@RequestParam String assetDetailNo,				// 자산명 변경시 pk
+							@RequestParam String assetName,					// 자산명 변경시 자산명
+							@RequestParam String InformationTitle_str,		// 비품명
+							@RequestParam String InformationContents_str,	// 비품 상태
+							@RequestParam String release_str,				// 비품 공개유무
+							@RequestParam String assetInformationNo_str) {	// 비품 pk
+		
+		/*
+		System.out.println("확인용 assetDetailNo : " + assetDetailNo);
+		System.out.println("확인용 assetName : " + assetName);
+		System.out.println("확인용 InformationTitle_str : " + InformationTitle_str);
+		System.out.println("확인용 InformationContents_str : " + InformationContents_str);
+		System.out.println("확인용 release_str : " + release_str);
+		
+			확인용 assetDetailNo : 100030
+			확인용 assetName : Whale
+			확인용 InformationTitle_str : 화이트보드,빔프로젝트
+			확인용 InformationContents_str : O,X
+			확인용 release_str : 0,1
+		*/
+		
+		///////////////////////////////////////////////////////
+		String[] InformationTitle_arr = InformationTitle_str.split(",");
+		String[] InformationContents_arr = InformationContents_str.split(",");
+		String[] release_arr = release_str.split(",");
+		String[] assetInformationNo_arr = assetInformationNo_str.split(",");
+		
+		// <배열들 map에 담기(비품관련)> //
+		Map<String, Object> paraMapArr = new HashMap<>();
+		paraMapArr.put("InformationTitle_arr", InformationTitle_arr);
+		paraMapArr.put("InformationContents_arr", InformationContents_arr);
+		paraMapArr.put("release_arr", release_arr);
+		paraMapArr.put("assetInformationNo_arr", assetInformationNo_arr);
+		
+		// <넘어온 값 map에 담기(자산명관련)> //
+		Map<String, String> paraMapAsset = new HashMap<>();
+		paraMapAsset.put("assetDetailNo", assetDetailNo);
+		paraMapAsset.put("assetName", assetName);
+		///////////////////////////////////////////////////////
+		
+		int result2 = 1;
+		// System.out.println("찍어보자 : " +InformationTitle_str);
+		int result1 = service.updateAssetDetailName(paraMapAsset); // 자산명을 수정해주는 메소드
+		
+		if(!"".equals(InformationTitle_str)) {
+			result2 = service.GofixInfo(paraMapArr); 			   // 비품내용들을 수정해주는 메소드
+		}
+		
+		JSONObject jsonObj = new JSONObject();
+		if (result1 * result2 != 0) { // 둘 다 성공하면 0이 아닐 것을 이용
+	        jsonObj.put("result", 1);
+	    } else {
+	        jsonObj.put("result", 0);
+	    }
+		
+		return jsonObj.toString();
+	}
 	
 	
 	
@@ -366,13 +457,13 @@ public class ReservationController {
 	@PostMapping("addReservation")
 	@ResponseBody
 	public String addReservation(AssetReservationVO assetreservationvo) {
-		
-		System.out.println("Fk_assetDetailNo 확인 : "+ assetreservationvo.getFk_assetDetailNo()); 		// Fk_assetDetailNo 확인 : 100015
-		System.out.println("Fk_employeeNo 확인 : "+ assetreservationvo.getFk_employeeNo());		 		// Fk_employeeNo 확인 : 100012
-		System.out.println("ReservationStart 확인 : "+ assetreservationvo.getReservationStart()); 		// ReservationStart 확인 : 2025.02.27 11:00
-		System.out.println("getReservationEnd 확인 : "+ assetreservationvo.getReservationEnd());         // getReservationEnd 확인 : 2025.02.27 13:30
-		System.out.println("ReservationContents 확인 : "+ assetreservationvo.getReservationContents());  // ReservationContents 확인 : dsa
-		
+		/*
+			System.out.println("Fk_assetDetailNo 확인 : "+ assetreservationvo.getFk_assetDetailNo()); 		// Fk_assetDetailNo 확인 : 100015
+			System.out.println("Fk_employeeNo 확인 : "+ assetreservationvo.getFk_employeeNo());		 		// Fk_employeeNo 확인 : 100012
+			System.out.println("ReservationStart 확인 : "+ assetreservationvo.getReservationStart()); 		// ReservationStart 확인 : 2025.02.27 11:00
+			System.out.println("getReservationEnd 확인 : "+ assetreservationvo.getReservationEnd());         // getReservationEnd 확인 : 2025.02.27 13:30
+			System.out.println("ReservationContents 확인 : "+ assetreservationvo.getReservationContents());  // ReservationContents 확인 : dsa
+		*/
 		
 		
 		int result = service.addReservation(assetreservationvo); // 예약추가를 해주는 메소드

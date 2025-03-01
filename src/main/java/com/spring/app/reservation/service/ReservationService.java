@@ -50,6 +50,18 @@ public interface ReservationService {
 	// 상세에 해당하는 비품정보들을 불러주는 메소드
 	List<Map<String, String>> selectInformation(String fk_assetdetailno);
 
+	// 비품 하나를 삭제해주는 메소드
+	int midDeleteOne(String assetInformationNo);
+
+	// 자산 하나에 해당하는 비품들 조회하기
+	List<Map<String, String>> fixSelectAssetNo(String fk_assetDetailNo);
+
+	// 자산명을 수정해주는 메소드
+	int updateAssetDetailName(Map<String, String> paraMapAsset);
+
+	// 비품내용들을 수정해주는 메소드
+	int GofixInfo(Map<String, Object> paraMapArr);
+
 	
 
 	
