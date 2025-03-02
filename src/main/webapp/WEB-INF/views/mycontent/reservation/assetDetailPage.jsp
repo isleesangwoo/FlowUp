@@ -62,7 +62,9 @@
 			    <div class="calendar_container">
 			        <div class="time_table">
 						<div style="position:relative; width:100%; height:100%;">
-							
+							<div class="innerTimeTable">
+								
+							</div>
 							
 							<div id="timeLine"></div>
 						</div>
@@ -331,6 +333,7 @@
 		async:false,
 		success:function(json){
 			console.log(JSON.stringify(json));
+			$('.innerTimeTable').empty();
 			/*
 				[{"assetDetailRegisterday":"2025-02-27 14:30:06","assetDetailNo":"100030","assetName":"Whale","fk_assetNo":"100031"}
 				,{"assetDetailRegisterday":"2025-02-27 18:13:10","assetDetailNo":"100042","assetName":"Chrome","fk_assetNo":"100031"}
@@ -353,6 +356,8 @@
 						<td><a href="<%= ctxPath%>/reservation/showReservationDeOne?assetDetailNo=\${item.assetDetailNo}&assetName=\${item.assetName}">예약하기</a></td>
 					</tr>
 				`);
+				
+				$('.innerTimeTable').append(`<div class="reservationTimeLisnDisplay" id="\${item.assetDetailNo}" style="width:100%; height:var(--size30); position: relative;"></div>`);
 			}) // end of $.each(json, function(index, item){})---------------
 			
 			
@@ -421,18 +426,21 @@
     $('#prev').click(() => {
         today.setDate(today.getDate() - 1);
         updateDate();
+		selectNowReservation();
     });
 
     // 다음 버튼 클릭 시
     $('#next').click(() => {
         today.setDate(today.getDate() + 1);
         updateDate();
+		selectNowReservation();
     });
 
     // 오늘 버튼 클릭 시
     $('#now').click(() => {
         today = new Date(currentDate); // 저장된 currentDate 날짜로 복구
         updateDate();
+		selectNowReservation();
     });
 
     // 날짜 업데이트 함수
@@ -474,9 +482,9 @@
 
 					if (!isNaN(timeStr) && timeStr !== "" && timeStr !== " ") {
 					    if (isInteger(timeStr)) { 
-					        html += `<td><input class="clickTime" type="hidden" value="\${timeString + ' '+timeStr+':00'}"/></td>`;
+					        html += `<td><input class="clickTime" type="hidden" value="\${timeString + ' '+String(timeStr).padStart(2, '0') +':00'}"/></td>`;
 					    } else {
-					        html += `<td><input class="clickTime" type="hidden" value="\${timeString + ' '+parseInt(timeStr, 10)+':30'}"/></td>`;
+					        html += `<td><input class="clickTime" type="hidden" value="\${timeString + ' '+String(parseInt(timeStr, 10)).padStart(2, '0') +':30'}"/></td>`;
 					    }
 					} else {
 					    console.error("Invalid timeStr value:", timeStr);
@@ -500,10 +508,86 @@
    // ====================== 날짜 리모컨 기능 생성 ====================== //
    <%-- ============== 현재 페이지 회의실 뿌려주기 ============== --%>
         
-
    
    
    
+   
+   <%-- ======================= 예약정보 갖고오기 ======================= --%>
+   function selectNowReservation() {
+	
+	   let assetDetailNo_arr = Array.from($('input[name="assetDetailNo"]'));
+	   let assetDetailNo_arr_str = [];
+	   
+	   assetDetailNo_arr.forEach(function(item, index) { 
+	       assetDetailNo_arr_str.push($(item).val()); 
+	   });
+	   
+	   // alert(assetDetailNo_arr_str.join(","))
+	   // alert($('#today').text().split(" ")[0])
+	   $.ajax({
+			url:"<%=ctxPath%>/reservation/selectNowReservation",
+			type:"get",
+			data:{"assetDetailNo_arr_str":assetDetailNo_arr_str.join(","),
+				  "reservationStart":$('#today').text().split(" ")[0]},
+			dataType:"json",
+			success:function(json){
+				console.log(JSON.stringify(json))
+				/*
+					[{"assetReservationNo":"100023","reservationEnd":"2025-03-04 12:30:00","fk_assetDetailNo":"100030","reservationStart":"2025-03-04 09:00:00","name":"강이훈 ","reservationcontents":"되나","fk_employeeNo":"100012"}
+					,{"assetReservationNo":"100025","reservationEnd":"2025-03-04 15:30:00","fk_assetDetailNo":"100042","reservationStart":"2025-03-04 10:00:00","name":"강이훈 ","reservationcontents":"테스트","fk_employeeNo":"100012"}
+					,{"assetReservationNo":"100026","reservationEnd":"2025-03-04 14:00:00","fk_assetDetailNo":"100030","reservationStart":"2025-03-04 10:30:00","name":"강이훈 ","reservationcontents":"웨일 테스트","fk_employeeNo":"100012"}]
+				*/
+				$('.reservationTimeLisnDisplay').empty();
+				
+				Array.from($('.reservationTimeLisnDisplay')).forEach(function(elmt, i){
+					// alert($(elmt).attr('id'))
+					$.each(json, function(index, item){
+						
+						// alert(item.fk_assetDetailNo)
+						if($(elmt).attr('id') == item.fk_assetDetailNo){ // 예약 정보의 pk를 이용해 같은 tr에 쌓기
+							
+							const startTimeOne = parseInt(((item.reservationStart).split(/\s+/g)[1]).split(':')[0]); // 12
+							const endTimeOne = parseInt(((item.reservationEnd).split(/\s+/g)[1]).split(':')[0]);    // 14
+							
+							const startTimeTwo = parseInt(((item.reservationStart).split(/\s+/g)[1]).split(':')[1]); // 00
+							const endTimeTwo = parseInt(((item.reservationEnd).split(/\s+/g)[1]).split(':')[1]);    // 30
+							
+							// 예약 시작시간과 끝시간의 차를 구해 30단위로 끊은 것의 개수 구하기
+							const timeSum = ((endTimeOne * 60 + endTimeTwo) - (startTimeOne * 60 + startTimeTwo)) / 30;
+							
+							const startabsolute = ((startTimeOne * 60 + startTimeTwo) - (9 * 60)) / 30; // 9시부터 예약 시작시간의 차를 30분 단위로 쪼갠 개수
+							// alert(startabsolute)
+							
+							// td 하나당 width
+							const oneCell = $('#postContainer > div > div.calendar_container > table > thead > tr > th:nth-child(2)').width() / 2;
+							
+							
+							const cellWidth = timeSum * oneCell;
+							const cellAbsolute = startabsolute * oneCell;
+							
+							$(elmt).append(`<div style="position: absolute; top:50%; transform:translate(0px, -50%); 
+											width:\${cellWidth}px; height:calc(100% - 9px); border-radius: 30px;
+											background-color: #ddd; font-size: 12px; box-sizing: border-box; padding-left:6px;
+											left: \${cellAbsolute}px;">
+											   \${((item.reservationStart).split(/\s+/g)[1]).split(':')[0]}:\${((item.reservationStart).split(/\s+/g)[1]).split(':')[1]} ~
+											   \${((item.reservationEnd).split(/\s+/g)[1]).split(':')[0]}:\${((item.reservationEnd).split(/\s+/g)[1]).split(':')[1]}    \${item.reservationcontents}
+										 	</div>`);
+						}
+					})
+					
+				})
+				
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			} 
+	   })
+   }
+   selectNowReservation();
+   <%-- ======================= 예약정보 갖고오기 ======================= --%>
+   
+   
+   // 비품정보 모달창 띄우기
    $(document).on('click', '.assetDetailInfoBtn', e=>{
    		// alert()
 		

@@ -68,6 +68,9 @@ public interface ReservationDAO {
 	// 비품내용들을 수정해주는 메소드
 	int GofixInfo(Map<String, Object> paraMapArr);
 
+	// 회의실별 오늘에 해당하는 예약 정보 조회
+	List<Map<String, String>> selectNowReservation(Map<String, Object> paraMap);
+
 	
 
 }

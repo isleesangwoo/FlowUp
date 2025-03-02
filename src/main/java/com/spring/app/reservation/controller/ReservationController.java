@@ -479,6 +479,7 @@ public class ReservationController {
 	}
 	
 	
+	// 상세 하나의 비품들 조회해주기
 	@GetMapping("selectInformation")
 	@ResponseBody
 	public List<Map<String, String>> selectInformation(@RequestParam String fk_assetdetailno) {
@@ -490,6 +491,22 @@ public class ReservationController {
 	
 	
 	
+	// 회의실별 오늘에 해당하는 예약 정보 조회
+	@GetMapping("selectNowReservation")
+	@ResponseBody
+	public List<Map<String,String>> selectNowReservation(@RequestParam String assetDetailNo_arr_str,
+														 @RequestParam String reservationStart) {
+		
+		String[] assetDetailNo_arr = assetDetailNo_arr_str.split(",");
+		
+		Map<String, Object> paraMap = new HashMap<>();
+		paraMap.put("reservationStart", reservationStart);
+		paraMap.put("assetDetailNo_arr", assetDetailNo_arr);
+		
+		List<Map<String,String>> selectNowReservationList = service.selectNowReservation(paraMap); // 회의실별 오늘에 해당하는 예약 정보 조회
+	
+		return selectNowReservationList;
+	}
 	
 	
 	
