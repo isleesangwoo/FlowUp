@@ -499,8 +499,12 @@ public class ReservationController {
 	public ModelAndView assetDetailPage(ModelAndView mav, @RequestParam String assetNo, @RequestParam String assetTitle) {
 		
 		
+		AssetVO assetvo = service.assetOneSelect(assetNo); //자산 대분류 상세 정보 가져오기
+		
+		
 		mav.addObject("assetNo", assetNo);
 		mav.addObject("assetTitle", assetTitle);
+		mav.addObject("assetvo", assetvo);
 		
 		mav.setViewName("mycontent/reservation/assetDetailPage");
 		

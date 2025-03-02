@@ -21,11 +21,21 @@
         <div id="right_title_box">
             <span id="right_title">${requestScope.assetTitle}</span>
             
-            <div style="width: 100%; height: 200px; background-color: #eee; margin: 24px 0px 0px 0px; border: 1px solid #dcdcdc;">
-        </div>
-        
-        
-        
+			<c:if test="${not empty requestScope.assetvo.assetInfo}">
+	            <div class="assetInfoBox">
+					<div style="padding:24px; width:100%; height: auto; box-sizing: border-box; overflow:hidden; ">
+						${assetvo.assetInfo}
+					</div>
+	        	</div>
+			</c:if> 
+			<c:if test="${empty requestScope.assetvo.assetInfo}">
+	            <div class="assetInfoBox">
+					<div style="padding:24px; width:100%; height: auto; box-sizing: border-box; overflow:hidden; ">
+						등록된 안내사항이 없습니다.
+					</div>
+	        	</div>
+			</c:if> 
+			
         </div>
 
 		<!-- 시간표 달력을 보여주는 요소 전체 박스-->
@@ -51,12 +61,13 @@
 			    <!-- 시간 표기란 -->
 			    <div class="calendar_container">
 			        <div class="time_table">
-			
-			
+						<div style="position:relative; width:100%; height:100%;">
+							
+							
+							<div id="timeLine"></div>
+						</div>
 			        </div>
-			        <div id="timeLine">
-			
-			        </div>
+			        
 			        <table border="1" class="time_table_back_form">
 			            <thead>
 			                <th style="width: 120px;"></th>
@@ -109,12 +120,7 @@
 					<tbody class="my_tbody">
 					
 					
-						<tr>
-							<td>본사 1,2층 공용 회의실</td>
-							<td>Safari</td>
-							<td>상세정보</td>
-							<td>예약하기</td>
-						</tr>
+						<!-- 회의실들 테이블 형식으로 뿌려주기 -->
 						
 						
 					</tbody>
@@ -127,6 +133,40 @@
     </div>
     <!-- 오른쪽 바 -->
     
+	
+	
+	<div id="assetModalBg2" class="modal_bg"></div>
+				<div id="assetModal2" class="modal_containerAssetFix">
+					<div>
+						<label class="assetNameTitle">ID값</label><span class="fixNo"></span>
+					</div>
+					
+					<div>
+						<label class="assetNameTitle">항목명</label><span class="assetName"></span>
+					</div>
+					
+					<table class="baseTable" style="margin-top:12px;">
+						<thead>
+							<tr>
+								<th>비품명</th>
+								<th>유무 상태</th>
+							</tr>
+						</thead>
+						<tbody class="informationTitleAppend">
+							<!-- 여기는 추가된 항목들 목록 -->
+							
+							<!-- 여기는 추가된 항목들 목록 -->
+						</tbody>
+					</table>
+					
+					
+					<div class="bottom_btn_box">
+						<button class="okBtn" id="CloseInfo">확인</button>
+					</div>
+				</div>
+	
+	
+	
 	
 	
 <script>
@@ -142,7 +182,7 @@
 			  dataType:"json",
 			  success:function(json){
 				  
-			  console.log("ajax 뽑아옴 : ", JSON.stringify(json));
+			  // console.log("ajax 뽑아옴 : ", JSON.stringify(json));
 
 			  
 			  let v_html = ``;
@@ -279,7 +319,7 @@
 	  
 
 	  
-	  
+	<%-- ============== 현재 페이지 회의실 뿌려주기 ============== --%>
 	// ======= 지금 페이지 회의실들 불러오기 ======= //
 	let assCnt =[];
 	
@@ -290,11 +330,32 @@
 		dataType:"json",
 		async:false,
 		success:function(json){
-			// console.log(JSON.stringify(json));
+			console.log(JSON.stringify(json));
+			/*
+				[{"assetDetailRegisterday":"2025-02-27 14:30:06","assetDetailNo":"100030","assetName":"Whale","fk_assetNo":"100031"}
+				,{"assetDetailRegisterday":"2025-02-27 18:13:10","assetDetailNo":"100042","assetName":"Chrome","fk_assetNo":"100031"}
+				,{"assetDetailRegisterday":"2025-02-27 14:29:53","assetDetailNo":"100029","assetName":"Edge","fk_assetNo":"100031"}]
+			*/
+			
 			
 			$.each(json, function(index, item){
 				assCnt.push(item)
 			})
+			
+			//////////////////////////////////////////////////////////////////
+			
+			$.each(json, function(index, item){
+				$('.my_tbody').append(`
+					<tr>
+						<td>\${$('#right_title').text()}</td>
+						<td>\${item.assetName}</td>
+						<td><input type="hidden" name="assetDetailNo" value="\${item.assetDetailNo}" /><span class="assetDetailInfoBtn" style="cursor:pointer;">상세정보</span></td>
+						<td><a href="<%= ctxPath%>/reservation/showReservationDeOne?assetDetailNo=\${item.assetDetailNo}&assetName=\${item.assetName}">예약하기</a></td>
+					</tr>
+				`);
+			}) // end of $.each(json, function(index, item){})---------------
+			
+			
 			
 			// alert("사이즈 : ", assCnt.length)
 			
@@ -307,39 +368,48 @@
 	  
 	
 	  
-	  
+   	// ============== 타임라인 바 ============== //
+	updateTimelinePosition();
+	setInterval(() => {
+		updateTimelinePosition();
+	}, 100000);
+
+	function updateTimelinePosition() {
+		// console.log('되는중')
+		const totalWidth = Math.round($('.time_table_back_form').width());
+		// console.log("totalWidth: ", totalWidth); // totalWidth를 확인
+	
+		// 15시로 시간 설정
+		const now = new Date();
+		// now.setHours(15, 0, 0, 0); // 15시 0분으로 설정
+		// console.log("현재 시간: ", now); // 현재 시간이 15시로 잘 설정되었는지 확인
+	
+		const startHour = 9; // 9시
+		const endHour = 21;  // 21시
+	
+		// 9시부터 현재 시간까지 경과한 분
+		const startTime = new Date(now);
+		startTime.setHours(startHour, 0, 0, 0); // 오늘 9시 기준
+		const minutesPassed = Math.floor((now - startTime) / (1000 * 60)); // 경과 시간 (분)
+		// console.log("경과 시간: ", minutesPassed, "분"); // 경과한 시간이 360분인지 확인
+	
+		// 타임라인의 총 분 (9시부터 21시까지 720분)
+		const totalMinutes = (endHour - startHour) * 60;
+	
+		// 비율로 계산하여 left 값 설정
+		const leftPercentage = Math.round((minutesPassed / totalMinutes) * totalWidth);
+		// console.log("leftPercentage: ", leftPercentage); // leftPercentage가 정상적으로 계산되는지 확인
+		
+		// 타임라인의 스타일 업데이트
+		$("#timeLine").css({
+		    'left': Math.ceil(leftPercentage) - 16 + "px" // left 값을 비율로 설정
+		});
+	}
 
 	
-   	// ============== 타임라인 바 ============== //
-   	$(window).on('resize', function(){
-
-   		// console.log('되는중')
-   		
-   		const totalWidth = $('.time_table_back_form').width();
-   		// alert(totalWidth);
-   		
-   		// 현재 시간
-   		const now = new Date();
-   		const startHour = 9; // 9시
-   		const endHour = 21;  // 21시
-
-   		// 9시부터 현재 시간까지 경과한 분
-   		const startTime = new Date(now);
-   		startTime.setHours(startHour, 0, 0, 0); // 오늘 9시 기준
-   		const minutesPassed = Math.floor((now - startTime) / (1000 * 60)); // 경과 시간 (분)
-
-   		// 타임라인의 총 분 (9시부터 21시까지 720분)
-   		const totalMinutes = (endHour - startHour) * 60;
-
-   		// 비율로 계산하여 left 값 설정
-   		const leftPercentage = (minutesPassed / totalMinutes) * totalWidth;
-
-   		// 타임라인의 스타일 업데이트 (여기서는 예시로 div 요소)
-   		const timelineElement = $("#timeline");
-   		timelineElement.css({
-   			'left' : leftPercentage + "%"
-   		})
-   	});
+	$(window).resize(function() {
+        updateTimelinePosition(); // 윈도우 크기 변경 시 위치 업데이트
+    });
  	// ============== 타임라인 바 ============== //
    	
    	
@@ -379,10 +449,6 @@
 
 
 
-
-
-
-
        // ====================== table tr 생성 ====================== //
        
        // 왜 이렇게 따로 빼두었나?? - td 26개 생성하기 귀찮아서,,, for문 돌릴 생각 하다가 이렇게 번짐
@@ -393,7 +459,7 @@
 
        //-- DB 연동시 foreach로 바꿀것 --//
        assCnt.forEach(function(item){
-    	   console.log("dddddd :   ",item.assetName)
+    	   // console.log("dddddd :   ",item.assetName)
            html += `<tr>`;
 
            html += `
@@ -432,9 +498,91 @@
    // 페이지 로드 시 현재 날짜 표시
    updateDate();
    // ====================== 날짜 리모컨 기능 생성 ====================== //
-
+   <%-- ============== 현재 페이지 회의실 뿌려주기 ============== --%>
         
 
+   
+   
+   
+   $(document).on('click', '.assetDetailInfoBtn', e=>{
+   		// alert()
+		
+		// 모달창 title 값 뿌려두기 //
+		$('.fixNo').text($(e.target).prev().val());
+		$('span.assetName').html($(e.target).parent().prev().text());
+		// 모달창 title 값 뿌려두기 //
+		
+		$('.informationTitleAppend').empty();
+		
+		// alert($(e.target).attr('id'))
+		$.ajax({
+		  url:"<%=ctxPath%>/reservation/fixSelectAssetNo",
+		  type:"post",
+		  data:{"fk_assetDetailNo":$(e.target).prev().val()},
+		  dataType:"json",
+		  success:function(json){
+			console.log(JSON.stringify(json))
+			/*
+			[{"assetInformationNo":"100006","InformationContents":"X","release":"0","assetDetailNo":"100029","InformationTitle":"확인","assetName":"Edge"}
+			,{"assetInformationNo":"100009","InformationContents":"X","release":"0","assetDetailNo":"100029","InformationTitle":"테스트","assetName":"Edge"}]
+			*/
+			
+			let c_html = ``;
+			let appendcheck = ``;
+			let appendCnt = 0;
+			
+			if(json.length == 0) { // 비품이 존재하지 않는 경우
+				c_html += `<tr><td colspan="2" style="text-align: center; color:#999;">등록된 비품이 없습니다.</td></tr>`;
+			}
+			else{ // 비품이 존재하는 경우
+
+				$.each(json, function(index, item){
+					if(item.release == 0){ // 공개여부에 따라 쌓기!
+					
+					appendCnt++; // 쌓을 때마다 카운트 남겨주기
+						
+					c_html += `<tr>
+			                   	 <td>\${item.InformationTitle}</td>
+		            			 <td>\${item.InformationContents}</td>
+							   </tr>`;
+							   
+					}
+			    }); // end of $.each(json, function(index, item){})-------
+				
+				if(appendCnt == 0) { // 비품이 있긴 있지만 전부 비공개일 경우
+					c_html += `<tr><td colspan="2" style="text-align: center; color:#999;">등록된 비품이 없습니다.</td></tr>`;
+				}
+			}
+			
+			$('.informationTitleAppend').append(c_html);
+			
+			
+			$('#assetModalBg2').fadeIn();
+			$('#assetModal2').fadeIn();
+			  
+		  },
+		  error: function(request, status, error){
+		 	  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		  } 
+	  })
+
+   }) // end of $(document).on('click', '.assetDetailInfoBtn', e=>{})-------
+   
+   
+   // === 비품수정창 모달창 닫기 === //
+   $(document).on('click', '#CloseInfo', e=>{
+	   $('#assetModalBg2').fadeOut();
+	   $('#assetModal2').fadeOut();
+   });
+   
+   $('#assetModalBg2:not(#assetModal2)').click(e=>{
+	   $('#assetModalBg2').fadeOut();
+	   $('#assetModal2').fadeOut();
+   });
+   // === 비품수정창 모달창 닫기 === //
+
+  
+   
 
 
     // === 정수 체크 함수 === //
