@@ -383,3 +383,20 @@
         box-sizing: border-box; /* 자식 div에도 box-sizing을 적용 */
 		width: max-content !important;;
     }
+	
+	
+	.reservationBar{
+		position: absolute; 
+		top:50%; 
+		transform:translate(0px, -50%);
+		height:calc(100% - 9px); 
+		border-radius: 30px;
+		background-color: #ddd; 
+		font-size: 12px; 
+		box-sizing: border-box; 
+		padding-left:6px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		word-break: break-all;
+	}

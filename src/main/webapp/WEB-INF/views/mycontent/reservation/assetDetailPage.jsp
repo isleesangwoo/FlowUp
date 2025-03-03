@@ -381,12 +381,12 @@
 
 	function updateTimelinePosition() {
 		// console.log('되는중')
-		const totalWidth = Math.round($('.time_table_back_form').width());
+		const totalWidth = $('.time_table_back_form').width();
 		// console.log("totalWidth: ", totalWidth); // totalWidth를 확인
 	
 		// 15시로 시간 설정
 		const now = new Date();
-		// now.setHours(15, 0, 0, 0); // 15시 0분으로 설정
+		now.setHours(15, 0, 0, 0); // 15시 0분으로 설정
 		// console.log("현재 시간: ", now); // 현재 시간이 15시로 잘 설정되었는지 확인
 	
 		const startHour = 9; // 9시
@@ -395,19 +395,21 @@
 		// 9시부터 현재 시간까지 경과한 분
 		const startTime = new Date(now);
 		startTime.setHours(startHour, 0, 0, 0); // 오늘 9시 기준
-		const minutesPassed = Math.floor((now - startTime) / (1000 * 60)); // 경과 시간 (분)
+		const minutesPassed = (now - startTime) / (1000 * 60); // 경과 시간 (분)
 		// console.log("경과 시간: ", minutesPassed, "분"); // 경과한 시간이 360분인지 확인
 	
 		// 타임라인의 총 분 (9시부터 21시까지 720분)
 		const totalMinutes = (endHour - startHour) * 60;
 	
 		// 비율로 계산하여 left 값 설정
-		const leftPercentage = Math.round((minutesPassed / totalMinutes) * totalWidth);
+		const leftPercentage = (minutesPassed / totalMinutes) * totalWidth;
 		// console.log("leftPercentage: ", leftPercentage); // leftPercentage가 정상적으로 계산되는지 확인
 		
 		// 타임라인의 스타일 업데이트
 		$("#timeLine").css({
-		    'left': Math.ceil(leftPercentage) - 16 + "px" // left 값을 비율로 설정
+		    'left': leftPercentage + "px",
+			'top': '0px',
+			'z-index': '0'
 		});
 	}
 
@@ -531,7 +533,7 @@
 				  "reservationStart":$('#today').text().split(" ")[0]},
 			dataType:"json",
 			success:function(json){
-				console.log(JSON.stringify(json))
+				//console.log(JSON.stringify(json))
 				/*
 					[{"assetReservationNo":"100023","reservationEnd":"2025-03-04 12:30:00","fk_assetDetailNo":"100030","reservationStart":"2025-03-04 09:00:00","name":"강이훈 ","reservationcontents":"되나","fk_employeeNo":"100012"}
 					,{"assetReservationNo":"100025","reservationEnd":"2025-03-04 15:30:00","fk_assetDetailNo":"100042","reservationStart":"2025-03-04 10:00:00","name":"강이훈 ","reservationcontents":"테스트","fk_employeeNo":"100012"}
@@ -559,20 +561,18 @@
 							// alert(startabsolute)
 							
 							// td 하나당 width
-							const oneCell = $('#postContainer > div > div.calendar_container > table > thead > tr > th:nth-child(2)').width() / 2;
-							
+							const oneCell = $('#tbody > tr:nth-child(1) > td:nth-child(2)').outerWidth();
+							// alert(oneCell)
 							
 							const cellWidth = timeSum * oneCell;
 							const cellAbsolute = startabsolute * oneCell;
-							
-							$(elmt).append(`<div style="position: absolute; top:50%; transform:translate(0px, -50%); 
-											width:\${cellWidth}px; height:calc(100% - 9px); border-radius: 30px;
-											background-color: #ddd; font-size: 12px; box-sizing: border-box; padding-left:6px;
-											left: \${cellAbsolute}px;">
+							 
+							$(elmt).append(`<div class="reservationBar"
+											style="width:\${cellWidth}px; left: \${cellAbsolute}px;">
 											   \${((item.reservationStart).split(/\s+/g)[1]).split(':')[0]}:\${((item.reservationStart).split(/\s+/g)[1]).split(':')[1]} ~
-											   \${((item.reservationEnd).split(/\s+/g)[1]).split(':')[0]}:\${((item.reservationEnd).split(/\s+/g)[1]).split(':')[1]}    \${item.reservationcontents}
+											   \${((item.reservationEnd).split(/\s+/g)[1]).split(':')[0]}:\${((item.reservationEnd).split(/\s+/g)[1]).split(':')[1]}  \${item.name} &nbsp;&nbsp; 사유 : \${item.reservationcontents}
 										 	</div>`);
-						}
+						} // end of if($(elmt).attr('id') == item.fk_assetDetailNo){})------------
 					})
 					
 				})
@@ -584,6 +584,11 @@
 	   })
    }
    selectNowReservation();
+   
+   $(window).resize(e=>{
+	selectNowReservation();
+   })
+   
    <%-- ======================= 예약정보 갖고오기 ======================= --%>
    
    

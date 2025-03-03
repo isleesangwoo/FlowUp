@@ -45,13 +45,7 @@
 					<tbody class="my_tbody">
 					
 					
-						<tr>
-							<td>차</td>
-							<td>모닝1122</td>
-							<td>대여</td>
-							<td>09:00</td>
-							<td>반납</td>
-						</tr>
+						
 						
 						
 					</tbody>
@@ -69,9 +63,9 @@
 <script>
 	$(document).ready(function(){  
 		  
-		  
+		  const now = new Date(); // 반납, 취소를 띄어주기 위한 지금날짜 변수 저장
 		  // ================ 들어오자마자 보이는 내 대여 현황 ================ //
-		  <%--
+		  
 		  $.ajax({
 			  url:"<%= ctxPath%>/reservation/showMyReservation",
 			  type:"get",
@@ -80,28 +74,50 @@
 			  success:function(json){
 				  
 			  console.log("ajax 뽑아옴 : ", JSON.stringify(json));
-
+			  /*
+			  	[{"assetReservationNo":"100023","reservationEnd":"2025-03-04 12:30:00","fk_assetDetailNo":"100030","reservationStart":"2025-03-04 09:00:00","assetTitle":"본사 1,2층 공용 회의실","assetName":"Whale","reservationDay":"2025-02-28 12:06:05","fk_employeeNo":"100012"}
+				,{"assetReservationNo":"100025","reservationEnd":"2025-03-04 15:30:00","fk_assetDetailNo":"100042","reservationStart":"2025-03-04 10:00:00","assetTitle":"본사 1,2층 공용 회의실","assetName":"Chrome","reservationDay":"2025-02-28 18:11:12","fk_employeeNo":"100012"}]
+			  */
+			  
 			  
 			  let v_html = ``;
 			  
+			  if(json.length == 0) {
+				v_html += `<tr><td colspan="5" style="height:120px; text-align: center; vertical-align: middle; color: #999;">예약된 자산이 없습니다.</td></tr>`;
+			  }
+			  
 			  $.each(json, function(index, item){
+				
+				var sd = new Date(`\${item.reservationStart}`); // startdate
+				var ed = new Date(`\${item.reservationEnd}`); // enddate
+				let status = ``;
+				
+				  if(now < sd) {
+					status = "취소"
+				  }
+				  else if(sd <= now && now >= ed) {
+					status = "반납"
+				  }
+				
+				  // alert(`\${item.reservationStart.split(" ")[1].split("\:")[0]}:\${item.reservationStart.split(" ")[1].split("\:")[1]}`)
 				  v_html += `<tr>
-								<td>\${item.}</td>
-								<td>모닝1122</td>
+								<td>\${item.assetTitle}</td>
+								<td>\${item.assetName}</td>
 								<td>대여</td>
-								<td>09:00</td>
-								<td>반납</td>
+								<td>\${item.reservationStart.split(" ")[1].split("\:")[0]}:\${item.reservationStart.split(" ")[1].split("\:")[1]}</td>
+								<td><input type="hidden" name="assetReservationNo" value="\${item.assetReservationNo}" /><span style="cursor:pointer;">\${status}</span></td>
 							</tr>`;
 			  });
 			  
 			  
+			  $('.my_tbody').append(v_html);
 			  
 			  },
 			  error: function(request, status, error){
 				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			  }   
 		  });
-		  --%>
+		  
 		  // ================ 들어오자마자 보이는 내 대여 현황 ================ //
 		  
 		  

@@ -55,12 +55,18 @@
 	   	<result property="reservationcontents" 	   column="reservationcontents" 	    javaType="String"/>
 	   	
 	   	<result property="name" 	   column="name" 	    javaType="String"/>
+	   	
+	   	<result property="assetTitle" 	   column="assetTitle" 	    javaType="String"/>
+	   	<result property="assetName" 	   column="assetName" 	    javaType="String"/>
    </resultMap>
    <!-- 내 예약 정보를 select 해주는 메소드 -->
    <select id="my_Reservation" parameterType="String" resultMap="my_Reservation_Map">
-   		select assetReservationNo, fk_assetDetailNo, fk_employeeNo, reservationStart, reservationEnd, reservationDay
-		from tbl_assetReservation
-		where fk_employeeNo = #{employeeNo}
+		select assetReservationNo, assetTitle, assetName, fk_assetDetailNo, fk_employeeNo, reservationStart, reservationEnd, reservationDay
+		from tbl_assetReservation ar join tbl_assetDetail ad
+		on ar.fk_assetDetailNo = ad.assetDetailNo
+		join tbl_asset ass
+		on ass.assetNo = ad.fk_assetNo
+		where fk_employeeNo = #{employeeNo} and reservationStart >= sysdate
    </select>
 
 

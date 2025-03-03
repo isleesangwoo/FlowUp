@@ -103,30 +103,13 @@ public class ReservationController {
 	// 들어오자마자 보이는 내 대여 현황
 	@GetMapping("showMyReservation")
 	@ResponseBody
-	public String showMyReservation(@RequestParam String employeeNo) {
+	public List<Map<String, String>> showMyReservation(@RequestParam String employeeNo) {
 		
 		List<Map<String, String>> my_ReservationList = service.my_Reservation(employeeNo); // 내 예약 정보를 select 해주는 메소드
 		
 		// System.out.println("ajax 들어옴?????????????" + my_ReservationList.size());
 		
-		JSONArray jsonArr = new JSONArray();  //  []
-		
-		if(my_ReservationList != null) {
-			
-			for(Map<String,String> listMap : my_ReservationList) {
-				JSONObject jsonObj = new JSONObject();  //  {}
-				jsonObj.put("assetReservationNo", listMap.get("assetReservationNo"));
-				jsonObj.put("fk_assetDetailNo", listMap.get("fk_assetDetailNo"));
-				jsonObj.put("fk_employeeNo", listMap.get("fk_employeeNo"));
-				jsonObj.put("reservationStart", listMap.get("reservationStart"));
-				jsonObj.put("reservationEnd", listMap.get("reservationEnd"));
-				jsonObj.put("reservationDay", listMap.get("reservationDay"));
-				
-				jsonArr.put(jsonObj);
-			} // end of for --------------
-		}
-		
-		return jsonArr.toString();
+		return my_ReservationList;
 	}
 	
 	
