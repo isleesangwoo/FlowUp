@@ -198,6 +198,10 @@
 	</insert>
 
 
+	<delete id="deleteAssetReservationNo" parameterType="String">
+		delete from tbl_assetReservation where assetReservationNo = #{assetReservationNo}
+	</delete>
+
 
 	<!-- 자산 소분류 삭제 -->
 	<delete id="deleteAssetNo" parameterType="String">

@@ -606,30 +606,39 @@
 	    dataType:"json",
 	    success:function(json){
 			// console.log(JSON.stringify(json));
-			
 			let t_html = ``;
 			
-			$.each(json, function(index, item){
-					
-				 $('#appendTrFinal').append(`<tr>
-												<td>\${item.assetDetailNo}</td>
-												<td>\${item.assetName}</td>
-												<!--<td>X</td>-->
-												<td><i style="cursor:pointer;" class="fa-solid fa-gear fixbtn" id="\${item.assetDetailNo}"></i></td>
-												<td><i class="fa-solid fa-trash trashbtn" id="\${item.assetDetailNo}" style="cursor:pointer;"></i></td>
+			if(json.length == 0){
+				$('#appendTrFinal').append(`<tr>
+												<td colspan="4" style="color: #999;">등록된 자산정보가 없습니다.</td>
 											</tr>`);
+			}
+			else{
+
+				$.each(json, function(index, item){
+						
+					 $('#appendTrFinal').append(`<tr>
+													<td>\${item.assetDetailNo}</td>
+													<td>\${item.assetName}</td>
+													<!--<td>X</td>-->
+													<td><i style="cursor:pointer;" class="fa-solid fa-gear fixbtn" id="\${item.assetDetailNo}"></i></td>
+													<td><i class="fa-solid fa-trash trashbtn" id="\${item.assetDetailNo}" style="cursor:pointer;"></i></td>
+												</tr>`);
+					 
+					 t_html += `<option value="\${item.assetDetailNo}">\${item.assetName}</option>`;
+					 
+				 }) // end of $.each(json, function(index, item)) {} ------------------- 
+				
 				 
-				 t_html += `<option value="\${item.assetDetailNo}">\${item.assetName}</option>`;
-				 
-			 }) // end of $.each(json, function(index, item)) {} ------------------- 
-			
+			 }
 			 $('.selectHere').empty();
-			 $('.selectHere').append(`
-					 <select id="selectAsset" style="font-size: 14px;">
-					 	<option hidden>선택하세요</option>
-					 	\${t_html}
-					 </select>
-			 `);
+ 			 $('.selectHere').append(`
+ 					 <select id="selectAsset" style="font-size: 14px;">
+ 					 	<option hidden>선택하세요</option>
+ 					 	\${t_html}
+ 					 </select>
+ 			 `);
+			 
 			 
 			 
 		},

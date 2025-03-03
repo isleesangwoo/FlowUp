@@ -65,6 +65,9 @@ public interface ReservationService {
 	// 회의실별 오늘에 해당하는 예약 정보 조회
 	List<Map<String, String>> selectNowReservation(Map<String, Object> paraMap);
 
+	// 예약을 삭제 해주는 메소드
+	int deleteAssetReservationNo(String assetReservationNo);
+
 	
 
 	

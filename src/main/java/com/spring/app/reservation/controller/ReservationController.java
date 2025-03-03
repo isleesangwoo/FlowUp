@@ -493,6 +493,23 @@ public class ReservationController {
 	
 	
 	
+	// 예약 삭제하기
+	@PostMapping("deleteAssetReservationNo")
+	@ResponseBody
+	public String deleteAssetReservationNo(@RequestParam String assetReservationNo) {
+		
+		int result = service.deleteAssetReservationNo(assetReservationNo); // 예약을 삭제 해주는 메소드
+
+	    JSONObject jsonObj = new JSONObject();
+	    if (result == 1) {
+	        jsonObj.put("result", 1);
+	    } else {
+	        jsonObj.put("result", 0);
+	    }
+		
+		return jsonObj.toString();
+	}
+	
 	
 	//////////////////////////////////////////////////////////////자산 대분류 상세 페이지
 	@GetMapping("assetDetailPage")

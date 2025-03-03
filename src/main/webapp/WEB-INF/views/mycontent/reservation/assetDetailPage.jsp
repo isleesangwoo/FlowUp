@@ -172,58 +172,7 @@
 	
 	
 <script>
-	$(document).ready(function(){  
-		  
-		  
-		  // ================ 들어오자마자 보이는 내 대여 현황 ================ //
-		  <%--
-		  $.ajax({
-			  url:"<%= ctxPath%>/reservation/showMyReservation",
-			  type:"get",
-			  data:{"employeeNo":"${sessionScope.loginuser.employeeNo}"},
-			  dataType:"json",
-			  success:function(json){
-				  
-			  // console.log("ajax 뽑아옴 : ", JSON.stringify(json));
 
-			  
-			  let v_html = ``;
-			  
-			  $.each(json, function(index, item){
-				  v_html += `<tr>
-								<td>\${item.}</td>
-								<td>모닝1122</td>
-								<td>대여</td>
-								<td>09:00</td>
-								<td>반납</td>
-							</tr>`;
-			  });
-			  
-			  
-			  
-			  },
-			  error: function(request, status, error){
-				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			  }   
-		  });
-		  --%>
-		  // ================ 들어오자마자 보이는 내 대여 현황 ================ //
-		  
-		  
-	  });// end of $(document).ready(function(){})-----------
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
-	  
 	  
 	//================ 대분류 소분류 뿌려주기 ================ //
 	  function resetLeftBar() {
