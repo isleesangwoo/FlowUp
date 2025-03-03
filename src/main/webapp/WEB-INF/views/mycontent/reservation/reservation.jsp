@@ -537,40 +537,51 @@
 	       let html = ``;
 	       // 회의실 개수가 들어올 자리 이 개수를 토대로 회의실 table 개수가 올라감
 	       // DB 연동시 assCnt = ${requestScope.List} 로 지정해두고 assCnt 를 이용해 foreach 돌릴 예정
+			
+		   if(assCnt.length == 0){
+	   			html += `<tr><td colspan="27" style="color:#999; height: 120px; text-align: center; vertical-align: middle;">해당 자산에 등록된 자산정보가 없습니다.</td></tr>`;
+	   			
+	   			$('#timeLine').css({
+	   				'display':'none'
+	   			})
+	   	   }
+	   	   else{
+	   			$('#timeLine').css({
+	   				'display':'block'
+	   			})
 
-
-	       //-- DB 연동시 foreach로 바꿀것 --//
-	       assCnt.forEach(function(item){
-	    	   // console.log("dddddd :   ",item.assetName)
-	           html += `<tr>`;
-
-	           html += `
-	               <td class="info">
-	                   <span class="name" title="\${item.assetName}"><input type="hidden" name="assetDetailNo" value="\${item.assetDetailNo}"/>\${item.assetName}</span>
-	               </td>
-	           `;
-
-
-	           for(let i=0; i<26; i++) {
-	               let timeStr = (9 + i/2);
-
-						if (!isNaN(timeStr) && timeStr !== "" && timeStr !== " ") {
-						    if (isInteger(timeStr)) { 
-						        html += `<td><input class="clickTime" type="hidden" value="\${timeString + ' '+String(timeStr).padStart(2, '0') +':00'}"/></td>`;
-						    } else {
-						        html += `<td><input class="clickTime" type="hidden" value="\${timeString + ' '+String(parseInt(timeStr, 10)).padStart(2, '0') +':30'}"/></td>`;
-						    }
-						} else {
-						    console.error("Invalid timeStr value:", timeStr);
-						}
-
-	               
-	           }
-
-	           html += `</tr>`;
-	       })
-	       //-- DB 연동시 foreach로 바꿀것 --//
-	       
+		       //-- DB 연동시 foreach로 바꿀것 --//
+		       assCnt.forEach(function(item){
+		    	   // console.log("dddddd :   ",item.assetName)
+		           html += `<tr>`;
+	
+		           html += `
+		               <td class="info">
+		                   <span class="name" title="\${item.assetName}"><input type="hidden" name="assetDetailNo" value="\${item.assetDetailNo}"/>\${item.assetName}</span>
+		               </td>
+		           `;
+	
+	
+		           for(let i=0; i<26; i++) {
+		               let timeStr = (9 + i/2);
+	
+							if (!isNaN(timeStr) && timeStr !== "" && timeStr !== " ") {
+							    if (isInteger(timeStr)) { 
+							        html += `<td><input class="clickTime" type="hidden" value="\${timeString + ' '+String(timeStr).padStart(2, '0') +':00'}"/></td>`;
+							    } else {
+							        html += `<td><input class="clickTime" type="hidden" value="\${timeString + ' '+String(parseInt(timeStr, 10)).padStart(2, '0') +':30'}"/></td>`;
+							    }
+							} else {
+							    console.error("Invalid timeStr value:", timeStr);
+							}
+	
+		               
+		           }
+	
+		           html += `</tr>`;
+		       })
+		       //-- DB 연동시 foreach로 바꿀것 --//
+	       }
 	       $('tbody#tbody').empty();
 	       $('tbody#tbody').append(html);
 		   
@@ -594,6 +605,8 @@
    	   let assetDetailNo_arr = Array.from($('input[name="assetDetailNo"]'));
    	   let assetDetailNo_arr_str = [];
    	   
+	   if(assetDetailNo_arr.length != 0){
+	   
    	   assetDetailNo_arr.forEach(function(item, index) { 
    	       assetDetailNo_arr_str.push($(item).val()); 
    	   });
@@ -656,6 +669,7 @@
    				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
    			} 
    	   })
+	   }
       }
       selectNowReservation();
       
