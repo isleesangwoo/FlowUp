@@ -111,6 +111,32 @@ public class DocumentController {
 	}
 	
 	
+	// 결제대기문서함
+	@GetMapping("todoList")
+	public ModelAndView todoList(ModelAndView mav, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		else {
+			employeeNo = "100014";
+		}
+		
+		List<DocumentVO> todoList = service.todoList(employeeNo);
+		// 임시 저장 문서 리스트 가져오기
+		
+		mav.addObject("todoList", todoList);
+		mav.setViewName("mycontent/document/todoList");
+		
+		return mav;
+		
+	}
+	
 	// 임시저장함
 	@GetMapping("tempList")
 	public ModelAndView tempList(ModelAndView mav, HttpServletRequest request) {

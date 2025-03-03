@@ -12,6 +12,9 @@ public interface DocumentService {
 	// 휴가신청서 결재 요청
 	int annualDraft(Map<String, String> paraMap);
 
+	// 결제 대기 문서 리스트 가져오기
+	List<DocumentVO> todoList(String employeeNo);
+
 	// 임시저장 문서 리스트 가져오기
 	List<DocumentVO> tempList(String employeeNo);
 
@@ -29,6 +32,7 @@ public interface DocumentService {
 
 	// 문서함에서 보여줄 결재자 리스트 가져오기
 	List<ApprovalVO> getApprovalList(String documentNo);
+
 
 	
 }

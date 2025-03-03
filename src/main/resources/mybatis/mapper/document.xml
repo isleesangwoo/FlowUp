@@ -27,6 +27,15 @@
 	</insert>
 	
 	
+	<!-- 결제 대기 문서 리스트 가져오기 -->
+	<select id="todoList" parameterType="String" resultType="DocumentVO">
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
+		from tbl_document
+		where fk_employeeNo = #{employeeNo} and temp = 1
+		order by draftDate desc
+	</select>
+	
+	
 	<!-- 임시저장 문서 리스트 가져오기 -->
 	<select id="tempList" parameterType="String" resultType="DocumentVO">
 		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
@@ -94,22 +103,31 @@
 		<result column="startDate"		property="startDate"		javaType="String" />
 		<result column="endDate"		property="endDate"			javaType="String" />
 		<result column="annualType"		property="annualType"		javaType="String" />
+		<result column="name"			property="name"				javaType="String" />
+		<result column="teamName"		property="teamName"			javaType="String" />
 	</resultMap>
 	<select id="documentView" parameterType="HashMap" resultMap="documentView_Map">
-		select d.documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, securityLevel, temp, documentType, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate
+		select d.documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, d.status
+			 , d.securityLevel, temp, documentType, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate, name, teamName
 		<if test="documentType == '휴가신청서'">
 		     , useAmount, reason, to_char(startDate, 'yyyy-mm-dd') as startDate, to_char(endDate, 'yyyy-mm-dd') as endDate, annualType
 		from tbl_document D JOIN tbl_draft_annual A
 		</if>
-		ON d.documentNo = A.documentNo
+		ON d.documentNo = A.documentNo JOIN tbl_employee E
+		ON d.fk_employeeNo = E.employeeNo JOIN tbl_team T
+		ON E.fk_teamNo = T.teamno
 		where d.documentNo = #{documentNo}
 	</select>
 	
 	
 	<select id="getApprovalList" parameterType="String" resultType="ApprovalVO">
-		select approvalNo, fk_documentNo, fk_approver, approvalOrder, approvalStatus, to_char(executionDate, 'yyyy-mm-dd') as executionDate
-		from tbl_approval
+		select approvalNo, fk_documentNo, fk_approver, approvalOrder, approvalStatus
+			 , to_char(executionDate, 'yyyy-mm-dd') as executionDate, positionname, name
+		from tbl_approval JOIN tbl_employee
+		ON fk_approver = employeeNo JOIN tbl_position
+		ON fk_positionno = positionno
 		where fk_documentNo = #{documentNo}
+		order by approvalOrder desc
 	</select>
 	
 </mapper>

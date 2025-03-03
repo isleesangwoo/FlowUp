@@ -58,6 +58,15 @@ public class DocumentService_imple implements DocumentService {
 	}
 
 	
+	// 결제 대기 문서 리스트 가져오기
+	@Override
+	public List<DocumentVO> todoList(String employeeNo) {
+
+		List<DocumentVO> todoList = mapper_dao.todoList(employeeNo);
+		return todoList;
+	}
+	
+	
 	// 임시저장 문서 리스트 가져오기
 	@Override
 	public List<DocumentVO> tempList(String employeeNo) {
@@ -110,6 +119,9 @@ public class DocumentService_imple implements DocumentService {
 		List<ApprovalVO> approvalList = mapper_dao.getApprovalList(documentNo);
 		return approvalList;
 	}
+
+
+	
 
 	
 }
