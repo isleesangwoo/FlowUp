@@ -83,19 +83,25 @@ $(document).ready(()=>{
      }
    });
 
-
+   $(document).ready(function() {
+	   $("#sortCnt_btn ul li").on("click", function() {
+	       let pageSize = $(this).text().trim();
+	       $("#sortCnt_btn > span:nth-child(1)").text(pageSize);
+	       location.href = ctxPath + "/mail?currentShowPageNo=1&sizePerPage=" + pageSize;
+	   });
+   });
    
 }) // end of $(document).ready(()=>{})---------
 
-
+/*
 // Function Declaration
 function goView(mailNo) {
 	
 	const frm = document.goViewFrm;
-    frm.postNo.value = mailNo;
+    frm.mailNo.value = mailNo;
     frm.goBackURL.value = goBackURL;
    
     frm.method = "get";
     frm.action = ctxPath + "/mail/viewMail";
     frm.submit();
-}
+}*/

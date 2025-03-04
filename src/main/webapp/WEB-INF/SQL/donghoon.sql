@@ -736,7 +736,9 @@ nocycle
 nocache;
 
 insert into tbl_mail(mailNo, fk_employeeNo, subject, content, readStatus, deleteStatus, saveStatus, importantStatus)
-values(100155, 100020, '임시저장 테스트', '임시저장 메일입니다', default, default, 1, default);
+values(100156, 100020, '가나다라', '정렬 테스트 메일입니다', default, default, 1, default);
+
+
 
 BEGIN
   FOR i IN 1..30 LOOP
@@ -929,5 +931,32 @@ FROM
      where status = 1
      
      
-    
+        SELECT 
+        M.mailNo, M.fk_employeeNo, M.subject, M.content,
+        to_char(M.sendDate, 'yyyy-mm-dd hh24:mi') AS sendDate,
+        M.readStatus, M.deleteStatus, M.saveStatus, M.importantStatus,
+        e.employeeNo, e.name,
+        f.fileSize
+    FROM tbl_mail M
+    JOIN tbl_employee e ON M.fk_employeeNo = e.employeeNo
+    LEFT JOIN tbl_mailFile f ON M.mailNo = f.fk_mailNo
+    WHERE M.deleteStatus = 0
 
+
+
+select *
+from tbl_mail
+where importantStatus = 1;
+
+	    SELECT M.mailNo, M.fk_employeeNo, M.subject, M.content
+	          ,to_char(M.sendDate, 'yyyy-mm-dd hh24:mi') AS sendDate
+			  ,M.readStatus ,M.deleteStatus ,M.saveStatus ,M.importantStatus
+	          ,E.employeeNo AS employeeNo
+	          ,E.name AS name
+	    FROM tbl_mail M
+	    JOIN tbl_employee E
+	      ON M.fk_employeeNo = E.employeeNo
+	    WHERE M.importantStatus = 1
+	      -- AND M.deleteStatus = 0
+	      AND M.fk_employeeNo = 100020
+	    ORDER BY M.mailNo DESC
