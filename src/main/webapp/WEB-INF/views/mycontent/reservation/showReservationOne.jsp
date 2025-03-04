@@ -42,7 +42,9 @@
 			<div class="tab1_info">※ 첫 페이지에 나오는 안내문을 작성할 수 있습니다.</div>
 			<div>
 				<div style="width: 100%; height: auto; border: 0px solid red;">
-					<form name="addReserFrm" enctype="multipart/form-data">
+					<form name="addReserFrm2" enctype="multipart/form-data">
+						<input type="hidden" name="updateAssetNo" value="${requestScope.assetvo.assetNo}" />
+						<input type="hidden" name="updateAssetTitle" value="${requestScope.assetvo.assetTitle}" />
 						<!-- 스마트 에디터 -->
 						<textarea name="assetInfoUpdate" id="assetInfoUpdate" rows="10"
 							cols="100" style="width: 100%; height: 500px;">${requestScope.assetvo.assetInfo}</textarea>
@@ -52,7 +54,7 @@
 
 				<!-- bottom 버튼 영역 -->
 				<div class="bottom_btn_box">
-					<button class="okBtn">확인</button>
+					<button class="okBtn" id="updateOkBtn">확인</button>
 					<button class="resetBtn">취소</button>
 				</div>
 				<!-- bottom 버튼 영역 -->
@@ -239,13 +241,13 @@
 
 
 
-	<%--  ==== 스마트 에디터 구현 시작 ==== --%>
+	<%--  ==== 스마트 에디터 구현 시작 수정창  ==== --%>
 	//전역변수
-    var obj = [];
+    var obj1 = [];
     
     //스마트에디터 프레임생성
     nhn.husky.EZCreator.createInIFrame({
-        oAppRef: obj,
+        oAppRef: obj1,
         elPlaceHolder: "assetInfoUpdate",
         sSkinURI: "<%= ctxPath%>/smarteditor/SmartEditor2Skin.html",
         htParams : {
@@ -261,11 +263,11 @@
   
   
   // ================ 대분류 등록버튼 ================ //
-  $("button#addReserBtn").click(function(){
+  $("#updateOkBtn").click(function(){
 	  
 	  <%-- === 스마트 에디터 구현 시작 === --%>
 	   // id가 content인 textarea에 에디터에서 대입
-       obj.getById["assetInfoUpdate"].exec("UPDATE_CONTENTS_FIELD", []);
+       obj1.getById["assetInfoUpdate"].exec("UPDATE_CONTENTS_FIELD", []);
 	  <%-- === 스마트 에디터 구현 끝 === --%>
 	  
 	  
@@ -282,18 +284,30 @@
     	  alert("소개내용을 입력하세요!!");
     	  return; // 종료
       }
-      
-	  
-	  
-	  
+
     	  
       // 폼(form)을 전송(submit)
-      const frm = document.addReserFrm;
+      const frm = document.addReserFrm2;
       frm.method = "post";
-      frm.action = "<%= ctxPath%>/reservation/reservationAdd";
+      frm.action = "<%= ctxPath%>/reservation/assetInfoUpdate";
       frm.submit();
   });
   // ================ 대분류 등록버튼 ================ //
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
+  
+  
+  
+  
+  
   
   
   
@@ -705,6 +719,7 @@
 	  	  url: "<%= ctxPath%>/reservation/selectReservationSubTitle",
 	      type: "get",
 	      dataType: "json",
+	      async:false,
 	      success: function(json) {
 	          // console.log(JSON.stringify(json))
 	          
@@ -728,6 +743,7 @@
 	  	  url: "<%= ctxPath%>/reservation/selectReservationTitle",
 	      type: "get",
 	      dataType: "json",
+	      async:false,
 	      success: function(json) {
 	          // console.log(JSON.stringify(json))
 	          

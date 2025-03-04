@@ -38,7 +38,7 @@ public class ReservationController {
 	
 	// 자산 예약 메인페이지
 	@GetMapping("")
-	public ModelAndView selectLeftBar_reservation(HttpServletRequest request, 
+	public ModelAndView requiredLogin_reservation(HttpServletRequest request, HttpServletResponse response,
 												  ModelAndView mav) {
 		
 		mav.setViewName("mycontent/reservation/reservation");
@@ -99,6 +99,31 @@ public class ReservationController {
 	}
 	
 	
+	// 자산 대분류 info 수정
+	@PostMapping("assetInfoUpdate") 
+	public ModelAndView assetInfoUpdate(ModelAndView mav, 
+									   HttpServletRequest request,
+									   @RequestParam(defaultValue = "") String updateAssetNo,
+									   @RequestParam(defaultValue = "") String assetInfoUpdate,
+									   @RequestParam(defaultValue = "") String updateAssetTitle) {
+		
+		Map<String, String> paraMap = new HashMap<>();
+		
+		paraMap.put("assetNo", updateAssetNo); 
+		paraMap.put("assetInfo", assetInfoUpdate);
+		
+		int n = service.assetInfoUpdate(paraMap); // 자산 대분류 info를 update 해주는 메소드
+		
+		if(n==1) {
+			mav.addObject("message", "수정이 완료되었습니다.");
+			mav.addObject("loc", request.getContextPath()+"/reservation/assetDetailPage?assetNo="+updateAssetNo+"&assetTitle="+updateAssetTitle);
+			mav.setViewName("msg");
+		}
+		
+		return mav;
+	}
+	
+	
 	
 	// 들어오자마자 보이는 내 대여 현황
 	@GetMapping("showMyReservation")
@@ -137,7 +162,7 @@ public class ReservationController {
 	
 	// 자산 관리자용 상세페이지
 	@GetMapping("showReservationOne")
-	public ModelAndView selectLeftBar_showReservationOne(HttpServletRequest request, 
+	public ModelAndView requiredLogin_showReservationOne(HttpServletRequest request, HttpServletResponse response,
 														 ModelAndView mav, 
 														 @RequestParam String assetNo) {
 
@@ -405,7 +430,7 @@ public class ReservationController {
 	
 	////////////////////////////////////////////////////////////// 자산상세 페이지
 	@GetMapping("showReservationDeOne")
-	public ModelAndView selectLeftBar_showReservationDeOne(HttpServletRequest request, 
+	public ModelAndView requiredLogin_showReservationDeOne(HttpServletRequest request, HttpServletResponse response,
 													       ModelAndView mav,
 													       @RequestParam String assetName,
 													       @RequestParam String assetDetailNo) {
@@ -447,16 +472,25 @@ public class ReservationController {
 			System.out.println("getReservationEnd 확인 : "+ assetreservationvo.getReservationEnd());         // getReservationEnd 확인 : 2025.02.27 13:30
 			System.out.println("ReservationContents 확인 : "+ assetreservationvo.getReservationContents());  // ReservationContents 확인 : dsa
 		*/
+		JSONObject jsonObj = new JSONObject();
 		
+		int selectReservation = service.selectReservation(assetreservationvo); // 예약하기에 앞서 해당 일자에 예약한 건이 있는지 확인
 		
-		int result = service.addReservation(assetreservationvo); // 예약추가를 해주는 메소드
-
-	    JSONObject jsonObj = new JSONObject();
-	    if (result == 1) {
-	        jsonObj.put("result", 1);
-	    } else {
-	        jsonObj.put("result", 0);
-	    }
+		System.out.println("확인 : selectReservation " + selectReservation);
+		
+		if(selectReservation != 0) {
+			jsonObj.put("result", 0);
+		}
+		else {
+			int result = service.addReservation(assetreservationvo); // 예약추가를 해주는 메소드
+	
+		    
+		    if (result == 1) {
+		        jsonObj.put("result", 1);
+		    } else {
+		        jsonObj.put("result", 0);
+		    }
+		}
 		
 		return jsonObj.toString();
 	}
@@ -513,7 +547,7 @@ public class ReservationController {
 	
 	//////////////////////////////////////////////////////////////자산 대분류 상세 페이지
 	@GetMapping("assetDetailPage")
-	public ModelAndView assetDetailPage(ModelAndView mav, @RequestParam String assetNo, @RequestParam String assetTitle) {
+	public ModelAndView requiredLogin_assetDetailPage(HttpServletRequest request, HttpServletResponse response, ModelAndView mav, @RequestParam String assetNo, @RequestParam String assetTitle) {
 		
 		
 		AssetVO assetvo = service.assetOneSelect(assetNo); //자산 대분류 상세 정보 가져오기

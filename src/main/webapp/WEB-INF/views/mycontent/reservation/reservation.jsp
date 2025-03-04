@@ -133,7 +133,7 @@
 			  dataType:"json",
 			  success:function(json){
 				  
-			  console.log("ajax 뽑아옴 : ", JSON.stringify(json));
+			  // console.log("ajax 뽑아옴 : ", JSON.stringify(json));
 			  /*
 			  	[{"assetReservationNo":"100023","reservationEnd":"2025-03-04 12:30:00","fk_assetDetailNo":"100030","reservationStart":"2025-03-04 09:00:00","assetTitle":"본사 1,2층 공용 회의실","assetName":"Whale","reservationDay":"2025-02-28 12:06:05","fk_employeeNo":"100012"}
 				,{"assetReservationNo":"100025","reservationEnd":"2025-03-04 15:30:00","fk_assetDetailNo":"100042","reservationStart":"2025-03-04 10:00:00","assetTitle":"본사 1,2층 공용 회의실","assetName":"Chrome","reservationDay":"2025-02-28 18:11:12","fk_employeeNo":"100012"}]
@@ -145,30 +145,31 @@
 			  if(json.length == 0) {
 				v_html += `<tr><td colspan="5" style="height:120px; text-align: center; vertical-align: middle; color: #999;">예약된 자산이 없습니다.</td></tr>`;
 			  }
+			  else{
 			  
-			  $.each(json, function(index, item){
-				
-				var sd = new Date(`\${item.reservationStart}`); // startdate
-				var ed = new Date(`\${item.reservationEnd}`); // enddate
-				let status = ``;
-				
-				  if(now < sd) {
-					status = "취소"
-				  }
-				  else if(sd <= now && now >= ed) {
-					status = "반납"
-				  }
-				
-				  // alert(`\${item.reservationStart.split(" ")[1].split("\:")[0]}:\${item.reservationStart.split(" ")[1].split("\:")[1]}`)
-				  v_html += `<tr>
-								<td>\${item.assetTitle}</td>
-								<td>\${item.assetName}</td>
-								<td>대여</td>
-								<td>\${item.reservationStart.split(" ")[1].split("\:")[0]}:\${item.reservationStart.split(" ")[1].split("\:")[1]}</td>
-								<td><input type="hidden" name="assetReservationNo" value="\${item.assetReservationNo}" /><span class="status" id="\${item.assetName}" style="cursor:pointer;">\${status}</span></td>
-							</tr>`;
-			  });
-			  
+				  $.each(json, function(index, item){
+					
+					var sd = new Date(`\${item.reservationStart}`); // startdate
+					var ed = new Date(`\${item.reservationEnd}`); // enddate
+					let status = ``;
+					
+					  if(now < sd) {
+						status = "취소"
+					  }
+					  else if(sd <= now && now >= ed) {
+						status = "반납"
+					  }
+					
+					  // alert(`\${item.reservationStart.split(" ")[1].split("\:")[0]}:\${item.reservationStart.split(" ")[1].split("\:")[1]}`)
+					  v_html += `<tr>
+									<td>\${item.assetTitle}</td>
+									<td>\${item.assetName}</td>
+									<td>대여</td>
+									<td>\${item.reservationStart.split(" ")[1].split("\:")[0]}:\${item.reservationStart.split(" ")[1].split("\:")[1]}</td>
+									<td><input type="hidden" name="assetReservationNo" value="\${item.assetReservationNo}" /><span class="status" id="\${item.assetName}" style="cursor:pointer;">\${status}</span></td>
+								</tr>`;
+				  });
+			  }
 			  $('.my_tbody').empty();
 			  $('.my_tbody').append(v_html);
 			  
@@ -268,7 +269,7 @@
 				  if(json.length == 0){
 					$('.board_menu_container > ul').append(`<li>등록된 자산이 없습니다.</li>`);
 				  }
-				  else{
+				  else if(json.length != 0){
 			          $.each(json, function(index, Title){
 						
 							////////////////////// select 태그 쌓아주기 //////////////////////
@@ -370,7 +371,7 @@
 	  		async:false,
 	  		success:function(json){
 				assCnt =[];
-				console.log(JSON.stringify(json));
+				// console.log(JSON.stringify(json));
 				$('.innerTimeTable').empty();
 
 				$.each(json, function(index, item){
@@ -399,41 +400,45 @@
 	  	let assCnt =[];
 	  	
 		function titleAssetNo(){
-		  	$.ajax({
-		  		url:"<%= ctxPath%>/reservation/selectAssetDe",
-		  		type:"post",
-		  		data:{"fk_assetNo":$('select[name="titleAssetNo"]').val()},
-		  		dataType:"json",
-		  		async:false,
-		  		success:function(json){
-					console.log(JSON.stringify(json));
-					
-					$('.innerTimeTable').empty();
-					/*
-						[{"assetDetailRegisterday":"2025-02-27 14:30:06","assetDetailNo":"100030","assetName":"Whale","fk_assetNo":"100031"}
-						,{"assetDetailRegisterday":"2025-02-27 18:13:10","assetDetailNo":"100042","assetName":"Chrome","fk_assetNo":"100031"}
-						,{"assetDetailRegisterday":"2025-02-27 14:29:53","assetDetailNo":"100029","assetName":"Edge","fk_assetNo":"100031"}]
-					*/
-					
-					
-					$.each(json, function(index, item){
-						assCnt.push(item)
-					})
-					
-					//////////////////////////////////////////////////////////////////
-					
-					$.each(json, function(index, item){
-						$('.innerTimeTable').append(`<div class="reservationTimeLisnDisplay" id="\${item.assetDetailNo}" style="width:100%; height:var(--size30); position: relative;"></div>`);
-					}) // end of $.each(json, function(index, item){})---------------
-					
-					
-					
-					// alert("사이즈 : ", assCnt.length)
-		  		},
-		  	    error: function(request, status, error){
-		  	 	    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		  	    } 
-		  	})
+			
+			if($('select[name="titleAssetNo"]').val() != null){
+			
+			  	$.ajax({
+			  		url:"<%= ctxPath%>/reservation/selectAssetDe",
+			  		type:"post",
+			  		data:{"fk_assetNo":$('select[name="titleAssetNo"]').val()},
+			  		dataType:"json",
+			  		async:false,
+			  		success:function(json){
+						console.log(JSON.stringify(json));
+						
+						$('.innerTimeTable').empty();
+						/*
+							[{"assetDetailRegisterday":"2025-02-27 14:30:06","assetDetailNo":"100030","assetName":"Whale","fk_assetNo":"100031"}
+							,{"assetDetailRegisterday":"2025-02-27 18:13:10","assetDetailNo":"100042","assetName":"Chrome","fk_assetNo":"100031"}
+							,{"assetDetailRegisterday":"2025-02-27 14:29:53","assetDetailNo":"100029","assetName":"Edge","fk_assetNo":"100031"}]
+						*/
+						
+						
+						$.each(json, function(index, item){
+							assCnt.push(item)
+						})
+						
+						//////////////////////////////////////////////////////////////////
+						
+						$.each(json, function(index, item){
+							$('.innerTimeTable').append(`<div class="reservationTimeLisnDisplay" id="\${item.assetDetailNo}" style="width:100%; height:var(--size30); position: relative;"></div>`);
+						}) // end of $.each(json, function(index, item){})---------------
+						
+						
+						
+						// alert("사이즈 : ", assCnt.length)
+			  		},
+			  	    error: function(request, status, error){
+			  	 	    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  	    } 
+			  	})
+			}
 		}
 		titleAssetNo();
 	  	<%-- 회의실들 불러오기 --%>

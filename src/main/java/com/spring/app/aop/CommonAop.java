@@ -47,8 +47,8 @@ public class CommonAop {
 		
 		HttpSession session = request.getSession();
 		if(session.getAttribute("loginuser") == null) {
-			String message = "먼저 로그인 하세요~~ (AOP Before Advice 활용)";
-			String loc = request.getContextPath() + "/member/login";
+			String message = "로그인을 먼저 해주세요";
+			String loc = request.getContextPath() + "/employee/login";
 
 			request.setAttribute("message", message);
 			request.setAttribute("loc", loc);

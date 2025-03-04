@@ -182,6 +182,7 @@
 		  	  url: "<%= ctxPath%>/reservation/selectReservationSubTitle",
 		      type: "get",
 		      dataType: "json",
+		      async:false,
 		      success: function(json) {
 		          // console.log(JSON.stringify(json))
 		          
@@ -205,6 +206,7 @@
 		  	  url: "<%= ctxPath%>/reservation/selectReservationTitle",
 		      type: "get",
 		      dataType: "json",
+		      async:false,
 		      success: function(json) {
 		          // console.log(JSON.stringify(json))
 		          
@@ -339,12 +341,12 @@
 
 	function updateTimelinePosition() {
 		// console.log('되는중')
-		const totalWidth = $('.time_table_back_form').width();
+		const totalWidth = $('.time_table_back_form').outerWidth() - 240;
 		// console.log("totalWidth: ", totalWidth); // totalWidth를 확인
 	
 		// 15시로 시간 설정
 		const now = new Date();
-		now.setHours(15, 0, 0, 0); // 15시 0분으로 설정
+		// now.setHours(15, 0, 0, 0); // 15시 0분으로 설정
 		// console.log("현재 시간: ", now); // 현재 시간이 15시로 잘 설정되었는지 확인
 	
 		const startHour = 9; // 9시
@@ -354,13 +356,13 @@
 		const startTime = new Date(now);
 		startTime.setHours(startHour, 0, 0, 0); // 오늘 9시 기준
 		const minutesPassed = (now - startTime) / (1000 * 60); // 경과 시간 (분)
-		// console.log("경과 시간: ", minutesPassed, "분"); // 경과한 시간이 360분인지 확인
+		console.log("경과 시간: ", minutesPassed, "분"); // 경과한 시간이 360분인지 확인
 	
 		// 타임라인의 총 분 (9시부터 21시까지 720분)
 		const totalMinutes = (endHour - startHour) * 60;
 	
 		// 비율로 계산하여 left 값 설정
-		const leftPercentage = (minutesPassed / totalMinutes) * totalWidth;
+		const leftPercentage = (minutesPassed / totalMinutes) * totalWidth ;
 		// console.log("leftPercentage: ", leftPercentage); // leftPercentage가 정상적으로 계산되는지 확인
 		
 		// 타임라인의 스타일 업데이트

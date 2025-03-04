@@ -400,3 +400,7 @@
 		text-overflow: ellipsis;
 		word-break: break-all;
 	}
+	
+	.innerTimeTable {
+		overflow: hidden;
+	}

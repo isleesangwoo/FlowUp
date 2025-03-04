@@ -76,79 +76,70 @@
 	
 <script>
 	$(document).ready(function(){  
+		<%--  ==== 스마트 에디터 구현 시작 등록창 ==== --%>
+		//전역변수
+	    var obj = [];
+	    
+	    //스마트에디터 프레임생성
+	    nhn.husky.EZCreator.createInIFrame({
+	        oAppRef: obj,
+	        elPlaceHolder: "assetInfo",
+	        sSkinURI: "<%= ctxPath%>/smarteditor/SmartEditor2Skin.html",
+	        htParams : {
+	            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseToolbar : true,            
+	            // 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseVerticalResizer : true,    
+	            // 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseModeChanger : true,
+	        }
+	    });
+	  <%--  ==== 스마트 에디터 구현 끝 ==== --%>
+	  
+	  
+	  // ================ 대분류 등록버튼 ================ //
+	  $("button#addReserBtn").click(function(){
 		  
-		
-		
-		  <%--  ==== 스마트 에디터 구현 시작 ==== --%>
-			//전역변수
-		    var obj = [];
-		    
-		    //스마트에디터 프레임생성
-		    nhn.husky.EZCreator.createInIFrame({
-		        oAppRef: obj,
-		        elPlaceHolder: "assetInfo",
-		        sSkinURI: "<%= ctxPath%>/smarteditor/SmartEditor2Skin.html",
-		        htParams : {
-		            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
-		            bUseToolbar : true,            
-		            // 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
-		            bUseVerticalResizer : true,    
-		            // 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
-		            bUseModeChanger : true,
-		        }
-		    });
-		  <%--  ==== 스마트 에디터 구현 끝 ==== --%>
+		  <%-- === 스마트 에디터 구현 시작 === --%>
+		   // id가 content인 textarea에 에디터에서 대입
+	       obj.getById["assetInfo"].exec("UPDATE_CONTENTS_FIELD", []);
+		  <%-- === 스마트 에디터 구현 끝 === --%>
 		  
+		  // === 글제목 유효성 검사 === 
+	      const subject = $("input:text[name='assetTitle']").val().trim();	  
+	      if(subject == "") {
+	    	  alert("대분류명을 입력하세요!!");
+	    	  $("input:text[name='assetTitle']").val("");
+	    	  return; // 종료
+	      }	
 		  
-		  // ================ 대분류 등록버튼 ================ //
-		  $("button#addReserBtn").click(function(){
-			  
-			  <%-- === 스마트 에디터 구현 시작 === --%>
-			   // id가 content인 textarea에 에디터에서 대입
-		       obj.getById["assetInfo"].exec("UPDATE_CONTENTS_FIELD", []);
-			  <%-- === 스마트 에디터 구현 끝 === --%>
-			  
-			  // === 글제목 유효성 검사 === 
-		      const subject = $("input:text[name='assetTitle']").val().trim();	  
-		      if(subject == "") {
-		    	  alert("대분류명을 입력하세요!!");
-		    	  $("input:text[name='assetTitle']").val("");
-		    	  return; // 종료
-		      }	
-			  
-			  // === 글내용 유효성 검사(스마트 에디터를 사용할 경우) ===
-			  let content_val = $("textarea[name='assetInfo']").val().trim();
-			  
-		      content_val = content_val.replace(/&nbsp;/gi, "");  // 공백(&nbsp;)을 "" 으로 변환
+		  // === 글내용 유효성 검사(스마트 에디터를 사용할 경우) ===
+		  let content_val = $("textarea[name='assetInfo']").val().trim();
+		  
+	      content_val = content_val.replace(/&nbsp;/gi, "");  // 공백(&nbsp;)을 "" 으로 변환
 
-		      content_val = content_val.substring(content_val.indexOf("<p>")+3);
-			  
-		      content_val = content_val.substring(0, content_val.indexOf("</p>"));
-		     
-		      if(content_val.trim().length == 0) {
-		    	  alert("소개내용을 입력하세요!!");
-		    	  return; // 종료
-		      }
-		      
-			  
-			  
-			  
-		    	  
-		      // 폼(form)을 전송(submit)
-		      const frm = document.addReserFrm;
-		      frm.method = "post";
-		      frm.action = "<%= ctxPath%>/reservation/reservationAdd";
-		      frm.submit();
-		  });
-		  // ================ 대분류 등록버튼 ================ //
+	      content_val = content_val.substring(content_val.indexOf("<p>")+3);
 		  
-		  
-		  
-		  
-		  
-		  
-		  
-		  
+	      content_val = content_val.substring(0, content_val.indexOf("</p>"));
+	     
+	      if(content_val.trim().length == 0) {
+	    	  alert("소개내용을 입력하세요!!");
+	    	  return; // 종료
+	      }
+	      
+	      // 폼(form)을 전송(submit)
+	      const frm = document.addReserFrm;
+	      frm.method = "post";
+	      frm.action = "<%= ctxPath%>/reservation/reservationAdd";
+	      frm.submit();
+	  });
+	  // ================ 대분류 등록버튼 ================ //
+	  
+		
+		
+		
+		
+
 		  // ================ 소분류 토글 ================ //
 		  $(document).on('click', 'div.assetTitleBtn', e=>{
 			  
@@ -160,12 +151,7 @@
 		  // ================ 소분류 토글 ================ //
 
 		  
-		  
-		  
-		  
-		  
-		  
-		  
+
 		  
 		  
 		  

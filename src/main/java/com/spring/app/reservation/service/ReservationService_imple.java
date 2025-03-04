@@ -225,6 +225,24 @@ public class ReservationService_imple implements ReservationService {
 	}
 
 
+
+	// 자산 대분류 info를 update 해주는 메소드
+	@Override
+	public int assetInfoUpdate(Map<String, String> paraMap) {
+		int result = dao.assetInfoUpdate(paraMap);
+		return result;
+	}
+
+
+
+	// 예약하기에 앞서 해당 일자에 예약한 건이 있는지 확인
+	@Override
+	public int selectReservation(AssetReservationVO assetreservationvo) {
+		int selectReservation = dao.selectReservation(assetreservationvo);
+		return selectReservation;
+	}
+
+
 	
 	
 }

@@ -77,8 +77,9 @@
 }
 
 .dateBar {
+	position: relative;
 	border-color: inherit;
-	border-right: 1px solid #ddd;
+	border-right: 1px solid #e0e8ee;
 }
 
 .table_cell {
@@ -103,7 +104,7 @@
 }
 
 .highlight {
-        background-color: rgba(242, 247, 253);
+        background-color: #e0e8ee;
         position: relative;
         z-index: 0;
 }
@@ -150,20 +151,24 @@
 }
 
 .reservationBox {
-	position: absolute; 
-	top:0px; 
-	left:0px; 
-	width: 100%; 
-	background-color:#8f8f8f; 
-	z-index:5;
-	color:#fff;
 	box-sizing: border-box;
 	padding: var(--size8);
+	position:absolute; 
+	z-index:5;
+	width:100%; 
+	background-color: #2985db;
+	color: #fff;
+	overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    word-break: break-all;
 }
+
+
 
 .reservationBoxTitle {
 	font-size: var(--size15);
-	margin-bottom: var(--size8)
+	margin-bottom: var(--size8);
 }
 
 .reservationBoxContent {
@@ -172,6 +177,10 @@
 
 .todayBg {
 	background-color: #f1f1f1;
+}
+
+.pastBg {
+	opacity: 0.5;
 }
 
 

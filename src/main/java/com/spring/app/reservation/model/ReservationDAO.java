@@ -74,6 +74,12 @@ public interface ReservationDAO {
 	// 예약을 삭제 해주는 메소드
 	int deleteAssetReservationNo(String assetReservationNo);
 
+	// 자산 대분류 info를 update 해주는 메소드
+	int assetInfoUpdate(Map<String, String> paraMap);
+
+	// 예약하기에 앞서 해당 일자에 예약한 건이 있는지 확인
+	int selectReservation(AssetReservationVO assetreservationvo);
+
 	
 
 }
