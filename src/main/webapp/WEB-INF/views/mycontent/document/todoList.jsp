@@ -20,7 +20,7 @@
 
 	<div>
 		<div>
-			<h1>결제 대기 문서함</h1>
+			<h1>결재 대기 문서함</h1>
 			<button>목록 다운로드</button>
 			<button>문서 삭제</button>
 		</div>
@@ -33,9 +33,6 @@
 					</th>
 					<th>
 						<span>기안일</span>
-					</th>
-					<th>
-						<span>완료일</span>
 					</th>
 					<th>
 						<span>결재양식</span>
@@ -52,48 +49,39 @@
 					<th>
 						<span>문서번호</span>
 					</th>
-					<th>
-						<span>결재상태</span>
-					</th>
 				</tr>
 			</thead>
 			<tbody>
-				<c:if test="${not empty requestScope.toDoList}">
-					<c:forEach var="toDo" items="${requestScope.toDoList}">
-						<tr>
+				<c:if test="${not empty requestScope.todoList}">
+					<c:forEach var="todo" items="${requestScope.todoList}">
+						<tr class="document" onclick="location.href='<%= ctxPath%>/document/documentView?documentNo=${todo.documentNo}&documentType=${todo.documentType}';">
 							<td>
-								<input type="checkbox" />
+								<input type="checkbox" class="document_check" onclick='event.cancelBubble=true;'>
 							</td>
 							<td>
-								<span>${toDo.draftDate}</span>
+								<span>${todo.draftDate}</span>
 							</td>
 							<td>
-								<span>${toDo.approvalDate}</span>
+								<span>${todo.documentType}</span>
 							</td>
 							<td>
-								<span>${toDo.documentType}</span>
-							</td>
-							<td>
-								<span>${toDo.subject}</span>
+								<span>${todo.subject}</span>
 							</td>
 							<td>
 								<span></span>
 							</td>
 							<td>
-								<span>${toDo.name}</span>
+								<span>${todo.name}</span>
 							</td>
 							<td>
-								<span>${toDo.documentNo}</span>
-							</td>
-							<td>
-								<span>${toDo.status}</span>
+								<span>${todo.documentNo}</span>
 							</td>
 						</tr>
 					</c:forEach>
 				</c:if>
-				<c:if test="${empty requestScope.toDoList}">
+				<c:if test="${empty requestScope.todoList}">
 					<tr>
-						<td colspan="6"><span>결제 대기 문서가 없습니다.</span></td>
+						<td colspan="6"><span>결재 대기 문서가 없습니다.</span></td>
 					</tr>
 				</c:if>
 			</tbody>

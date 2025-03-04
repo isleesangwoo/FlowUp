@@ -11,6 +11,7 @@
  
 <%-- 각자 페이지에 해당되는 css 연결 --%>
 <link href="<%=ctxPath%>/css/document/document_main.css" rel="stylesheet">
+<link href="<%=ctxPath%>/css/document/document.css" rel="stylesheet">
 
 <%-- 각자 페이지에 해당되는 js 연결 --%>
 <script src="<%=ctxPath%>/js/document/document.js"></script>
@@ -40,22 +41,23 @@
 	<!-- 왼쪽 사이드바 -->
     <div id="left_bar">
 
-        <!-- === 새 결제 작성 버튼 === -->
+        <!-- === 새 결재 작성 버튼 === -->
         <button id="goMail">
             <i class="fa-solid fa-plus"></i>
-            <span>새 결제</span>
+            <span>새 결재</span>
         </button>
-        <!-- === 새 결제 작성 버튼 === -->
+        <!-- === 새 결재 작성 버튼 === -->
 
         <div class="mail_menu_container">
             <ul>
                 <li>
-                    <a href="#">결제 대기 문서</a>
+                    <a href="<%= ctxPath%>/document/todoList">결재 대기 문서</a>
                     <span class="mail_cnt">5</span> <!-- 콤마처리 해주세요 -->
                 </li>
-                <li><a href="#">결제 예정 문서</a></li>
+                <li><a href="<%= ctxPath%>/document/upcomingList">결재 예정 문서</a></li>
                 <li><a href="<%= ctxPath%>/document/myDocumentList">기안 문서함</a></li>
                 <li><a href="<%= ctxPath%>/document/tempList">임시 저장함</a></li>
+                <li><a href="<%= ctxPath%>/document/approvedList">결재 문서함</a></li>
                 <li><a href="<%= ctxPath%>/document/deptDocumentList">부서문서함</a></li>
             </ul>
         </div>

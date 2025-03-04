@@ -40,6 +40,185 @@ public class DocumentController {
 	}
 	
 	
+	// 결재대기문서함
+	@GetMapping("todoList")
+	public ModelAndView todoList(ModelAndView mav, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		// 테스트 중 로그인 안하고 처리하기 위해 임시로 사원번호 입력
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		else {
+			employeeNo = "100014";
+		}
+		
+		List<DocumentVO> todoList = service.todoList(employeeNo);
+		// 결재 대기 문서 리스트 가져오기
+		
+		mav.addObject("todoList", todoList);
+		mav.setViewName("mycontent/document/todoList");
+		
+		return mav;
+	}
+	
+	
+	// 결재예정문서함
+	@GetMapping("upcomingList")
+	public ModelAndView upcomingList(ModelAndView mav, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		// 테스트 중 로그인 안하고 처리하기 위해 임시로 사원번호 입력
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		else {
+			employeeNo = "100014";
+		}
+		
+		List<DocumentVO> upcomingList = service.upcomingList(employeeNo);
+		// 결재 예정 문서 리스트 가져오기
+		
+		mav.addObject("upcomingList", upcomingList);
+		mav.setViewName("mycontent/document/upcomingList");
+		
+		return mav;
+	}
+		
+	
+	// 기안 문서함
+	@GetMapping("myDocumentList")
+	public ModelAndView myDocumentList(ModelAndView mav, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		// 테스트 중 로그인 안하고 처리하기 위해 임시로 사원번호 입력
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		else {
+			employeeNo = "100014";
+		}
+		
+		List<DocumentVO> myDocumentList = service.myDocumentList(employeeNo);
+		// 기안을 올린 문서 리스트 가져오기
+		
+		mav.addObject("myDocumentList", myDocumentList);
+		mav.setViewName("mycontent/document/myDocumentList");
+		
+		return mav;
+	}
+	
+	
+	// 임시저장함
+	@GetMapping("tempList")
+	public ModelAndView tempList(ModelAndView mav, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		// 테스트 중 로그인 안하고 처리하기 위해 임시로 사원번호 입력
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		else {
+			employeeNo = "100014";
+		}
+		
+		List<DocumentVO> tempList = service.tempList(employeeNo);
+		// 임시 저장 문서 리스트 가져오기
+		
+		mav.addObject("tempList", tempList);
+		mav.setViewName("mycontent/document/tempList");
+		
+		return mav;
+	}
+	
+	
+	// 결재 문서함
+	@GetMapping("approvedList")
+	public ModelAndView approvedList(ModelAndView mav, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		// 테스트 중 로그인 안하고 처리하기 위해 임시로 사원번호 입력
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		else {
+			employeeNo = "100014";
+		}
+		
+		List<DocumentVO> approvedList = service.approvedList(employeeNo);
+		// 결재 처리한 문서 리스트 가져오기
+		
+		mav.addObject("approvedList", approvedList);
+		mav.setViewName("mycontent/document/approvedList");
+		
+		return mav;
+	}
+	
+	
+	// 부서 문서함
+	@GetMapping("deptDocumentList")
+	public ModelAndView deptDocumentList(ModelAndView mav, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		// 테스트 중 로그인 안하고 처리하기 위해 임시로 사원번호 입력
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		else {
+			employeeNo = "100014";
+		}
+		
+		List<DocumentVO> deptDocumentList = service.deptDocumentList(employeeNo);
+		// 부서 문서 리스트 가져오기
+		
+		mav.addObject("deptDocumentList", deptDocumentList);
+		mav.setViewName("mycontent/document/deptDocumentList");
+		
+		return mav;
+	}
+	
+	
+	// 문서함에서 문서 1개 보기
+	@GetMapping("documentView")
+	public ModelAndView documentView(ModelAndView mav, @RequestParam Map<String, String> paraMap) {
+		
+		Map<String, String> document = service.documentView(paraMap);
+		// 문서함에서 문서 1개 보여주기
+		List<ApprovalVO> approvalList = service.getApprovalList(paraMap.get("documentNo"));
+		// 문서함에서 보여줄 결재자 리스트 가져오기
+		
+		mav.addObject("document", document);
+		mav.addObject("approvalList", approvalList);
+		mav.setViewName("mycontent/document/documentView");
+		
+		return mav;
+	}
+	
+	
 	// 휴가신청서 페이지
 	@GetMapping("annual")
 	public ModelAndView annual(ModelAndView mav) {
@@ -47,6 +226,17 @@ public class DocumentController {
 		mav.setViewName("mycontent/document/annual");
 		
 		return mav;
+	}
+	
+	
+	// 조직도에 뿌려주기 위한 사원 목록 가져오기
+	@GetMapping("getEmployeeList")
+	@ResponseBody
+	public List<EmployeeVO> getEmployeeList(){
+		
+		List<EmployeeVO> employeeList = service.getEmployeeList();
+		return employeeList;
+		
 	}
 	
 	
@@ -110,134 +300,4 @@ public class DocumentController {
 		return map;
 	}
 	
-	
-	// 결제대기문서함
-	@GetMapping("todoList")
-	public ModelAndView todoList(ModelAndView mav, HttpServletRequest request) {
-		
-		HttpSession session = request.getSession();
-		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
-		
-		String employeeNo = null;
-		
-		if(loginuser != null) {
-			employeeNo = loginuser.getEmployeeNo();
-		}
-		else {
-			employeeNo = "100014";
-		}
-		
-		List<DocumentVO> todoList = service.todoList(employeeNo);
-		// 임시 저장 문서 리스트 가져오기
-		
-		mav.addObject("todoList", todoList);
-		mav.setViewName("mycontent/document/todoList");
-		
-		return mav;
-		
-	}
-	
-	// 임시저장함
-	@GetMapping("tempList")
-	public ModelAndView tempList(ModelAndView mav, HttpServletRequest request) {
-		
-		HttpSession session = request.getSession();
-		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
-		
-		String employeeNo = null;
-		
-		if(loginuser != null) {
-			employeeNo = loginuser.getEmployeeNo();
-		}
-		else {
-			employeeNo = "100014";
-		}
-		
-		List<DocumentVO> tempList = service.tempList(employeeNo);
-		// 임시 저장 문서 리스트 가져오기
-		
-		mav.addObject("tempList", tempList);
-		mav.setViewName("mycontent/document/tempList");
-		
-		return mav;
-		
-	}
-	
-	
-	// 기안 문서함
-	@GetMapping("myDocumentList")
-	public ModelAndView myDocumentList(ModelAndView mav, HttpServletRequest request) {
-		
-		HttpSession session = request.getSession();
-		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
-		
-		String employeeNo = null;
-		
-		if(loginuser != null) {
-			employeeNo = loginuser.getEmployeeNo();
-		}
-		else {
-			employeeNo = "100014";
-		}
-		
-		List<DocumentVO> myDocumentList = service.myDocumentList(employeeNo);
-		// 기안 문서 리스트 가져오기
-		
-		mav.addObject("myDocumentList", myDocumentList);
-		mav.setViewName("mycontent/document/myDocumentList");
-		
-		return mav;
-	}
-	
-	
-	// 부서 문서함
-	@GetMapping("deptDocumentList")
-	public ModelAndView deptDocumentList(ModelAndView mav, HttpServletRequest request) {
-		
-		HttpSession session = request.getSession();
-		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
-		
-		String employeeNo = null;
-		
-		if(loginuser != null) {
-			employeeNo = loginuser.getEmployeeNo();
-		}
-		else {
-			employeeNo = "100014";
-		}
-		
-		List<DocumentVO> deptDocumentList = service.deptDocumentList(employeeNo);
-		// 부서 문서 리스트 가져오기
-		
-		mav.addObject("deptDocumentList", deptDocumentList);
-		mav.setViewName("mycontent/document/deptDocumentList");
-		
-		return mav;
-		
-	}
-	
-	
-	// 조직도에 뿌려주기 위한 사원 목록 가져오기
-	@GetMapping("getEmployeeList")
-	@ResponseBody
-	public List<EmployeeVO> getEmployeeList(){
-		
-		List<EmployeeVO> employeeList = service.getEmployeeList();
-		return employeeList;
-		
-	}
-	
-	
-	@GetMapping("documentView")
-	public ModelAndView documentView(ModelAndView mav, @RequestParam Map<String, String> paraMap) {
-		
-		Map<String, String> document = service.documentView(paraMap);
-		List<ApprovalVO> approvalList = service.getApprovalList(paraMap.get("documentNo"));
-		
-		mav.addObject("document", document);
-		mav.addObject("approvalList", approvalList);
-		mav.setViewName("mycontent/document/documentView");
-		
-		return mav;
-	}
 }

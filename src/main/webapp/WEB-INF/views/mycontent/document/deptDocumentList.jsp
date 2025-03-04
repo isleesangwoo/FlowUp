@@ -60,9 +60,9 @@
 			<tbody>
 				<c:if test="${not empty requestScope.deptDocumentList}">
 					<c:forEach var="deptDocument" items="${requestScope.deptDocumentList}">
-						<tr>
+						<tr class="document" onclick="location.href='<%= ctxPath%>/document/documentView?documentNo=${deptDocument.documentNo}&documentType=${deptDocument.documentType}';">
 							<td>
-								<input type="checkbox" />
+								<input type="checkbox" class="document_check" onclick='event.cancelBubble=true;'>
 							</td>
 							<td>
 								<span>${deptDocument.draftDate}</span>
@@ -86,7 +86,11 @@
 								<span>${deptDocument.documentNo}</span>
 							</td>
 							<td>
-								<span>${deptDocument.status}</span>
+								<span>
+									<c:if test="${deptDocument.status == 0}">진행중</c:if>
+									<c:if test="${deptDocument.status == 1}">완료</c:if>
+									<c:if test="${deptDocument.status == 2}">반려</c:if>
+								</span>
 							</td>
 						</tr>
 					</c:forEach>

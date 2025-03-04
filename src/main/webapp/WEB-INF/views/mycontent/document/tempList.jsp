@@ -68,7 +68,7 @@
 								<span></span>
 							</td>
 							<td>
-								<span>${temp.status}</span>
+								<span>임시저장</span>
 							</td>
 						</tr>
 					</c:forEach>

@@ -216,10 +216,52 @@ select *
 from tbl_approval
 where fk_approver = '100014';
 
-select *
+
+select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, draftDate, documentType, name, documentNo
 from
 (
-    select approvalNo, fk_approver, fk_documentNo, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
     from tbl_approval
-)
-where rn = 1;
+    where APPROVALSTATUS = 0
+) A JOIN tbl_document
+ON fk_documentNo = documentNo
+JOIN tbl_employee
+ON fk_employeeNo = employeeNo
+where rn = 1 and fk_approver = '100014' and temp = 0;
+
+
+select approvalNo, fk_approver, fk_documentNo, approvalOrder, FK_EMPLOYEENO, SUBJECT, DRAFTDATE, TEMP
+from
+(
+    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+    from tbl_approval
+    where APPROVALSTATUS = 0
+) A JOIN tbl_document
+ON fk_documentNo = documentNo
+where rn != 1 and fk_approver = '100014' and temp = 0;
+
+
+select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, draftDate, documentType, name, documentNo
+from
+(
+    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+    from tbl_approval
+    where APPROVALSTATUS = 0
+) A JOIN tbl_document
+ON fk_documentNo = documentNo
+JOIN tbl_employee
+ON fk_employeeNo = employeeNo
+where rn != 1 and fk_approver = '100014' and temp = 0;
+
+
+select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, draftDate, documentType, name, documentNo, approvalDate ,D.status
+from
+(
+    select approvalNo, fk_approver, fk_documentNo, approvalOrder
+    from tbl_approval
+    where APPROVALSTATUS != 0 and fk_approver = '100014'
+) A JOIN tbl_document D
+ON fk_documentNo = documentNo
+JOIN tbl_employee
+ON fk_employeeNo = employeeNo
+where temp = 0;

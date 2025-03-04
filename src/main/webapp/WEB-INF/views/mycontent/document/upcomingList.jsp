@@ -20,7 +20,7 @@
 
 	<div>
 		<div>
-			<h1>결제 예정 문서함</h1>
+			<h1>결재 대기 문서함</h1>
 			<button>목록 다운로드</button>
 			<button>문서 삭제</button>
 		</div>
@@ -33,9 +33,6 @@
 					</th>
 					<th>
 						<span>기안일</span>
-					</th>
-					<th>
-						<span>완료일</span>
 					</th>
 					<th>
 						<span>결재양식</span>
@@ -52,23 +49,17 @@
 					<th>
 						<span>문서번호</span>
 					</th>
-					<th>
-						<span>결재상태</span>
-					</th>
 				</tr>
 			</thead>
 			<tbody>
 				<c:if test="${not empty requestScope.upcomingList}">
 					<c:forEach var="upcoming" items="${requestScope.upcomingList}">
-						<tr>
+						<tr class="document" onclick="location.href='<%= ctxPath%>/document/documentView?documentNo=${upcoming.documentNo}&documentType=${upcoming.documentType}';">
 							<td>
-								<input type="checkbox" />
+								<input type="checkbox" class="document_check" onclick='event.cancelBubble=true;'>
 							</td>
 							<td>
 								<span>${upcoming.draftDate}</span>
-							</td>
-							<td>
-								<span>${upcoming.approvalDate}</span>
 							</td>
 							<td>
 								<span>${upcoming.documentType}</span>
@@ -85,15 +76,12 @@
 							<td>
 								<span>${upcoming.documentNo}</span>
 							</td>
-							<td>
-								<span>${upcoming.status}</span>
-							</td>
 						</tr>
 					</c:forEach>
 				</c:if>
 				<c:if test="${empty requestScope.upcomingList}">
 					<tr>
-						<td colspan="6"><span>결제 예정 문서가 없습니다.</span></td>
+						<td colspan="6"><span>결재 예정 문서가 없습니다.</span></td>
 					</tr>
 				</c:if>
 			</tbody>

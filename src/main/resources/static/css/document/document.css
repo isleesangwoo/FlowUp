@@ -1,0 +1,4 @@
+tr.document:hover {
+	cursor: pointer;
+	background-color: gray;
+}
