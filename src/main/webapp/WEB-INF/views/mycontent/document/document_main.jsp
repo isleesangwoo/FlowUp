@@ -16,6 +16,32 @@
 <%-- 각자 페이지에 해당되는 js 연결 --%>
 <script src="<%=ctxPath%>/js/document/document.js"></script>
 
+<script type="text/javascript">
+	
+	$(document).ready(function(){
+		
+		// 결제 예정 문서와 결제 대기 문서의 갯수 가져오기
+		$.ajax({
+			url:"<%= ctxPath%>/document/getDocCount",
+			dataType:"json",
+			success:function(json){
+				if(json.todoCount != 0) {
+					$("span#todoCount").text(json.todoCount);
+				}
+				if(json.upcomingCount != 0) {
+					$("span#upcomingCount").text(json.upcomingCount);
+				}
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		}); // end of $.ajax({})----------------
+		
+		
+	}); // end of $(document).ready(function()})---------------------------
+	
+</script>
+
 	<%-- 이곳에 각 해당되는 뷰 페이지를 작성해주세요 --%>
 	<!-- 전자결재작성 폼 -->
     <div id="modal" class="modal_bg">
@@ -52,9 +78,12 @@
             <ul>
                 <li>
                     <a href="<%= ctxPath%>/document/todoList">결재 대기 문서</a>
-                    <span class="mail_cnt">5</span> <!-- 콤마처리 해주세요 -->
+                    <span id="todoCount" class="doc_cnt"></span> <!-- 콤마처리 해주세요 -->
                 </li>
-                <li><a href="<%= ctxPath%>/document/upcomingList">결재 예정 문서</a></li>
+                <li>
+                	<a href="<%= ctxPath%>/document/upcomingList">결재 예정 문서</a>
+                	<span id="upcomingCount" class="doc_cnt"></span>
+                </li>
                 <li><a href="<%= ctxPath%>/document/myDocumentList">기안 문서함</a></li>
                 <li><a href="<%= ctxPath%>/document/tempList">임시 저장함</a></li>
                 <li><a href="<%= ctxPath%>/document/approvedList">결재 문서함</a></li>

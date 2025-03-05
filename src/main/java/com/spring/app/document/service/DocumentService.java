@@ -26,7 +26,7 @@ public interface DocumentService {
 
 	// 부서 문서 리스트 가져오기
 	List<DocumentVO> deptDocumentList(String employeeNo);
-
+	
 	// 문서함에서 문서 1개 보여주기
 	Map<String, String> documentView(Map<String, String> paraMap);
 
@@ -38,6 +38,8 @@ public interface DocumentService {
 	
 	// 휴가신청서 결재 요청
 	int annualDraft(Map<String, String> paraMap);
+
+	
 
 
 	

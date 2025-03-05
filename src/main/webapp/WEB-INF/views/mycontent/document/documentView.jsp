@@ -6,11 +6,80 @@
    String ctxPath = request.getContextPath();
 %>
 
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		
+		// 모달에서 취소 버튼을 클릭했을 때 모달이 사라지게 하기
+		$("button#cancel_approval_line").click(e=>{
+			close_modal();
+		});
+		
+		// 모달 바깥 부분을 클릭했을 때 모달이 사라지게 하기
+	    $('.modal_bg:not(.modal_container_document)').click(e=>{
+	    	close_modal();
+	    });
+		
+	}); // end of $(document).ready(function(){})---------------------
+
+	function approve() {
+		$('#approval_line_bg').fadeIn();
+		$('.approval_line_modal_container').css({
+			'display':'block'
+		});
+	}
+	
+	function reject() {
+		alert("거부됨")
+	}
+	
+	// 모달창을 사라지게 하기
+	function close_modal() {
+		$('#approval_line_bg').fadeOut();
+        $('.approval_line_modal_container').css({
+        	'display':''
+		});
+	}
+	
+</script>
+
 
 <jsp:include page="document_main.jsp" />
 
+	<!-- 결재처리 모달 -->
+	<div id="approval_line_bg" class="modal_bg">
+		<!-- 모달창을 띄웠을때의 뒷 배경 -->
+	</div>
+	<div id="approval_line_container" class="approval_line_modal_container">
+		<div>
+			
+		</div>
+		<div>
+			<button id="submit_approval_line">확인</button>
+			<button id="cancel_approval_line">취소</button>
+		</div>
+	</div>
+	
+
 	<div style="width: 1000px;">
 		<h1>${document.documentType}</h1>
+		
+		<!-- 결재해야할 문서 (결재 순서가 자기 차례인 문서)를 보는 경우 결재/반려 버튼이 보이도록 -->
+		<c:if test="${not empty requestScope.approvalList}">
+			<c:set var="isOrder" value="true" />
+			<c:forEach var="approval" items="${requestScope.approvalList}">
+				<c:if test="${isOrder}">
+					<c:if test="${approval.approvalStatus eq 0 && sessionScope.loginuser.employeeNo ne approval.fk_approver}">
+						<c:set var="isOrder" value="false" />
+					</c:if>
+					<c:if test="${approval.approvalStatus eq 0 && sessionScope.loginuser.employeeNo eq approval.fk_approver}">
+						<button onclick="approve()">결재</button>
+						<button onclick="reject()">반려</button>
+					</c:if>
+				</c:if>
+			</c:forEach>
+		</c:if>
+		<!-- 결재해야할 문서 (결재 순서가 자기 차례인 문서)를 보는 경우 결재/반려 버튼이 보이도록 -->
 		
 		<div style="width: 300px; display: inline-block;">
 			<table class="table">
@@ -35,15 +104,18 @@
 			</table>
 		</div>
 		
-		<div style="display: inline-block; border: solid 1px black; width:600px;">
+		<div style="display: inline-block; width:600px;">
 		
 			<c:if test="${not empty requestScope.approvalList}">
 				<c:forEach var="approval" items="${requestScope.approvalList}">
-					<table>
+					<table style="display: inline-block;">
 						<tbody>
 							<tr>
-								<td rowspan="3" style="border: solid 1px black">승인</td>
+								<td rowspan="4" style="border: solid 1px black">승인</td>
 								<td style="border: solid 1px black">${approval.positionName}</td>
+							</tr>
+							<tr>
+								<td style="border: solid 1px black">${approval.approvalStatus}</td>
 							</tr>
 							<tr>
 								<td style="border: solid 1px black">${approval.name}</td>

@@ -138,6 +138,9 @@ public class DocumentService_imple implements DocumentService {
 		return n*m;
 	}
 
+
+	
+
 	
 
 	

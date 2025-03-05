@@ -202,6 +202,37 @@ public class DocumentController {
 	}
 	
 	
+	// 결제 예정 문서와 결제 대기 문서의 갯수 가져오기
+	@GetMapping("getDocCount")
+	@ResponseBody
+	public Map<String, Integer> getDocCount(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		// 테스트 중 로그인 안하고 처리하기 위해 임시로 사원번호 입력
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		else {
+			employeeNo = "100014";
+		}
+		
+		Map<String, Integer> countList = new HashMap<>();
+		
+		int todoCount = service.todoList(employeeNo).size();			// 결재 처리할 문서 수
+		int upcomingCount = service.upcomingList(employeeNo).size();	// 결제 예정인 문서 수
+		
+		countList.put("todoCount", todoCount);
+		countList.put("upcomingCount", upcomingCount);
+		
+		return countList;
+	}
+	
+	
+	
 	// 문서함에서 문서 1개 보기
 	@GetMapping("documentView")
 	public ModelAndView documentView(ModelAndView mav, @RequestParam Map<String, String> paraMap) {

@@ -29,12 +29,10 @@
 </script>
 
 	<div>
-		<div>
-			<h1>기안문서함</h1>
-			<button>목록 다운로드</button>
-			<button>문서 삭제</button>
+		<div class="mt-3 ml-3 mb-3">
+			<h3 class="mb-3">기안문서함</h3>
+			<button class="doc_download">목록 다운로드</button>
 		</div>
-		
 		<table id="myDocumentList" class="table">
 			<thead>
 				<tr>

@@ -129,7 +129,7 @@
 	<!-- 문서함에서 보여줄 결재자 리스트 가져오기 -->
 	<select id="getApprovalList" parameterType="String" resultType="ApprovalVO">
 		select approvalNo, fk_documentNo, fk_approver, approvalOrder, approvalStatus
-			 , to_char(executionDate, 'yyyy-mm-dd') as executionDate, positionname, name
+			 , to_char(executionDate, 'yyyy-mm-dd') as executionDate, positionname, name, approvalStatus
 		from tbl_approval JOIN tbl_employee
 		ON fk_approver = employeeNo JOIN tbl_position
 		ON fk_positionno = positionno
