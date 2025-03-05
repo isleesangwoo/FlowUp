@@ -41,7 +41,8 @@
 	<select id="selectMailList" resultMap="selectMailList_Map" parameterType="HashMap">
 		SELECT M.mailNo, M.fk_employeeNo, M.subject, M.content, 
 		       M.sendDate, M.readStatus, M.deleteStatus, M.saveStatus, M.importantStatus,
-		       e.employeeNo, e.name
+		       e.employeeNo, e.name,
+		       f.Filesize
 		FROM 
 		    ( 
 		        SELECT row_number() OVER (ORDER BY mailNo DESC) AS rno, 
@@ -49,14 +50,24 @@
 		               to_char(sendDate, 'yyyy-mm-dd hh24:mi') AS sendDate,
 		               readStatus, deleteStatus, saveStatus, importantStatus
 		        FROM tbl_mail
-		        WHERE deleteStatus = 0
-		        <!-- saveStatus 값이 null이 아니고 빈 문자열("")도 아닐 경우에만 조건을 추가 -->
-                <if test="saveStatus != null and saveStatus != '' ">
-            		AND saveStatus = #{saveStatus}
-      			</if>
+		        WHERE 1 = 1
+		        
+		        <!-- status 값이 null이 아니고 빈 문자열("")도 아닐 경우에만 조건을 추가 -->
+	            <if test="deleteStatus != null and deleteStatus != ''"> 
+	                AND deleteStatus = #{deleteStatus} 
+	            </if>
+	            <if test="saveStatus != null and saveStatus != ''"> 
+	                AND saveStatus = #{saveStatus} 
+	            </if>
+	            <if test="importantStatus != null and importantStatus != ''"> 
+	                AND importantStatus = #{importantStatus} 
+	            </if>
+
 		    ) M
-		JOIN tbl_employee e
-		  ON M.fk_employeeNo = e.employeeNo
+			JOIN tbl_employee e
+			  ON M.fk_employeeNo = e.employeeNo
+		  	LEFT JOIN tbl_mailFile f
+	  		  ON M.mailNo = f.fk_mailNo
 		
 		<!-- startRno와 endRno가 null이 아닐 때만 페이징 조건을 적용 -->
 	    <if test="startRno != null and endRno != null">
@@ -117,45 +128,139 @@
 	      <!--
 		      특정 유저 empNo를 발신자나 수신자 기준으로 필터할때 추가하기
 		      발신자가 empNo 인 경우
-	          AND M.fk_employeeNo = #{empNo}
+		      AND (M.fk_employeeNo = #{empNo} OR M.receiverEmpNo = #{empNo})
 	      -->
+	      AND M.fk_employeeNo = #{empNo}
 	    ORDER BY M.mailNo DESC
 	</select>
 	
 	
 	<!-- 메일 하나 조회하기 -->
-	<!--
-	<resultMap id="viewOneMail_Map" type="MailVO">
-	-->
- 		<!-- MailVO의 필드 매핑 -->
- 		<!--
-	    <result property="mailNo" 		 column="mailNo"/>
-	    <result property="fk_employeeNo" column="fk_employeeNo"/>
-	    <result property="name" 		 column="name"/>
-	    <result property="subject" 		 column="subject"/>
-	    <result property="content" 		 column="content"/>
-	    <result property="readCount" 	 column="readCount"/>
-	    <result property="regDate" 		 column="regDate"/>
-	    <result property="commentCount"  column="commentCount"/>
-		-->
+	<resultMap id="viewMail" type="MailVO">
+	    <!-- MailVO의 필드 매핑 -->
+	    <result property="mailNo"        column="mailNo"/>
+	    <result property="subject"       column="subject"/>
+	    <result property="content"       column="content"/>
+	    <result property="sendDate"      column="sendDate"/>
+	    <result property="regDate"       column="regDate"/>
+	    <result property="importantStatus" column="importantStatus"/>
+	    <result property="readStatus"    column="readStatus"/>
+	    
+	    <!-- 첨부파일 관련 필드 매핑 -->
+	    <result property="fileSize"      column="fileSize"/>
+	    <result property="orgFileName"   column="orgFileName"/>
+	    <result property="fileName"      column="fileName"/>
 	
-	 	<!-- BoardVO의 필드 매핑 -->
-	 	<!--
-	    <association property="employeevo"  javaType="EmployeeVO">
-	        <result property="employeeNo" 	column="employeeNo"/>
-	        <result property="name" 		column="name"/>
+	    <!-- 참조 정보 관련 필드 매핑 -->
+	    <result property="refStatus"     column="refStatus"/>
+	    <result property="refName"       column="refName"/>
+	    <result property="refMail"       column="refMail"/>
+	    
+	    <!-- EmployeeVO의 필드 매핑 -->
+	    <association property="employeevo" javaType="EmployeeVO">
+	        <result property="employeeNo" column="employeeNo"/>
+	        <result property="name"       column="name"/>
+	        <result property="email"      column="email"/>
 	    </association>
 	</resultMap>
-	<select id="viewOneMail" resultMap="goViewOnePost_Map" parameterType="HashMap">
-		select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount
-		from tbl_mail M
-		join tbl_employee E
-		on M.FK_MAILNO = E.boardNo
-		where mailNo = #{mailNo}
+
+	<select id="viewMail" resultMap="viewMail" parameterType="HashMap">
+	    select M.mailNo, M.subject, M.content, M.sendDate, M.importantStatus, M.readStatus,
+	           f.fileSize, f.orgFileName, f.fileName,
+	           e.employeeNo, e.name, e.email,
+	           r.refStatus, r.refName, r.refMail
+	    from tbl_mail M
+	    left join tbl_mailFile f
+	      on M.mailNo = f.fk_mailNo
+	    left join tbl_referenced r
+	      on M.mailNo = r.fk_mailNo
+	    join tbl_employee e
+	      on M.fk_employeeNo = e.employeeNo
+	    where M.mailNo = #{mailNo}
+	</select>
+
+	
+	
+	<!-- 메일함 정렬 선택 시작 -->
+	<select id="mailListSort" resultMap="selectMailList_Map" parameterType="HashMap">
+	    SELECT 
+	        M.mailNo, M.fk_employeeNo, M.subject, M.content,
+	        to_char(M.sendDate, 'yyyy-mm-dd hh24:mi') AS sendDate,
+	        M.readStatus, M.deleteStatus, M.saveStatus, M.importantStatus,
+	        e.employeeNo, e.name,
+	        f.fileSize
+	    FROM tbl_mail M
+	    JOIN tbl_employee e ON M.fk_employeeNo = e.employeeNo
+	    LEFT JOIN tbl_mailFile f ON M.mailNo = f.fk_mailNo
+	    WHERE M.deleteStatus = 0
+	
+	    <!-- 동적 ORDER BY -->
+	    <if test="sortKey != null and sortKey != ''">
+	        ORDER BY
+	        <!-- 안전하게 처리: sortKey가 subject, sendDate, fileSize 중 하나만 허용 -->
+	        <choose>
+	            <when test="sortKey == 'subject'">
+	                M.subject ASC
+	            </when>
+	            <when test="sortKey == 'sendDate'">
+	                M.sendDate DESC
+	            </when>
+	            <when test="sortKey == 'fileSize'">
+	                f.fileSize DESC
+	            </when>
+	            <otherwise>
+	                M.mailNo DESC
+	            </otherwise>
+	        </choose>
+	    </if>
+	</select>
+	<!-- 메일함 정렬 선택 끝 -->
+	
+	
+	<update id="updateDeleteStatus" parameterType="list">
+	    UPDATE tbl_mail
+	    SET deleteStatus = 1
+	    WHERE mailNo IN
+	    <foreach collection="list" item="mailNo" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	</update>
+	
+   	<!-- deleteStatus=1 인 메일 조회 -->
+	<select id="selectDeletedMail" resultMap="selectMailList_Map">
+	    SELECT 
+	        M.mailNo,
+	        M.fk_employeeNo,
+	        M.subject,
+	        M.content,
+	        to_char(M.sendDate, 'yyyy-mm-dd hh24:mi') AS sendDate,
+	        M.readStatus,
+	        M.deleteStatus,
+	        M.saveStatus,
+	        M.importantStatus,
+	        E.employeeNo AS employeeNo,
+	        E.name AS name,
+	        F.fileSize
+	    FROM tbl_mail M
+	    JOIN tbl_employee E ON M.fk_employeeNo = E.employeeNo
+	    LEFT JOIN tbl_mailFile F ON M.mailNo = F.fk_mailNo
+	    WHERE M.deleteStatus = 1
+	    ORDER BY M.mailNo DESC
 	</select>
 	
-	 -->
-
+	<!-- 총 행수 구하기 (페이지바 계산) -->
+	<select id="getMailCount" resultType="int" parameterType="HashMap">
+	    SELECT COUNT(*)
+	    FROM tbl_mail
+	    WHERE 1=1
+	    <if test="importantStatus != null">
+	        AND importantStatus = #{importantStatus}
+	        <if test="deleteStatus != null"> AND deleteStatus = #{deleteStatus} </if>
+	        <if test="saveStatus != null"> AND saveStatus = #{saveStatus} </if>
+	    </if>
+	</select>
+		
+	
 
 </mapper>
 

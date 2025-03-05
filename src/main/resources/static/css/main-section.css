@@ -41,9 +41,6 @@
     height: var(--size36);
     border-radius: var(--size2);
     background-color: #eee;
-    /*이지혜 넣음*/
-    text-align: center;
-    line-height: var(--size36);
 }
 
 

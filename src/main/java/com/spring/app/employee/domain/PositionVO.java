@@ -2,18 +2,18 @@ package com.spring.app.employee.domain;
 
 public class PositionVO {
 
-	private String positionNo;     // 직급번호
+	private String posiotionNo;     // 직급번호
 	private String positionName;    // 직급명
 	private String salary; 			// 기본급
 	
 	//////////////////////////////////////////////
 	
-	public String getPositionNo() {
-		return positionNo;
+	public String getPosiotionNo() {
+		return posiotionNo;
 	}
 	
-	public void setPositionNo(String positionNo) {
-		this.positionNo = positionNo;
+	public void setPosiotionNo(String posiotionNo) {
+		this.posiotionNo = posiotionNo;
 	}
 	
 	public String getPositionName() {
