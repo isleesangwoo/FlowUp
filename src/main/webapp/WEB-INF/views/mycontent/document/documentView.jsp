@@ -6,6 +6,8 @@
    String ctxPath = request.getContextPath();
 %>
 
+<jsp:include page="document_main.jsp" />
+
 <script type="text/javascript">
 
 	$(document).ready(function(){
@@ -30,7 +32,7 @@
 	}
 	
 	function reject() {
-		alert("거부됨")
+		alert("거부됨");
 	}
 	
 	// 모달창을 사라지게 하기
@@ -43,8 +45,6 @@
 	
 </script>
 
-
-<jsp:include page="document_main.jsp" />
 
 	<!-- 결재처리 모달 -->
 	<div id="approval_line_bg" class="modal_bg">
