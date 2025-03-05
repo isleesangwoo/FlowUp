@@ -1,7 +1,5 @@
 package com.spring.app.commute.domain;
 
-import java.text.DecimalFormat;
-
 public class AnnualVO {
 
 	private String annualNo;		// 연차 고유번호
@@ -20,27 +18,23 @@ public class AnnualVO {
 	
 	public String getTotalAnnual() {
 		
-		DecimalFormat df = new DecimalFormat("###.#");
+		int n_occurAnnual = Integer.parseInt(occurAnnual);
+		int n_overAnnual = Integer.parseInt(overAnnual);
+		int n_addAnnual = Integer.parseInt(addAnnual);
+		int n_totalAnnual = n_occurAnnual + n_overAnnual + n_addAnnual;
 		
-		double n_occurAnnual = Double.parseDouble(occurAnnual);
-		double n_overAnnual = Double.parseDouble(overAnnual);
-		double n_addAnnual = Double.parseDouble(addAnnual);
-		double n_totalAnnual = n_occurAnnual + n_overAnnual + n_addAnnual;
-		
-		totalAnnual = df.format(n_totalAnnual);
+		totalAnnual = "" + n_totalAnnual;
 		
 		return totalAnnual;
 	}
 
 	public String getRemainderAnnual() {
 		
-		DecimalFormat df = new DecimalFormat("###.#");
+		int n_totalAnnual = Integer.parseInt(getTotalAnnual());
+		int n_usedAnnual = Integer.parseInt(usedAnnual);
+		int n_remainderAnnual = n_totalAnnual - n_usedAnnual;
 		
-		double n_totalAnnual = Double.parseDouble(getTotalAnnual());
-		double n_usedAnnual = Double.parseDouble(usedAnnual);
-		double n_remainderAnnual = n_totalAnnual - n_usedAnnual;
-		
-		remainderAnnual = df.format(n_remainderAnnual);
+		remainderAnnual = "" + n_remainderAnnual;
 		
 		return remainderAnnual;
 	}

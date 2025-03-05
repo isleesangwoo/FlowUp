@@ -411,7 +411,13 @@ div.hoverDiv:hover {
 				
 				
 				$.each(json, (index,item)=>{
-
+					
+					
+		//			console.log("확인용 startTime : " + item.startTime);
+					// 확인용 startTime : 2025-02-18 09:54
+		//			console.log("확인용 endTime : " + item.endTime);
+					// 확인용 endTime : 2025-02-18 15:46
+					
 					const selectDay = item.startTime.substring(8, 10); 
 					
 					const starthour = (item.startTime).substring(11, 13); 
@@ -424,7 +430,22 @@ div.hoverDiv:hover {
 					const endCell = Number(endhour) * 6 + Math.floor(Number(endmin)/10);   // 18:41 라면 @@@@@@@@@@@@@|@@@@@@@@@@@@@|@@@@@@@@@@@@|113|114|115|  => 112
 					                  
 					const totalCellCnt = endCell - startCell +1;                                              
+					                                                        
+					for(let workCell=startCell; workCell<=endCell; workCell++) {
+						
+					//	console.log("확인용 selectDay : " +selectDay);
+					//	console.log("확인용 workCell : " +workCell);
+						
+					//	$("table td."+workCell).css({"background-color":"red"});
+						
+					//	$("table."+selectDay+" td").css({"background-color":"blue"});
+						
+	//					$("table."+selectDay+" td."+workCell).css({"background-color":"green"});
+					}
+					
 				
+					
+					
 					let v_html = ``;
 					
 					for(let k=0; k<144; k++) {
@@ -457,7 +478,19 @@ div.hoverDiv:hover {
 		        		
 		        	}
 					
+					
 					$("table."+selectDay+" tbody").html(v_html);
+					
+					
+					
+					
+					/* $("table."+selectDay+" td."+startCell).css({
+						'position' : 'releate'
+					}).html(`
+								<div title="출근시간" style="width: calc(\${tableWidth}px / 144 * \${totalCellCnt}); background-color: #80ff80; padding:10px; z-index:100; border-radius:50px;" >
+									
+								</div>
+							`); */
 					
 				});
 				
@@ -487,7 +520,6 @@ div.hoverDiv:hover {
 			success:function(json) {
     	
 				let total_sec = 0;
-				let monthOvertime_sec = 0;
 				
 				$.each(json, (index,item)=>{
 					
@@ -495,18 +527,14 @@ div.hoverDiv:hover {
 					
 					const weekWorktime = secToHour(worktime_sec);
 
+					
 					const todayWeekNo = String(new Date().getWeek()).padStart(2, '0');
 				
-					const plusMinus = worktime_sec - (40 * 60 * 60);
-					
-					if( plusMinus > 0 ) {
-						monthOvertime_sec = monthOvertime_sec + plusMinus;
-					}
-					
 					if(item.weekNo == todayWeekNo ) {
 						
 						$("div#thisWeekWorktime").html(weekWorktime);
 						
+						const plusMinus = worktime_sec - (40 * 60 * 60);
 						
 						if( plusMinus > 0 ) {
 							$("div#thisWeekWorktime_plus").html(secToHour(plusMinus));
@@ -515,17 +543,20 @@ div.hoverDiv:hover {
 							$("div#thisWeekWorktime_minus").html(secToHour(plusMinus * (-1) ));
 						}
 						
+						
 					}
+					
 					
 					total_sec = total_sec + worktime_sec;
 					
+					
+					
 				});
-
+				
 				const monthWorktime = secToHour(total_sec);
+				
 				$("div#thisMonthWorktime").html(monthWorktime);
 				
-				const monthOvertime = secToHour(monthOvertime_sec);
-				$("div#thisMonthOvertime").html(monthOvertime);
 					
 			},
 			error: function(request, status, error){
@@ -634,20 +665,14 @@ div.hoverDiv:hover {
 
 <div style="display: flex;">
 
-	<div style="width: var(--size250);; height: 100vh; border-right: solid 1px #000; flex-shrink: 0;">
+	<div
+		style="width: var(--size250);; height: 100vh; border-right: solid 1px #000;">
 
 		<jsp:include page="../../common/commute_btn.jsp" />
 
 	</div>
 
-	<div style="width: 100%; padding: 20px;">
-	
-		<div class="ml-1 mr-1 mb-5">
-			
-			<div style="font-size:14pt;">내 근태현황</div>
-			
-		</div>
-	
+	<div style="width: 100%; padding: 5px;">
 		<div class="dateController">
 			<div class="dateTopBar">
 
@@ -706,7 +731,7 @@ div.hoverDiv:hover {
 					
 					<div style="margin:0 auto; width:150px; text-align: center;">
 						<div style="color: #999;">이번달 연장</div>
-						<div id="thisMonthOvertime" style="color: #999; font-size: 20px;">00:00:00</div>
+						<div style="color: #999; font-size: 20px;">00:00:00</div>
 					</div>
 					
 					<div style="margin:0 auto; width:150px; text-align: center;">
