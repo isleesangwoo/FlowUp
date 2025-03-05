@@ -144,7 +144,7 @@
 	    <result property="sendDate"      column="sendDate"/>
 	    <result property="regDate"       column="regDate"/>
 	    <result property="importantStatus" column="importantStatus"/>
-	    <result property="readStatus" column="readStatus"/>
+	    <result property="readStatus"    column="readStatus"/>
 	    
 	    <!-- 첨부파일 관련 필드 매핑 -->
 	    <result property="fileSize"      column="fileSize"/>
@@ -152,9 +152,9 @@
 	    <result property="fileName"      column="fileName"/>
 	
 	    <!-- 참조 정보 관련 필드 매핑 -->
-	    <result property="reference"     column="reference"/>
-	    <result property="referenceName" column="referenceName"/>
-	    <result property="referenceMail" column="referenceMail"/>
+	    <result property="refStatus"     column="refStatus"/>
+	    <result property="refName"       column="refName"/>
+	    <result property="refMail"       column="refMail"/>
 	    
 	    <!-- EmployeeVO의 필드 매핑 -->
 	    <association property="employeevo" javaType="EmployeeVO">
@@ -168,11 +168,11 @@
 	    select M.mailNo, M.subject, M.content, M.sendDate, M.importantStatus, M.readStatus,
 	           f.fileSize, f.orgFileName, f.fileName,
 	           e.employeeNo, e.name, e.email,
-	           r.reference, r.referenceName, r.referenceMail
+	           r.refStatus, r.refName, r.refMail
 	    from tbl_mail M
 	    left join tbl_mailFile f
 	      on M.mailNo = f.fk_mailNo
-	    left join tbl_reference r
+	    left join tbl_referenced r
 	      on M.mailNo = r.fk_mailNo
 	    join tbl_employee e
 	      on M.fk_employeeNo = e.employeeNo

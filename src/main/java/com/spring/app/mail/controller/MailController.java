@@ -80,6 +80,13 @@ public class MailController {
 	        // 휴지통 => deleteStatus=1
 	        paraMap.put("deleteStatus", "1");
 	    }
+	    /*
+	    else if ("sendMail".equals(mailbox)) {
+	        // 임시보관 => saveStatus=1
+	        paraMap.put("saveStatus", "1");
+	    }
+	    */
+	    
 	    else if ("save".equals(mailbox)) {
 	        // 임시보관 => saveStatus=1
 	        paraMap.put("saveStatus", "1");
@@ -148,6 +155,7 @@ public class MailController {
 	    // url에 sizePerPage 파라미터도 붙이기
 	    // String url = "list?sizePerPage=" + n_sizePerPage;
 	    // pageBar 생성 시에도 mailbox를 포함
+	    System.out.println("mailbox : " + mailbox);
 	    String url = request.getContextPath() + "/mail?mailbox=" + mailbox + "&sizePerPage=" + n_sizePerPage;
 	    System.out.println("URL: " + url); // url 로그 출력
 	    

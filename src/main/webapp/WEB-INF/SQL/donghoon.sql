@@ -770,7 +770,7 @@ END;
 select mailNo, fk_employeeNo, subject, content
 from tbl_mail;
 
-select *
+select count(*)
 from tbl_mail;
 
 select *
@@ -797,20 +797,23 @@ WHERE rno BETWEEN 1 AND 5;
 
 
 
-CREATE TABLE tbl_reference
+CREATE TABLE tbl_referenced
 (refMailNo      NUMBER        NOT NULL -- 참조 이메일번호
-,reference      NUMBER(1)     NOT NULL -- 참조수신여부 / 0:수신자, 1:참조자
-,referenceName  VARCHAR2(20)  NOT NULL -- 참조/수신자이름
-,referenceMail  VARCHAR2(50)  NOT NULL -- 참조/수신자이메일
+,refStatus      NUMBER(1)     NOT NULL -- 참조수신여부 / 0:수신자, 1:참조자
+,refName        VARCHAR2(20)  NOT NULL -- 참조/수신자이름
+,refMail        VARCHAR2(50)  NOT NULL -- 참조/수신자이메일
 ,fk_mailNo      NUMBER        NOT NULL -- 메일번호
 ,fk_adrsBNo     NUMBER        NOT NULL -- 주소록 고유번호
 
 ,constraint pk_tbl_referenced_refMailNo primary key (refMailNo)
 ,constraint fk_tbl_referenced_fk_mailNo foreign key(fk_mailNo) references tbl_mail(mailNo)
 ,constraint fk_tbl_addressBook_fk_adrsBNo foreign key(fk_adrsBNo) references tbl_addressBook(adrsBNo)
-,constraint ck_tbl_referenced_reference check( reference in(1,0) )
+,constraint ck_tbl_referenced_refStatus check( refStatus in(1,0) )
 );
 
+drop table tbl_reference;
+
+commit;
 
 create sequence referencedSeq
 start with 1
@@ -824,10 +827,7 @@ select *
 from tbl_mailFile;
 
 select *
-from tbl_tag;
-
-select *
-from tbl_reference;
+from tbl_referenced;
 
 CREATE TABLE tbl_tag
 (tagNo      NUMBER(2)     NOT NULL -- 태그번호
@@ -960,3 +960,6 @@ where importantStatus = 1;
 	      -- AND M.deleteStatus = 0
 	      AND M.fk_employeeNo = 100020
 	    ORDER BY M.mailNo DESC
+        
+        
+    

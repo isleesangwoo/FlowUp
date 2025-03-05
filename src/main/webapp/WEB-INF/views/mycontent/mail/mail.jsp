@@ -27,7 +27,7 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 	  <%-- ==== 메일함 통합 ajax 시작 ==== --%>
 	  function loadMailList(mailbox, currentShowPageNo = 1) {
 		    const sizePerPage = 20; // 페이지 크기 (기본값)
-
+		    
 		    $.ajax({
 		        url: ctxPath + "/mail/mailList", // 공통 메서드 매핑
 		        type: "GET",
@@ -57,7 +57,8 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 
 		                let name = mail.employeevo ? mail.employeevo.name : '발신자 없음';
 		                let size = mail.fileSize ? mail.fileSize + "KB" : "";
-
+		                const ctxPath = "<%= ctxPath %>";
+		                
 		                html += `
 		                <tr class="mailReadTitle">
 		                    <td>
@@ -69,7 +70,12 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 		                        <i class="fa-solid fa-paperclip"></i>
 		                    </td>
 		                    <td id="mailName">\${name}</td>
-		                    <td id="mailTitle">\${mail.subject}</td>
+		                    <td id="mailTitle">
+	                   			<a href="\${ctxPath}/mail/viewMail?mailNo=\${mail.mailNo}">
+								    \${mail.subject}
+								</a>
+		                    </td>
+
 		                    <td id="right-content">
 		                        <span id="sendDate">\${mail.sendDate}</span>
 		                        <span id="fileSize">\${size}</span>
@@ -104,18 +110,28 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 		    });
 		}
 	  
+	  	
 		// 이벤트 위임을 사용하여 동적 요소에 이벤트 바인딩
 		$(document).on("click", `#mailTable a[href^='${ctxPath}/mail/viewMail']`, function(e) {
 		    e.preventDefault(); // 기본 동작(페이지 이동) 막기
 		    const url = $(this).attr("href"); // 클릭한 링크의 URL 가져오기
 		    window.location.href = url; // 해당 URL로 이동
 		});
+	  	
 
 		// 받은메일함 조회
 		$("#receivedMail").on("click", function(e){
 		    e.preventDefault(); // a 태그 이동 막기
 		    loadMailList("default"); // 받은메일함 조회
 		});
+		
+		// 보낸메일함 조회
+		/* 
+		$("#sendMail").on("click", function(e){
+		    e.preventDefault(); // a 태그 이동 막기
+		    loadMailList("send"); // 보낸메일함 조회
+		});
+		 */
 	  
 		// 휴지통 조회
 		$("#deleteMail").on("click", function(e){
@@ -135,8 +151,6 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 		    loadMailList("save"); // 중요메일함 조회
 		});
 		<%-- ==== 메일함 통합 ajax 끝 ==== --%>
-	  
-	  
 	  
 	  
 
@@ -354,6 +368,7 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
    $(document).ready(function() {
 	    loadPage(1); // 처음 페이지 로드 시 1페이지 데이터를 불러옴
    });
+   
 </script>	
 
 	<%-- 이곳에 각 해당되는 뷰 페이지를 작성해주세요 --%>
@@ -694,11 +709,6 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
                    			<a href="<%= ctxPath %>/mail/viewMail?mailNo=${mail.mailNo}">
 							    ${mail.subject}
 							</a>
-							<%--
-					        <a href="${ctxPath}/mail/viewMail?mailNo=${mail.mailNo}">
-					            ${mail.subject}
-					        </a>
-					        --%>
                    		</td>
 					    <td id="right-content">
 					        <span id="sendDate">${mail.sendDate}</span>

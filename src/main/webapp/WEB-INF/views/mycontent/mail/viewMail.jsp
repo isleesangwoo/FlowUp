@@ -258,7 +258,7 @@
         <div class="mail_menu_container">
             <ul>
                 <li id="receivedMail">
-                    <a href="<%=request.getContextPath()%>/mail/mail">받은메일함</a>
+                    <a href="<%=request.getContextPath()%>/mail">받은메일함</a>
                     <span class="mail_cnt">${totalCount}</span> <!-- 콤마처리 해주세요 -->
                 </li>
                 <li id="sendMail"><a href="#">보낸메일함</a></li>
