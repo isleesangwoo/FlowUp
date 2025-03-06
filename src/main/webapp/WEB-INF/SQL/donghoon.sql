@@ -888,9 +888,9 @@ join tbl_employee e
 where M.mailNo = 100145;
 ----------------------------------------------------------------
 
-SELECT importantStatus
+SELECT *
 FROM tbl_mail
-WHERE mailNo = 100150;
+WHERE mailNo = 100154;
 
 
 SELECT mailNo, subject, fk_employeeNo, importantStatus
@@ -970,7 +970,11 @@ where importantStatus = 1;
 	      AND M.fk_employeeNo = 100020
 	    ORDER BY M.mailNo DESC
         
-        	    select M.mailNo, M.subject, M.content, M.sendDate, M.importantStatus, M.readStatus,
+        select *
+from tbl_mailFile;
+
+        
+        select M.mailNo, M.subject, M.content, M.sendDate, M.importantStatus, M.readStatus,
 	           f.fileSize, f.orgFileName, f.fileName,
 	           e.employeeNo, e.name, e.email,
 	           r.refStatus, r.refName, r.refMail
@@ -983,9 +987,11 @@ where importantStatus = 1;
 	      on M.fk_employeeNo = e.employeeNo
 	    where M.mailNo = 100154
         
-select *
-from tbl_mailFile;
 
-
+	<select id="getMailFile" resultType="MailFileVO">
+	    SELECT fileNo, fileName, orgFileName, fileSize, fk_mailNo
+	    FROM tbl_mailFile
+	    WHERE fk_mailNo = 100154
+	</select>
 
     

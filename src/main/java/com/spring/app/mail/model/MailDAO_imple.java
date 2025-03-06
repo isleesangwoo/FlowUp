@@ -23,4 +23,6 @@ public abstract class MailDAO_imple implements MailDAO {
     public List<MailVO> selectDeletedMail() {
         return sqlsession.selectList("com.spring.app.mail.model.MailDAO.selectDeletedMail");
     }
+
+    
 }

@@ -159,11 +159,11 @@
 	    </association>
 	    
    	    <!-- 첨부파일 관련 필드 매핑 -->
-   	    <association property="mailfilevo" javaType="mailFileVO">
+   	    <collection property="mailfilevo" ofType="MailFileVO">
 		    <result property="fileSize"      column="fileSize"/>
 		    <result property="orgFileName"   column="orgFileName"/>
 		    <result property="fileName"      column="fileName"/>
-	    </association>
+	    </collection>
 	</resultMap>
 
 	<select id="viewMail" resultMap="viewMail" parameterType="HashMap">
@@ -261,6 +261,16 @@
 	    </foreach>
 	</update>
 	
+	<!-- readStatus=1 로 변경된 체크된 메일 조회 -->
+	<select id="getUpdatedMailStatus" resultType="MailVO">
+	    SELECT mailNo, readStatus
+	    FROM tbl_mail
+	    WHERE mailNo IN
+	    <foreach collection="list" item="mailNo" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	</select>
+	
 	
 	<!-- 총 행수 구하기 (페이지바 계산) -->
 	<select id="getMailCount" resultType="int" parameterType="HashMap">
@@ -274,7 +284,11 @@
 	    </if>
 	</select>
 		
-	
+	<select id="getMailFile" resultType="MailFileVO">
+	    SELECT fileNo, fileName, orgFileName, fileSize, fk_mailNo
+	    FROM tbl_mailFile
+	    WHERE fk_mailNo = #{mailNo}
+	</select>
 
 </mapper>
 

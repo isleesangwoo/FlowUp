@@ -1,9 +1,11 @@
 package com.spring.app.mail.domain;
 
+import java.util.List;
+
 import com.spring.app.employee.domain.EmployeeVO;
 
 public class MailVO {
-
+	
 	private String mailNo;           // 메일번호
 	private String subject;          // 메일제목
 	private String content;          // 메일내용
@@ -14,10 +16,10 @@ public class MailVO {
 	private String sendDate;         // 전송날짜
 	
 	private String fk_employeeNo;    // 사번 (직원 테이블 참조)
-	private String fk_fileNo;
 	
 	private EmployeeVO employeevo;   // employee 테이블 조인
-	private MailFileVO fileNo;       // 
+	
+	private List<MailFileVO> mailfilevo;   // mailfile 테이블 조인
 	
 	public String getMailNo() {
 		return mailNo;
@@ -79,13 +81,12 @@ public class MailVO {
 	public void setEmployeevo(EmployeeVO employeevo) {
 		this.employeevo = employeevo;
 	}
-	public MailFileVO getFileNo() {
-		return fileNo;
+	public List<MailFileVO> getMailfilevo() {
+		return mailfilevo;
 	}
-	public void setFileNo(MailFileVO fileNo) {
-		this.fileNo = fileNo;
+	public void setMailfilevo(List<MailFileVO> mailfilevo) {
+		this.mailfilevo = mailfilevo;
 	}
-	
 	
 	
 	

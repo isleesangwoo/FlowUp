@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
+import com.spring.app.mail.domain.MailFileVO;
 import com.spring.app.mail.domain.MailVO;
 
 @Mapper //@Mapper 어노테이션을 붙여서 DAO 역할의 Mapper 인터페이스 파일을 만든다. 
@@ -59,6 +60,13 @@ public interface MailDAO {
 
 	// 체크된 메일 readStatus 1로 업데이트
 	int updateCheckReadStatus(List<Integer> mailNoList);
+
+	// 한개 메일 첨부파일의 파일명, 기존파일명, 새로운파일명, 파일사이즈 얻어오기
+	List<MailFileVO> getMailFile(Map<String, String> paraMap);
+
+	// 체크박스 체크된 메일 readStatus 1로 업데이트 하고 아이콘 변경
+	List<MailVO> getUpdatedMailStatus(List<Integer> mailNoList);
+
 
 	
 }

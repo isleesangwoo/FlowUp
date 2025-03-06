@@ -56,6 +56,9 @@ public interface MailService {
 	// 체크된 메일 readStatus 1로 업데이트
 	int readMailStatus(List<Integer> mailNoList);
 
+	// 체크박스 체크된 메일 readStatus 1로 업데이트 하고 아이콘 변경
+	List<MailVO> getUpdatedMailStatus(List<Integer> mailNoList);
+
 
 
 	
