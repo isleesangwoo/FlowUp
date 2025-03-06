@@ -15,6 +15,13 @@
       <typeAlias type="com.spring.app.document.domain.DocumentVO" alias="DocumentVO"/>
       <typeAlias type="com.spring.app.reservation.domain.AssetVO" alias="AssetVO"/>
       <typeAlias type="com.spring.app.mail.domain.MailVO" alias="MailVO"/>
+      <typeAlias type="com.spring.app.reservation.domain.AssetReservationVO" alias="AssetReservationVO"/>
+      <typeAlias type="com.spring.app.commute.domain.AnnualVO" alias="AnnualVO"/>
+      <typeAlias type="com.spring.app.board.domain.PostFileVO" alias="PostFileVO"/>
+      <typeAlias type="com.spring.app.commute.domain.SalaryVO" alias="SalaryVO"/>
+      <typeAlias type="com.spring.app.document.domain.ApprovalVO" alias="ApprovalVO"/>
+      <typeAlias type="com.spring.app.mail.domain.MailFileVO" alias="MailFileVO"/>
+      <typeAlias type="com.spring.app.employee.domain.AddressBookVO" alias="AddressBookVO"/>
    </typeAliases>
 
 </configuration>

@@ -6,12 +6,19 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.spring.app.common.AES256;
 import com.spring.app.common.Sha256;
+import com.spring.app.employee.domain.AddressBookVO;
 import com.spring.app.employee.domain.EmployeeVO;
 import com.spring.app.employee.model.EmployeeDAO;
 
@@ -44,7 +51,6 @@ public class EmployeeService_imple implements EmployeeService {
 
 		 paraMap.put("passwd", Sha256.encrypt(paraMap.get("passwd")));
 
-		// 시키기
 
 		EmployeeVO loginuser = dao.getLoginEmployee(paraMap);
 
@@ -143,9 +149,18 @@ public class EmployeeService_imple implements EmployeeService {
 
 
 	// === #ljh9.회원추가 처리 === //
+	
 	@Override
+	@Transactional(value="transactionManager_mymvc_user", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	public int insert_employee(EmployeeVO empvo) {
+		
 		int insert_employee = dao.insert_employee(empvo);
+
+		if(insert_employee == 1) {
+			
+			insert_employee = dao.insert_annual(empvo.getEmployeeNo());
+		}
+		
 		return insert_employee;
 	}
 
@@ -154,6 +169,85 @@ public class EmployeeService_imple implements EmployeeService {
 	@Override
 	public List<Map<String, String>> departmentno_select() {
 		List<Map<String, String>> mapList = dao.departmentno_select();
+		return mapList;
+	}
+
+
+	// === 직급번호, 직급명 알아오기 === //
+	@Override
+	public List<Map<String, String>> positionno_select() {
+		List<Map<String, String>> mapList = dao.positionno_select();
+		return mapList;
+	}
+
+	// === 부서번호별 팀번호 알아오기 ===
+	@Override
+	public List<Map<String, String>> teamNo_seek_BydepartmentNo(String departmentNo) {
+		List<Map<String, String>> mapList = dao.teamNo_seek_BydepartmentNo(departmentNo);
+		return mapList;
+	}
+
+
+
+	// 로그아웃 처리하기
+	@Override
+	public ModelAndView logout(ModelAndView mav, HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		session.invalidate();
+		
+		String message = "로그아웃 되었습니다.";
+		String loc = request.getContextPath()+"/employee/login";
+		
+		mav.addObject("message", message);
+		mav.addObject("loc", loc);
+		
+		mav.setViewName("msg");
+		
+		return mav;
+	}
+
+
+	// === 내 정보 수정하기 === //
+	@Override
+	public int updateInfoEnd(EmployeeVO empvo) {
+		int n = dao.updateInfoEnd(empvo);
+		return n;
+	}
+
+
+	// ==== 주소록 추가
+	@Override
+	public int insert_addressBook(AddressBookVO adrsVO) {
+
+		 int n = dao.insert_addressBook(adrsVO);
+		
+		return n;
+	}
+
+
+	//===== 전체 주소록 보여주기 ======
+	@Override
+	public List<Map<String, String>> all_address_data(String fk_employeeNo) {
+		
+		List<Map<String, String>> mapList = dao.all_address_data_list(fk_employeeNo);
+		
+		return mapList;
+	}
+
+
+	// 부서별 주소록 목록 가져오기
+	@Override
+	public List<Map<String, String>> department_address_data(String fk_employeeNo) {
+		List<Map<String, String>>mapList=dao.department_address_data(fk_employeeNo);
+		return mapList;
+	}
+
+
+	// ==== 외부 주소록 목록 가져오기 ====
+	@Override
+	public List<Map<String, String>> external_address_data(String fk_employeeNo) {
+		List<Map<String, String>> mapList = dao.external_address_data(fk_employeeNo);
 		return mapList;
 	}
 

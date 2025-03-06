@@ -3,7 +3,7 @@ package com.spring.app.employee.domain;
 public class AddressBookVO {
 
 	private String addressBookNo;   // 주소록고유번호
-	private String FK_employeeNo;   // 사번
+	private String fk_employeeNo;   // 사번
 	private String firstName;       // 성
 	private String middleName;      // 중간이름
 	private String lastName;        // 이름(마지막 이름)
@@ -12,7 +12,7 @@ public class AddressBookVO {
 	private String rank;            // 직위
 	private String email;           // 이메일  
 	private String phoneNo;         // 휴대전화
-	private String directCal;       // 내선번호
+	private String directCall;       // 내선번호
 	private String companyAddress;  //회사주소
 	private String profileImg;		// 프로필 이미지
 	
@@ -25,15 +25,16 @@ public class AddressBookVO {
 	public void setAddressBookNo(String addressBookNo) {
 		this.addressBookNo = addressBookNo;
 	}
+
 	
-	public String getFK_employeeNo() {
-		return FK_employeeNo;
+	public String getFk_employeeNo() {
+		return fk_employeeNo;
 	}
-	
-	public void setFK_employeeNo(String fK_employeeNo) {
-		FK_employeeNo = fK_employeeNo;
+
+	public void setFk_employeeNo(String fk_employeeNo) {
+		this.fk_employeeNo = fk_employeeNo;
 	}
-	
+
 	public String getFirstName() {
 		return firstName;
 	}
@@ -97,12 +98,12 @@ public class AddressBookVO {
 		this.phoneNo = phoneNo;
 	}
 	
-	public String getDirectCal() {
-		return directCal;
+	public String getDirectCall() {
+		return directCall;
 	}
 	
-	public void setDirectCal(String directCal) {
-		this.directCal = directCal;
+	public void setDirectCall(String directCall) {
+		this.directCall = directCall;
 	}
 	
 	public String getCompanyAddress() {
