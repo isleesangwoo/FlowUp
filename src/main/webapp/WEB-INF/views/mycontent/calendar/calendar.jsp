@@ -8,8 +8,8 @@
     //     /myspring
 %>
 
-<jsp:include page="../../header/header.jsp" />
- 
+
+ <jsp:include page="../../header/header.jsp" />
 <%-- 각자 페이지에 해당되는 css 연결 --%>
 <link href="<%=ctxPath%>/css/email/email_main.css" rel="stylesheet">
 
@@ -437,8 +437,8 @@ function showCompanyCal(){
 						 html += "<td style='width:60%; padding: 3px 0px;'><input type='checkbox' name='com_smcatgono' class='calendar_checkbox com_smcatgono' style='margin-right: 3px;' value='"+item.smcatgono+"' checked id='com_smcatgono_"+index+"'/><label for='com_smcatgono_"+index+"'>"+item.smcatgoname+"</label></td>";  
 						 
 						 <%-- 사내 캘린더 추가를 할 수 있는 직원은 직위코드가 3 이면서 부서코드가 4 에 근무하는 사원이 로그인 한 경우에만 가능하도록 조건을 걸어둔다. 
-						 if("${sessionScope.loginuser.fk_pcode}" =='3' && "${sessionScope.loginuser.fk_dcode}" == '4') { --%>
-						 if("${sessionScope.loginuser.gradelevel}" =='10') {
+						 if("${sessionScope.loginuser.securityLevel}" =='3' && "${sessionScope.loginuser.securityLevel}" == '4') { --%>
+						 if("${sessionScope.loginuser.securityLevel}" =='10') {
 							 html += "<td style='width:20%; padding: 3px 0px;'><button class='btn_edit' data-target='editCal' onclick='editComCalendar("+item.smcatgono+",\""+item.smcatgoname+"\")'><i class='fas fa-edit'></i></button></td>";  
 							 html += "<td style='width:20%; padding: 3px 0px;'><button class='btn_edit delCal' onclick='delCalendar("+item.smcatgono+",\""+item.smcatgoname+"\")'><i class='fas fa-trash'></i></button></td>";
 						 }

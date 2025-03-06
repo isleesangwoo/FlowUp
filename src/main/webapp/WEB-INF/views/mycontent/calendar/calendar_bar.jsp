@@ -15,12 +15,9 @@
 <style type="text/css">
 
 div#wrapper1{
-	float: left; display: inline-block; width: 20%; margin-top:250px; font-size: 13pt;
+	display: inline-block; width: 100%; font-size: 14px; margin-top:10px;
 }
 
-div#wrapper2{
-	display: inline-block; width: 80%; padding-left: 20px;
-}
 
 /* ========== full calendar css 시작 ========== */
 .fc-header-toolbar {
@@ -55,8 +52,19 @@ button.btn_normal{
 
 button.btn_edit{
 	border: none;
-	background-color: #fff;
 }
+
+#modal_addComCal {
+	position: fixed;
+	top:0px;
+	z-index: 9 !important;
+}
+.modal-backdrop {
+	position: fixed;
+	top:0px;
+	z-index: 0 !important;
+}
+
 </style>
 
 <!-- 메일작성 폼 -->
@@ -82,18 +90,6 @@ button.btn_edit{
         </button>
         <!-- === 메일 작성 버튼 === -->
 
-        <div class="mail_menu_container">
-            <ul>
-                <li>
-                    <a href="#">받은메일함</a>
-                </li>
-                <li><a href="#">보낸메일함</a></li>
-                <li><a href="#">임시보관함</a></li>
-                <li><a href="#">태그메일함</a></li>
-                <li><a href="#">중요메일함</a></li>
-                <li><a href="#">휴지통</a></li>
-            </ul>
-        </div>
 		
 		<div id="wrapper1">
 				<input type="hidden" value="100012" id="fk_userid"/>

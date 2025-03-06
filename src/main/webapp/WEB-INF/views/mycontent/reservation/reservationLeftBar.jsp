@@ -60,55 +60,10 @@
 
 	      <div class="board_menu_container">
 	          <ul>
-				<%-- 대분류에가 있는 경우 --%>
-				<c:if test="${not empty requestScope.assetList}">
-					<c:forEach var="assetMap" items="${requestScope.assetList}" varStatus="index">
-						<li>
-		                    <div>
-								<div class="assetTitleBtn" style="justify-content: space-between; display: flex;">
-									<span style="pointer-events: none;">${assetMap.assetTitle}</span>
-									<span>
-										<a href="<%= ctxPath%>/reservation/showReservationOne?assetNo=${assetMap.assetNo}"><i class="fa-solid fa-gear"></i></a>
-										<i class="fa-solid fa-trash disableBoardIcon deleteAsset" id="${assetMap.assetNo}"></i>
-									</span>
-								</div> <!-- 대분류 명 -->
-								
-								<%-- 대분류에 대한 상세 자산이 있는 경우 --%>
-								<c:if test="${not empty requestScope.assetDetailList}">
-									
-									<div class="assetDetailList" style="display:none;">
-										<c:forEach var="assetDetailMap" items="${requestScope.assetDetailList}">
-										
-											<c:if test="${assetDetailMap.fk_assetNo eq assetMap.assetNo}">
-											
-												<a href="<%= ctxPath%>/reservation/showReservationDeOne?assetDetailNo=${assetDetailMap.assetDetailNo}&assetName=${assetDetailMap.assetName}"><div>${assetDetailMap.assetName}</div></a> <!-- 상세 명 -->
-												
-											</c:if>	
-											
-										</c:forEach>
-									</div>
-									
-								</c:if>
-								<%-- 대분류에 대한 상세 자산이 있는 경우 --%>
-								<%-- 대분류에 대한 상세 자산이 없는 경우 --%>
-								<c:if test="${empty requestScope.assetDetailList}">
-									<div class="assetDetailList" style="display:none;">
-										<div>자산이 없습니다.</div>
-									</div>
-								</c:if>
-								<%-- 대분류에 대한 상세 자산이 없는 경우 --%>
-							</div>
-		                </li>
-					</c:forEach>
-	            </c:if>
-				<%-- 대분류에가 있는 경우 --%>
-				<%-- 대분류에가 없는 경우 --%>
-	            <c:if test="${empty requestScope.assetList}">
-					<li>
-	                    <div>등록된 자산이 없습니다.</div>
-	                </li>
-				</c:if>
-				<%-- 대분류에가 없는 경우 --%>
+				
+				
+				<!--  여기 들어옴  -->
+				
 	          </ul>
 	      </div>
 	  </div>
@@ -121,81 +76,72 @@
 	
 <script>
 	$(document).ready(function(){  
+		<%--  ==== 스마트 에디터 구현 시작 등록창 ==== --%>
+		//전역변수
+	    var obj = [];
+	    
+	    //스마트에디터 프레임생성
+	    nhn.husky.EZCreator.createInIFrame({
+	        oAppRef: obj,
+	        elPlaceHolder: "assetInfo",
+	        sSkinURI: "<%= ctxPath%>/smarteditor/SmartEditor2Skin.html",
+	        htParams : {
+	            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseToolbar : true,            
+	            // 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseVerticalResizer : true,    
+	            // 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+	            bUseModeChanger : true,
+	        }
+	    });
+	  <%--  ==== 스마트 에디터 구현 끝 ==== --%>
+	  
+	  
+	  // ================ 대분류 등록버튼 ================ //
+	  $("button#addReserBtn").click(function(){
 		  
-		
-		
-		  <%--  ==== 스마트 에디터 구현 시작 ==== --%>
-			//전역변수
-		    var obj = [];
-		    
-		    //스마트에디터 프레임생성
-		    nhn.husky.EZCreator.createInIFrame({
-		        oAppRef: obj,
-		        elPlaceHolder: "assetInfo",
-		        sSkinURI: "<%= ctxPath%>/smarteditor/SmartEditor2Skin.html",
-		        htParams : {
-		            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
-		            bUseToolbar : true,            
-		            // 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
-		            bUseVerticalResizer : true,    
-		            // 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
-		            bUseModeChanger : true,
-		        }
-		    });
-		  <%--  ==== 스마트 에디터 구현 끝 ==== --%>
+		  <%-- === 스마트 에디터 구현 시작 === --%>
+		   // id가 content인 textarea에 에디터에서 대입
+	       obj.getById["assetInfo"].exec("UPDATE_CONTENTS_FIELD", []);
+		  <%-- === 스마트 에디터 구현 끝 === --%>
 		  
+		  // === 글제목 유효성 검사 === 
+	      const subject = $("input:text[name='assetTitle']").val().trim();	  
+	      if(subject == "") {
+	    	  alert("대분류명을 입력하세요!!");
+	    	  $("input:text[name='assetTitle']").val("");
+	    	  return; // 종료
+	      }	
 		  
-		  // ================ 대분류 등록버튼 ================ //
-		  $("button#addReserBtn").click(function(){
-			  
-			  <%-- === 스마트 에디터 구현 시작 === --%>
-			   // id가 content인 textarea에 에디터에서 대입
-		       obj.getById["assetInfo"].exec("UPDATE_CONTENTS_FIELD", []);
-			  <%-- === 스마트 에디터 구현 끝 === --%>
-			  
-			  // === 글제목 유효성 검사 === 
-		      const subject = $("input:text[name='assetTitle']").val().trim();	  
-		      if(subject == "") {
-		    	  alert("대분류명을 입력하세요!!");
-		    	  $("input:text[name='assetTitle']").val("");
-		    	  return; // 종료
-		      }	
-			  
-			  // === 글내용 유효성 검사(스마트 에디터를 사용할 경우) ===
-			  let content_val = $("textarea[name='assetInfo']").val().trim();
-			  
-		      content_val = content_val.replace(/&nbsp;/gi, "");  // 공백(&nbsp;)을 "" 으로 변환
+		  // === 글내용 유효성 검사(스마트 에디터를 사용할 경우) ===
+		  let content_val = $("textarea[name='assetInfo']").val().trim();
+		  
+	      content_val = content_val.replace(/&nbsp;/gi, "");  // 공백(&nbsp;)을 "" 으로 변환
 
-		      content_val = content_val.substring(content_val.indexOf("<p>")+3);
-			  
-		      content_val = content_val.substring(0, content_val.indexOf("</p>"));
-		     
-		      if(content_val.trim().length == 0) {
-		    	  alert("소개내용을 입력하세요!!");
-		    	  return; // 종료
-		      }
-		      
-			  
-			  
-			  
-		    	  
-		      // 폼(form)을 전송(submit)
-		      const frm = document.addReserFrm;
-		      frm.method = "post";
-		      frm.action = "<%= ctxPath%>/reservation/reservationAdd";
-		      frm.submit();
-		  });
-		  // ================ 대분류 등록버튼 ================ //
+	      content_val = content_val.substring(content_val.indexOf("<p>")+3);
 		  
-		  
-		  
-		  
-		  
-		  
-		  
-		  
+	      content_val = content_val.substring(0, content_val.indexOf("</p>"));
+	     
+	      if(content_val.trim().length == 0) {
+	    	  alert("소개내용을 입력하세요!!");
+	    	  return; // 종료
+	      }
+	      
+	      // 폼(form)을 전송(submit)
+	      const frm = document.addReserFrm;
+	      frm.method = "post";
+	      frm.action = "<%= ctxPath%>/reservation/reservationAdd";
+	      frm.submit();
+	  });
+	  // ================ 대분류 등록버튼 ================ //
+	  
+		
+		
+		
+		
+
 		  // ================ 소분류 토글 ================ //
-		  $('div.assetTitleBtn').click(e=>{
+		  $(document).on('click', 'div.assetTitleBtn', e=>{
 			  
 			  if (!$(e.target).hasClass('fa-gear')) {
 			  		$(e.target).next().toggle();
@@ -205,17 +151,12 @@
 		  // ================ 소분류 토글 ================ //
 
 		  
-		  
-		  
-		  
-		  
-		  
-		  
+
 		  
 		  
 		  
 		  // ================ 대분류 삭제 ================ //
-			$('.deleteAsset').click(e => {
+			$(document).on('click', '.deleteAsset', e => {
 				
 				const thisAssetNo = $(e.target).attr('id'); 
 					
@@ -228,7 +169,7 @@
 				        dataType: "json",
 				        success: function(json) {
 				            if (json.result == 1) {
-				            	location.reload(true);
+				            	resetLeftBar();
 				            }
 				            if (json.result == 0) {
 				                alert('삭제가 실패되었습니다.');
@@ -243,7 +184,8 @@
 
 			});
 		  // ================ 대분류 삭제 ================ //
-
+		  
+		  
 		  
 		  
 		  

@@ -165,24 +165,71 @@ a {
 	gap: var(--size8);
 	margin: auto; 
 	padding-top: var(--size24);
-}
-
-.top_btn_box{
-	margin-bottom: var(--size12);
+	margin-bottom: 10px;
 }
 
 
-#assetModal {
-	width: 500px;
-	height: 300px;
+
+#assetModal, #assetModal2 {
+	min-width: 500px;
+	width: auto;
+	height: auto;
 	z-index: 100;
 	border-radius: 10px;
 	background-color: #fff;
-	position: absolute;
+	position: fixed;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
 	box-sizing: border-box;
 	padding: var(--size24);
 	display: none;
+	filter: drop-shadow(4px 5px 22px rgba(0, 0, 0, 0.2));
+}
+
+
+#addAsset, #addFixtures {
+	width: max-content;
+	cursor: pointer;
+	box-sizing: border-box;
+	padding: 8px 10px;
+}
+
+#addAsset:hover, #addFixtures:hover{
+	background-color: #eee;
+}
+
+
+
+#assetModal > input, #assetModal2 > div input {
+	display: inline-block;
+    box-sizing: border-box;
+    border: 1px solid #dbdbdb;
+    border-radius: 4px;
+}
+
+
+#goAddAsset {
+	margin-top: 40px;
+    text-align: center;
+    padding: 10px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    background-color: #2985db;
+    color: #fff;
+}
+
+.assetNameTitle {
+	display: inline-block;
+	width: 100px;
+}
+
+.top_btn_box {
+	display: flex;
+	gap: 12px;
+	align-items: center;
+}
+
+.midDeleteOne {
+	cursor: pointer;
 }
