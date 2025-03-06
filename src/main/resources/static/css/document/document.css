@@ -22,7 +22,7 @@ button.doc_delete:hover {
 	background-color: gray;
 }
 
-.approval_line_modal_container {
+.box_modal_container {
 	text-align: left;
 	border-radius: 3%;
 	display: none;
@@ -37,4 +37,29 @@ button.doc_delete:hover {
 	transform: translate(-50%, -50%); 
 	background-color: #fff;
 	overflow: hidden;
+}
+
+div#approve_modal_container th {
+	width: 150px;
+}
+
+div#approve_modal_container tr {
+	line-height: 80px;
+}
+
+th.reason {
+	vertical-align: top;
+}
+
+button.approve_btn {
+	padding: 2px;
+	font-size: 20px;
+	background-color: white;
+	border: solid 0.5px gray;
+	border-radius: 3px;
+}
+
+textarea.approve_modal_reason {
+	width: 410px;
+	height: 150px;
 }

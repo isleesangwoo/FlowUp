@@ -50,7 +50,7 @@
 
 		<div class="mail_menu_container">
 			<ul>
-				<li><a href="<%= ctxPath%>/document/annual">휴가신청</a></li>
+				<li onclick="location.href='<%= ctxPath%>/document/annual'"><a>휴가신청</a></li>
 				<li><a href="#">업무기안</a></li>
 				<li><a href="#">지출품의</a></li>
 				<li><a href="#">연장근무신청</a></li>
@@ -76,18 +76,18 @@
 
         <div class="mail_menu_container">
             <ul>
-                <li>
-                    <a href="<%= ctxPath%>/document/todoList">결재 대기 문서</a>
+                <li onclick="location.href='<%= ctxPath%>/document/todoList'">
+                    <a>결재 대기 문서</a>
                     <span id="todoCount" class="doc_cnt"></span> <!-- 콤마처리 해주세요 -->
                 </li>
-                <li>
-                	<a href="<%= ctxPath%>/document/upcomingList">결재 예정 문서</a>
+                <li onclick="location.href='<%= ctxPath%>/document/upcomingList'">
+                	<a>결재 예정 문서</a>
                 	<span id="upcomingCount" class="doc_cnt"></span>
                 </li>
-                <li><a href="<%= ctxPath%>/document/myDocumentList">기안 문서함</a></li>
-                <li><a href="<%= ctxPath%>/document/tempList">임시 저장함</a></li>
-                <li><a href="<%= ctxPath%>/document/approvedList">결재 문서함</a></li>
-                <li><a href="<%= ctxPath%>/document/deptDocumentList">부서문서함</a></li>
+                <li onclick="location.href='<%= ctxPath%>/document/myDocumentList'"><a>기안 문서함</a></li>
+                <li onclick="location.href='<%= ctxPath%>/document/tempList'"><a>임시 저장함</a></li>
+                <li onclick="location.href='<%= ctxPath%>/document/approvedList'"><a>결재 문서함</a></li>
+                <li onclick="location.href='<%= ctxPath%>/document/deptDocumentList'"><a>부서 문서함</a></li>
             </ul>
         </div>
     </div>

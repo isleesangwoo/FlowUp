@@ -12,48 +12,41 @@ String ctxPath = request.getContextPath();
 
 	$(document).ready(function(){
 		
-		// 모달에서 취소 버튼을 클릭했을 때 모달이 사라지게 하기
-		$("button#cancel_approval_line").click(e=>{
-			close_modal();
-		});
-		
 		// 모달 바깥 부분을 클릭했을 때 모달이 사라지게 하기
 	    $('.modal_bg:not(.modal_container_document)').click(e=>{
 	    	close_modal();
 	    });
 		
+	 	// 결재 버튼 클릭 시
+		$("button#approve_btn").click(e=>{
+			open_modal();
+		});
+		
+		// 반려 버튼 클릭 시
+		$("button#reject_btn").click(e=>{
+			
+		});
+		
 	}); // end of $(document).ready(function(){})---------------------
 
-	// 결재 버튼 클릭 시
-	function approve() {
-		open_modal();
-	}
-	
-	// 반려 버튼 클릭 시
-	function reject() {
-		alert("거부됨");
-	}
-	
-	// 모달창 뜨게 하기
+	// 모달창 보이게 하기
 	function open_modal() {
-		$('#approval_line_bg').fadeIn();
-		$('.approval_line_modal_container').css({
+		$('#approve_modal_bg').fadeIn();
+		$('.box_modal_container').css({
 			'display':'block'
 		});
 	}
 	
 	// 모달창 사라지게 하기
 	function close_modal() {
-		$('#approval_line_bg').fadeOut();
-        $('.approval_line_modal_container').css({
+		$('#approve_modal_bg').fadeOut();
+        $('.box_modal_container').css({
         	'display':''
 		});
 	}
 	
 	// 결재 모달에서 확인 버튼 클릭 시
-	function submit_approval_line() {
-		
-		alert("dd");
+	function approve() {
 		
 		$.ajax({
 			url:"<%=ctxPath%>/document/documentView/approve",
@@ -78,14 +71,29 @@ String ctxPath = request.getContextPath();
 
 
 <!-- 결재처리 모달 -->
-<div id="approval_line_bg" class="modal_bg">
+<div id="approve_modal_bg" class="modal_bg">
 	<!-- 모달창을 띄웠을때의 뒷 배경 -->
 </div>
-<div id="approval_line_container" class="approval_line_modal_container">
-	<div></div>
-	<div>
-		<button onclick="submit_approval_line()">확인</button>
-		<button id="cancel_approval_line">취소</button>
+<div id="approve_modal_container" class="box_modal_container">
+
+	<div class="m-5">
+		<h3 class="mb-5">결재하기</h3>
+		<table>
+			<tbody>
+				<tr>
+					<th>결재문서명</th>
+					<td>${document.subject}</td>
+				</tr>
+				<tr>
+					<th class="reason"><span>결재의견</span></th>
+					<td><textarea name="approve_reason" class="approve_modal_reason"></textarea></td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="mt-5 text-right">
+			<button onclick="approve()" class="approve_btn">승인</button>
+			<button onclick="close_modal()" class="approve_btn ml-3">취소</button>
+		</div>
 	</div>
 </div>
 
@@ -104,8 +112,8 @@ String ctxPath = request.getContextPath();
 				</c:if>
 				<c:if
 					test="${approval.approvalStatus eq 0 && sessionScope.loginuser.employeeNo eq approval.fk_approver}">
-					<button onclick="approve()">결재</button>
-					<button onclick="reject()">반려</button>
+					<button id="approve_btn">결재</button>
+					<button id="reject_btn">반려</button>
 				</c:if>
 			</c:if>
 		</c:forEach>

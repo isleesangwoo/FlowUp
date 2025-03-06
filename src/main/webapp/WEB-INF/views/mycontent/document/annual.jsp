@@ -22,23 +22,6 @@
 		border: solid 1px gray;
 	}
 	
-	.approval_line_modal_container {
-		text-align: left;
-		border-radius: 3%;
-		display: none;
-		position: fixed;
-		min-width: 600px;
-		min-height: 300px;
-		width: 50%;
-		height: 60vh;
-		z-index: 11;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%); 
-		background-color: #fff;
-		overflow: hidden;
-	}
-	
 	.closed { 
 		display: none;
 	}
@@ -62,7 +45,7 @@
 		$('#approval_line_btn').click(e=>{
 
 	        $('#approval_line_bg').fadeIn();
-			$('.approval_line_modal_container').css({
+			$('.box_modal_container').css({
 				'display':'block'
 			})
 			
@@ -245,7 +228,7 @@
 	// 모달창을 사라지게 하기
 	function close_modal() {
 		$('#approval_line_bg').fadeOut();
-        $('.approval_line_modal_container').css({
+        $('.box_modal_container').css({
         	'display':''
 		});
 	}
@@ -393,7 +376,7 @@
 	<div id="approval_line_bg" class="modal_bg">
 		<!-- 모달창을 띄웠을때의 뒷 배경 -->
 	</div>
-	<div id="approval_line_container" class="approval_line_modal_container">
+	<div id="approval_line_container" class="box_modal_container">
 		<div>
 			<h1>결재 정보</h1>
 		</div>
