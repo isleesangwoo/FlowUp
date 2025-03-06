@@ -170,18 +170,98 @@ select *
 from tbl_document D JOIN tbl_draft_annual A
 ON d.documentNo = A.documentNo;
 
-select d.documentNo, fk_employeeNo, subject, draftDate, status, securityLevel, temp, documentType, approvalDate
+select d.documentNo, d.fk_employeeNo, subject, draftDate, status, securityLevel, temp, documentType, approvalDate
      , useAmount, reason, startDate, endDate, annualType
 from tbl_document D JOIN tbl_draft_annual A
-ON d.documentNo = A.documentNo B JOIN tbl_employee E
+ON d.documentNo = A.documentNo JOIN tbl_employee E
 ON d.fk_employeeNo = E.employeeNo
 where d.documentNo = '2025-100002';
 
-select approvalNo, fk_documentNo, fk_approver, approvalOrder, approvalStatus, to_char(executionDate, 'yyyy-mm-dd') as executionDate
-from tbl_approval
-where fk_documentNo = '2025-100030';
+select d.documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, securityLevel, temp, documentType, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate
+     , useAmount, reason, to_char(startDate, 'yyyy-mm-dd') as startDate, to_char(endDate, 'yyyy-mm-dd') as endDate, annualType
+from tbl_document D JOIN tbl_draft_annual A
+ON d.documentNo = A.documentNo
+where d.documentNo = '2025-100002';
+
+select approvalNo, fk_documentNo, fk_approver, approvalOrder, approvalStatus
+     , to_char(executionDate, 'yyyy-mm-dd') as executionDate, positionname, name
+from tbl_approval JOIN tbl_employee
+ON fk_approver = employeeNo JOIN tbl_position
+ON fk_positionno = positionno
+where fk_documentNo = '2025-100032'
+order by approvalOrder desc;
 
 
 select *
 from tbl_document D JOIN tbl_draft_annual A
 ON d.documentNo = A.documentNo;
+
+select d.documentNo, d.fk_employeeNo, subject, draftDate, d.status, e.securityLevel, temp, documentType, approvalDate
+     , useAmount, reason, startDate, endDate, annualType, name, teamname
+from tbl_document D JOIN tbl_draft_annual A
+ON d.documentNo = A.documentNo JOIN tbl_employee E
+ON d.fk_employeeNo = E.employeeNo JOIN tbl_team T
+ON E.fk_teamNo = T.teamno
+where d.documentNo = '2025-100002';
+
+
+
+select *
+from tbl_document JOIN tbl_approval
+ON documentNo = fk_documentNo
+where fk_employeeNo = '100014' and (select 
+order by draftDate desc;
+
+select *
+from tbl_approval
+where fk_approver = '100014';
+
+
+select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, draftDate, documentType, name, documentNo
+from
+(
+    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+    from tbl_approval
+    where APPROVALSTATUS = 0
+) A JOIN tbl_document
+ON fk_documentNo = documentNo
+JOIN tbl_employee
+ON fk_employeeNo = employeeNo
+where rn = 1 and fk_approver = '100014' and temp = 0;
+
+
+select approvalNo, fk_approver, fk_documentNo, approvalOrder, FK_EMPLOYEENO, SUBJECT, DRAFTDATE, TEMP
+from
+(
+    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+    from tbl_approval
+    where APPROVALSTATUS = 0
+) A JOIN tbl_document
+ON fk_documentNo = documentNo
+where rn != 1 and fk_approver = '100014' and temp = 0;
+
+
+select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, draftDate, documentType, name, documentNo
+from
+(
+    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+    from tbl_approval
+    where APPROVALSTATUS = 0
+) A JOIN tbl_document
+ON fk_documentNo = documentNo
+JOIN tbl_employee
+ON fk_employeeNo = employeeNo
+where rn != 1 and fk_approver = '100014' and temp = 0;
+
+
+select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, draftDate, documentType, name, documentNo, approvalDate ,D.status
+from
+(
+    select approvalNo, fk_approver, fk_documentNo, approvalOrder
+    from tbl_approval
+    where APPROVALSTATUS != 0 and fk_approver = '100014'
+) A JOIN tbl_document D
+ON fk_documentNo = documentNo
+JOIN tbl_employee
+ON fk_employeeNo = employeeNo
+where temp = 0;

@@ -22,16 +22,6 @@
 
 	$(document).ready(function(){
 		
-		<%-- /*
-		$("table#myDocumentList").on("click", "tr.document" ,function(e){
-			location.href="<%= ctxPath%>/document/documentView";
-		});
-		*/ --%>
-		
-		$("table#myDocumentList").on("click", "td.document_check" ,function(e){
-			e.stopPropagation();
-			alert("YYY");
-		});
 		
 	}); // end of $(document).ready(function(){})-------------------------------------------------
 	
@@ -39,12 +29,10 @@
 </script>
 
 	<div>
-		<div>
-			<h1>기안문서함</h1>
-			<button>목록 다운로드</button>
-			<button>문서 삭제</button>
+		<div class="mt-3 ml-3 mb-3">
+			<h3 class="mb-3">기안문서함</h3>
+			<button class="doc_download">목록 다운로드</button>
 		</div>
-		
 		<table id="myDocumentList" class="table">
 			<thead>
 				<tr>
@@ -75,8 +63,8 @@
 				<c:if test="${not empty requestScope.myDocumentList}">
 					<c:forEach var="myDocument" items="${requestScope.myDocumentList}">
 						<tr class="document" onclick="location.href='<%= ctxPath%>/document/documentView?documentNo=${myDocument.documentNo}&documentType=${myDocument.documentType}';">
-							<td class="document_check">
-								<input type="checkbox" />
+							<td>
+								<input type="checkbox" class="document_check" onclick='event.cancelBubble=true;'>
 							</td>
 							<td>
 								<span>${myDocument.draftDate}</span>
@@ -94,7 +82,11 @@
 								<span>${myDocument.documentNo}</span>
 							</td>
 							<td>
-								<span>${myDocument.status}</span>
+								<span>
+									<c:if test="${myDocument.status == 0}">진행중</c:if>
+									<c:if test="${myDocument.status == 1}">완료</c:if>
+									<c:if test="${myDocument.status == 2}">반려</c:if>
+								</span>
 							</td>
 						</tr>
 					</c:forEach>

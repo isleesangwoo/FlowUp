@@ -5,7 +5,154 @@
 
 <!-- ==== 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체내에서 유일해야 한다.) ==== -->
 <mapper namespace="com.spring.app.document.model.DocumentDAO">
-
+	
+	
+	<!-- 결재 대기 문서 리스트 가져오기 -->
+	<select id="todoList" parameterType="String" resultType="DocumentVO">
+		select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo
+		from
+		(
+		    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+		    from tbl_approval
+		    where APPROVALSTATUS = 0
+		) A JOIN tbl_document
+		ON fk_documentNo = documentNo
+		JOIN tbl_employee
+		ON fk_employeeNo = employeeNo
+		where rn = 1 and fk_approver = #{employeeNo} and temp = 0
+	</select>
+	
+	
+	<!-- 결재 예정 문서 리스트 가져오기 -->
+	<select id="upcomingList" parameterType="String" resultType="DocumentVO">
+		select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo
+		from
+		(
+		    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+		    from tbl_approval
+		    where APPROVALSTATUS = 0
+		) A JOIN tbl_document
+		ON fk_documentNo = documentNo
+		JOIN tbl_employee
+		ON fk_employeeNo = employeeNo
+		where rn != 1 and fk_approver = #{employeeNo} and temp = 0
+	</select>
+	
+	
+	<!-- 기안을 올린 문서 리스트 가져오기 -->
+	<select id="myDocumentList" parameterType="String" resultType="DocumentVO">
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
+		from tbl_document
+		where fk_employeeNo = #{employeeNo} and temp = 0
+		order by draftDate desc
+	</select>
+	
+	
+	<!-- 임시저장 문서 리스트 가져오기 -->
+	<select id="tempList" parameterType="String" resultType="DocumentVO">
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
+		from tbl_document
+		where fk_employeeNo = #{employeeNo} and temp = 1
+		order by draftDate desc
+	</select>
+	
+	
+	<!-- 결재 처리한 문서 리스트 가져오기 -->
+	<select id="approvedList" parameterType="String" resultType="DocumentVO">
+		select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, draftDate, documentType, name, documentNo, approvalDate ,D.status
+		from
+		(
+		    select approvalNo, fk_approver, fk_documentNo, approvalOrder
+		    from tbl_approval
+		    where APPROVALSTATUS != 0 and fk_approver = #{employeeNo}
+		) A JOIN tbl_document D
+		ON fk_documentNo = documentNo
+		JOIN tbl_employee
+		ON fk_employeeNo = employeeNo
+		where temp = 0
+	</select>
+	
+	
+	<!-- 부서 문서 리스트 가져오기 -->
+	<select id="deptDocumentList" parameterType="String" resultType="DocumentVO">
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, name, nvl(to_char(approvalDate, 'yyyy-mm-dd'), '-') as approvalDate, name, documentNo
+		from
+		(
+		    select employeeNo, name
+		    from
+		        (
+		            select fk_departmentno
+		            from tbl_employee
+		            where employeeNo = '100014'
+		        ) E1 JOIN tbl_employee E2
+		    ON E1.fk_departmentNo = E2.fk_departmentno
+		) E JOIN tbl_document D
+		ON E.employeeNO = D.fk_employeeNo
+		where temp = 0
+		order by draftDate desc
+	</select>
+	
+	
+	<!-- 문서함에서 문서 1개 보여주기 -->
+	<resultMap type="HashMap" id="documentView_Map">
+		<result column="documentNo"		property="documentNo"		javaType="String" />
+		<result column="fk_employeeNo"	property="fk_employeeNo"	javaType="String" />
+		<result column="subject"		property="subject"			javaType="String" />
+		<result column="draftDate"		property="draftDate"		javaType="String" />
+		<result column="status"			property="status"			javaType="String" />
+		<result column="securityLevel"	property="securityLevel"	javaType="String" />
+		<result column="temp"			property="temp"				javaType="String" />
+		<result column="documentType"	property="documentType"		javaType="String" />
+		<result column="approvalDate"	property="approvalDate"		javaType="String" />
+		<result column="useAmount"		property="useAmount"		javaType="String" />
+		<result column="reason"			property="reason"			javaType="String" />
+		<result column="startDate"		property="startDate"		javaType="String" />
+		<result column="endDate"		property="endDate"			javaType="String" />
+		<result column="annualType"		property="annualType"		javaType="String" />
+		<result column="name"			property="name"				javaType="String" />
+		<result column="teamName"		property="teamName"			javaType="String" />
+	</resultMap>
+	<select id="documentView" parameterType="HashMap" resultMap="documentView_Map">
+		select d.documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, d.status
+			 , d.securityLevel, temp, documentType, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate, name, teamName
+		<if test="documentType == '휴가신청서'">
+		     , useAmount, reason, to_char(startDate, 'yyyy-mm-dd') as startDate, to_char(endDate, 'yyyy-mm-dd') as endDate, annualType
+		from tbl_document D JOIN tbl_draft_annual A
+		</if>
+		ON d.documentNo = A.documentNo JOIN tbl_employee E
+		ON d.fk_employeeNo = E.employeeNo JOIN tbl_team T
+		ON E.fk_teamNo = T.teamno
+		where d.documentNo = #{documentNo}
+	</select>
+	
+	
+	<!-- 문서함에서 보여줄 결재자 리스트 가져오기 -->
+	<select id="getApprovalList" parameterType="String" resultType="ApprovalVO">
+		select approvalNo, fk_documentNo, fk_approver, approvalOrder, approvalStatus
+			 , to_char(executionDate, 'yyyy-mm-dd') as executionDate, positionname, name, approvalStatus
+		from tbl_approval JOIN tbl_employee
+		ON fk_approver = employeeNo JOIN tbl_position
+		ON fk_positionno = positionno
+		where fk_documentNo = #{documentNo}
+		order by approvalOrder desc
+	</select>
+	
+	
+	<!-- 조직도에 뿌려주기 위한 사원 목록 가져오기 -->
+	<select id="getEmployeeList" resultType="EmployeeVO">
+		select employeeNo, departmentName, FK_departmentNo, name, securityLevel
+		from tbl_employee E JOIN tbl_department D
+		ON FK_departmentNo = departmentNo
+		order by FK_departmentNo, securityLevel
+	</select>
+	
+	
+	<!-- 결재 라인 승인자 추가하기 -->
+	<insert id="insertApprover" parameterType="HashMap">
+		insert into tbl_approval(APPROVALNO, FK_DOCUMENTNO, FK_APPROVER, APPROVALORDER, APPROVALSTATUS)
+		values(seq_approval.nextval, #{documentNo}, #{fk_approver}, #{approvalorder}, default)
+	</insert>
+	
 
 	<!-- document sequence 값 가져오기 -->
 	<select id="getSeqDocument" resultType="String">
@@ -27,90 +174,27 @@
 	</insert>
 	
 	
-	<!-- 임시저장 문서 리스트 가져오기 -->
-	<select id="tempList" parameterType="String" resultType="DocumentVO">
-		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
-		from tbl_document
-		where fk_employeeNo = #{employeeNo} and temp = 1
-		order by draftDate desc
-	</select>
+	<!-- 결재 승인하기 -->
+	<update id="approve" parameterType="HashMap">
+		update tbl_approval set approvalStatus = 1, executiondate = sysdate
+		where fk_documentNo = #{documentNo} and fk_approver = #{employeeNo}
+	</update>
 	
 	
-	<!-- 기안 문서 리스트 가져오기 -->
-	<select id="myDocumentList" parameterType="String" resultType="DocumentVO">
-		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
-		from tbl_document
-		where fk_employeeNo = #{employeeNo} and temp = 0
-		order by draftDate desc
-	</select>
-	
-	
-	<!-- 부서 문서 리스트 가져오기 -->
-	<select id="deptDocumentList" parameterType="String" resultType="DocumentVO">
-		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, name, nvl(to_char(approvalDate, 'yyyy-mm-dd'), '-') as approvalDate, name, documentNo
-		from
-		(
-		    select employeeNo, name
-		    from
-		        (
-		            select fk_departmentno
-		            from tbl_employee
-		            where employeeNo = '100014'
-		        ) E1 JOIN tbl_employee E2
-		    ON E1.fk_departmentNo = E2.fk_departmentno
-		) E JOIN tbl_document D
-		ON E.employeeNO = D.fk_employeeNo
-		order by draftDate desc
-	</select>
-	
-	
-	<!-- 조직도에 뿌려주기 위한 사원 목록 가져오기 -->
-	<select id="getEmployeeList" resultType="EmployeeVO">
-		select employeeNo, departmentName, FK_departmentNo, name, securityLevel
-		from tbl_employee E JOIN tbl_department D
-		ON FK_departmentNo = departmentNo
-		order by FK_departmentNo, securityLevel
-	</select>
-	
-	
-	<insert id="insertApprover" parameterType="HashMap">
-		insert into tbl_approval(APPROVALNO, FK_DOCUMENTNO, FK_APPROVER, APPROVALORDER, APPROVALSTATUS)
-		values(seq_approval.nextval, #{documentNo}, #{fk_approver}, #{approvalorder}, default)
-	</insert>
-	
-
-	<resultMap type="HashMap" id="documentView_Map">
-		<result column="documentNo"		property="documentNo"		javaType="String" />
-		<result column="fk_employeeNo"	property="fk_employeeNo"	javaType="String" />
-		<result column="subject"		property="subject"			javaType="String" />
-		<result column="draftDate"		property="draftDate"		javaType="String" />
-		<result column="status"			property="status"			javaType="String" />
-		<result column="securityLevel"	property="securityLevel"	javaType="String" />
-		<result column="temp"			property="temp"				javaType="String" />
-		<result column="documentType"	property="documentType"		javaType="String" />
-		<result column="approvalDate"	property="approvalDate"		javaType="String" />
-		<result column="useAmount"		property="useAmount"		javaType="String" />
-		<result column="reason"			property="reason"			javaType="String" />
-		<result column="startDate"		property="startDate"		javaType="String" />
-		<result column="endDate"		property="endDate"			javaType="String" />
-		<result column="annualType"		property="annualType"		javaType="String" />
-	</resultMap>
-	<select id="documentView" parameterType="HashMap" resultMap="documentView_Map">
-		select d.documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, securityLevel, temp, documentType, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate
-		<if test="documentType == '휴가신청서'">
-		     , useAmount, reason, to_char(startDate, 'yyyy-mm-dd') as startDate, to_char(endDate, 'yyyy-mm-dd') as endDate, annualType
-		from tbl_document D JOIN tbl_draft_annual A
-		</if>
-		ON d.documentNo = A.documentNo
-		where d.documentNo = #{documentNo}
-	</select>
-	
-	
-	<select id="getApprovalList" parameterType="String" resultType="ApprovalVO">
-		select approvalNo, fk_documentNo, fk_approver, approvalOrder, approvalStatus, to_char(executionDate, 'yyyy-mm-dd') as executionDate
+	<!-- 결재자의 승인 순서 알아오기 -->
+	<select id="getApprovalOrder" parameterType="HashMap" resultType="Integer">
+		select approvalOrder
 		from tbl_approval
-		where fk_documentNo = #{documentNo}
+		where fk_documentNo = #{documentNo} and fk_approver = #{employeeNo}
 	</select>
+	
+	
+	<!-- 문서의 결재 상태를 업데이트 하기 -->
+	<update id="updateDocumentApprovalStatus" parameterType="String">
+		update tbl_document set status = 1, approvaldate = sysdate
+		where documentno = #{documentNo}
+	</update>
+	
 	
 </mapper>
 

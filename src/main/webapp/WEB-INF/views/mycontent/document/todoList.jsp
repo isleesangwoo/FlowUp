@@ -20,9 +20,8 @@
 
 	<div>
 		<div class="mt-3 ml-3 mb-3">
-			<h3 class="mb-3">임시저장함</h3>
-			<button class="doc_download mr-3">목록 다운로드</button>
-			<button class="doc_delete">문서 삭제</button>
+			<h3 class="mb-3">결재 대기 문서함</h3>
+			<button class="doc_download">목록 다운로드</button>
 		</div>
 		<table class="table">
 			<thead>
@@ -31,7 +30,7 @@
 						<input type="checkbox" />
 					</th>
 					<th>
-						<span>생성일</span>
+						<span>기안일</span>
 					</th>
 					<th>
 						<span>결재양식</span>
@@ -43,38 +42,44 @@
 						<span>첨부</span>
 					</th>
 					<th>
-						<span>결재상태</span>
+						<span>기안자</span>
+					</th>
+					<th>
+						<span>문서번호</span>
 					</th>
 				</tr>
 			</thead>
 			<tbody>
-				<c:if test="${not empty requestScope.tempList}">
-					<c:forEach var="temp" items="${requestScope.tempList}">
-						<tr class="document">
+				<c:if test="${not empty requestScope.todoList}">
+					<c:forEach var="todo" items="${requestScope.todoList}">
+						<tr class="document" onclick="location.href='<%= ctxPath%>/document/documentView?documentNo=${todo.documentNo}&documentType=${todo.documentType}';">
 							<td>
-								<input type="checkbox" />
+								<input type="checkbox" class="document_check" onclick='event.cancelBubble=true;'>
 							</td>
 							<td>
-								<span>${temp.draftDate}</span>
+								<span>${todo.draftDate}</span>
 							</td>
 							<td>
-								<span>${temp.documentType}</span>
+								<span>${todo.documentType}</span>
 							</td>
 							<td>
-								<span>${temp.subject}</span>
+								<span>${todo.subject}</span>
 							</td>
 							<td>
 								<span></span>
 							</td>
 							<td>
-								<span>임시저장</span>
+								<span>${todo.name}</span>
+							</td>
+							<td>
+								<span>${todo.documentNo}</span>
 							</td>
 						</tr>
 					</c:forEach>
 				</c:if>
-				<c:if test="${empty requestScope.tempList}">
+				<c:if test="${empty requestScope.todoList}">
 					<tr>
-						<td colspan="6"><span>임시 저장 문서가 없습니다.</span></td>
+						<td colspan="6"><span>결재 대기 문서가 없습니다.</span></td>
 					</tr>
 				</c:if>
 			</tbody>

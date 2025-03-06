@@ -1,0 +1,40 @@
+/* 문서함의 문서 */
+tr.document:hover {
+	cursor: pointer;
+	background-color: gray;
+}
+
+/* 문서함에서 다운로드 버튼 */
+button.doc_download {
+	background-color: white;
+	border: none;
+}
+button.doc_download:hover {
+	background-color: gray;
+}
+
+/* 임시저장함 삭제 버튼 */
+button.doc_delete {
+	background-color: white;
+	border: none;
+}
+button.doc_delete:hover {
+	background-color: gray;
+}
+
+.approval_line_modal_container {
+	text-align: left;
+	border-radius: 3%;
+	display: none;
+	position: fixed;
+	min-width: 600px;
+	min-height: 300px;
+	width: 50%;
+	height: 60vh;
+	z-index: 11;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%); 
+	background-color: #fff;
+	overflow: hidden;
+}

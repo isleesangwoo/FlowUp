@@ -9,6 +9,9 @@ public class ApprovalVO {
 	private String approvalStatus;	// 승인상태(0:처리전,1:결재,2:반려,3:보류)
 	private String executionDate;	// 처리날짜
 	
+	private String name;			// 승인자이름
+	private String positionName;	// 승인자직위
+	
 	public String getApprovalNo() {
 		return approvalNo;
 	}
@@ -44,6 +47,18 @@ public class ApprovalVO {
 	}
 	public void setExecutionDate(String executionDate) {
 		this.executionDate = executionDate;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getPositionName() {
+		return positionName;
+	}
+	public void setPositionName(String positionName) {
+		this.positionName = positionName;
 	}
 	
 }

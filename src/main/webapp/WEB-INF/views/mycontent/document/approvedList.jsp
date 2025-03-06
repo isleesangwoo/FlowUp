@@ -20,7 +20,7 @@
 
 	<div>
 		<div class="mt-3 ml-3 mb-3">
-			<h3 class="mb-3">부서문서함</h3>
+			<h3 class="mb-3">결재 문서함</h3>
 			<button class="doc_download">목록 다운로드</button>
 		</div>
 		
@@ -57,46 +57,46 @@
 				</tr>
 			</thead>
 			<tbody>
-				<c:if test="${not empty requestScope.deptDocumentList}">
-					<c:forEach var="deptDocument" items="${requestScope.deptDocumentList}">
-						<tr class="document" onclick="location.href='<%= ctxPath%>/document/documentView?documentNo=${deptDocument.documentNo}&documentType=${deptDocument.documentType}';">
+				<c:if test="${not empty requestScope.approvedList}">
+					<c:forEach var="approved" items="${requestScope.approvedList}">
+						<tr class="document" onclick="location.href='<%= ctxPath%>/document/documentView?documentNo=${approved.documentNo}&documentType=${approved.documentType}';">
 							<td>
 								<input type="checkbox" class="document_check" onclick='event.cancelBubble=true;'>
 							</td>
 							<td>
-								<span>${deptDocument.draftDate}</span>
+								<span>${approved.draftDate}</span>
 							</td>
 							<td>
-								<span>${deptDocument.approvalDate}</span>
+								<span>${approved.approvalDate}</span>
 							</td>
 							<td>
-								<span>${deptDocument.documentType}</span>
+								<span>${approved.documentType}</span>
 							</td>
 							<td>
-								<span>${deptDocument.subject}</span>
+								<span>${approved.subject}</span>
 							</td>
 							<td>
 								<span></span>
 							</td>
 							<td>
-								<span>${deptDocument.name}</span>
+								<span>${approved.name}</span>
 							</td>
 							<td>
-								<span>${deptDocument.documentNo}</span>
+								<span>${approved.documentNo}</span>
 							</td>
 							<td>
 								<span>
-									<c:if test="${deptDocument.status == 0}">진행중</c:if>
-									<c:if test="${deptDocument.status == 1}">완료</c:if>
-									<c:if test="${deptDocument.status == 2}">반려</c:if>
+									<c:if test="${approved.status == 0}">진행중</c:if>
+									<c:if test="${approved.status == 1}">완료</c:if>
+									<c:if test="${approved.status == 2}">반려</c:if>
 								</span>
 							</td>
 						</tr>
 					</c:forEach>
 				</c:if>
-				<c:if test="${empty requestScope.deptDocumentList}">
+				<c:if test="${empty requestScope.approvedList}">
 					<tr>
-						<td colspan="6"><span>기안 문서가 없습니다.</span></td>
+						<td colspan="6"><span>결재 예정 문서가 없습니다.</span></td>
 					</tr>
 				</c:if>
 			</tbody>
