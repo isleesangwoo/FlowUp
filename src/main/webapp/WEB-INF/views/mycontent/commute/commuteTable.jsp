@@ -200,14 +200,11 @@ div.hoverDiv:hover {
             week_div(today, currentShowPageNo);
         });
 
-       
         // 페이지 로드 시 현재 날짜 및 테이표시
         week_div(today, currentShowPageNo);
         // ====================== 날짜 리모컨 기능 생성 ====================== //
  
         $('div.oneday').hide();
-        
-     	
         
         $("select#sizePerPage").change(e=>{
         	
@@ -217,7 +214,6 @@ div.hoverDiv:hover {
         	spread_thead(today, currentShowPageNo);
         });
 		
-        
 		$("button#btn_search").click(function(e) {
 			
 			const today = new Date($("input#year").val(), Number($("input#month").val())-1 , 1);
@@ -226,7 +222,6 @@ div.hoverDiv:hover {
 			spread_tbody(today, currentShowPageNo);
 			
 		});
-		
 		
 		$("input#searchWord").keydown(function(e) {
 			
@@ -238,9 +233,6 @@ div.hoverDiv:hover {
 				spread_tbody(today, currentShowPageNo);
 			}
 			
-			
-			
-			
 		});
     	
     	
@@ -249,8 +241,6 @@ div.hoverDiv:hover {
         
     }); // end of $(document).ready(() => {})-------------
 
-   
-   
     function week_div(today, currentShowPageNo) {
 
     	const year = today.getFullYear();
@@ -271,13 +261,8 @@ div.hoverDiv:hover {
     	
 //      console.log(last_week(today));
     	
-    
-    	
     	spread_thead(today, currentShowPageNo);
     	
-
-    	
-
     }; //// week_div(today) 
     	
     // 테이블 헤더 뿌리기
@@ -287,8 +272,6 @@ div.hoverDiv:hover {
 			<th>이름</th>
 			<th>누적 근무시간</th>`;
 			
-		
-		
 		for(let i=1; i<=last_week(today); i++) {
 			html_h += `<th>\${i}주</th>`;
 			
@@ -299,17 +282,13 @@ div.hoverDiv:hover {
     	
 		$("thead#thead").html(html_h);
 		
-		
 		spread_tbody(today, currentShowPageNo);
 		
     };
 		//////////////////////////////////////////////////////////
-
-		
-		
-		
+	
 	function spread_tbody(today, currentShowPageNo) {	
-		
+			
 		const year = today.getFullYear();
    		let month = String(today.getMonth()+1).padStart(2, '0');
     	
@@ -348,46 +327,54 @@ div.hoverDiv:hover {
 				
 				let html_b = ``;
 				
-				$.each(json.mapList, (index,item)=>{
+				if(json.mapList.length > 0 ) {
+					
+					$.each(json.mapList, (index,item)=>{
 
-					
-					html_b += `<tr>
-					
-								<td style="text-align: center; vertical-align:middle"><span style="font-size:14pt;">\${item.name}</span><br><span>\${item.departmentname}</span></td>
-								<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.total) )}</td>`;
-								
-					if(last_week(today) == 4) {
-						html_b += `<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week1) )}</td>
-									<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week2) )}</td>
-									<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week3) )}</td>
-									<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week4) )}</td>`;
-					}
-					
-					else if(last_week(today) == 5) {
-						html_b += `<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week1) )}</td>
-							<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week2) )}</td>
-							<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week3) )}</td>
-							<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week4) )}</td>
-							<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week5) )}</td>`;
-					}
-					
-					else {
-						html_b += `<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week1) )}</td>
-							<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week2) )}</td>
-							<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week3) )}</td>
-							<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week4) )}</td>
-							<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week5) )}</td>
-							<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week6) )}</td>`;
-					}
+						
+						html_b += `<tr>
+						
+									<td style="text-align: center; vertical-align:middle"><span style="font-size:14pt;">\${item.name}</span>&nbsp;\${item.positionname}<br><span>\${item.departmentname}</span></td>
+									<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.total) )}</td>`;
+									
+						if(last_week(today) == 4) {
+							html_b += `<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week1) )}</td>
+										<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week2) )}</td>
+										<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week3) )}</td>
+										<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week4) )}</td>`;
+						}
+						
+						else if(last_week(today) == 5) {
+							html_b += `<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week1) )}</td>
+								<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week2) )}</td>
+								<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week3) )}</td>
+								<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week4) )}</td>
+								<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week5) )}</td>`;
+						}
+						
+						else {
+							html_b += `<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week1) )}</td>
+								<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week2) )}</td>
+								<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week3) )}</td>
+								<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week4) )}</td>
+								<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week5) )}</td>
+								<td style="text-align: center; vertical-align:middle">\${secToHour( Number(item.week6) )}</td>`;
+						}
 							
-			
-					html_b += `</tr>`;
+						html_b += `</tr>`;
+					
+					});
+					
+					$("div#pageBar").html(json.pageBar);
+					
+				}
+				else {
+					html_b += `<tr><td colspan="\${ last_week(today)+2 }" style="text-align: center; vertical-align:middle; font-size:12pt;">데이터가 없습니다.</td></tr>`;
+					
+					$("div#pageBar").html("");
+				}
 				
-				});
-			
 				$("tbody#tbody").html(html_b);
-				
-				$("div#pageBar").html(json.pageBar);
 				
 			},
 			error: function(request, status, error){
@@ -398,25 +385,6 @@ div.hoverDiv:hover {
 		
     };
  
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
     // 그 달이 몇주차 까지 있는지 
     function last_week(today) {
@@ -432,21 +400,6 @@ div.hoverDiv:hover {
     	
     	return Math.ceil((endDate + firstDay) / 7);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
     
 	function secToHour(total_sec) {
 
@@ -469,14 +422,6 @@ div.hoverDiv:hover {
     	
     	return Number(hour) * 60 * 60 + Number(min) * 60 + Number(sec);
     }
-    
-    
-    
-    
-    
-    
-    
-    
     
 </script>
 

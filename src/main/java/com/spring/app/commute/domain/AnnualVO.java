@@ -10,9 +10,9 @@ public class AnnualVO {
 	private String occurAnnual;		// 발생 연차
 	private String overAnnual;		// 이월 연차
 	private String addAnnual;		// 조정 연차
+	
+	
 	private String usedAnnual;     	// 소진 연차
-	
-	
 	private String totalAnnual;		// 총 연차
 	private String remainderAnnual;	// 잔여 연차
 	
@@ -33,19 +33,28 @@ public class AnnualVO {
 	}
 
 	public String getRemainderAnnual() {
-		
-		DecimalFormat df = new DecimalFormat("###.#");
-		
-		double n_totalAnnual = Double.parseDouble(getTotalAnnual());
-		double n_usedAnnual = Double.parseDouble(usedAnnual);
-		double n_remainderAnnual = n_totalAnnual - n_usedAnnual;
-		
-		remainderAnnual = df.format(n_remainderAnnual);
-		
-		return remainderAnnual;
+		if(usedAnnual != null && usedAnnual != "0") {
+			DecimalFormat df = new DecimalFormat("###.#");
+			
+			double n_totalAnnual = Double.parseDouble(getTotalAnnual());
+			double n_usedAnnual = Double.parseDouble(usedAnnual);
+			double n_remainderAnnual = n_totalAnnual - n_usedAnnual;
+			
+			remainderAnnual = df.format(n_remainderAnnual);
+			
+			return remainderAnnual;
+		}
+		else {
+			return "0";
+		}
 	}
 	
-	
+	public String getUsedAnnual() {
+		if(usedAnnual == null) {
+			usedAnnual="0";
+		}
+		return usedAnnual;
+	}
 	
 	
 
@@ -85,9 +94,7 @@ public class AnnualVO {
 	public void setAddAnnual(String addAnnual) {
 		this.addAnnual = addAnnual;
 	}
-	public String getUsedAnnual() {
-		return usedAnnual;
-	}
+	
 	public void setUsedAnnual(String usedAnnual) {
 		this.usedAnnual = usedAnnual;
 	}
