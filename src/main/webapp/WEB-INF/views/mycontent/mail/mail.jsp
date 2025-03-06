@@ -132,13 +132,14 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 		    loadMailList("send"); // 보낸메일함 조회
 		});
 		 */
-	  
+	  	
 		// 휴지통 조회
 		$("#deleteMail").on("click", function(e){
 		    e.preventDefault(); // a 태그 이동 막기
 		    loadMailList("trash"); // 휴지통 조회
 		});
-
+		
+		 
 		// 중요메일함 조회
 		$("#importantMail").on("click", function(e){
 		    e.preventDefault(); // a 태그 이동 막기
@@ -347,7 +348,7 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
                url: ctxPath + "/mail/deleteMail",
                type: "POST",
                traditional: true,  
-               // ↑ jQuery가 mailNoArray를 mailNo=1&mailNo=2... 형태로 전송하도록
+               // jQuery가 mailNoArray를 mailNo=1&mailNo=2... 형태로 전송하도록
                data: { mailNo: mailNoArray },
                success: function(response){
                    // 성공 후, 목록 갱신 or 해당 행 제거 or 새로고침
@@ -361,6 +362,48 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
            });
        });
        <%-- 삭제 버튼 클릭 ajax 끝 --%>
+       
+       
+       <%-- 읽음 버튼 클릭 ajax 시작 --%>
+       // 읽음 버튼 클릭
+       $("#readMailBtn").on("click", function(e){
+           e.preventDefault(); // a 태그 이동 막기
+
+           // 1. 체크된 메일 번호 저장
+           let mailNoArray = [];
+           $("input.mailOneCheck:checked").each(function(){
+               let mailNo = $(this).data("mailno"); 
+               mailNoArray.push(mailNo);
+           });
+
+           if(mailNoArray.length === 0) {
+               alert("읽음 처리 할 메일을 선택하세요.");
+               return;
+           }
+
+           // 2. Ajax로 readStatus = 1 로 업데이트
+           $.ajax({
+               url: ctxPath + "/mail/readMail",
+               type: "POST",
+               traditional: true,  
+               // jQuery가 mailNoArray를 mailNo=1&mailNo=2... 형태로 전송하도록
+               data: { mailNo: mailNoArray },
+               success: function(response){
+                   // 성공 후, 목록 갱신 or 해당 행 제거 or 새로고침
+                   // 예) 새로고침
+                   location.reload();
+               },
+               error: function(err){
+                   console.log(err);
+                   alert("메일 읽음 처리 중 오류 발생");
+               }
+           });
+       });
+       <%-- 읽음 버튼 클릭 ajax 끝 --%>
+       
+       
+       
+       
        
    });
 	  
@@ -611,7 +654,7 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
                     </a>
                 </span>
                 <span>
-                    <a href="#">
+                    <a href="#" id="readMailBtn">
                     	<i class="fa-regular fa-envelope-open"></i>
                         <span>읽음</span>
                     </a>

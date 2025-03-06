@@ -146,11 +146,6 @@
 	    <result property="importantStatus" column="importantStatus"/>
 	    <result property="readStatus"    column="readStatus"/>
 	    
-	    <!-- 첨부파일 관련 필드 매핑 -->
-	    <result property="fileSize"      column="fileSize"/>
-	    <result property="orgFileName"   column="orgFileName"/>
-	    <result property="fileName"      column="fileName"/>
-	
 	    <!-- 참조 정보 관련 필드 매핑 -->
 	    <result property="refStatus"     column="refStatus"/>
 	    <result property="refName"       column="refName"/>
@@ -161,6 +156,13 @@
 	        <result property="employeeNo" column="employeeNo"/>
 	        <result property="name"       column="name"/>
 	        <result property="email"      column="email"/>
+	    </association>
+	    
+   	    <!-- 첨부파일 관련 필드 매핑 -->
+   	    <association property="mailfilevo" javaType="mailFileVO">
+		    <result property="fileSize"      column="fileSize"/>
+		    <result property="orgFileName"   column="orgFileName"/>
+		    <result property="fileName"      column="fileName"/>
 	    </association>
 	</resultMap>
 
@@ -216,8 +218,8 @@
 	</select>
 	<!-- 메일함 정렬 선택 끝 -->
 	
-	
-	<update id="updateDeleteStatus" parameterType="list">
+	<!-- 체크된 메일 deleteStatus=1 로 변경 -->
+	<update id="updateCheckDeleteStatus" parameterType="list">
 	    UPDATE tbl_mail
 	    SET deleteStatus = 1
 	    WHERE mailNo IN
@@ -247,6 +249,18 @@
 	    WHERE M.deleteStatus = 1
 	    ORDER BY M.mailNo DESC
 	</select>
+	
+	
+	<!-- 체크된 메일 readStatus=1 로 변경 -->
+	<update id="updateCheckReadStatus" parameterType="list">
+	    UPDATE tbl_mail
+	    SET readStatus = 1
+	    WHERE mailNo IN
+	    <foreach collection="list" item="mailNo" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	</update>
+	
 	
 	<!-- 총 행수 구하기 (페이지바 계산) -->
 	<select id="getMailCount" resultType="int" parameterType="HashMap">

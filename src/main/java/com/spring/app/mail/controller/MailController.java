@@ -400,7 +400,7 @@ public class MailController {
         // 1, DB에서 해당 mailNo들에 대해 deleteStatus=1로 업데이트
         service.deleteMailStatus(mailNoList);
 
-        // 2. 성공시 "success" 등 리턴
+        // 2. 성공시 "success" 리턴
         return "success";
     }
     
@@ -418,6 +418,18 @@ public class MailController {
         List<MailVO> deletedList = service.selectDeletedMail(); 
         
         return deletedList; // JSON으로 반환
+    }
+    
+    // Ajax 요청 체크박스 체크된 메일 readStatus 1로 업데이트
+    @PostMapping("/readMail")
+    @ResponseBody
+    public String readMail(@RequestParam("mailNo") List<Integer> mailNoList) {
+        // mailNoList = [ 101, 102, ... ]
+        // 1, DB에서 해당 mailNo들에 대해 deleteStatus=1로 업데이트
+        service.readMailStatus(mailNoList);
+
+        // 2. 성공시 "success" 리턴
+        return "success";
     }
 	
 }

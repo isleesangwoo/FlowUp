@@ -52,10 +52,13 @@ public interface MailDAO {
 	List<MailVO> mailListSort(Map<String, String> paramMap);
 
 	// 체크된 메일 deleteStatus 1로 업데이트
-	int updateDeleteStatus(List<Integer> mailNoList);
-
+	int updateCheckDeleteStatus(List<Integer> mailNoList);
+	
 	// deleteStatus 1 인것만 조회 (휴지통)
 	List<MailVO> selectDeletedMail();
+
+	// 체크된 메일 readStatus 1로 업데이트
+	int updateCheckReadStatus(List<Integer> mailNoList);
 
 	
 }

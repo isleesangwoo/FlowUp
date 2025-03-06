@@ -53,6 +53,9 @@ public interface MailService {
 	// deleteStatus 1 인것만 조회 (휴지통)
 	List<MailVO> selectDeletedMail();
 
+	// 체크된 메일 readStatus 1로 업데이트
+	int readMailStatus(List<Integer> mailNoList);
+
 
 
 	

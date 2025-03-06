@@ -170,7 +170,7 @@ public class MailService_imple implements MailService {
     public int deleteMailStatus(List<Integer> mailNoList) {
     	
         // DAO 호출
-        return mailDAO.updateDeleteStatus(mailNoList);
+        return mailDAO.updateCheckDeleteStatus(mailNoList);
     }
 
 
@@ -187,6 +187,15 @@ public class MailService_imple implements MailService {
 	public int getMailCount(Map<String, String> paraMap) {
 
 		return mailDAO.getMailCount(paraMap);
+	}
+
+
+	// 체크된 메일 readStatus 1로 업데이트
+	@Override
+	public int readMailStatus(List<Integer> mailNoList) {
+		
+		// DAO 호출
+        return mailDAO.updateCheckReadStatus(mailNoList);
 	}
 
 

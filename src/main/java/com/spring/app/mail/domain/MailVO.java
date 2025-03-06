@@ -14,8 +14,10 @@ public class MailVO {
 	private String sendDate;         // 전송날짜
 	
 	private String fk_employeeNo;    // 사번 (직원 테이블 참조)
+	private String fk_fileNo;
 	
 	private EmployeeVO employeevo;   // employee 테이블 조인
+	private MailFileVO fileNo;       // 
 	
 	public String getMailNo() {
 		return mailNo;
@@ -76,6 +78,12 @@ public class MailVO {
 	}
 	public void setEmployeevo(EmployeeVO employeevo) {
 		this.employeevo = employeevo;
+	}
+	public MailFileVO getFileNo() {
+		return fileNo;
+	}
+	public void setFileNo(MailFileVO fileNo) {
+		this.fileNo = fileNo;
 	}
 	
 	

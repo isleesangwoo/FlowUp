@@ -396,8 +396,8 @@
                         <div>
                             <i class="fa-solid fa-paperclip"></i>
                             <!-- 파일 다운로드 링크 예시 -->
-                            <a href="<%=ctxPath%>/mail/download?fileName=${file.fileName}&orgFileName=${file.orgFileName}">
-                                ${file.orgFileName} (${file.fileSize}KB)
+                            <a href="<%=ctxPath%>/mail/download?fileName=${mailfile.fileName}&orgFileName=${mailfile.orgFileName}">
+                                ${mailfile.orgFileName} (${mailfile.fileSize}KB)
                             </a>
                         </div>
                     </c:forEach>
