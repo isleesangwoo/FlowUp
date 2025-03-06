@@ -37,5 +37,6 @@ String ctxPath = request.getContextPath();
     <hr>
     <div class="adminFooter">
     	<a href="<%= ctxPath%>/employee/addEmployee"id="addEmployee">사원등록</a>
+    	<a href="<%= ctxPath%>/employee/updateEmployee"id="updateEmployee">사원정보수정</a>
         <!-- <button type="button" id="addEmployee" onclick=""> 사원등록 </button> --> <!-- 누르면 사원 등록 페이지가 나옴. -->
 </div>
