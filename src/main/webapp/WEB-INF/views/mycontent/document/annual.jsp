@@ -437,55 +437,59 @@
 
     <!-- 휴가신청서 폼 -->
 	
-	<div>
-		<h1>휴가신청서</h1>
-		<button onclick="annualDraft()">결재요청</button>
-		<button onclick="saveTemp()">임시저장</button>
-		<button>미리보기</button>
-		<button id="approval_line_btn">결재 정보</button>
+	<div class="m-3">
+		<h1 class="mb-3">휴가신청서</h1>
+		<button class="doc_btn mr-3" onclick="annualDraft()">결재요청</button>
+		<button class="doc_btn mr-3" onclick="saveTemp()">임시저장</button>
+		<button class="doc_btn mr-3">미리보기</button>
+		<button class="doc_btn" id="approval_line_btn">결재 정보</button>
 	</div>
-		<div style="border: solid 1px gray; width: 1000px;">
-			<form name="annualDraftForm">
-				<input type="hidden" name="documentType" value="휴가신청서" />
-				<input type="hidden" name="temp" value="0" />
-				<h1 style="text-align: center">연차신청서</h1>
-				<div style="display: inline-block; width: 300px">
-					<table>
-						<tbody>
-							<tr>
-								<td>기안자</td>
-								<td>${sessionScope.loginuser.name}</td>
-							</tr>
-							<tr>
-								<td>기안부서</td>
-								<td>${sessionScope.loginuser.departmentName}</td>
-							</tr>
-							<tr>
-								<td>기안일</td>
-								<td><%= today%></td>
-							</tr>
-							<tr>
-								<td>문서번호</td>
-								<td></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				
-				<div id="approval_line" style="text-align: right; display: inline-block; width: 690px">
-				
-					<!-- 결재 라인이 들어올 곳 -->
-					
-				</div>
-				
-				<table class="mt-5" style="width: 1000px;">
+	<div class="m-3 p-3 draftForm" style="border: solid 1px gray; width: 70%;">
+		<form name="annualDraftForm">
+		
+			<input type="hidden" name="documentType" value="휴가신청서" />
+			<input type="hidden" name="temp" value="0" />
+			
+			<h3 style="text-align: center">연차신청서</h3>
+			
+			<div class="drafter_info" style="display: inline-block;">
+				<table>
 					<tbody>
 						<tr>
-							<td>제목</td>
-							<td><input type="text" name="subject" value=" "/></td>
+							<th>기안자</th>
+							<td>${sessionScope.loginuser.name}</td>
 						</tr>
 						<tr>
-							<td>휴가 종류</td>
+							<th>기안부서</th>
+							<td>${sessionScope.loginuser.departmentName}</td>
+						</tr>
+						<tr>
+							<th>기안일</th>
+							<td><%= today%></td>
+						</tr>
+						<tr>
+							<th>문서번호</th>
+							<td></td>
+						</tr>
+						
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="approval_info" id="approval_line" style="text-align: right; display: inline-block; width: 100%">
+			
+				<!-- 결재 라인이 들어올 곳 -->
+				
+			</div>
+			<div class="document_info">
+				<table class="mt-5" style="width: 100%">
+					<tbody>
+						<tr>
+							<th>제목</th>
+							<td><input type="text" name="subject" value=" " style="width: 100%;"/></td>
+						</tr>
+						<tr>
+							<th>휴가 종류</th>
 							<td>
 								<select name="annualType" onchange="calAnnualAmount()">
 									<option value="1">연차</option>
@@ -495,32 +499,35 @@
 							</td>
 						</tr>
 						<tr>
-							<td>사유</td>
-							<td><input type="text" name="reason" value=" " /></td>
+							<th>사유</th>
+							<td><input type="text" name="reason" value=" " style="width: 100%;"/></td>
 						</tr>
 						<tr>
-							<td>기간 및 일시</td>
+							<th>기간 및 일시</th>
 							<td>
 								<input type="date" name="startDate" onchange="calAnnualAmount()" onkeydown="return false" />
 								<input type="date" name="endDate"   onchange="calAnnualAmount()" onkeydown="return false" />
 							</td>
 						</tr>
 						<tr>
-							<td></td>
-							<td></td>
-						</tr>
-						<tr>
-							<td>연차 일수</td>
+							<th>연차 일수</th>
 							<td>
 								잔여 연차 : <input type="text" name="totalAmount" value="10" readonly />
 								신청 연차 : <input type="text" name="useAmount" value="0" readonly />
 							</td>
 						</tr>
+						<tr>
+							<th colspan="2">
+								1. 연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 잔여 연차에 한하여 사용함을 원칙으로 한다.
+								<br>단, 최초 입사시에는 근로 기준법에 따라 발생 예정된 연차를 차용하여 월 1회 사용 할 수 있다.
+								<br>2. 경조사 휴가는 행사일을 증명할 수 있는 가족 관계 증명서 또는 등본, 청첩장 등 제출
+								<br>3. 공가(예비군/민방위)는 사전에 통지서를, 사후에 참석증을 반드시 제출
+							</th>
+						</tr>
 					</tbody>
 				</table>
-			</form>
-		</div>
-		
+			</div>
+		</form>
 	</div>
 </div>
 <jsp:include page="../../footer/footer.jsp" /> 

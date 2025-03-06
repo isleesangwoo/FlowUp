@@ -19,10 +19,10 @@
 </script>
 
 	<div>
-		<div class="mt-3 ml-3 mb-3">
+		<div class="m-3">
 			<h3 class="mb-3">임시저장함</h3>
-			<button class="doc_download mr-3">목록 다운로드</button>
-			<button class="doc_delete">문서 삭제</button>
+			<button class="doc_btn mr-3">목록 다운로드</button>
+			<button class="doc_btn">문서 삭제</button>
 		</div>
 		<table class="table">
 			<thead>
