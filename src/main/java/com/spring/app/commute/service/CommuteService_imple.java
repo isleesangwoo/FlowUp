@@ -401,7 +401,7 @@ public class CommuteService_imple implements CommuteService {
 		    
 		    switch (date) {
 		    
-			case SUNDAY: 
+			case SATURDAY: 
 				
 				rowLocation++; // 5 
 				bodyRow = sheet.createRow(rowLocation); 
@@ -562,8 +562,44 @@ public class CommuteService_imple implements CommuteService {
 
 	@Override
 	public AnnualVO getAnnualInfo(Map<String, String> paramap) {
+		
 		AnnualVO avo = dao.getAnnualInfo(paramap);
+		
+		avo.setUsedAnnual(dao.getUsedAnnual(paramap));
+		
+		
 		return avo;
+	}
+
+	
+	@Override
+	public List<Map<String, String>> getUsedAnnualList(Map<String, String> paraMap) {
+		List<Map<String, String>> mapList = dao.getUsedAnnualList(paraMap);
+		return mapList;
+	}
+
+	@Override
+	public List<String> getWorkYear(String fk_employeeNo) {
+		List<String> yearList = dao.getWorkYear(fk_employeeNo);
+		return yearList;
+	}
+
+	@Override
+	public DepartmentVO getdeptInfo(String departmentNo) {
+		DepartmentVO dvo = dao.getdeptInfo(departmentNo);
+		return dvo;
+	}
+
+	@Override
+	public List<Map<String, String>> getCommuteTableInfo(Map<String, String> paraMap) {
+		List<Map<String, String>> mapList = dao.getCommuteTableInfo(paraMap);
+		return mapList;
+	}
+
+	@Override
+	public int totalCnt(Map<String, String> paraMap) {
+		int totalCount = dao.totalCnt(paraMap);
+		return totalCount;
 	}
 
 	

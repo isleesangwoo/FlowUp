@@ -132,7 +132,7 @@
                               <a href="<%= ctxPath%>/index"><i class="fa-solid fa-house"></i><span>홈</span></a>
                           </li>
                           <li>
-                              <a href="<%= ctxPath%>/mail/"><i class="fa-regular fa-envelope"></i><span>메일</span></a>
+                              <a href="<%= ctxPath%>/mail"><i class="fa-regular fa-envelope"></i><span>메일</span></a>
                           </li>
                           <li>
                               <a href="<%= ctxPath%>/reservation/"><i class="fa-solid fa-file-contract"></i><span>예약</span></a>
@@ -177,7 +177,7 @@
                 </div>
                 <div class="top_header_r top_header">
                     <div class="top_ikon">
-                        <a class="goMypage" href="<%= ctxPath%>/employee/mypage"><i class="fa-solid fa-circle-user"></i></a>
+                        
                     </div>
                     <div class="top_ikon">
                         

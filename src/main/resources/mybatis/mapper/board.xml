@@ -166,17 +166,6 @@ ORDER BY createdAt DESC
 <!--    게시글 하나 조회하기(조인함) -->
 	<resultMap id="goViewOnePost_Map" type="PostVO">
 	 <!-- PostVO의 필드 매핑 -->
-	 <result property="previouspostNo" column="previouspostNo"/>
-	 <result property="previoussubject" column="previoussubject"/>
-	 <result property="previousreadCount" column="previousreadCount"/>
-	 <result property="previousregDate" column="previousregDate"/>
-	 <result property="previousname" column="previousname"/>
-	 <result property="nextpostNo" column="nextpostNo"/>
-	 <result property="nextsubject" column="nextsubject"/>
-	 <result property="nextreadCount" column="nextreadCount"/>
-	 <result property="nextregDate" column="nextregDate"/>
-	 <result property="nextname" column="nextname"/>
-	 
 	    <result property="postNo" column="postNo"/>
 	    <result property="fk_boardNo" column="fk_boardNo"/>
 	    <result property="fk_employeeNo" column="fk_employeeNo"/>
@@ -197,38 +186,11 @@ ORDER BY createdAt DESC
 	    </association>
 	</resultMap>
 	<select id="goViewOnePost" resultMap="goViewOnePost_Map" parameterType="HashMap">
-		SELECT previouspostNo, previousreadCount, previousregDate,previousname
-		     , case when length(previoussubject) &lt; 30 then previoussubject 
-                    else substr(previoussubject, 1, 28)||'..' end AS previoussubject
-		     , postNo, fk_employeeNo, name, subject, content, readCount, regDate
-		     , nextpostNo
-		     , nextreadCount,nextregDate,nextname
-		     , case when length(nextsubject) &lt; 30 then nextsubject 
-                    else substr(nextsubject, 1, 28)||'..' end AS nextsubject
-             , V.commentCount,V.allowComments,V.isNotice,V.noticeEndDate
-             , fk_boardNo,V.boardName,V.createdBy      
-		FROM
-		 (
-		     select lag(P.postNo) over(order by P.postNo desc) AS previouspostNo
-		          , lag(P.subject) over(order by P.postNo desc) AS previoussubject
-		          , lag(P.readCount) over(order by P.postNo desc) AS previousreadCount
-                  , lag(P.regDate) over(order by P.postNo desc) AS previousregDate
-                  , lag(P.name) over(order by P.postNo desc) AS previousname
-		          , P.postNo, P.fk_employeeNo, P.name, P.subject, P.content, P.readCount, P.regDate
-		          , lead(P.postNo) over(order by P.postNo desc) AS nextpostNo
-		          , lead(p.subject) over(order by P.postNo desc) AS nextsubject
-		          , lead(p.readCount) over(order by P.postNo desc) AS nextreadCount
-                  , lead(p.regDate) over(order by P.postNo desc) AS nextregDate
-                  , lead(p.name) over(order by P.postNo desc) AS nextname
-		          , P.fk_boardNo,P.commentCount,P.allowComments,P.isNotice,P.noticeEndDate
-                  ,B.boardName,B.createdBy
-		     from tbl_post P
-             join tbl_board B
-             on P.FK_BOARDNO = B.boardNo
-		     where p.status = 1
-		     <if test="checkAll_or_boardGroup == 1"> and B.boardNo=to_number(#{fk_boardNo})</if>
-			) V
-		WHERE V.postNo = to_number(#{postNo})
+		select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount,P.allowComments,P.isNotice,P.noticeEndDate
+		from tbl_post P
+		join tbl_board B
+		on P.FK_BOARDNO = B.boardNo
+		where postNo = #{postNo}
 	</select>
 	
 <!--  글 하나의 첨부파일 기존파일명,새로운 파일명 추출 -->

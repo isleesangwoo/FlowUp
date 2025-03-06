@@ -48,6 +48,21 @@ public interface CommuteService {
 	// 사원번호를 받아 그 사원의 연차정보를 가져오는 메소드
 	AnnualVO getAnnualInfo(Map<String, String> paramap);
 
+	// 특정 사원 및 특정 연도(map)의 연차사용 내역을 가져오는 메소드
+	List<Map<String, String>> getUsedAnnualList(Map<String, String> paraMap);
+
+	// 근속했던 년도를 가져오는 메소드
+	List<String> getWorkYear(String fk_employeeNo);
+
+	// 부서 정보를 조회해오는 메소드
+	DepartmentVO getdeptInfo(String departmentNo);
+
+	// 특정 부서의 전직원 주별 근무시간 조회
+	List<Map<String, String>> getCommuteTableInfo(Map<String, String> paraMap);
+
+	// 부서별 사원수 조회
+	int totalCnt(Map<String, String> paraMap);
+
 
 
 	

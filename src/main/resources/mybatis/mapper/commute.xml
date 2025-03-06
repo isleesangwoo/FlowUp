@@ -36,15 +36,16 @@
    		<result property="workTime" column="workTime" javaType="String" />
    	</resultMap>
    	<select id="getThisWeekWorkTime" parameterType="String" resultMap="ThisWeekWorkTimeMap">
-   		select to_char( nvl( round(endTime - startTime , 8), 0) ) as workTime
-		from tbl_commute
-		where fk_employeeNo = #{fk_employeeNo} and startTime BETWEEN TRUNC(sysdate, 'iw') and TRUNC(sysdate, 'iw')+6.99999
+	   		select to_char( nvl( round(endTime - startTime , 8), 0) ) as workTime
+			from tbl_commute
+			where fk_employeeNo = #{fk_employeeNo}
+			and to_char(starttime,'w') = to_char(SYSDATE,'w')
+        	and to_char(starttime,'yyyymm') = to_char(SYSDATE,'yyyymm')
    	</select>
    	
    	<select id="getDepInfo" resultType="DepartmentVO">
    		select departmentNo, FK_managerNo, departmentName
    		from tbl_department
-   		where departmentNo != 100000
    	</select>
    	
    	<resultMap type="HashMap" id="getMontWorkInfoMap">
@@ -55,7 +56,7 @@
    		select nvl(to_char(startTime, 'yyyy-mm-dd hh24:mi'), '-') as startTime, nvl(to_char(endTime, 'yyyy-mm-dd hh24:mi'), '-') as endTime
    		from tbl_commute
    		where fk_employeeNo = #{fk_employeeNo} 
-   			  and (starttime BETWEEN to_date(#{selectMonth}, 'yyyy-mm-dd') and add_months(to_date(#{selectMonth}, 'yyyy-mm-dd'), 1)-0.00001)
+   		and (starttime BETWEEN to_date(#{selectMonth}, 'yyyy-mm-dd') and add_months(to_date(#{selectMonth}, 'yyyy-mm-dd'), 1)-0.00001)
    	</select>   	
    	
    	<resultMap type="HashMap" id="getWorktimeMap">
@@ -63,12 +64,12 @@
    		<result property="worktime_sec" column="worktime_sec" 	javaType="String" />
    	</resultMap>
    	<select id="getWorktime" parameterType="HashMap" resultMap="getWorktimeMap">
-   		select to_char(trunc(starttime) , 'iw') as weekNo
+   		select to_char(trunc(starttime) , 'w') as weekNo
 		     , sum(nvl((endtime - starttime), 0) * 24 * 60 * 60) as worktime_sec
 		from tbl_commute
 		where fk_employeeno = ${fk_employeeNo}
 		and to_char(starttime, 'yyyymm') = ${year_month}
-		group by to_char(trunc(starttime) , 'iw') 	
+		group by to_char(trunc(starttime) , 'w') 	
 		order by 1
    	</select> 
    	
@@ -112,7 +113,6 @@
    	<resultMap type="HashMap" id="getEmployeeInfoMap">
    		<result property="positionName" column="positionName" javaType="String" />
    		<result property="name" column="name" javaType="String" />
-
    	</resultMap>
    	<select id="getEmployeeInfo" parameterType="String" resultMap="getEmployeeInfoMap">
    		select P.positionName as positionName, name
@@ -124,10 +124,113 @@
    	<select id="getAnnualInfo" parameterType="HashMap" resultType="AnnualVO">
    		select annualNo, year, occurAnnual, overAnnual, addAnnual, usedAnnual
    		from tbl_annual
-   		where fk_employeeNo = #{fk_employeeNo} and year = '2025'
+   		where fk_employeeNo = #{fk_employeeNo} and year = #{year}
    	</select>
    	
+   	<select id="getUsedAnnual" parameterType="HashMap" resultType="String">
+   		select sum(useamount) as usedannual
+		from tbl_document D join tbl_draft_annual A
+		on D.DOCUMENTNO = A.DOCUMENTNO
+		where fk_employeeno = #{fk_employeeNo}
+		and to_char(startdate, 'yyyy') = #{year}
+		group by to_char(startdate, 'yyyy')
+   	</select>
    	
+   	<resultMap type="HashMap" id="getUsedAnnualListMap">
+   		<result property="userange" column="userange" javaType="String" />
+   		<result property="useamount" column="useamount" javaType="String" />
+   		<result property="reason" column="reason" javaType="String" />
+   	</resultMap>
+   	<select id="getUsedAnnualList" parameterType="HashMap" resultMap="getUsedAnnualListMap">
+   		select to_char(startdate, 'mm/dd')|| ' - ' ||to_char(enddate, 'mm/dd') as userange, useamount, reason
+		from tbl_document D join tbl_draft_annual A
+		on D.DOCUMENTNO = A.DOCUMENTNO
+		where D.fk_employeeno = #{fk_employeeNo} and to_char(startdate, 'yyyy') = #{year}
+		order by startdate asc 
+   	</select>
+   	
+   	<select id="getWorkYear" parameterType="String" resultType="String">
+   		select year
+   		from tbl_annual
+   		where fk_employeeNo = #{fk_employeeNo}
+   		order by year desc
+   	</select>
+   	
+   	<select id="getdeptInfo" parameterType="String" resultType="DepartmentVO">
+   		select FK_managerNo, departmentName
+   		from tbl_department
+   		where departmentNo = #{departmentNo}
+   	</select>
+   	
+   	<resultMap type="HashMap" id="getCommuteTableInfoMap">
+   		<result property="departmentname" 	column="departmentname" javaType="String" />
+   		<result property="name" 			column="name" 			javaType="String" />
+   		<result property="week1" 			column="week1" 			javaType="String" />
+   		<result property="week2" 			column="week2" 			javaType="String" />
+   		<result property="week3" 			column="week3" 			javaType="String" />
+   		<result property="week4" 			column="week4" 			javaType="String" />
+   		<result property="week5" 			column="week5" 			javaType="String" />
+   		<result property="week6" 			column="week6" 			javaType="String" />
+   		<result property="total" 			column="total" 			javaType="String" />
+   	</resultMap>
+   	<select id="getCommuteTableInfo" parameterType="HashMap" resultMap="getCommuteTableInfoMap">
+   		select departmentname, name, week1, week2, week3, week4, week5, week6, total
+    	from
+    	(
+			SELECT row_number() over(order by departmentName asc, name asc) as rno, departmentname, name, week1, week2, week3, week4, week5, week6, week1+week2+week3+week4+week5+week6 as total
+			from 
+			(
+			    SELECT E.name as name,
+			           nvl(V.week1, 0) as week1,
+			           nvl(V.week2, 0) as week2,
+			           nvl(V.week3, 0) as week3,
+			           nvl(V.week4, 0) as week4,
+			           nvl(V.week5, 0) as week5,
+			           nvl(V.week6, 0) as week6,
+			           FK_departmentNo
+			    FROM 
+			    (
+			        select fk_employeeno,
+			               TRUNC( SUM( decode( to_char(starttime,'w'), 1 , nvl( (endtime - starttime)*(24*60*60), 0), 0 ) ) ) AS week1,
+			               TRUNC( SUM( decode( to_char(starttime,'w'), 2 , nvl( (endtime - starttime)*(24*60*60), 0), 0 ) ) ) AS week2,
+			               TRUNC( SUM( decode( to_char(starttime,'w'), 3 , nvl( (endtime - starttime)*(24*60*60), 0), 0 ) ) ) AS week3,
+			               TRUNC( SUM( decode( to_char(starttime,'w'), 4 , nvl( (endtime - starttime)*(24*60*60), 0), 0 ) ) ) AS week4,
+			               TRUNC( SUM( decode( to_char(starttime,'w'), 5 , nvl( (endtime - starttime)*(24*60*60), 0), 0 ) ) ) AS week5,
+			               TRUNC( SUM( decode( to_char(starttime,'w'), 6 , nvl( (endtime - starttime)*(24*60*60), 0), 0 ) ) ) AS week6
+			        from tbl_commute
+			        where to_char(starttime, 'yyyymm') = #{year_month}
+			        group by fk_employeeno
+			    ) V right JOIN tbl_employee E
+			    ON V.fk_employeeno = E.employeeno
+			    <choose>
+		    		<when test='searchType == "name" and searchWord != ""'>
+		    			where lower(name) like '%'||lower(#{searchWord})||'%' 
+		    		</when>
+		    		<otherwise></otherwise>
+		    	</choose>
+			    
+			) A Join tbl_department D
+			on A.FK_departmentNo = D.departmentNo
+			<if test="departmentNo != 'all'">
+				where departmentNo = #{departmentNo}
+			</if>
+			order by departmentName asc, name asc
+		)
+		WHERE rno between to_number(#{startRno}) and to_number(#{endRno})
+		
+   	</select>
+   	
+   	<select id="totalCnt" parameterType="HashMap" resultType="int">
+   		select count(*) as totalcount
+		from tbl_employee
+		where 1=1
+		<if test="departmentNo != 'all'">
+		and fk_departmentno = #{departmentNo}
+		</if>
+		<if test='searchType == "name" and searchWord != ""'>
+		and lower(name) like '%'||lower(#{searchWord})||'%' 
+		</if>
+   	</select>
    	
    	
 </mapper>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="springscheduler">
+
+	<update id="scheduler_endtime_update">
+		update tbl_commute set endtime = to_date( to_char(starttime, 'yyyy-mm-dd')||' 18:00:00' , 'yyyy-mm-dd hh24:mi:ss')
+		where starttime is not null and endtime is null  
+	</update>
+
+	<resultMap type="HashMap" id="getEmpInfoMap">
+   		<result property="employeeNo" column="employeeNo" javaType="String" />
+   		<result property="regYear" column="registerDate" javaType="String" />
+   	</resultMap>
+	<select id="getEmpInfo" resultMap="getEmpInfoMap"> 
+		select employeeNo, to_char(registerDate, 'yyyy') as regYear
+		from tbl_employee E left join tbl_annual A
+		on E.employeeNo = A.fk_employeeNo
+		where E.status = 1 and A.year = to_char(sysdate, 'yyyy')
+	</select>
+	
+	
+	
+
+</mapper>
+

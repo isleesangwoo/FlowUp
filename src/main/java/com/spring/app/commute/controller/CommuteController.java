@@ -55,23 +55,26 @@ public class CommuteController {
 
 		}
 		else {
-			
-			List<DepartmentVO> dvoList = new ArrayList<>();;
-			
-			if("10".equals(loginuser.getSecurityLevel())) {
-				
-				dvoList = service.getDepInfo(); // 모든 부서 리스트 조회
-				
-			}
-
-			mav.addObject("dvoList", dvoList);
-			
+		
 			mav.setViewName("mycontent/commute/commute");
 			
 		}
 		
 		return mav;
 	}
+	
+	@GetMapping("getDeptname")
+	@ResponseBody
+	public List<DepartmentVO> getDeptname() {
+		
+		List<DepartmentVO> dvoList = service.getDepInfo(); // 모든 부서 리스트 조회
+		
+		return dvoList;
+	}
+	
+	
+	
+	
 	
 	
 	
@@ -214,6 +217,7 @@ public class CommuteController {
 		return map;
 	}
 	
+	// 근무 상태 변경
 	@PostMapping("statusChange")
 	@ResponseBody
 	public Map<String, Integer> statusChange(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, String> paramap) {
@@ -230,6 +234,7 @@ public class CommuteController {
 		return map;
 	}
 	
+	// 한달치 근무 기록 조회
 	@GetMapping("getMontWorkInfo")
 	@ResponseBody
 	public List<Map<String, String>> getMontWorkInfo(@RequestParam Map<String, String> paramap) {
@@ -239,7 +244,7 @@ public class CommuteController {
 		return mapList;
 	}
 	
-	
+	// 이번주 근무 시간 조회
 	@GetMapping("getWorktime")
 	@ResponseBody
 	public List<Map<String, String>> getWorktime(@RequestParam Map<String, String> paramap) {
@@ -249,7 +254,7 @@ public class CommuteController {
 		return mapList;
 	}
 	
-	
+	// 엑셀 다운로드
 	@PostMapping("downloadExcel")
 	public String downloadExcelFile(@RequestParam(defaultValue = "") String year_month, @RequestParam(defaultValue = "") String fk_employeeNo, Model model) {
 
@@ -274,7 +279,7 @@ public class CommuteController {
 		}
 	}
 		
-		
+	// 내 연차 조회 및 페이지 이동
 	@GetMapping("myAnnual")
 	public ModelAndView myAnnual(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
@@ -311,17 +316,207 @@ public class CommuteController {
 	}
 		
 		
+	// 소진 연차 리스트	
+	@GetMapping("getUsedAnnualList")
+	@ResponseBody
+	public List<Map<String, String>> getUsedAnnualList(@RequestParam Map<String, String> paraMap) {
+		
+		List<Map<String, String>> mapList = service.getUsedAnnualList(paraMap);
+		
+		return mapList;
+	}
+		
+	// 셀렉트 태그에 해당 사원이 실제로 근무한 연도 출력
+	@GetMapping("getWorkYear")
+	@ResponseBody
+	public List<String> getWorkYear(@RequestParam(defaultValue = "") String fk_employeeNo) {
+		
+		List<String> yearList = service.getWorkYear(fk_employeeNo);
+		
+		return yearList;
+	}
+		
+	
+	@GetMapping("commuteTable")
+	public ModelAndView commuteTable(HttpServletRequest request
+								   , HttpServletResponse response
+								   , ModelAndView mav) {
+		
+		String departmentNo = request.getParameter("departmentNo");
+		
+		if(!"all".equals(departmentNo)) {
+			
+			DepartmentVO dvo = service.getdeptInfo(departmentNo);
+			mav.addObject("departmentName", dvo.getDepartmentName());
+		}
+		
+		mav.addObject("currentShowPageNo", "1");
+		mav.addObject("departmentNo", departmentNo);
+		mav.setViewName("mycontent/commute/commuteTable");
+			
+		return mav;
+	}
+	
+	
+	@GetMapping("getCommuteTableInfo")
+	@ResponseBody
+	public Map<String, Object> getCommuteTableInfo(@RequestParam Map<String, String> paraMap) {
+		
+		Map<String, Object> jsonMap = new HashMap<>();
+		
+		String currentShowPageNo = "1";
+		
+		if(paraMap.get("currentShowPageNo") != null) {
+			currentShowPageNo = paraMap.get("currentShowPageNo");
+		}
+		if(!"name".equals(paraMap.get("searchType")) ) {
+			paraMap.put("searchType", "");
+		}
+		if(paraMap.get("searchWord").trim() == null) {
+			paraMap.put("searchWord", "");
+		}
+		else {
+			paraMap.put("searchWord", paraMap.get("searchWord").trim());
+		}
+		
+		paraMap.put("year_month", paraMap.get("year")+""+paraMap.get("month"));
 		
 		
 		
+		int totalCount = 0; 	// 총 게시물 수
+		int sizePerPage = 0; 	// 페이지당 게시물 수
+		int totalPage = 0; 		// 총 페이지 수
+		int n_currentShowPageNo = 1;
 		
+		if(paraMap.get("sizePerPage") != null ) {
+			sizePerPage = Integer.parseInt(paraMap.get("sizePerPage"));
+		}
+		
+		totalCount = service.totalCnt(paraMap);
 
+		totalPage = (int)( Math.ceil((double)totalCount/sizePerPage) );
+		
+		
+		
+		System.out.println("searchType : "+ paraMap.get("searchType"));
+		System.out.println("searchWord : "+ paraMap.get("searchWord"));
+		
+		try {
+			n_currentShowPageNo = Integer.parseInt(currentShowPageNo);
+			
+			if(n_currentShowPageNo < 1 || n_currentShowPageNo > totalPage) {
+	            n_currentShowPageNo = 1;
+	        }
+			
+		} catch (NumberFormatException e) {
+			n_currentShowPageNo = 1;
+		}
+		
+		int startRno = ((n_currentShowPageNo - 1) * sizePerPage ) + 1;
+		int endRno = startRno + sizePerPage -1;
+		
+		
+		
+		
+		paraMap.put("startRno", String.valueOf(startRno));
+		paraMap.put("endRno", String.valueOf(endRno));
+		
+		
+		List<Map<String, String>> mapList = service.getCommuteTableInfo(paraMap);
+		
+		
+		
+		int blockSize = 5; 
+		int loop = 1;
+		int pageNo = ((n_currentShowPageNo - 1)/blockSize) * blockSize + 1;
+		
+		
+		
+		
+		
+		String pageBar = "<div style='width:100%; margin:0 auto;'>";
+		
+	    pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+(Integer.parseInt(paraMap.get("month"))-1)+", 1), 1)'>[처음]</button>";
+	    
+	    if(n_currentShowPageNo > 1) {
+	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+(Integer.parseInt(paraMap.get("month"))-1)+", 1), "+ (pageNo-1) +")'>[이전]</button>";
+
+	    }
+	    
+	    while(!(loop > blockSize || pageNo > totalPage)) {
+	    	
+	    
+	    	if(pageNo == n_currentShowPageNo) {
+	            pageBar += "<button type='button'  class='btn' style='color:#2985DB;'>"+pageNo+"</button>";
+	        }
+	    	else {
+	    		pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+(Integer.parseInt(paraMap.get("month"))-1)+", 1), "+pageNo+")'>"+pageNo+"</button>"; 
+	    	}    
+	    	
+	    	loop++;
+	    	pageNo++;
+	           
+	    }// end of while --------------------------------
+	        
+	    if(pageNo <= totalPage) {
+	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+ (Integer.parseInt(paraMap.get("month"))-1)+ ", 1), "+pageNo+")'>[다음]</button>"; 
+	    }
+
+	    pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+(Integer.parseInt(paraMap.get("month"))-1)+", 1), "+totalPage+")'>[마지막]</button>"; 
+		    
+	    pageBar += "</div>";
+		
+	    jsonMap.put("pageBar", pageBar);
+		jsonMap.put("paraMap", paraMap);
+		jsonMap.put("mapList", mapList);
+		
+		return jsonMap;
+		
+	}
 	
 	
 	
 	
 	
 	
+	
+	
+	
+	@GetMapping("commuteChart")
+	public ModelAndView commuteChart(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+		
+		String departmentNo = request.getParameter("departmentNo");
+		if(!"all".equals(departmentNo)) {
+			
+			DepartmentVO dvo = service.getdeptInfo(departmentNo);
+			mav.addObject("departmentName", dvo.getDepartmentName());
+		}
+		
+		mav.addObject("departmentNo", departmentNo);
+		mav.setViewName("mycontent/commute/commuteChart");
+			
+		return mav;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@GetMapping("annualInfo")
+	public ModelAndView annualInfo(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+		
+		
+		
+		mav.setViewName("mycontent/commute/annualInfo");
+			
+
+		
+		return mav;
+	}
 	
 	
 	
