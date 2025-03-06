@@ -41,6 +41,39 @@ public interface ReservationService {
 	// 해당 페이지 내의 일자 구간 예약정보 불러오기
 	List<AssetReservationVO> selectassetReservationThis(AssetReservationVO assetreservationvo);
 
+	// 예약추가를 해주는 메소드
+	int addReservation(AssetReservationVO assetreservationvo);
+
+	// 자산 소분류 삭제
+	int deleteAssetNo(String assetDetailNo);
+
+	// 상세에 해당하는 비품정보들을 불러주는 메소드
+	List<Map<String, String>> selectInformation(String fk_assetdetailno);
+
+	// 비품 하나를 삭제해주는 메소드
+	int midDeleteOne(String assetInformationNo);
+
+	// 자산 하나에 해당하는 비품들 조회하기
+	List<Map<String, String>> fixSelectAssetNo(String fk_assetDetailNo);
+
+	// 자산명을 수정해주는 메소드
+	int updateAssetDetailName(Map<String, String> paraMapAsset);
+
+	// 비품내용들을 수정해주는 메소드
+	int GofixInfo(Map<String, Object> paraMapArr);
+
+	// 회의실별 오늘에 해당하는 예약 정보 조회
+	List<Map<String, String>> selectNowReservation(Map<String, Object> paraMap);
+
+	// 예약을 삭제 해주는 메소드
+	int deleteAssetReservationNo(String assetReservationNo);
+
+	// 자산 대분류 info를 update 해주는 메소드
+	int assetInfoUpdate(Map<String, String> paraMap);
+
+	// 예약하기에 앞서 해당 일자에 예약한 건이 있는지 확인
+	int selectReservation(AssetReservationVO assetreservationvo);
+
 	
 
 	

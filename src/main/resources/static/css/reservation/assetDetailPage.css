@@ -1,0 +1,406 @@
+
+	
+	.dateController {
+        width: 100%; 
+        margin: auto;
+    }
+
+    .dateTopBar {
+        display: flex;
+        gap: var(--size16);
+        align-items: center;
+        justify-content: space-between;
+		padding: 0px var(--size24);
+        margin-bottom: var(--size30);
+    }
+	
+	.dateTopBtn {
+		display: flex;
+        gap: var(--size16);
+        align-items: center;
+        justify-content: center;
+	}
+    #today {
+        font-size: var(--size24);
+        font-weight: 500;
+    }
+
+    #now {
+        box-sizing: border-box;
+        padding: calc(var(--size2) + var(--size2)) calc(var(--size2) + var(--size2));
+        margin-top: calc(var(--size2) + var(--size2));
+        font-size: var(--size12);
+    }
+
+    #now:hover {
+        background-color: #eee;
+    }
+
+    .calendar_container {
+        position: relative;
+    }
+
+    table {
+        border-collapse : collapse;
+        font-size: var(--size14);
+    }
+
+    .time_table_back_form {
+        border: 1px solid #ddd;
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        border-spacing: 0;
+    }
+	
+	.my_table {
+		border: 1px solid #ddd;
+        width: 100%;
+        table-layout: fixed;
+        border-collapse: collapse;
+        border-spacing: 0;
+	}
+	
+	.my_table tr th {
+		height: var(--size30);
+        font-weight: bold;
+		text-align: left;
+		padding-left: var(--size8);
+	}
+
+    .time_table_back_form tr th,
+    .info {
+        height: var(--size30);
+        font-weight: normal;
+		text-align: center;
+    }
+
+    .info {
+        vertical-align: middle;
+        overflow: hidden;
+        text-align: center;
+        border-left: 0;
+    }
+
+    .info span{
+        display: block;
+        color: #333;
+        text-align: left;
+        margin: 2px 5px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+        cursor: pointer;
+        font-size: 13px;
+    }
+    
+    /* 여기부터는 예약 바 생성 */
+    
+    .time_table {
+    	width: calc(100% - 120px);
+    	height: calc(100% - var(--size30));
+    	position: absolute;
+	    top: var(--size30);
+	    left: 120px;
+    }
+    
+    #timeLine {
+    	position: absolute;
+	    width: 1px;
+	    background: red;
+	    height: calc(100%);
+    }
+    
+    
+    
+    
+    
+    /* 여기까지는 예약 바 생성 */
+	
+	
+	
+	a {
+	  text-decoration: none;
+	  color: inherit;
+	}
+	.tab {
+	  width: 100%;
+	  display: flex;
+	  align-items: center;
+	  padding: 1rem;
+	  border-bottom: 1px solid #eee; 
+	}
+	.tab__item {
+	  padding: 0.6rem 1.3rem;
+	  margin-right: var(--size8);
+	  font-size: var(--size14);
+	  
+	}
+
+	.tab__item:hover {
+		background-color: #f1f1f1;
+	}
+
+	.tab__item.active {
+	  display: inline-block;
+	  color: #000;
+	  border-bottom: solid 2px #056ac9;
+	}
+	.tab__content-wrapper {
+	  padding: 1rem
+	}
+	.tab__content {
+	  display: none;
+	}
+	.tab__content.active {
+	  display: block;
+	}
+
+	.tab1_info {
+		font-size: var(--size14);
+		color: #999;
+		margin-bottom: var(--size10);
+	}
+
+
+
+	.baseTable {
+		width: 100%;
+		table-layout: fixed;
+		display: table;
+	    border-collapse: separate;
+	    box-sizing: border-box;
+	    text-indent: initial;
+	    unicode-bidi: isolate;
+	    border-spacing: 2px;
+	    border-color: gray;
+		border-collapse: collapse;
+		font-size: var(--size14);
+	}
+
+	.baseTable thead {
+	    display: table-header-group;
+	    vertical-align: middle;
+	    unicode-bidi: isolate;
+	    border-color: inherit;
+	    font-size: var(--size14);
+	}
+
+
+	.baseTable tr {
+	    display: table-row;
+	    vertical-align: inherit;
+	    unicode-bidi: isolate;
+	    border-color: inherit;
+	}
+
+	.baseTable tr:nth-child(even) {
+		 background-color: rgba(242, 247, 253, 0.5);
+	}
+
+	.baseTable tbody tr:hover {
+		 background-color: rgba(242, 247, 253);
+	}
+
+	.baseTable tr th {
+		box-sizing:border-box;
+	    padding-left: var(--size24);
+	    height: var(--size30);
+	    border-top: 1px solid #ddd;
+	    border-bottom: 1px solid #ddd;
+	    text-align: left;
+	    padding: 0 var(--size16);
+	    white-space: nowrap;
+	    font-weight: normal;
+	    ext-align: left;
+	}
+
+	.baseTable tbody {
+	    display: table-row-group;
+	    vertical-align: middle;
+	    unicode-bidi: isolate;
+	    border-color: inherit;
+	}
+
+	.baseTable tbody td {
+		padding: var(--size8) var(--size16);
+	    line-height: 1.6;
+	    border-bottom: 1px solid #eee;
+	    vertical-align: top;
+	}
+
+
+	#mailOneCheck {
+	    appearance: none; 
+	    box-sizing: border-box;
+	    background-clip: content-box;
+	    padding: calc(var(--size2) + var(--size2));
+	    width: var(--size20);
+	    height: var(--size20);
+	    border: 1px solid gray;
+	    cursor: pointer;
+	    margin-right: var(--size12);
+	}
+
+	#mailOneCheck:checked {
+	    border-color: #2985db;
+	    background-color: #2985db;
+	}
+
+	.okBtn {
+		width: 80px;
+	    height: var(--size40);
+	    font-size: var(--size14);
+	    transition-duration: 150ms;
+	    align-items: center;
+	    background-color: rgb(41, 133, 219);
+	    color: rgb(255, 255, 255);
+	    margin-bottom: var(--size10);
+	    border-width: 1px;
+	    border-style: solid;
+	    border-radius: calc(var(--size2) + var(--size2));
+	    text-wrap: nowrap;
+	    border-color: rgb(5, 106, 201);
+	}
+
+	.resetBtn {
+		width: 80px;
+	    height: var(--size40);
+	    font-size: var(--size14);
+	    transition-duration: 150ms;
+	    align-items: center;
+	    background-color: #dbdbdb;
+	    color: rgb(0, 0, 0);
+	    margin-bottom: var(--size10);
+	    border-width: 1px;
+	    border-style: solid;
+	    border-radius: calc(var(--size2) + var(--size2));
+	    text-wrap: nowrap;
+	    border-color: #eee;
+	}
+
+	.bottom_btn_box{
+		width: 50%; 
+		display: flex; 
+		justify-content: center; 
+		gap: var(--size8);
+		margin: auto; 
+		padding-top: var(--size24);
+		margin-bottom: 10px;
+	}
+
+
+
+	#assetModal, #assetModal2 {
+		min-width: 500px;
+		width: auto;
+		height: auto;
+		z-index: 100;
+		border-radius: 10px;
+		background-color: #fff;
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		box-sizing: border-box;
+		padding: var(--size24);
+		display: none;
+		filter: drop-shadow(4px 5px 22px rgba(0, 0, 0, 0.2));
+	}
+
+
+	#addAsset, #addFixtures {
+		width: max-content;
+		cursor: pointer;
+		box-sizing: border-box;
+		padding: 8px 10px;
+	}
+
+	#addAsset:hover, #addFixtures:hover{
+		background-color: #eee;
+	}
+
+
+
+	#assetModal > input, #assetModal2 > div input {
+		display: inline-block;
+	    box-sizing: border-box;
+	    border: 1px solid #dbdbdb;
+	    border-radius: 4px;
+	}
+
+
+	#goAddAsset {
+		margin-top: 40px;
+	    text-align: center;
+	    padding: 10px 20px;
+	    border-radius: 8px;
+	    cursor: pointer;
+	    background-color: #2985db;
+	    color: #fff;
+	}
+
+	.assetNameTitle {
+		display: inline-block;
+		width: 100px;
+	}
+
+	.top_btn_box {
+		display: flex;
+		gap: 12px;
+		align-items: center;
+	}
+
+	.midDeleteOne {
+		cursor: pointer;
+	}
+	
+	
+	.assetInfoBox{
+		height:auto; 
+		min-height: 120px; 
+		background-color: rgb(249, 249, 249);
+		margin: 24px 0px 0px 0px; 
+		border: 1px solid #dcdcdc;
+		box-sizing: border-box;
+		overflow-x: hidden;
+	}
+	
+	.assetInfoBox p{
+		margin: 0px !important;
+		width: max-content !important;;
+	}
+	
+	.assetInfoBox li{
+		margin: 0px !important;
+		padding: 0px !important;
+		width: max-content !important;
+	}
+
+	
+	.assetInfoBox div {
+        box-sizing: border-box; /* 자식 div에도 box-sizing을 적용 */
+		width: max-content !important;;
+    }
+	
+	
+	.reservationBar{
+		position: absolute; 
+		top:50%; 
+		transform:translate(0px, -50%);
+		height:calc(100% - 9px); 
+		border-radius: 30px;
+		background-color: #ddd; 
+		font-size: 12px; 
+		box-sizing: border-box; 
+		padding-left:6px;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		word-break: break-all;
+	}
+	
+	.innerTimeTable {
+		overflow: hidden;
+	}

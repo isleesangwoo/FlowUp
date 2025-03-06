@@ -19,7 +19,7 @@
         <div id="right_title_box">
             <span id="right_title">${requestScope.assetName}</span>
         </div>
-		<span><input type="text" name="reservationStart" />~<input type="text" name="reservationEnd" /></span>
+		<span><input type="hidden" name="reservationStart" /><input type="hidden" name="reservationEnd" /></span>
 		<div class="dateController">
 			
 			<div class="dateTopBar">
@@ -64,8 +64,8 @@
 			<div id="assetModal" class="modal_containerAsset" style="padding:24px;">
 				<div class="assetModalTitle" >예약</div>
 				<div class="assetModal_body">
-					<input type="text" value="${requestScope.assetDetailNo}" name="fk_assetDetailNo" />
-					<input type="text" value="${sessionScope.loginuser.employeeNo}" name="fk_employeeNo" />
+					<input type="hidden" value="${requestScope.assetDetailNo}" name="fk_assetDetailNo" />
+					<input type="hidden" value="${sessionScope.loginuser.employeeNo}" name="fk_employeeNo" />
 					<div>
 						<label>예약일</label><span><input type="text" name="reservationStart" size="4" /> ~ <input type="text" name="reservationEnd" size="4" /></span>
 					</div>
@@ -73,7 +73,7 @@
 						<label>예약자</label><span>${sessionScope.loginuser.name}</span>
 					</div>
 					<div>
-						<label>목적</label><span><input type="text" name="reservationContents" /></span>
+						<label>목적</label><span><textarea type="text" name="reservationContents"></textarea></span>
 					</div>
 				</div>
 				<div id="goReservation">확인</div>
@@ -86,16 +86,21 @@
     <!-- 오른쪽 바 -->
 
 <script type="text/javascript">
-	// ====================== 날짜 리모컨 기능 생성 ====================== //
+	<%-- ====================== 날짜 리모컨 기능 생성 ====================== --%>
+	
+	// === 날짜 변수 생성 === //
 	let today = new Date(); // 현재 날짜 저장
 	let currentDate = new Date(); // 오늘을 저장하는 변수
 	let currentDateBg = new Date(); // 오늘과 날이 같다면 배경색을 바꾸기 위한 저장 변수
-
+	// === 날짜 변수 생성 === //
+	
+	<%-- 날짜 조작 버튼 --%>
 	// 이전 버튼 클릭 시
 	$('#prev').click(() => {
 	    // 이전 주의 월요일로 설정
 	    today.setDate(today.getDate() - 7); // 오늘에서 7일을 빼서 이전 주 월요일로 이동
 	    updateDate();
+	    selectassetReservationThis();
 	});
 
 	// 다음 버튼 클릭 시
@@ -103,15 +108,20 @@
 	    // 현재 날짜 기준으로 1주일 후 월요일로 설정
 	    today.setDate(today.getDate() + 7); // 오늘에서 7일을 더해서 다음 주 월요일로 이동
 	    updateDate();
+	    selectassetReservationThis();
 	});
 
 	// 오늘 버튼 클릭 시
 	$('#now').click(() => {
 	    today = new Date(currentDate); // 저장된 currentDate 날짜로 복구
 	    updateDate();
+	    selectassetReservationThis();
 	});
-
-	// 날짜 업데이트 함수
+	<%-- 날짜 조작 버튼 --%>
+	
+	
+	
+	<%-- 날짜 업데이트 함수 --%>
 	function updateDate() {
 	    const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];
 	    
@@ -180,7 +190,7 @@
 		
 		
 		
-		/////////////////////////////////////////////////////// 주간 캘린더 내부 나타내기
+		<%-- 주간 캘린더 내부 나타내기 --%>
 		let v_html2 = ``;
 		v_html2 += `<tr id="weekWrap">
 						<th class="time_wrap">
@@ -202,15 +212,18 @@
 						
 		let targetCnt = 0;
 		const dataValue = `\${String(currentDateBg.getMonth() + 1).padStart(2, '0')}.\${String(currentDateBg.getDate()).padStart(2, '0')}(\${daysOfWeek[currentDateBg.getDay()]})`;
-		
-		weekDates.forEach(date => {
+		// alert(dataValue)
+		weekDates.forEach((index, date) => {
 			targetCnt++;
-			
-			if(date == dataValue){ // 만약 오늘 날자랑 td가 같으면 배경색을 #eee로 지정해주기 위해 .todayBg 생성
-				v_html2 +=  `<td class="dateBar todayBg" data-value="\${date}" >`
+			// alert(date)
+			if(index == dataValue){ // 만약 오늘 날자랑 td가 같으면 배경색을 #eee로 지정해주기 위해 .todayBg 생성
+				v_html2 +=  `<td class="dateBar todayBg" data-value="\${date}" ><input type="hidden" name="datebar" value="\${weekDatesTarget[targetCnt -1]}" />`
+			}
+			else if(index < dataValue) {
+				v_html2 +=  `<td class="dateBar pastBg" data-value="\${date}" ><input type="hidden" name="datebar" value="\${weekDatesTarget[targetCnt -1]}" />`
 			}
 			else {
-				v_html2 +=  `<td class="dateBar" data-value="\${date}" >`
+				v_html2 +=  `<td class="dateBar" data-value="\${date}" ><input type="hidden" name="datebar" value="\${weekDatesTarget[targetCnt -1]}" />`
 			}
 			v_html2 +=		`<div class="schedule_wrap">`;
 								
@@ -219,9 +232,9 @@
 										
 									    if (isInteger(timeStr)) { 
 									        v_html2 += `<div class="table_cell" style="height: 60px;">
-															<div class="box"><input class="clickTime" type="hidden" value="\${weekDatesTarget[targetCnt-1]+ ' '+timeStr+':00'}"/></div>`;
+															<div class="box"><input class="clickTime" type="hidden" value="\${weekDatesTarget[targetCnt-1]+ ' '+String(timeStr).padStart(2, '0')+':00'}"/></div>`;
 									    } else {
-									        v_html2 += `	<div class="box"><input class="clickTime" type="hidden" value="\${weekDatesTarget[targetCnt-1]+ ' '+parseInt(timeStr, 10)+':30'}"/></div>
+									        v_html2 += `	<div class="box"><input class="clickTime" type="hidden" value="\${weekDatesTarget[targetCnt-1]+ ' '+String(parseInt(timeStr, 10)).padStart(2, '0')+':30'}"/></div>
 														</div>`;
 									    }
 				                } // end of for------------
@@ -239,28 +252,23 @@
 	    // HTML에 추가
 	    $('.weekTitle').append(v_html);
 		$('.week_table_back_td').append(v_html2);
+		<%-- 주간 캘린더 내부 나타내기 --%>
 	}
-	///////////////////////////////////////////////////////
+	<%-- 날짜 업데이트 함수 --%>
 
 	// 페이지 로드 시 현재 날짜와 주간 캘린더 표시
 	updateDate();
-	// ====================== 날짜 리모컨 기능 생성 ====================== //
+	<%-- ====================== 날짜 리모컨 기능 생성 ====================== --%>
 
 
 
 
-	// === 정수 체크 함수 === //
-	function isInteger(number) {
-	    return !isNaN(number) && Number.isInteger(Number(number));
-	}
-    // === 정수 체크 함수 === //
 	
 	
 	
-	
-	
-	
-	///////////////////////////////////////////////////////////
+	<%-- ====================== 마우스 다운, 무브, 업 이벤트 ====================== --%>
+	$(document).ready(e=>{
+		
 	let isMouseDown = false;
     let startIndex = -1;
     let endIndex = -1;
@@ -285,16 +293,34 @@
             }
             // alert('Start: ' + $('input.clickTime').eq(startIndex).val() + ', End: ' + $('input.clickTime').eq(endIndex + 1).val());
 			
+            let currentDay = new Date();
+			const formattedDateTarget = `\${String(currentDay.getFullYear())}.\${String(currentDay.getMonth() + 1).padStart(2, '0')}.\${String(currentDay.getDate()).padStart(2, '0')}`;
+			
+			if(formattedDateTarget > $('input.clickTime').eq(endIndex).val()) {
+				alert('오늘보다 이전 날짜는 예약이 불가합니다.');
+				$('.box').each(function(index) {
+		        	$(this).removeClass('highlight');
+		        });
+			}
+			else{
             
             // ======= 모달창 on ======= //
 			$('#assetModalBg').fadeIn();
 			$('.modal_containerAsset').fadeIn();
 			// ======= 모달창 on ======= //
 			
+			if(endIndex% 26 == 25){
+				$('input[name="reservationEnd"]').val($('input.clickTime').eq(endIndex).val())	
+			}
+			else{
+				$('input[name="reservationEnd"]').val($('input.clickTime').eq(endIndex+1).val())
+			}
+			
 			$('input[name="reservationStart"]').val($('input.clickTime').eq(startIndex).val());
-			$('input[name="reservationEnd"]').val($('input.clickTime').eq(endIndex + 1).val())
+			
 			
             highlightBoxes();
+			}
         }
     });
 
@@ -325,94 +351,247 @@
         return $('.box').index(target);
     }
     
-    
-    
-    
-    // ======== 모달창 닫기 ======== //
+ 	// ======== 모달창 닫기 ======== //
     $('#assetModalBg:not(.modal_containerAsset)').click(e=>{
     	$('#assetModalBg').fadeOut();
     	$('.modal_containerAsset').fadeOut();
     })
     // ======== 모달창 닫기 ======== //
     
+    <%-- ====================== 마우스 다운, 무브, 업 이벤트 ====================== --%>
+	}) // end of $(document).ready(e=>{
     
     
     
+    
+
+    
+    
+    
+    
+    <%-- ====================== 현재 페이지에서의 예약 정보 ====================== --%>
+    function selectassetReservationThis() {
+
+	    const todayArr = $('#today').text().split("\~");
+	    
+	    $.ajax({
+	    	url:"<%=ctxPath%>/reservation/selectassetReservationThis",
+	    	type:"post",
+	    	data:{"reservationStart":todayArr[0].trim(),
+	    		  "reservationEnd":todayArr[1].trim(),
+	    		  "fk_assetDetailNo":${requestScope.assetDetailNo}},
+	    	dataType:"json",
+	    	success:function(json){
+	    		console.log(JSON.stringify(json));
+	    		/*
+	    			[{"assetReservationNo":"100010","fk_assetDetailNo":"100014","fk_employeeNo":"100012","reservationStart":"2025.02.25 12:00","reservationEnd":"2025.02.25 14:30","reservationDay":null,"reservationContents":"그냥~"}]
+	    		*/
+	    		
+	    		Array.from( $('.dateBar input[name="datebar"]') ).forEach(function(elmt, i){
+	    			
+	    			// alert($(item).val())// 2025.03.03
+
+		    		$.each(json, function(index, item){
+		    			
+		    			const startTimeOne = parseInt(((item.reservationStart).split(/\s+/g)[1]).split(':')[0]); // 12
+						const endTimeOne = parseInt(((item.reservationEnd).split(/\s+/g)[1]).split(':')[0]);    // 14
+						
+						const startTimeTwo = parseInt(((item.reservationStart).split(/\s+/g)[1]).split(':')[1]); // 00
+						const endTimeTwo = parseInt(((item.reservationEnd).split(/\s+/g)[1]).split(':')[1]);    // 30
+						
+						// 예약 시작시간과 끝시간의 차를 구해 30단위로 끊은 것의 개수 구하기
+						const timeSum = ((endTimeOne * 60 + endTimeTwo) - (startTimeOne * 60 + startTimeTwo)) / 30;
+						
+						// 예약 시작시간과 09시의 차를 구해 30분 단위로 끊은 것의 개수 구하기
+		    			const startSum = ( (startTimeOne * 60 + startTimeTwo) - (9 * 60) ) / 30;
+						
+						// cell 하나당 height 구하기
+		    			const cellHeight = $('.time').outerHeight() / 2;
+		    			
+		    			if($(elmt).val() == item.reservationStart.split(" ")[0]){
+		    			
+		    				$(elmt).parent().append(`<div class="reservationBox" style="top:\${cellHeight * startSum}px; height:\${cellHeight * timeSum}px;"
+		    						title="\${(item.reservationStart).split(/\s+/g)[1] +" ~ "+ (item.reservationEnd).split(/\s+/g)[1]}&#10;\${item.fk_employeeNo}&#10;\${item.reservationContents}">
+		    						<div class="textover">
+			    						<div class="reservationBoxTitle">예약정보</div>
+	                                    <div class="reservationBoxContent">
+	                                       <div>\${(item.reservationStart).split(/\s+/g)[1] +" ~ "+ (item.reservationEnd).split(/\s+/g)[1]}</div>
+	                                       <div>\${item.fk_employeeNo}</div>
+	                                       <div>\${item.reservationContents}</div>
+	                                    <div>
+                                    </div>
+		    				</div>`).removeClass('box');
+			    		
+		    			}
+		    			
+		    		}) // end of $.each(json, function(index, item){})---------------
+	    		
+	    		})
+	    		
+	    	},
+		    error: function(request, status, error){
+		 	    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		    } 
+	    });
+	    
+    }
+    
+    selectassetReservationThis();
+    <%-- ====================== 현재 페이지에서의 예약 정보 ====================== --%>
+    
+    
+    
+    
+    
+    
+    
+    <%-- ====================== 예약하기 ====================== --%>
     $('#goReservation').click(e=>{
     	
-    	
+    	$.ajax({
+    		url:`<%=ctxPath%>/reservation/addReservation`,
+	    	type:"post",
+	    	data:{"fk_assetDetailNo": ${requestScope.assetDetailNo},
+	    		  "fk_employeeNo": ${sessionScope.loginuser.employeeNo},
+	    		  "reservationStart": $('input:hidden[name="reservationStart"]').val(),
+	    		  "reservationEnd": $('input:hidden[name="reservationEnd"]').val(),
+	    		  "reservationContents": $('textarea[name="reservationContents"]').val()},
+	    	dataType:"json",
+	    	success:function(json){
+	    		console.log(JSON.stringify(json));
+	    		
+	    		if(json.result == 1) {
+	    			
+	    			alert('예약이 완료되었습니다.');
+	    			
+	    			
+	    			// === 선택했던 영역 배경색 삭제 === //
+	    			$('.box').each(function(index) {
+	    	        	$(this).removeClass('highlight');
+	    	        });
+	    			// === 선택했던 영역 배경색 삭제 === //
+	    			
+	    			$('#assetModalBg').fadeOut();
+    				$('.modal_containerAsset').fadeOut();
+	    			
+	    			// 다시 뷰단 로드시키기
+		    		selectassetReservationThis();
+	    		}
+	    		else {
+	    			alert('해당날짜에 예약건이 존재합니다.');
+	    		}
+	    		
+	    		
+	    	},
+		    error: function(request, status, error){
+		 	    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		    } 
+    	})
     	
     })
-    
-    
-    
-    
-    
-    
-    // ======== 현재 페이지에서의 예약 정보 ======== //
-    
-    const todayArr = $('#today').text().split("\~");
-    
-    
-    $.ajax({
-    	url:"<%=ctxPath%>/reservation/selectassetReservationThis",
-    	type:"post",
-    	data:{"reservationStart":todayArr[0].trim(),
-    		  "reservationEnd":todayArr[1].trim()},
-    	dataType:"json",
-    	success:function(json){
-    		console.log(JSON.stringify(json));
-    		/*
-    			[{"assetReservationNo":"100010","fk_assetDetailNo":"100014","fk_employeeNo":"100012","reservationStart":"2025.02.25 12:00","reservationEnd":"2025.02.25 14:30","reservationDay":null,"reservationContents":"그냥~"}]
-    		*/
-    		
-    		const boxArr = Array.from($('.box')); 
-    		
-    		$.each(json, function(index, item){
-    			
-    			$.each(boxArr, function(idx, elmt){
-    				
-					const startTimeOne = parseInt(((item.reservationStart).split(/\s+/g)[1]).split(':')[0]); // 12
-					const endTimeOne = parseInt(((item.reservationEnd).split(/\s+/g)[1]).split(':')[0]);    // 14
-					
-					const startTimeTwo = parseInt(((item.reservationStart).split(/\s+/g)[1]).split(':')[1]); // 00
-					const endTimeTwo = parseInt(((item.reservationEnd).split(/\s+/g)[1]).split(':')[1]);    // 30
-					
-					// 예약 시작시간과 끝시간의 차를 구해 30단위로 끊은 것의 개수 구하기
-					const timeSum = ((endTimeOne * 60 + endTimeTwo) - (startTimeOne * 60 + startTimeTwo)) / 30;
+	<%-- ====================== 예약하기 ====================== --%>
+	
+	
+	
+	
+	
+	
+	
+	
+    <%-- ====================== 대분류 소문류 왼쪽바 만들기 ====================== --%>
+    function resetLeftBar() {
+	  let assetDetailListArr;
+	  
+	  $.ajax({
+	  	  url: "<%= ctxPath%>/reservation/selectReservationSubTitle",
+	      type: "get",
+	      dataType: "json",
+	      async:false,
+	      success: function(json) {
+	          console.log(JSON.stringify(json))
+	          
+	          	  assetDetailListArr = json;
+	          
+	      },
+	      error: function(request, status, error) {
+	          alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+	      }
+	  });
+	  
+	  // ================ 소분류 끝나고 대분류 조회 시작 후 뿌려주기 ================ //
+	  let TitleArr;
+	  let html = ``;
+	  
+	  $.ajax({
+	  	  url: "<%= ctxPath%>/reservation/selectReservationTitle",
+	      type: "get",
+	      dataType: "json",
+	      async:false,
+	      success: function(json) {
+	          // console.log(JSON.stringify(json))
+	          
+	          TitleArr = JSON.stringify(json);
+	          
+	          // alert(TitleArr)
+	          
+			  $('.board_menu_container > ul').empty();
+		
+	          $.each(json, function(index, Title){
+	        	    let detailListHtml = ''; // 자산 상세 리스트를 저장할 빈 문자열 초기화
+	        	          
+	        	    // assetDetailListArr 배열을 순회하면서 자산 세부 항목들을 생성
+	        	    $.each(assetDetailListArr, function(i, subTitle){
+	        	        // 실제 if문을 넣어서 조건을 처리합니다.
+	        	        if (Title.assetNo == subTitle.fk_assetNo) {
+	        	            // 조건이 맞으면 해당 항목을 detailListHtml에 추가
+	        	            detailListHtml += `<a href='<%= ctxPath %>/reservation/showReservationDeOne?assetDetailNo=\${subTitle.assetDetailNo}&assetName=\${subTitle.assetName}'>
+	        	                                   <div>\${subTitle.assetName}</div>
+	        	                                </a>`;
+	        	        } else {
+	        	            
+	        	        	// detailListHtml += `<div>없습니다.</div>`
+	        	        }
+	        	    });
 
-    				
-    				if(item.reservationStart == $(elmt).find('.clickTime').val()){
-    					
-    					$(elmt).html(`<div class="reservationBox" style="height: calc(\${timeSum} * 30px);" 
-    									title="\${(item.reservationStart).split(/\s+/g)[1] +" ~ "+ (item.reservationEnd).split(/\s+/g)[1]}&#10;\${item.fk_employeeNo}&#10;\${item.reservationContents}">
-    								  	<div class="reservationBoxTitle">예약정보</div>
-    								  	<div class="reservationBoxContent">
-    								  		<div>\${(item.reservationStart).split(/\s+/g)[1] +" ~ "+ (item.reservationEnd).split(/\s+/g)[1]}</div>
-    								  		<div>\${item.fk_employeeNo}</div>
-    								  		<div>\${item.reservationContents}</div>
-    								  	<div>
-    								  </div>`);
-    				}
-    				
+	        	    // 자산 상세 HTML을 최종적으로 추가
+	        	    
+	        	    
+	        	    $('.board_menu_container > ul').append(`
+	        	        <li>
+	        	            <div>
+	        	                <div class="assetTitleBtn" style="justify-content: space-between; display: flex;">
+	        	                <span><a href='<%= ctxPath %>/reservation/assetDetailPage?assetNo=\${Title.assetNo}&assetTitle=\${Title.assetTitle}'>\${Title.assetTitle}</a></span>
+	        	                    <span>
+	        	                        <a href="<%= ctxPath %>/reservation/showReservationOne?assetNo=\${Title.assetNo}">
+	        	                            <i class="fa-solid fa-gear"></i>
+	        	                        </a>
+	        	                        <i class="fa-solid fa-trash disableBoardIcon deleteAsset" id="\${Title.assetNo}"></i>
+	        	                    </span>
+	        	                </div> <!-- 대분류 명 -->
+	        	                <div class="assetDetailList" id="\${Title.assetNo}" style="display:none;">
+	        	                    \${detailListHtml} <!-- 동적으로 생성된 자산 세부 항목들 -->
+	        	                </div>
+	        	            </div>
+	        	        </li>
+	        	    `);
+	        	});
 
-    			}) // end of $.each(boxArr, function(idx, elmt){})--------------
-    			
-    		}) // end of $.each(json, function(index, item){})---------------
-    		
-    		
-    		
-    	},
-	    error: function(request, status, error){
-	 	    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-	    } 
-    });
-    
-    
-    // ======== 현재 페이지에서의 예약 정보 ======== //
-    
-    
-
+	      },
+	      error: function(request, status, error) {
+	          alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+	      }
+	  });
+  }
+  resetLeftBar();
+  <%-- ====================== 대분류 소문류 왼쪽바 만들기 ====================== --%>
+  
+  
+  
+  //=== 정수 체크 함수 === //
+  function isInteger(number) {
+    return !isNaN(number) && Number.isInteger(Number(number));
+  }
+  // === 정수 체크 함수 === //
 </script>
 
 <jsp:include page="../../footer/footer.jsp" /> 

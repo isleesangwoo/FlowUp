@@ -343,7 +343,7 @@
 		
 		<span>
 			<select name="ass" id="ass">
-				<option value="">선택하세요</option>
+				<option value="" hidden>선택하세요</option>
 				<option value="">회의실1</option>
 			</select>
 			
