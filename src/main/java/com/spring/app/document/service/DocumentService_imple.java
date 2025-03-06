@@ -139,6 +139,27 @@ public class DocumentService_imple implements DocumentService {
 	}
 
 
+	// 결재 승인하기
+	@Override
+	public int approve(Map<String, String> map) {
+		
+		// 결재 승인하기
+		int n = mapper_dao.approve(map);
+		
+		// 결재자의 승인 순서 알아오기
+		int approvalOrder = mapper_dao.getApprovalOrder(map);
+		
+		int m = 1;
+		
+		if(approvalOrder == 1) {
+			// 문서의 결재 상태를 업데이트 하기
+			m = mapper_dao.updateDocumentApprovalStatus(map.get("documentNo"));
+		}
+		
+		return n*m;
+	}
+
+
 	
 
 	

@@ -173,6 +173,29 @@
 		values(#{documentNo}, #{useAmount}, #{reason}, to_date(#{startDate}, 'yyyy-MM-dd'), to_date(#{endDate}, 'yyyy-MM-dd'), #{annualType})
 	</insert>
 	
+	
+	<!-- 결재 승인하기 -->
+	<update id="approve" parameterType="HashMap">
+		update tbl_approval set approvalStatus = 1, executiondate = sysdate
+		where fk_documentNo = #{documentNo} and fk_approver = #{employeeNo}
+	</update>
+	
+	
+	<!-- 결재자의 승인 순서 알아오기 -->
+	<select id="getApprovalOrder" parameterType="HashMap" resultType="Integer">
+		select approvalOrder
+		from tbl_approval
+		where fk_documentNo = #{documentNo} and fk_approver = #{employeeNo}
+	</select>
+	
+	
+	<!-- 문서의 결재 상태를 업데이트 하기 -->
+	<update id="updateDocumentApprovalStatus" parameterType="String">
+		update tbl_document set status = 1, approvaldate = sysdate
+		where documentno = #{documentNo}
+	</update>
+	
+	
 </mapper>
 
 

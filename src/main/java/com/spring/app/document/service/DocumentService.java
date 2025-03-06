@@ -39,6 +39,9 @@ public interface DocumentService {
 	// 휴가신청서 결재 요청
 	int annualDraft(Map<String, String> paraMap);
 
+	// 결재 승인하기
+	int approve(Map<String, String> map);
+
 	
 
 

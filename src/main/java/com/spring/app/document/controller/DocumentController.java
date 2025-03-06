@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -329,6 +330,35 @@ public class DocumentController {
 		map.put("n", String.valueOf(n));
 		
 		return map;
+	}
+	
+	
+	// 결재 승인하기
+	@GetMapping("documentView/approve")
+	@ResponseBody
+	public String approve(HttpServletRequest request, @RequestParam String documentNo) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		
+		Map<String, String> map = new HashMap<>();
+		
+		map.put("documentNo", documentNo);
+		map.put("employeeNo", employeeNo);
+		
+		int n = service.approve(map);
+		
+		JSONObject json = new JSONObject();
+		
+		json.put("n", n);
+		
+		return json.toString();
 	}
 	
 }

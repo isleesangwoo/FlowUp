@@ -51,6 +51,15 @@ public interface DocumentDAO {
 	// 휴가신청서 문서 생성
 	int insertAnnualDraft(Map<String, String> paraMap);
 
+	// 결재 승인하기
+	int approve(Map<String, String> map);
+
+	// 결재자의 승인 순서 알아오기
+	int getApprovalOrder(Map<String, String> map);
+
+	// 문서의 결재 상태를 업데이트 하기
+	int updateDocumentApprovalStatus(String documentNo);
+
 	
 
 	
