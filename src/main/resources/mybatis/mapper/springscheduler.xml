@@ -3,23 +3,74 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="springscheduler">
-
-	<update id="scheduler_endtime_update">
+	
+	<update id="scheduler_endtime_update_noClick">
 		update tbl_commute set endtime = to_date( to_char(starttime, 'yyyy-mm-dd')||' 18:00:00' , 'yyyy-mm-dd hh24:mi:ss')
 		where starttime is not null and endtime is null  
 	</update>
-
-	<resultMap type="HashMap" id="getEmpInfoMap">
-   		<result property="employeeNo" column="employeeNo" javaType="String" />
-   		<result property="regYear" column="registerDate" javaType="String" />
+	
+	<resultMap type="HashMap" id="scheduler_getOverTimeYNMap">
+   		<result property="FK_employeeNo" 		column="FK_employeeNo" 		javaType="String" />
+   		<result property="overTimeYN" 			column="overTimeYN" 		javaType="String" />
    	</resultMap>
-	<select id="getEmpInfo" resultMap="getEmpInfoMap"> 
-		select employeeNo, to_char(registerDate, 'yyyy') as regYear
-		from tbl_employee E left join tbl_annual A
-		on E.employeeNo = A.fk_employeeNo
-		where E.status = 1 and A.year = to_char(sysdate, 'yyyy')
+	<select id="scheduler_getOverTimeYN" resultMap="scheduler_getOverTimeYNMap">
+		select FK_employeeNo, overTimeYN
+		from tbl_commute
+		where workDate = to_char(sysdate, 'yyyy-mm-dd')
+		and starttime is not null
 	</select>
 	
+	<update id="scheduler_endtime_update_noDraft" parameterType="String">
+		update tbl_commute set endtime = to_date( to_char(starttime, 'yyyy-mm-dd')||' 18:00:00' , 'yyyy-mm-dd hh24:mi:ss')
+		where workDate = to_char(sysdate, 'yyyy-mm-dd')
+		and starttime is not null
+		and endtime > to_date( to_char(sysdate, 'yyyy-mm-dd')||' 18:00:00' , 'yyyy-mm-dd hh24:mi:ss')
+		and fk_employeeNo = ${fk_employeeNo}
+	</update>
+	
+	<update id="scheduler_endtime_update_draft" parameterType="String">
+		update tbl_commute set endtime = to_date( to_char(starttime, 'yyyy-mm-dd')||' 21:00:00' , 'yyyy-mm-dd hh24:mi:ss')
+		where workDate = to_char(sysdate, 'yyyy-mm-dd')
+		and starttime is not null
+		and endtime > to_date( to_char(sysdate, 'yyyy-mm-dd')||' 21:00:00' , 'yyyy-mm-dd hh24:mi:ss')
+		and fk_employeeNo = ${fk_employeeNo}
+	</update>
+
+	<resultMap type="HashMap" id="getEmpInfoMap">
+   		<result property="employeeNo" 		column="employeeNo" 		javaType="String" />
+   		<result property="regYear" 			column="registerDate" 		javaType="String" />
+   		<result property="totalAnnual" 		column="totalannual" 		javaType="String" />
+   		<result property="usedAnnual" 		column="usedannual" 		javaType="String" />
+   		<result property="remainingAnnual" 	column="remainingannual" 	javaType="String" />
+   	</resultMap>
+	<select id="getEmpInfo" resultMap="getEmpInfoMap" parameterType="String"> 
+		select employeeNo
+			 , regYear
+			 , occurAnnual + overAnnual + addAnnual as totalannual
+			 , usedannual
+			 , occurAnnual + overAnnual + addAnnual - usedannual as remainingannual
+		from
+		(
+			select employeeNo, to_char(registerDate, 'yyyy') as regYear, occurAnnual, overAnnual, addAnnual
+			from tbl_employee E left join tbl_annual A
+			on E.employeeNo = A.fk_employeeNo 
+			where E.status = 1 and A.year = #{str_current_Year} 
+		)A
+		join
+		(
+			select D.fk_employeeNo , sum(useamount) as usedannual
+			from tbl_document D join tbl_draft_annual T
+			on D.DOCUMENTNO = T.DOCUMENTNO
+			where to_char(draftdate, 'yyyy') = #{str_current_Year} and T.status = 1
+			group by D.fk_employeeNo
+		)B
+		on A.employeeNo = B.fk_employeeNo
+	</select>
+	
+	<insert id="insertAnnual" parameterType="HashMap">
+		insert into tbl_annual(annualNo, fk_employeeNo, year, occurAnnual, overAnnual, addAnnual)
+		values(annualseq.nextval, #{employeeNo}, #{nextYear}, #{occurAnnual}, #{overAnnual}, 0)
+	</insert>
 	
 	
 

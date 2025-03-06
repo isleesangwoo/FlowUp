@@ -247,7 +247,7 @@ public class CommuteController {
 	// 이번주 근무 시간 조회
 	@GetMapping("getWorktime")
 	@ResponseBody
-	public List<Map<String, String>> getWorktime(@RequestParam Map<String, String> paramap) {
+	public List<Map<String, String>> getWorktime(@RequestParam Map<String, String> paramap) { 
 		
 		List<Map<String, String>> mapList = service.getWorktime(paramap);
 		
@@ -457,7 +457,10 @@ public class CommuteController {
 	    	pageNo++;
 	           
 	    }// end of while --------------------------------
-	        
+	       
+	    System.out.println("pageNo"+ pageNo);
+	    System.out.println("totalPage"+ totalPage);
+	    
 	    if(pageNo <= totalPage) {
 	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+ (Integer.parseInt(paraMap.get("month"))-1)+ ", 1), "+pageNo+")'>[다음]</button>"; 
 	    }

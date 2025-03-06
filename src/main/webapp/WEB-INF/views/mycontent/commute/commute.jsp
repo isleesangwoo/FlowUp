@@ -491,7 +491,7 @@ div.hoverDiv:hover {
 				
 				$.each(json, (index,item)=>{
 					
-					const worktime_sec = Number(item.worktime_sec)+1;
+					const worktime_sec = Number(item.worktime_sec);
 					
 					const weekWorktime = secToHour(worktime_sec);
 

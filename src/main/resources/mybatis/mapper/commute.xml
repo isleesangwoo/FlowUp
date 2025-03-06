@@ -122,13 +122,13 @@
    	</select>
    	
    	<select id="getAnnualInfo" parameterType="HashMap" resultType="AnnualVO">
-   		select annualNo, year, occurAnnual, overAnnual, addAnnual, usedAnnual
+   		select annualNo, year, occurAnnual, overAnnual, addAnnual
    		from tbl_annual
    		where fk_employeeNo = #{fk_employeeNo} and year = #{year}
    	</select>
    	
    	<select id="getUsedAnnual" parameterType="HashMap" resultType="String">
-   		select sum(useamount) as usedannual
+   		select sum(useamount) as usedAnnual
 		from tbl_document D join tbl_draft_annual A
 		on D.DOCUMENTNO = A.DOCUMENTNO
 		where fk_employeeno = #{fk_employeeNo}
@@ -172,12 +172,13 @@
    		<result property="week5" 			column="week5" 			javaType="String" />
    		<result property="week6" 			column="week6" 			javaType="String" />
    		<result property="total" 			column="total" 			javaType="String" />
+   		<result property="positionname" 	column="positionname" 			javaType="String" />
    	</resultMap>
    	<select id="getCommuteTableInfo" parameterType="HashMap" resultMap="getCommuteTableInfoMap">
-   		select departmentname, name, week1, week2, week3, week4, week5, week6, total
+   		select departmentname, name, week1, week2, week3, week4, week5, week6, total, positionname
     	from
     	(
-			SELECT row_number() over(order by departmentName asc, name asc) as rno, departmentname, name, week1, week2, week3, week4, week5, week6, week1+week2+week3+week4+week5+week6 as total
+			SELECT row_number() over(order by departmentName asc, name asc) as rno, departmentname, name, week1, week2, week3, week4, week5, week6, week1+week2+week3+week4+week5+week6 as total, positionname
 			from 
 			(
 			    SELECT E.name as name,
@@ -187,7 +188,8 @@
 			           nvl(V.week4, 0) as week4,
 			           nvl(V.week5, 0) as week5,
 			           nvl(V.week6, 0) as week6,
-			           FK_departmentNo
+			           FK_departmentNo,
+			           positionname
 			    FROM 
 			    (
 			        select fk_employeeno,
@@ -208,7 +210,8 @@
 		    		</when>
 		    		<otherwise></otherwise>
 		    	</choose>
-			    
+			    join tbl_position P 
+			    on E.fk_positionno = P.positionno
 			) A Join tbl_department D
 			on A.FK_departmentNo = D.departmentNo
 			<if test="departmentNo != 'all'">
