@@ -108,24 +108,7 @@
 		ORDER BY b.dt
 	</select>
    	
-   	   	
-   	<resultMap type="HashMap" id="getEmployeeInfoMap">
-   		<result property="positionName" column="positionName" javaType="String" />
-   		<result property="name" column="name" javaType="String" />
-
-   	</resultMap>
-   	<select id="getEmployeeInfo" parameterType="String" resultMap="getEmployeeInfoMap">
-   		select P.positionName as positionName, name
-   		from tbl_employee E join tbl_position P
-   		on E.FK_positionNo = P.positionNo
-   		where employeeNo = #{fk_employeeNo}
-   	</select>
    	
-   	<select id="getAnnualInfo" parameterType="HashMap" resultType="AnnualVO">
-   		select annualNo, year, occurAnnual, overAnnual, addAnnual, usedAnnual
-   		from tbl_annual
-   		where fk_employeeNo = #{fk_employeeNo} and year = '2025'
-   	</select>
    	
    	
    	

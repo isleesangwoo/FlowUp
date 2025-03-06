@@ -736,7 +736,9 @@ nocycle
 nocache;
 
 insert into tbl_mail(mailNo, fk_employeeNo, subject, content, readStatus, deleteStatus, saveStatus, importantStatus)
-values(100155, 100020, '임시저장 테스트', '임시저장 메일입니다', default, default, 1, default);
+values(100156, 100020, '가나다라', '정렬 테스트 메일입니다', default, default, 1, default);
+
+
 
 BEGIN
   FOR i IN 1..30 LOOP
@@ -768,7 +770,7 @@ END;
 select mailNo, fk_employeeNo, subject, content
 from tbl_mail;
 
-select *
+select count(*)
 from tbl_mail;
 
 select *
@@ -776,7 +778,8 @@ from tbl_employee;
 
 SELECT M.mailNo, M.fk_employeeNo, M.subject, M.content, 
        M.sendDate, M.readStatus, M.deleteStatus, M.saveStatus, M.importantStatus,
-       e.employeeNo, e.name
+       e.employeeNo, e.name,
+       f.fileName, f.orgfilename, f.Filesize
 FROM 
     ( 
         SELECT row_number() OVER (ORDER BY mailNo DESC) AS rno, 
@@ -788,23 +791,29 @@ FROM
     ) M
 JOIN tbl_employee e
   ON M.fk_employeeNo = e.employeeNo
-WHERE rno BETWEEN 1 AND 2;
+JOIN tbl_mailFile f
+  ON M.mailNo = f.fk_mailNo
+WHERE rno BETWEEN 1 AND 5;
 
 
 
 CREATE TABLE tbl_referenced
 (refMailNo      NUMBER        NOT NULL -- 참조 이메일번호
-,reference      NUMBER(1)     NOT NULL -- 참조수신여부 / 0:수신자, 1:참조자
-,referenceName  VARCHAR2(20)  NOT NULL -- 참조/수신자이름
-,referenceMail  VARCHAR2(50)  NOT NULL -- 참조/수신자이메일
+,refStatus      NUMBER(1)     NOT NULL -- 참조수신여부 / 0:수신자, 1:참조자
+,refName        VARCHAR2(20)  NOT NULL -- 참조/수신자이름
+,refMail        VARCHAR2(50)  NOT NULL -- 참조/수신자이메일
 ,fk_mailNo      NUMBER        NOT NULL -- 메일번호
 ,fk_adrsBNo     NUMBER        NOT NULL -- 주소록 고유번호
 
 ,constraint pk_tbl_referenced_refMailNo primary key (refMailNo)
 ,constraint fk_tbl_referenced_fk_mailNo foreign key(fk_mailNo) references tbl_mail(mailNo)
 ,constraint fk_tbl_addressBook_fk_adrsBNo foreign key(fk_adrsBNo) references tbl_addressBook(adrsBNo)
-,constraint ck_tbl_referenced_reference check( reference in(1,0) )
+,constraint ck_tbl_referenced_refStatus check( refStatus in(1,0) )
 );
+
+drop table tbl_reference;
+
+commit;
 
 create sequence referencedSeq
 start with 1
@@ -818,9 +827,7 @@ select *
 from tbl_mailFile;
 
 select *
-from tbl_tag;
-
-drop table tbl_referenced;
+from tbl_referenced;
 
 CREATE TABLE tbl_tag
 (tagNo      NUMBER(2)     NOT NULL -- 태그번호
@@ -835,13 +842,30 @@ CREATE TABLE tbl_tag
 CREATE TABLE tbl_mailFile
 (fileNo        NUMBER         NOT NULL -- 첨부파일번호
 ,fileName      VARCHAR2(50)   NOT NULL -- 첨부파일명
-,orgFilename   VARCHAR2(50)   NOT NULL -- 원래파일명
+,orgFileName   VARCHAR2(50)   NOT NULL -- 원래파일명
 ,fileSize      VARCHAR2(6)    NOT NULL -- 파일용량
 ,fk_mailNo     NUMBER         NOT NULL -- 메일번호
 
 ,constraint pk_tbl_mailFile_fileNo primary key(fileNo)
 ,constraint fk_tbl_mailFile_fk_mailNo foreign key(fk_mailNo) references tbl_mail(mailNo)
 );
+
+commit;
+
+----------------------------------------------------------------
+select M.mailNo, M.subject, M.content, M.sendDate,
+       f.fileSize, f.orgFileName, f.fileName,
+       e.name, e.email,
+       r.reference, r.referenceName, r.referenceMail
+from tbl_mail M
+left join tbl_mailFile f
+  on M.mailNo = f.fk_mailNo
+left join tbl_reference r
+  on M.mailNo = r.fk_mailNo
+join tbl_employee e
+  on M.fk_employeeNo = e.employeeNo
+where M.mailNo = 100145;
+----------------------------------------------------------------
 
 create sequence mailFileSeq
 start with 1
@@ -855,7 +879,9 @@ rollback;
 
 commit;
 
-SELECT importantStatus FROM tbl_mail WHERE mailNo = 100150;
+SELECT importantStatus
+FROM tbl_mail
+WHERE mailNo = 100150;
 
 
 SELECT mailNo, subject, fk_employeeNo, importantStatus
@@ -875,31 +901,65 @@ SET importantStatus = #{importantStatus}
 WHERE mailNo = #{mailNo}
 
 
-	    SELECT ReadStatus 
-	    FROM tbl_mail
-	    WHERE mailNo = 100145
+SELECT ReadStatus 
+FROM tbl_mail
+WHERE mailNo = 100145
         
-        UPDATE tbl_mail
-	    SET readStatus = 1
-	    WHERE mailNo = 100147
+UPDATE tbl_mail
+SET readStatus = 1
+WHERE mailNo = 100147
+        
+        rollback;
         
         commit;
+   
+SELECT previousseq, 
+       case when length(previoussubject) 30 then previoussubject 
+            else substr(previoussubject, 1, 28)||'..' end AS previoussubject
+     , seq, fk_userid, name, subject, content, readCount, regDate, pw
+     , nextseq, 
+       case when length(nextsubject) 30 then nextsubject 
+            else substr(nextsubject, 1, 28)||'..' end AS nextsubject
+FROM
+ (
+     select lag(seq) over(order by seq desc) AS previousseq
+          , lag(subject) over(order by seq desc) AS previoussubject
+          , seq, fk_userid, name, subject, content, readCount, regDate, pw  
+          , lead(seq) over(order by seq desc) AS nextseq
+          , lead(subject) over(order by seq desc) AS nextsubject
+     from tbl_board
+     where status = 1
+     
+     
+        SELECT 
+        M.mailNo, M.fk_employeeNo, M.subject, M.content,
+        to_char(M.sendDate, 'yyyy-mm-dd hh24:mi') AS sendDate,
+        M.readStatus, M.deleteStatus, M.saveStatus, M.importantStatus,
+        e.employeeNo, e.name,
+        f.fileSize
+    FROM tbl_mail M
+    JOIN tbl_employee e ON M.fk_employeeNo = e.employeeNo
+    LEFT JOIN tbl_mailFile f ON M.mailNo = f.fk_mailNo
+    WHERE M.deleteStatus = 0
+
+
+
+select *
+from tbl_mail
+where importantStatus = 1;
+
+	    SELECT M.mailNo, M.fk_employeeNo, M.subject, M.content
+	          ,to_char(M.sendDate, 'yyyy-mm-dd hh24:mi') AS sendDate
+			  ,M.readStatus ,M.deleteStatus ,M.saveStatus ,M.importantStatus
+	          ,E.employeeNo AS employeeNo
+	          ,E.name AS name
+	    FROM tbl_mail M
+	    JOIN tbl_employee E
+	      ON M.fk_employeeNo = E.employeeNo
+	    WHERE M.importantStatus = 1
+	      -- AND M.deleteStatus = 0
+	      AND M.fk_employeeNo = 100020
+	    ORDER BY M.mailNo DESC
         
         
-           
-		SELECT previousseq, 
-		       case when length(previoussubject) ; 30 then previoussubject 
-                    else substr(previoussubject, 1, 28)||'..' end AS previoussubject
-		     , seq, fk_userid, name, subject, content, readCount, regDate, pw
-		     , nextseq, 
-		       case when length(nextsubject) ; 30 then nextsubject 
-                    else substr(nextsubject, 1, 28)||'..' end AS nextsubject
-		FROM
-		 (
-		     select lag(seq) over(order by seq desc) AS previousseq
-		          , lag(subject) over(order by seq desc) AS previoussubject
-		          , seq, fk_userid, name, subject, content, readCount, regDate, pw  
-		          , lead(seq) over(order by seq desc) AS nextseq
-		          , lead(subject) over(order by seq desc) AS nextsubject
-		     from tbl_board
-		     where status = 1
+    

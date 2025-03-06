@@ -5,10 +5,8 @@ import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 
-import com.spring.app.commute.domain.AnnualVO;
 import com.spring.app.commute.domain.CommuteVO;
 import com.spring.app.employee.domain.DepartmentVO;
-import com.spring.app.employee.domain.EmployeeVO;
 
 @Mapper
 public interface CommuteDAO {
@@ -36,10 +34,6 @@ public interface CommuteDAO {
 	List<Map<String, String>> getWorktime(Map<String, String> paramap);
 
 	List<Map<String, String>> getMontWorkInfo_allday(Map<String, String> paraMap);
-
-	Map<String,String> getEmployeeInfo(String fk_employeeNo);
-
-	AnnualVO getAnnualInfo(Map<String, String> paramap);
 
 
 

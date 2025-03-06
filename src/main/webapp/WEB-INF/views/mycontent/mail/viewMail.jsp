@@ -39,6 +39,36 @@
 	        }
 	    });
 	  <%--  ==== 스마트 에디터 구현 끝 ==== --%>
+	  
+	  <%-- 별(중요표시) 클릭시 변경 ajax 시작 --%>
+      $(".toggle_star").on("click", function(){
+          const $star = $(this);
+          const mailNo = $star.data("mailno");    // data-mailno 값
+          // const current = $star.data("important"); // 현재 상태
+
+          $.ajax({
+              url: "<%=request.getContextPath()%>/mail/toggleImportant",
+              type: "POST",
+              data: { mailNo: mailNo },
+              success: function(importantStatus) {
+                  // 서버가 반환한 새로운 상태("0" 또는 "1")
+                  if(importantStatus === "1") {
+                      // 중요 상태가 됨 => CSS 색 변경, 아이콘 변경 등
+                      $star.removeClass("fa-regular").addClass("fa-solid")
+                           .css("color", "yellow");
+                  } 
+                  else {
+                      // 중요 상태 해제 => 기본 아이콘/색상
+                      $star.removeClass("fa-solid").addClass("fa-regular")
+                           .css("color", "");
+                  }
+              },
+              error: function() {
+                  alert("서버와 통신 중 오류가 발생했습니다.");
+              }
+          });
+      });
+      <%-- 별(중요표시) 클릭시 변경 ajax 끝 --%>
        
    });
 	  
@@ -228,7 +258,7 @@
         <div class="mail_menu_container">
             <ul>
                 <li id="receivedMail">
-                    <a href="<%=request.getContextPath()%>/mail/mail">받은메일함</a>
+                    <a href="<%=request.getContextPath()%>/mail">받은메일함</a>
                     <span class="mail_cnt">${totalCount}</span> <!-- 콤마처리 해주세요 -->
                 </li>
                 <li id="sendMail"><a href="#">보낸메일함</a></li>
@@ -283,7 +313,7 @@
                 </span>
                 <span>
                     <a href="#">
-                    	<i class="fa-regular -open"></i>
+                    	<i class="fa-regular fa-envelope-open"></i>
                         <span>읽음</span>
                     </a>
                 </span>
@@ -297,47 +327,101 @@
 
                 <span id="reBtn_box">
                     <span>
-                        <span id="sort_btn" title="정렬"> <!-- 정렬 버튼입니다! -->
-                            <i class="fa-solid fa-arrow-down-short-wide"></i>
-                            <ul>
-                                <li class="list_title">정렬순서</li>
-                                <!-- 각 li 태그 마다 ajax 보내주세요 -->
-                                <li>제목</li> 
-                                <li>받은날짜</li>
-                                <li>크기</li>
-
-                                <li class="list_title">빠른검색</li>
-                                <li>중요메일</li>
-                                <li>안읽은 메일</li>
-                                <li>읽은 메일</li>
-                                <li>오늘온 메일</li>
-                                <li>어제온 메일</li>
-                                <!-- 각 li 태그 마다 ajax 보내주세요 -->
-                            </ul>
+                        <span id="preBtn" title="이전 메일">
+                            <i class="fa-solid fa-arrow-up"></i>
                         </span>
-                        <span id="re_btn" title="새로고침">
-                            <i class="fa-solid fa-rotate-right"></i>
-                        </span>
-                        <span id="sortCnt_btn">
-                            <span>20</span>
-                            <i class="fa-solid fa-angle-right"></i>
-                            <ul>
-                                <li>10</li>
-                                <li>20</li>
-                                <li>40</li>
-                            </ul>
+                        <span id="nextBtn" title="다음 메일">
+                            <i class="fa-solid fa-arrow-right"></i>
                         </span>
                     </span>
                 </span>
+                
             </div>
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
         </div>
         
-        
-        <%-- === 페이지바 === --%>
-		<div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
-			${requestScope.pageBar}
-		</div>
+
+
+<!-- 메일 상세 테이블 (mailContentTable) -->
+<table id="mailContentTable" style="width: 100%; border-collapse: collapse;">
+    <tbody>
+        <!-- [1] 제목 + 별 아이콘 (th 없이, colspan=2) -->
+        <tr style="border-bottom: 1px solid #ddd;">
+            <td colspan="2" style="padding: 12px; font-size: 1.4em; font-weight: bold;">
+                <!-- 중요표시 별아이콘 -->
+                <c:choose>
+                    <c:when test="${mailvo.importantStatus == 1}">
+                        <!-- 채워진 별 + 노란색 -->
+                        <i class="fa-solid fa-star toggle_star" 
+                           style="color: yellow; cursor: pointer;"
+                           data-mailno="${mailvo.mailNo}">
+                        </i>
+                    </c:when>
+                    <c:otherwise>
+                        <!-- 빈 별 (기본) -->
+                        <i class="fa-regular fa-star toggle_star" 
+                           style="cursor: pointer;"
+                           data-mailno="${mailvo.mailNo}">
+                        </i>
+                    </c:otherwise>
+                </c:choose>
+                <!-- 메일 제목 -->
+                ${mailvo.subject}
+            </td>
+        </tr>
+
+        <!-- [2] 보낸사람 (이름 + 이메일) -->
+        <tr style="border-bottom: 1px solid #ddd;">
+            <th style="width: 120px; text-align: left; padding: 8px;">보낸사람</th>
+            <td style="padding: 8px;">
+                ${mailvo.employeevo.name}
+                (<span style="color: #555;">${mailvo.employeevo.email}</span>)
+            </td>
+        </tr>
+
+        <!-- [3] 날짜 -->
+        <tr style="border-bottom: 1px solid #ddd;">
+            <th style="text-align: left; padding: 8px;">보낸날짜</th>
+            <td style="padding: 8px;">
+                ${mailvo.sendDate}
+            </td>
+        </tr>
+
+        <!-- [4] 첨부파일 -->
+        <tr style="border-bottom: 1px solid #ddd;">
+            <th style="text-align: left; padding: 8px;">첨부파일</th>
+            <td style="padding: 8px;">
+                <c:if test="${not empty mailfilevo}">
+                    <c:forEach var="file" items="${mailfilevo}">
+                        <div>
+                            <i class="fa-solid fa-paperclip"></i>
+                            <!-- 파일 다운로드 링크 예시 -->
+                            <a href="<%=ctxPath%>/mail/download?fileName=${file.fileName}&orgFileName=${file.orgFileName}">
+                                ${file.orgFileName} (${file.fileSize}KB)
+                            </a>
+                        </div>
+                    </c:forEach>
+                </c:if>
+                <c:if test="${empty mailfilevo}">
+                    첨부파일 없음
+                </c:if>
+            </td>
+        </tr>
+
+        <!-- [5] 메일 내용 (th 없이, colspan=2, 폰트 크게) -->
+        <tr>
+            <td colspan="2" style="padding: 12px; font-size: 1.2em; line-height: 1.6;">
+                <!-- mailvo.content에 HTML 태그가 들어있다면 escapeXml="false" 필요 -->
+                <c:out value="${mailvo.content}" escapeXml="false" />
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+
+
+
+
     </div>
     <!-- 오른쪽 바 -->
 	<%-- 이곳에 각 해당되는 뷰 페이지를 작성해주세요 --%>
