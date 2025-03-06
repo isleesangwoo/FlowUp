@@ -8,8 +8,8 @@
     //     /myspring
 %>
 
-<jsp:include page="../../header/header.jsp" />
- 
+
+ <jsp:include page="../../header/header.jsp" />
 <%-- 각자 페이지에 해당되는 css 연결 --%>
 <link href="<%=ctxPath%>/css/email/email_main.css" rel="stylesheet">
 
