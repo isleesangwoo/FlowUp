@@ -630,7 +630,8 @@ $(document).ready(()=>{
 			     type: "post",
 			     url: ctxPath + "/board/deleteComment", 
 			     data: { commentNo: commentNo,
-						depthNo:depthNo},
+						depthNo:depthNo,
+						postNo : $("input[name='postNo']").val()},
 			     dataType: "json",
 			     success: function(json) {
 					if (json.length === 0) {

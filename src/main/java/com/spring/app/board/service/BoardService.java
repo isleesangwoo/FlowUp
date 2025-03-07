@@ -106,7 +106,7 @@ public interface BoardService {
 	int updateComment(String commentNo,String content);
 
 	// 댓글 삭제하기 ( 대댓글 개발 시  대댓글까지 삭제(status 값 변경) 추가해야 함.)
-	int deleteComment(String commentNo,String depthNo);
+	int deleteComment(String commentNo,String depthNo,String postNo);
 
 	// 대댓글 등록
 	int insertReComment(String postNo, String login_userid, String login_name, String replyContent, String fk_commentNo,String depthNo);

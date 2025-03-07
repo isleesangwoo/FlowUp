@@ -1116,11 +1116,13 @@ public class BoardController {
   //댓글 삭제하기(status 값 변경)
   @PostMapping("deleteComment")
   @ResponseBody
-  public Map<String, Object> deleteComment(@RequestParam String commentNo,@RequestParam String depthNo){
+  public Map<String, Object> deleteComment(@RequestParam String commentNo,@RequestParam String depthNo,@RequestParam(required = false) String postNo){
+	  
+	  System.out.println("댓글 삭제하기의 postNo : " + postNo);
 	  
 	   Map<String, Object> map = new HashMap<>(); 
 			  
-	   int deleteCount = service.deleteComment(commentNo,depthNo); // 댓글 삭제하기 
+	   int deleteCount = service.deleteComment(commentNo,depthNo,postNo); // 댓글 삭제하기 
 	   
 	   map.put("success", deleteCount > 0); // true 또는 false
 	   

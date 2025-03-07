@@ -179,6 +179,9 @@ public interface BoardDAO {
 
 	// 조회수 상위 5개 글
 	List<Map<String, String>> getTopReadPosts();
+
+	//삭제된 행의 개수만큼 해당 게시글의 댓글개수를 차감
+	void updateMinusCommentCount(Map<String, Integer> map);
 	
 
 	

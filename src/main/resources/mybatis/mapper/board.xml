@@ -550,7 +550,7 @@ ORDER BY createdAt DESC
 <!-- 	게시글 삭제 시 해당 게시글의 댓글 삭제(상태값 변경)하기 -->
 	<update id="delCommentOfPost">
 	update tbl_comment set status=0
-	where fk_postNo = #{postNo}
+	where fk_postNo = #{postNo} and status=1
 	</update>
 	
 <!-- 	수정하는 게시판에 접근할 수 있는 부서를 알아옴 -->
@@ -581,7 +581,7 @@ ORDER BY createdAt DESC
 	<update id="delPostOfBoard">
 	<!-- 게시판 내 모든 게시글 상태값 변경 -->
     update tbl_post 
-    set status = 0 
+    set status = 0, commentCount = 0
     where fk_boardNo = #{boardNo}
 	</update>
 	
@@ -627,6 +627,12 @@ ORDER BY createdAt DESC
     where rownum &lt;= 5
 	)
 	</select>
+	
+<!-- 	삭제된 행의 개수만큼 해당 게시글의 댓글개수를 차감 -->
+	<update id="updateMinusCommentCount">
+	update tbl_post set commentCount = commentCount - #{deleteCount}
+	where postNo = #{postNo}
+	</update>
 
 
 </mapper>

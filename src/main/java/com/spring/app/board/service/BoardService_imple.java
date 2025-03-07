@@ -200,10 +200,20 @@ public class BoardService_imple implements BoardService {
 	@Override
 	public int postDel(Map<String, String> paraMap,List<Map<String, Object>> postListmap) {
 		
+		
+		int deleteCount = 0; // 댓글테이블에서 삭제된 행의 개수
+		Map<String, Integer> map = new HashMap<>();
+		
 		int n = dao.postDel(paraMap.get("postNo")); // post 테이블에서 상태를 삭제(변경)하기 
 		if(n>0) {
 			dao.postFileDel(paraMap.get("postNo")); // postFile 테이블에서 상태를 삭제(변경)하기 
-			dao.delCommentOfPost(paraMap.get("postNo"));// 게시글 하나 삭제 시 해당 게시글 댓글의 상태를 삭제(변경)하기  
+			
+			deleteCount = dao.delCommentOfPost(paraMap.get("postNo"));// 게시글 하나 삭제 시 해당 게시글 댓글의 상태를 삭제(변경)하기
+			
+			map.put("deleteCount", deleteCount); // 차감할 수
+			map.put("postNo", Integer.parseInt(paraMap.get("postNo")));
+			
+			dao.updateMinusCommentCount(map); // 삭제된 행의 개수만큼 해당 게시글의 댓글개수를 차감
 		}
 		else{
 			System.out.println("게시글 행 삭제 전 댓글/대댓글의 상태변경을 실패하였습니다.");
@@ -472,7 +482,7 @@ public class BoardService_imple implements BoardService {
 
 	// 댓글 삭제하기
 	@Override
-	public int deleteComment(String commentNo,String depthNo) {
+	public int deleteComment(String commentNo,String depthNo,String postNo) {
 		
 		int deleteCount = 0 ;
 		
@@ -481,6 +491,14 @@ public class BoardService_imple implements BoardService {
 		}
 		else {
 			deleteCount = dao.deleteReComment(commentNo); //대댓글 삭제의 경우 where commentNo = #{commentNo}
+		}
+		
+		Map<String,Integer> map = new HashMap<>();
+		map.put("deleteCount", deleteCount);
+		map.put("postNo", Integer.parseInt(postNo));
+		
+		if(deleteCount > 0) { // 삭제된 행이 있다면
+			dao.updateMinusCommentCount(map); // 삭제된 행의 개수만큼 해당 게시글의 댓글개수를 차감
 		}
 		
 		
