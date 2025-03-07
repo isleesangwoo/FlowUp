@@ -1,12 +1,5 @@
 $(document).ready(()=>{
 	
-	// === 게시글 하나에 마우스 호버 시 시작 === //
-	$(".onePostElmt").hover(function(){
-		 $(this).css('color', '#808080');
-	 }, function(){
-		 $(this).css('color', '');
-	 });
-	// === 게시글 하나에 마우스 호버 시 끝 === //	
 	 
     // ========= 정렬버튼 토글 ========= //
     $('#sort_btn').click(e=>{
@@ -75,6 +68,37 @@ function goView(postNo) {
     frm.method = "get";
     frm.action = ctxPath + "/board/goViewOnePost";
     frm.submit();
+}
+
+// 좋아요 버튼 클릭 시 
+function goLike(postNo) {
+	
+	if($("#login_userid").text() == "" || $("#login_userid").text()== null){
+			alert("로그인 후 이용하실 수 있습니다.");
+			return;
+	}
+	let btn = $(this);	
+	let likeCounter = btn.closest(".onePostElmt").find(".likeCount");
+	$.ajax({
+          url : ctxPath+"/board/like",
+          type : "post",
+		  data : { "postNo": postNo, 
+				   "login_userid": $("#login_userid").text() 
+		  },
+          dataType:"json",
+          success:function(json){
+              if(json.likeStatus == 1) {
+				  btn.html("<i class='fa-solid fa-heart'></i>");
+			  }
+              else {
+				  btn.html("<i class='fa-regular fa-heart'></i>");
+              }
+			  likeCounter.html(json.likeCnt);
+          },
+          error: function(request, status, error){
+			  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		  }
+      });
 }
 
 

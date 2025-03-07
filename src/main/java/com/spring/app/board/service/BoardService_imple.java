@@ -2,13 +2,16 @@ package com.spring.app.board.service;
 
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.app.board.domain.BoardVO;
+import com.spring.app.board.domain.LikeVO;
 import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.board.domain.PostVO;
 import com.spring.app.board.model.BoardDAO;
@@ -35,8 +38,8 @@ public class BoardService_imple implements BoardService {
 	
 	// 게시판 수정하기
 	@Override
-	public int updateBoard(BoardVO boardvo) throws Exception {
-		int n = dao.updateBoard(boardvo);
+	public int updateBoard(Map<String, String> map) throws Exception {
+		int n = dao.updateBoard(map);
 		return n;
 	}
 
@@ -44,6 +47,14 @@ public class BoardService_imple implements BoardService {
 	@Override
 	public int disableBoard(String boardNo) {
 		int n = dao.disableBoard(boardNo);
+		int n2 = 0;
+		
+		if(n>0) {
+			dao.delPostOfBoard(boardNo); // 게시판 삭제 시 해당 게시판의 게시글 전부 삭제(상태변경)
+			
+			dao.delCommentOfBoard(boardNo); // 게시글의 댓글 전부 삭제(상태변경)
+		}
+		
 		return n;
 	}
 
@@ -104,7 +115,7 @@ public class BoardService_imple implements BoardService {
 		        	n2 = dao.addPostInsertFile(fileMap); // 첨부파일 테이블에 파일정보 삽입
 		        	
 		        	if(n2!=0) {
-			            System.out.println("파일이 저장 됐음! 저장된 파일명 : " + filename);
+			            //System.out.println("파일이 저장 됐음! 저장된 파일명 : " + filename);
 		        	}
 		        }
 		    }
@@ -116,8 +127,27 @@ public class BoardService_imple implements BoardService {
 
 	// 게시판 메인 페이지에 뿌려줄 모든 게시글 조회
 	@Override
-	public List<PostVO> selectAllPost(Map<String, String> paraMap) {
+	public List<PostVO> selectAllPost(Map<String, String> paraMap,String login_userid) {
 		List<PostVO> postAllList = dao.selectAllPost(paraMap);
+		
+		if (login_userid != null) {
+	        List<Integer> likedPosts = dao.getLikedPosts(login_userid); // 로그인한 사원이 좋아요한 게시글 조회
+	        
+	        // 좋아요한 게시글 목록을 Set으로 변환
+	        Set<Integer> likedPostSet = new HashSet<>(likedPosts);
+	        /*
+	         PostVO의 필드(setter를 통해 설정하는 값)가 아니라, 좋아요 여부를 확인하기 위해 임시로 만든 Set
+	         PostVO의 liked 필드를 setLiked(true/false)로 설정할 때 사용
+	         */
+
+	        // 게시글 목록에 좋아요 상태 추가
+	        for (PostVO post : postAllList) {
+	            boolean isLiked = likedPostSet.contains(Integer.valueOf(post.getPostNo())); // 강제 변환 후 비교
+	            post.setLiked(isLiked); //여기가 Setter 사용 부분
+	        }
+
+	    }
+		
 		return postAllList;
 	}
 
@@ -134,16 +164,11 @@ public class BoardService_imple implements BoardService {
 		PostVO postvo = dao.goViewOnePost(paraMap);  // 글 1개 조회하기
 		
 		String login_userid = paraMap.get("login_userid");
-		// paraMap.get("login_userid") 은 로그인을 한 상태이라면 로그인한 사용자의 userid 이고,
-		// 로그인을 하지 않은 상태이라면  paraMap.get("login_userid") 은 null 이다.
 		
 		if(login_userid != null &&
 				postvo != null &&
 		  !login_userid.equals(postvo.getFk_employeeNo() )) {
-//		if(login_userid == null &&
-//				postvo != null &&
-//		  !"100014".equals(postvo.getFk_employeeNo() )) { 이거는 로그인이 안돼서 테스트용도
-		  // 글조회수 증가는 로그인을 한 상태에서 다른 사람의 글을 읽을때만 증가하도록 한다.
+		  // 글조회수 증가는 로그인을 한 상태에서 다른 사람의 글을 읽을때만 증가.
 			
 		  int n = dao.increase_readCount(paraMap.get("postNo")); // 글조회수 1증가 하기 
 		
@@ -174,10 +199,15 @@ public class BoardService_imple implements BoardService {
 	// 파일첨부, 사진이미지가 들었는 경우의 글 삭제하기
 	@Override
 	public int postDel(Map<String, String> paraMap,List<Map<String, Object>> postListmap) {
-		dao.postFileDel(paraMap.get("postNo")); // postFile 테이블에서 행삭제하기
-	
-		int n = dao.postDel(paraMap.get("postNo")); // post 테이블에서 행삭제하기
-	
+		
+		int n = dao.postDel(paraMap.get("postNo")); // post 테이블에서 상태를 삭제(변경)하기 
+		if(n>0) {
+			dao.postFileDel(paraMap.get("postNo")); // postFile 테이블에서 상태를 삭제(변경)하기 
+			dao.delCommentOfPost(paraMap.get("postNo"));// 게시글 하나 삭제 시 해당 게시글 댓글의 상태를 삭제(변경)하기  
+		}
+		else{
+			System.out.println("게시글 행 삭제 전 댓글/대댓글의 상태변경을 실패하였습니다.");
+		}
 		
 		// === 첨부파일 및 사진이미지 파일 삭제하기 시작 === //
 		
@@ -224,6 +254,9 @@ public class BoardService_imple implements BoardService {
 					}
 				}
 			}
+			
+			
+			
 		} // end of if (postListmap != null && !postListmap.isEmpty()) {}-------------
 		// === 첨부파일 및 사진이미지 파일 삭제하기 끝 === //
 		return n;
@@ -246,14 +279,12 @@ public class BoardService_imple implements BoardService {
 	// 게시글 수정하기// 파일첨부가 있는 글수정 // 첨부파일이 있다면 첨부파일테이블(tbl_postFile) 테이블에 파일 정보 수정 
 	@Override
 	public int updatePost(PostVO postvo,PostFileVO postfilevo,List<Map<String, Object>> mapList) {
-		System.out.println( "postvo : "  + postvo.getPostNo());
 		int n = dao.updatePost(postvo); // 먼저 게시글 수정
 		int n2=0;
 		
 		if(n>0) { //게시글 수정이 성공했을 때만 첨부파일 등록
 			Map<String, Object> paraMap = new HashMap<>();
 			//postvo = dao.getInfoPost(); // 등록되는 게시글의 번호를 알아오기 위해
-			System.out.println("보서임의 postvo.getPostNo() : " + postvo.getPostNo());
 			paraMap.put("postNo", postvo.getPostNo()); // postNo 추가
 
 			int n1 = dao.selectTblPostFile(postvo.getPostNo()); // update 문을 실행 전 해당 행이 있는지 확인하기 위함.	(하다보니 필요하지않지만 보류)
@@ -268,14 +299,12 @@ public class BoardService_imple implements BoardService {
 		        	fileMap.put("originalFilename", filename.get("originalFilename")); // 원본 파일명 추가
 		        	fileMap.put("fileSize", ((byte[]) filename.get("bytes")).length); // 파일 크기 저장
 		        	
-		        	System.out.println("넌 실행을 ");
 		        	
-		        	 // 파일테이블에 행이 없을 경우
-		        		dao.addPostInsertFile(fileMap); // 첨부파일 테이블에 파일정보 삽입
+		        	// 파일테이블에 행이 없을 경우
+		        	dao.addPostInsertFile(fileMap); // 첨부파일 테이블에 파일정보 삽입
 		        	
-		        	System.out.println("넌 하녜? ");
 		        	if(n2!=0) {
-			            System.out.println("파일이 저장 됐음! 저장된 파일명 : " + filename);
+			            //System.out.println("파일이 저장 됐음! 저장된 파일명 : " + filename);
 		        	}
 		        }
 		    }
@@ -288,7 +317,6 @@ public class BoardService_imple implements BoardService {
 	// 글 수정에서 첨부파일 삭제하기
 	@Override
 	public int FileDelOfPostUpdate(Map<String, String> paraMap) {
-		System.out.println("paraMap.get(\"postNo\") : " + paraMap.get("postNo") );
 		int n = dao.FileDelOfPostUpdate(paraMap.get("postNo"),paraMap.get("fileNo")); // 글 수정하기에서 postFile 테이블에서 행삭제하기
 		
 		String filepath = paraMap.get("filepath"); // 저장된 경로
@@ -320,14 +348,9 @@ public class BoardService_imple implements BoardService {
 	// 수정하기에서 사진이미지가 들었는 경우 실제 경로의 파일 삭제하기
 	@Override
 	public void postImgFileDel(Map<String, String> paraMap, String fileName) {
-//		int n = dao.postImgFileDel(paraMap,fileName);
-		System.out.println("fileName 보서임 : " + fileName);
-		// 글내용에 사진이미지가 들어가 있는 경우라면 사진이미지 파일도 삭제.
-		//String photofilename = paraMap.get("photofilename");
 		
 		if(fileName != null) {
 			String photo_upload_path = paraMap.get("photo_upload_path");
-			System.out.println("보서임의 photo_upload_path :  " + photo_upload_path);
 			if(fileName.contains("/")) {
 				// 사진이미지가 2개 이상인 경우
 				
@@ -370,7 +393,166 @@ public class BoardService_imple implements BoardService {
 	public int getBoardGroupPostTotalCount(String boardNo) {
 		int totalCount = dao.getBoardGroupPostTotalCount(boardNo);
 		return totalCount;
-	}	
+	}
+
+	// 좋아요를 추가 또는 삭제함
+	@Override
+	public Map<String,Object> toggleLike(String postNo, String login_userid) {
+		
+		Map<String,Object> map = new HashMap<>();
+		
+		int n = 0;
+		
+		LikeVO likevo =  dao.getLikeInfo(postNo,login_userid); // 좋아요 테이블에서 로그인된 사원이 해당 게시글에 좋아요를 했는지 조회
+		
+		if(likevo != null) { // 조회가 된 경우 (좋아요를 누른 게시글)
+			
+			n = dao.removeLike(postNo,login_userid); // 좋아요 테이블에서 행 삭제(좋아요 삭제)
+			
+			if(n!=0) {
+				n = dao.updatePostLikeMinusCnt(postNo); // 게시글테이블의 좋아요 수 차감
+				map.put("likeStatus", 0);
+			}
+			
+		}
+		else { // 조회가 되지 않은 경우(좋아요가 안된 게시글)
+			
+			n = dao.addLike(postNo,login_userid); // 좋아요 테이블에서 행 추가(좋아요 추가)
+			
+			if(n!=0) {
+				n = dao.updatePostLikeCnt(postNo); // 게시글테이블의 좋아요 수 누적
+				map.put("likeStatus", 1);
+			}
+		}
+		
+		int likeCnt = dao.likeCnt(postNo); // 누적 또는 차감된 게시글의 좋아요 수
+		map.put("likeCnt", likeCnt);
+		
+		return map;
+	}
+
+	//로그인 된 사원이 해당 게시글에 좋아요 여부를 검사.
+	@Override
+	public int checkLike(String login_userid, String postNo) {
+		int likeCnt = dao.checkLike(login_userid,postNo);
+		return likeCnt;
+	}
+
+	// 좋아요 누른 사람(사원) 조회
+	@Override
+	public List<Map<String, Object>> getLikeList(String postNo) {
+		 List<Map<String,Object>> map = dao.getLikeList(postNo); // 좋아요 누른 사람(사원) 조회
+		return map;
+	}
+
+	// 댓글 등록
+	@Override
+	public int insertComment(String postNo, String login_userid, String login_name, String commentContent) {
+		int insertCount = dao.insertComment(postNo, login_userid, login_name,commentContent); // 댓글 등록
+		
+		if(insertCount>0) {
+			dao.addCommentCount(postNo); // 해당 게시글의 댓글 개수 증감하기
+		}
+		return insertCount;
+	}
+
+	// 해당 게시글의 댓글 조회
+	@Override
+	public List<Map<String, Object>> getComment(String postNo) {
+		List<Map<String, Object>> commentList= dao.getComment(postNo); // 해당 게시글의 댓글 조회
+		return commentList;
+	}
+
+	// 댓글 수정하기
+	@Override
+	public int updateComment(String commentNo,String content) {
+		int updateCount = dao.updateComment(commentNo,content); // 댓글 수정하기
+		return updateCount;
+	}
+
+	// 댓글 삭제하기
+	@Override
+	public int deleteComment(String commentNo,String depthNo) {
+		
+		int deleteCount = 0 ;
+		
+		if(Integer.parseInt(depthNo) ==0) {
+			deleteCount = dao.deleteComment(commentNo); // 댓글 삭제의 경우  where groupNo  = #{commentNo}
+		}
+		else {
+			deleteCount = dao.deleteReComment(commentNo); //대댓글 삭제의 경우 where commentNo = #{commentNo}
+		}
+		
+		return deleteCount;
+	}
+
+	// 대댓글 등록
+	@Override
+	public int insertReComment(String postNo, String login_userid, String login_name, String replyContent,
+			String fk_commentNo, String depthNo) {
+		int insertCount = dao.insertReComment(postNo, login_userid, login_name,replyContent,fk_commentNo,depthNo); // 대댓글 등록
+		
+		if(insertCount>0) {
+			dao.addCommentCount(postNo); // 해당 게시글의 댓글 개수 증감하기
+		}
+		
+		return insertCount;
+	}
+
+	// 댓글 개수 
+	@Override
+	public int getCommentCount(String postNo) {
+		int commentCount = dao.getCommentCount(postNo);
+		return commentCount;
+	}
+
+	// 부서별 공개일 경우 게시판 생성하기
+	@Override
+	public void addDepartmentBoard(BoardVO boardvo, List<Integer> departmentNoList) {
+		for (int deptNo : departmentNoList) { // 리스트에는 부서번호 밖에 없음.
+	        dao.addDepartmentBoard(boardvo, deptNo);
+	    }
+
+	}
+
+	// 수정하는 게시판에 접근할 수 있는 부서를 알아옴
+	@Override
+	public List<Map<String, String>> getboardAccessList(String boardNo) {
+		List<Map<String, String>> boardAccessList = dao.getboardAccessList(boardNo);
+		return boardAccessList;
+	}
+	
+	// 부서별 공개일 경우 권한이 부여된 부서 모두 삭제 
+	@Override
+	public void deleteDepartmentBoard(HashMap<String, String> map) {
+		dao.deleteDepartmentBoard(map); 
+	}
+
+	// 부서별 공개일 경우 게시판 삭제후 insert하기
+	@Override
+	public void addDepartmentBoard_2(HashMap<String, String> map, List<Integer> departmentNoList) {
+		for (int deptNo : departmentNoList) { // 리스트에는 부서번호 밖에 없음.
+	        dao.addDepartmentBoard_2(map.get("boardNo"), deptNo);
+//	        System.out.println(map.get("boardNo"));
+	    }
+	}
+	
+	// 좋아요 상위 5개 글
+	@Override
+	public List<Map<String, String>> getTopLikedPosts() {
+		List<Map<String, String>> topLikeList = dao.getTopLikedPosts();
+		return topLikeList;
+	}
+	
+	// 조회수 상위 5개 글
+	@Override
+	public List<Map<String, String>> getTopReadPosts() {
+		List<Map<String, String>> topReadList = dao.getTopReadPosts();
+		return topReadList;
+	}
+
+	
+
 	
 	
 	
