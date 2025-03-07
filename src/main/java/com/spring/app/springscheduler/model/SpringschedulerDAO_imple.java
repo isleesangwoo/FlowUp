@@ -51,6 +51,25 @@ public class SpringschedulerDAO_imple implements SpringschedulerDAO {
 		return n;
 	}
 
+	@Override
+	public int scheduler_yesterday_workYN(String str_now) {
+		int n = sqlsession.selectOne("springscheduler.scheduler_yesterday_workYN", str_now);
+		return n;
+	}
+
+	@Override
+	public List<String> scheduler_getEmployeeList(String yesterday) {
+		List<String> employeeNo = sqlsession.selectList("springscheduler.scheduler_getEmployeeList", yesterday);
+		return employeeNo;
+	}
+
+	@Override
+	public void scheduler_absence_insert(String employeeNo) throws SQLException {
+		sqlsession.insert("springscheduler.scheduler_absence_insert", employeeNo);
+	}
+
+	
+
 	
 
 

@@ -162,19 +162,15 @@ public class CommuteController {
 	@ResponseBody
 	public Map<String, Object> workStart(HttpServletRequest request, HttpServletResponse response, @RequestParam String fk_employeeNo) {
 		
-		System.out.println("출근 클릭 ~ ");
-		
 		int n = 0; // 0:에러, 1:성공
 		
 		// 금일자 출근정보가 있는지 조회
 		CommuteVO cvo = service.getTodayWorkInfo(fk_employeeNo);
-		
-		System.out.println("출근 클릭 ~ DB ~ cvo : " + cvo);
-		
-		
-		
+
 		if(cvo == null) { // 근태 기록이 없다면
+
 			n = service.insertWorkStart(fk_employeeNo); // 새로운 근태 기록 insert
+
 		}
 		else { // 오늘자 근태 행이 이미 있다면 (연차, 반차 등으로 이미 insert 해준 경우)
 
@@ -478,13 +474,6 @@ public class CommuteController {
 	}
 	
 	
-	
-	
-	
-	
-	
-	
-	
 	@GetMapping("commuteChart")
 	public ModelAndView commuteChart(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
@@ -501,7 +490,15 @@ public class CommuteController {
 		return mav;
 	}
 	
-	
+	@GetMapping("getCommuteCnt")
+	@ResponseBody
+	public Map<String, String> getCommuteCnt(@RequestParam Map<String,String> paraMap) {
+		
+		Map<String, String> map = service.getCommuteCnt(paraMap);
+
+		return map;
+		
+	}
 	
 	
 	

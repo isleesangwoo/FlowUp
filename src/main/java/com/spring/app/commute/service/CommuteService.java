@@ -63,6 +63,9 @@ public interface CommuteService {
 	// 부서별 사원수 조회
 	int totalCnt(Map<String, String> paraMap);
 
+	// 부서별 
+	Map<String, String> getCommuteCnt(Map<String, String> paraMap);
+
 
 
 	

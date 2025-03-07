@@ -204,14 +204,14 @@
 			        group by fk_employeeno
 			    ) V right JOIN tbl_employee E
 			    ON V.fk_employeeno = E.employeeno
+			    join tbl_position P 
+			    on E.fk_positionno = P.positionno
 			    <choose>
 		    		<when test='searchType == "name" and searchWord != ""'>
 		    			where lower(name) like '%'||lower(#{searchWord})||'%' 
 		    		</when>
 		    		<otherwise></otherwise>
 		    	</choose>
-			    join tbl_position P 
-			    on E.fk_positionno = P.positionno
 			) A Join tbl_department D
 			on A.FK_departmentNo = D.departmentNo
 			<if test="departmentNo != 'all'">
@@ -234,6 +234,33 @@
 		and lower(name) like '%'||lower(#{searchWord})||'%' 
 		</if>
    	</select>
+   	
+   	<resultMap type="HashMap" id="getCommuteCntMap">
+   		<result property="latenessCnt" 			column="latenessCnt" 			javaType="String" />
+   		<result property="earlyLeaveCnt" 		column="earlyLeaveCnt" 			javaType="String" />
+   		<result property="absenceCnt" 			column="absenceCnt" 			javaType="String" />
+   		<result property="halfdayMorningCnt" 	column="halfdayMorningCnt" 		javaType="String" />
+   		<result property="halfdayAfternoonCnt" 	column="halfdayAfternoonCnt" 	javaType="String" />
+   		<result property="vacationCnt" 			column="vacationCnt" 			javaType="String" />
+   		<result property="autoEndCnt" 			column="autoEndCnt" 			javaType="String" />
+   	</resultMap>
+   	<select id="getCommuteCnt" parameterType="HashMap" resultMap="getCommuteCntMap">
+   		select count( case when to_number( to_char(starttime, 'hh24') ) &gt; 8 and rest != 1 and rest != 2 then '1' end ) as latenessCnt
+		     , count( case when to_number( to_char(endtime, 'hh24') ) &lt; 18 and rest != 1 and rest != 3 then '1' end ) as earlyLeaveCnt
+		     , count( case when rest = 4 then '1' end ) as absenceCnt
+		     , count( case when rest = 2 then '1' end ) as halfdayMorningCnt
+		     , count( case when rest = 3 then '1' end ) as halfdayAfternoonCnt
+		     , count( case when rest = 1 then '1' end ) as vacationCnt
+		     , count( case when to_char(endtime, 'hh24:mi:ss') = '18:00:00' then '1' end) as autoEndCnt
+		from tbl_commute C 
+		join tbl_employee E
+		on C.fk_employeeNo = E.employeeNo
+		where substr(workdate, 0, 7) = #{year_month}
+		<if test="departmentNo != 'all'">
+			and E.fk_departmentNo = #{departmentNo}
+		</if>
+   	</select>
+   	
    	
    	
 </mapper>

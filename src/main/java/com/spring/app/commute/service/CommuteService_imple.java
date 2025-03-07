@@ -601,6 +601,12 @@ public class CommuteService_imple implements CommuteService {
 		return totalCount;
 	}
 
+	@Override
+	public Map<String, String> getCommuteCnt(Map<String, String> paraMap) {
+		Map<String, String> map = dao.getCommuteCnt(paraMap);
+		return map;
+	}
+
 	
 	
 	
