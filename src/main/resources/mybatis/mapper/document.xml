@@ -15,11 +15,11 @@
 		    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
 		    from tbl_approval
 		    where APPROVALSTATUS = 0
-		) A JOIN tbl_document
+		) A JOIN tbl_document D
 		ON fk_documentNo = documentNo
 		JOIN tbl_employee
 		ON fk_employeeNo = employeeNo
-		where rn = 1 and fk_approver = #{employeeNo} and temp = 0
+		where rn = 1 and fk_approver = #{employeeNo} and temp = 0 and D.status != 2
 	</select>
 	
 	
@@ -191,9 +191,15 @@
 	
 	
 	<!-- 문서의 결재 상태를 업데이트 하기 -->
-	<update id="updateDocumentApprovalStatus" parameterType="String">
-		update tbl_document set status = 1, approvaldate = sysdate
+	<update id="updateDocumentApprovalStatus" parameterType="HashMap">
+		update tbl_document set status = #{status}, approvaldate = sysdate
 		where documentno = #{documentNo}
+	</update>
+	
+	
+	<update id="reject" parameterType="HashMap">
+		update tbl_approval set approvalStatus = 2, executiondate = sysdate
+		where fk_documentNo = #{documentNo} and fk_approver = #{employeeNo}
 	</update>
 	
 	

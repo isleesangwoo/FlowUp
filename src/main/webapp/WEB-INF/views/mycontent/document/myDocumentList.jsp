@@ -6,8 +6,9 @@
    String ctxPath = request.getContextPath();
 %>
 
-
 <jsp:include page="document_main.jsp" />
+
+<jsp:include page="document_box.jsp" />
 
 <style type="text/css">
 	
@@ -23,7 +24,6 @@
 	$(document).ready(function(){
 		
 		$("h1#doc_title").text("기안문서함");
-		$("span.doc_delete").hide();
 		$("a.doc_search_btn").click(e=>{
 			alert("ddd");
 		});

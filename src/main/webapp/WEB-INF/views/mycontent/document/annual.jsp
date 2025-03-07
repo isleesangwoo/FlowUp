@@ -458,35 +458,36 @@
 			<input type="hidden" name="temp" value="0" />
 			
 			<h3 style="text-align: center">연차신청서</h3>
-			
-			<div class="drafter_info" style="display: inline-block;">
-				<table>
-					<tbody>
-						<tr>
-							<th>기안자</th>
-							<td>${sessionScope.loginuser.name}</td>
-						</tr>
-						<tr>
-							<th>소속</th>
-							<td>${sessionScope.loginuser.departmentName}</td>
-						</tr>
-						<tr>
-							<th>기안일</th>
-							<td><%= today%></td>
-						</tr>
-						<tr>
-							<th>문서번호</th>
-							<td></td>
-						</tr>
-						
-					</tbody>
-				</table>
-			</div>
-			<div class="m-3 p-3" style="display: inline-block;">
-				<div class="approval_info" id="approval_line" style="text-align: right; display: inline-block; width: 100%">
-				
-					<!-- 결재 라인이 들어올 곳 -->
+			<div style="display: flex">
+				<div class="drafter_info" style="display: inline-block;">
+					<table>
+						<tbody>
+							<tr>
+								<th>기안자</th>
+								<td>${sessionScope.loginuser.name}</td>
+							</tr>
+							<tr>
+								<th>소속</th>
+								<td>${sessionScope.loginuser.departmentName}</td>
+							</tr>
+							<tr>
+								<th>기안일</th>
+								<td><%= today%></td>
+							</tr>
+							<tr>
+								<th>문서번호</th>
+								<td></td>
+							</tr>
+							
+						</tbody>
+					</table>
+				</div>
+				<div style="margin-left: auto;">
+					<div class="approval_info" id="approval_line" style="text-align: right; display: inline-block; width: 100%">
 					
+						<!-- 결재 라인이 들어올 곳 -->
+						
+					</div>
 				</div>
 			</div>
 			<div class="document_info">

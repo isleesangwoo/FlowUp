@@ -58,7 +58,10 @@ public interface DocumentDAO {
 	int getApprovalOrder(Map<String, String> map);
 
 	// 문서의 결재 상태를 업데이트 하기
-	int updateDocumentApprovalStatus(String documentNo);
+	int updateDocumentApprovalStatus(Map<String, String> map);
+
+	// 결재 반려하기
+	int reject(Map<String, String> map);
 
 	
 

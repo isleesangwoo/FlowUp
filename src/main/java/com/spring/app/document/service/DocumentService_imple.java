@@ -151,10 +151,30 @@ public class DocumentService_imple implements DocumentService {
 		
 		int m = 1;
 		
+		// 결재 상태 1(승인)
+		map.put("status", "1");
+		
 		if(approvalOrder == 1) {
 			// 문서의 결재 상태를 업데이트 하기
-			m = mapper_dao.updateDocumentApprovalStatus(map.get("documentNo"));
+			m = mapper_dao.updateDocumentApprovalStatus(map);
 		}
+		
+		return n*m;
+	}
+
+
+	// 결재 반려하기
+	@Override
+	public int reject(Map<String, String> map) {
+		
+		// 결재 반려하기
+		int n = mapper_dao.reject(map);
+		
+		// 결재 상태 2(반려)
+		map.put("status", "2");
+		
+		// 문서의 결재 상태를 업데이트 하기
+		int m = mapper_dao.updateDocumentApprovalStatus(map);
 		
 		return n*m;
 	}

@@ -361,4 +361,33 @@ public class DocumentController {
 		return json.toString();
 	}
 	
+	
+	// 결재 반려하기
+	@GetMapping("documentView/reject")
+	@ResponseBody
+	public String reject(HttpServletRequest request, @RequestParam String documentNo) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		
+		Map<String, String> map = new HashMap<>();
+		
+		map.put("documentNo", documentNo);
+		map.put("employeeNo", employeeNo);
+		
+		int n = service.reject(map);
+		
+		JSONObject json = new JSONObject();
+		
+		json.put("n", n);
+		
+		return json.toString();
+	}
+	
 }

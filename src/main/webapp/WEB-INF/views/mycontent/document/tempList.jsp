@@ -6,8 +6,9 @@
    String ctxPath = request.getContextPath();
 %>
 
-
 <jsp:include page="document_main.jsp" />
+
+<jsp:include page="document_box.jsp" />
 
 <script type="text/javascript">
 

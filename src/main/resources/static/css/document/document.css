@@ -34,14 +34,25 @@ button.doc_btn:hover {
 	overflow: hidden;
 }
 
-/* 결재 처리하는 모달의 th 태그 */
-div#approve_modal_container th {
-	width: 150px;
+/* documentView 에서 결재 처리하는 모달의 table 태그 */
+table.approve_modal_info {
+	width: 100%;
 }
 
-/* 결재 처리하는 모달의 tr 태그 */
-div#approve_modal_container tr {
+/* documentView 에서 결재 처리하는 모달의 table 태그의 th 태그 */
+table.approve_modal_info th {
+	width: 20%;
+}
+
+/* documentView 에서 결재 처리하는 모달의 table 태그의 tr 태그 */
+table.approve_modal_info tr {
 	line-height: 80px;
+}
+
+/* documentView 에서 결재 처리하는 모달의 table 태그의 textarea 태그 */
+table.approve_modal_info textarea {
+	min-width: 150px;
+	width: 70%;
 }
 
 /*  */
@@ -54,9 +65,8 @@ button.approve_btn {
 	border-radius: 3px;
 }
 
-textarea.approve_modal_reason {
-	width: 410px;
-	height: 150px;
+div.draftForm {
+	width: 70%;
 }
 
 /* 결재요청 form 의 th 태그 */
@@ -84,3 +94,4 @@ div#approval_line {
 div#approval_line td {
 	min-width: 120px;
 }
+

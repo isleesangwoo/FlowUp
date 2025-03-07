@@ -42,6 +42,9 @@ public interface DocumentService {
 	// 결재 승인하기
 	int approve(Map<String, String> map);
 
+	// 결재 반려하기
+	int reject(Map<String, String> map);
+
 	
 
 
