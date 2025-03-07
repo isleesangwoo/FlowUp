@@ -7,7 +7,7 @@ public class CommuteVO {
 	private String startTime;		// 출근 시간 (00:00:00 ~ 23:59:59)
 	private String endTime;			// 퇴근 시간 (00:00:00 ~ 23:59:59)
 	private String status;     		// 현재 상태 0:업무시작전 1:휴가 2:내근 3:외근 4:파견 5:출장 6:업무종료
-	private String rest;   			// 휴가 여부 0:해당없음 1:연차 2:오전반차 3:오후반차 4:휴직
+	private String rest;   			// 휴가 여부 0:해당없음 1:연차 2:오전반차 3:오후반차 4:결근
 	private String overTimeYN;		// 연장근무 유무 기본 0 // 0:해당없음 1:연장근무
 	private String workDate;		// yyyy-mm-dd
 	

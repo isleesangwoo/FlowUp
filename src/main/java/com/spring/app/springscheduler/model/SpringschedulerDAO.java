@@ -1,5 +1,6 @@
 package com.spring.app.springscheduler.model;
 
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,12 @@ public interface SpringschedulerDAO {
 	List<Map<String, String>> getEmpInfo(String str_current_Year);
 
 	int insertAnnual(Map<String, String> paraMap);
+
+	int scheduler_yesterday_workYN(String str_now);
+
+	List<String> scheduler_getEmployeeList(String yesterday);
+
+	void scheduler_absence_insert(String employeeNo) throws SQLException;
 
 	
 
