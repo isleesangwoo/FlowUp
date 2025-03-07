@@ -42,6 +42,7 @@
    		<result property="totalAnnual" 		column="totalannual" 		javaType="String" />
    		<result property="usedAnnual" 		column="usedannual" 		javaType="String" />
    		<result property="remainingAnnual" 	column="remainingannual" 	javaType="String" />
+   		<result property="name" 			column="name" 				javaType="String" />
    	</resultMap>
 	<select id="getEmpInfo" resultMap="getEmpInfoMap" parameterType="String"> 
 		select employeeNo
@@ -49,9 +50,10 @@
 			 , occurAnnual + overAnnual + addAnnual as totalannual
 			 , usedannual
 			 , occurAnnual + overAnnual + addAnnual - usedannual as remainingannual
+			 , name
 		from
 		(
-			select employeeNo, to_char(registerDate, 'yyyy') as regYear, occurAnnual, overAnnual, addAnnual
+			select employeeNo, to_char(registerDate, 'yyyy') as regYear, occurAnnual, overAnnual, addAnnual, name
 			from tbl_employee E left join tbl_annual A
 			on E.employeeNo = A.fk_employeeNo 
 			where E.status = 1 and A.year = #{str_current_Year} 
@@ -71,6 +73,27 @@
 		insert into tbl_annual(annualNo, fk_employeeNo, year, occurAnnual, overAnnual, addAnnual)
 		values(annualseq.nextval, #{employeeNo}, #{nextYear}, #{occurAnnual}, #{overAnnual}, 0)
 	</insert>
+	
+	<select id="scheduler_yesterday_workYN" parameterType="String" resultType="int">
+		select count(*)
+		from tbl_commute
+		where workdate = #{yesterday} 
+		and starttime is not null
+	</select>
+	
+	<select id="scheduler_getEmployeeList" parameterType="String" resultType="String">
+		select employeeNo
+		from tbl_employee
+		where status = 1;
+	</select>
+	
+	<insert id="scheduler_absence_insert" parameterType="String">
+		insert into tbl_commute(commuteNo, FK_employeeNo, status, rest, overTimeYN, workdate)
+		values(commuteSeq.nextval, #{employeeNo}, 6, 4, 0, to_char(sysdate-1, 'yyyy-mm-dd') )
+	</insert>
+	
+		
+	
 	
 	
 

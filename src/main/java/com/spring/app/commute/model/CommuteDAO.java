@@ -53,6 +53,8 @@ public interface CommuteDAO {
 
 	int totalCnt(Map<String, String> paraMap);
 
+	Map<String, String> getCommuteCnt(Map<String, String> paraMap);
+
 
 
 }
