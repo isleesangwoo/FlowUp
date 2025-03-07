@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -435,7 +436,8 @@ public class MailController {
     // Ajax 요청 체크박스 체크된 메일 readStatus 1로 업데이트 하고 아이콘 변경
     @PostMapping("/readMail")
     @ResponseBody
-    public String readMail(@RequestParam("mailNo") List<Integer> mailNoList) {
+    public String readMail(@RequestBody Map<String, List<Integer>> request) {
+        List<Integer> mailNoList = request.get("mailNo");
         // DB에서 해당 mailNo들에 대해 readStatus=1로 업데이트
         service.readMailStatus(mailNoList);
 
