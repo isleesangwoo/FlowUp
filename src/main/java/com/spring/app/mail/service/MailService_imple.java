@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.mail.domain.MailFileVO;
 import com.spring.app.mail.domain.MailVO;
 import com.spring.app.mail.model.MailDAO;
@@ -137,18 +138,20 @@ public class MailService_imple implements MailService {
 	// 한개 메일 첨부파일의 파일명, 기존파일명, 새로운파일명, 파일사이즈 얻어오기
 	@Override
 	public List<MailFileVO> getMailFile(Map<String, String> paraMap) {
-
 		
-		
-		
-		return null;
+		return mailDAO.getMailFile(paraMap); 
 	}
 
 
 	// 메일 정렬 버튼 클릭시 정렬
 	@Override
 	public List<MailVO> mailListSort(Map<String, String> paramMap) {
+		/*
+		List<MailVO> mailSort = mailDAO.mailListSort(paramMap);
+		return mailSort;
+		*/
 		
+		// 위 아래 방식은 같다
 		
 		return mailDAO.mailListSort(paramMap);
 	}
@@ -170,7 +173,7 @@ public class MailService_imple implements MailService {
     public int deleteMailStatus(List<Integer> mailNoList) {
     	
         // DAO 호출
-        return mailDAO.updateDeleteStatus(mailNoList);
+        return mailDAO.updateCheckDeleteStatus(mailNoList);
     }
 
 
@@ -187,6 +190,23 @@ public class MailService_imple implements MailService {
 	public int getMailCount(Map<String, String> paraMap) {
 
 		return mailDAO.getMailCount(paraMap);
+	}
+
+
+	// 체크된 메일 readStatus 1로 업데이트
+	@Override
+	public int readMailStatus(List<Integer> mailNoList) {
+		
+		// DAO 호출
+        return mailDAO.updateCheckReadStatus(mailNoList);
+	}
+
+
+	// 체크박스 체크된 메일 readStatus 1로 업데이트 하고 아이콘 변경
+	@Override
+	public List<MailVO> getUpdatedMailStatus(List<Integer> mailNoList) {
+
+		return mailDAO.getUpdatedMailStatus(mailNoList);
 	}
 
 
