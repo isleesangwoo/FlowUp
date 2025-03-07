@@ -20,7 +20,7 @@
             	<div><span>${boardInfoMap.boardDesc}</span></div>
             </div>
             <div id="right_menu_container">
-				<button class="writePostBtn btnDefaultDesignNone"><i class="fa-solid fa-pencil"></i> 글쓰기</button>
+				<button class="writePostBtn writePostBtn_small btnDefaultDesignNone"><i class="fa-solid fa-pencil"></i> 글쓰기</button>
                 <span id="reBtn_box">
                     <span>
                         <span id="sortCnt_btn">
@@ -37,40 +37,36 @@
             </div>
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
         </div>
-        
-        
-        <%-- 이곳에 각 해당되는 뷰 페이지를 작성 시작 --%>
 		<div id="postContainer"> <!-- 게시글 보여주는 요소 전체 박스-->
-		<table>
-            <tr>
-                <td>번호</td>
-                <td>제목</td>
-                <td>작성자</td>
-                <td>작성일</td>
-                <td>조회</td>
-                <td>좋아요</td>
-            </tr>
-            <c:forEach var="postList" items="${groupPostMapList}" varStatus="status">
-            	<tr class="onePostElmt">
-		         	<td>
-		             	${ (totalCount) - (currentShowPageNo - 1) * (sizePerPage) - (status.index) }
-		            </td>       
-	                <td onclick="goView('${postList.postNo}')">${postList.subject}</td>
-	                <td>${postList.name}</td>
-	                <td>${postList.regDate}</td>
-	                <td>${postList.readCount}</td>
-	                <td>데이터6</td>
+			<table>
+	            <tr>
+	                <td>번호</td>
+	                <td>제목</td>
+	                <td>작성자</td>
+	                <td>작성일</td>
+	                <td>조회</td>
+	                <td>좋아요</td>
 	            </tr>
-            </c:forEach>
-    	</table>
+	            
+		            	<tr class="onePostElmt">
+				         	
+			            </tr>
+		            
+	    	</table>
 		</div>
-		<%-- === 페이지바 보여주기 === --%>
-	    <div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
-	    	${requestScope.pageBar}
-	    </div>
+		
+		<c:if test="${groupPostMapList[0] == null}"> <%-- 게시글이 없다면 --%>
+		    <div style="text-align: center; margin: 150px 0;">
+			  	  <p>작성된 글이 없습니다.</p>
+			  	  <p>새로운 정보, 기분 좋은 소식을 동료들과 공유하세요.</p>
+			  	  <button type="button"  class="writePostBtn ifNoPostWritePostBtn">글쓰기</button>
+		    </div>
+	    </c:if>
 	    
-		<%-- 이곳에 각 해당되는 뷰 페이지를 작성 끝 --%>
-        
+		<c:if test="${groupPostMapList[0] != null}"> <%-- 게시글이 있다면 페이지바 보여주기 --%>
+		    <div id="paginationContainer" align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+		    </div>
+	    </c:if>
     </div>
     <!-- 오른쪽 바 -->
 
@@ -78,6 +74,8 @@
 <form name="goViewFrm">
    <input type="hidden" name="postNo" />
    <input type="hidden" name="goBackURL" />
+   <input type="hidden" name="checkAll_or_boardGroup" />
+   <input type="hidden" name="fk_boardNo" value='${boardNo}' /> <!-- 이전/다음 글 할 때 전체 게시판은 조건이 필요없지만 게시판 별 게시글의 이전/다음글은 boardNo가 필요함 -->
 </form>
 	
 	

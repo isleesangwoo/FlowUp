@@ -30,7 +30,7 @@
     align-items: center;
     margin-top: var(--size24)
 }
-.writePostBtn:hover{
+.writePostBtn_small:hover{
 	background-color:#f9f9f9;
 }
 
@@ -142,15 +142,45 @@
     width: 100%;
     border-collapse: collapse;
 }
-#postContainer td {
-    padding: 8px;
-    text-align: center;
-}
 #postContainer tr:nth-child(1) {
     border-bottom: 1px solid #c8c8c8;
 }
 #postContainer td {
     border: none;
+}
+#postContainer td:nth-child(1){
+	padding: var(--size8) var(--size36) var(--size8) var(--size22);
+}
+#postContainer td:not(:nth-child(1)) {
+    padding: var(--size8);
+    text-align: center;
+}
+#postContainer td:nth-child(2){
+	width : 1100px;
+	text-align: left;
+}
+.postSubject{
+	cursor: pointer;
+}
+
+
+.onePostElmt:hover{
+	background-color: #f9f9f9;
+}
+.ifNoPostWritePostBtn{
+    width: 10%;
+    height: var(--size44);
+    font-size: var(--size18);
+    transition-duration: 150ms;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: calc(var(--size2) + var(--size2));
+    align-items: center;
+    text-wrap: nowrap;
+    background-color: #2985db;
+    border-color: #056ac9;
+    color: #fff;
+    margin-bottom: var(--size10);
 }
 
 

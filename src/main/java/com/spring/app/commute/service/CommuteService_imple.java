@@ -567,7 +567,6 @@ public class CommuteService_imple implements CommuteService {
 		
 		avo.setUsedAnnual(dao.getUsedAnnual(paramap));
 		
-		
 		return avo;
 	}
 

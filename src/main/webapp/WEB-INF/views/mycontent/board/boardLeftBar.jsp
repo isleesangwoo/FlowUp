@@ -19,9 +19,6 @@ $(document).ready(function() {
    
 	$("#isNoticeElmt").hide(); // 공지사항 등록 미체크시 hide 상태
 	
-	
-	
-	
 	/////////////////////////////////////////////////////////////////
 	
 	<%-- === jQuery 를 사용하여 드래그앤드롭(DragAndDrop)을 통한 파일 업로드 시작 === --%>
@@ -154,8 +151,8 @@ $(document).ready(function() {
                 dataType: "json",
                 success: function(json) {
                     if (json.n) {
-                        alert("게시판이 비활성화되었습니다.");
-                        listItem.remove(); // 삭제된 항목만 목록에서 제거 ==> 클릭된 아이콘의 li를 의미.
+                    	location.reload();
+                        //listItem.remove(); // 삭제된 항목만 목록에서 제거 ==> 클릭된 아이콘의 li를 의미.
                     } else {
                         alert("비활성화 실패: " + json.message);
                     }
@@ -165,6 +162,8 @@ $(document).ready(function() {
                 }
             });
         }
+        
+     
     }); // end of $(document).on("click", ".disableBoardIcon", function() {} --------------
 
     
@@ -219,35 +218,33 @@ $(document).ready(function() {
 	
 	// === datepicker 시작 === //
     $("input#datepicker").datepicker({
-        dateFormat: 'yy-mm-dd'  //Input Display Format 변경
-       ,showOtherMonths: true   //빈 공간에 현재월의 앞뒤월의 날짜를 표시
-       ,showMonthAfterYear:true //년도 먼저 나오고, 뒤에 월 표시
-       ,changeYear: true        //콤보박스에서 년 선택 가능
-       ,changeMonth: true       //콤보박스에서 월 선택 가능                
-       ,yearSuffix: "년"         //달력의 년도 부분 뒤에 붙는 텍스트
-       ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'] //달력의 월 부분 텍스트
-       ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] //달력의 월 부분 Tooltip 텍스트
-       ,dayNamesMin: ['일','월','화','수','목','금','토'] //달력의 요일 부분 텍스트
-       ,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 부분 Tooltip 텍스트         
+        dateFormat: 'yy-mm-dd'  
+       ,showOtherMonths: true   
+       ,showMonthAfterYear:true
+       ,changeYear: true        
+       ,changeMonth: true                   
+       ,yearSuffix: "년"         
+       ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12']
+       ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월']
+       ,dayNamesMin: ['일','월','화','수','목','금','토'] 
+       ,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일']       
 	   });
 
     // 초기값을 오늘 날짜로 설정
-	$('input#datepicker').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후) 
+	$('input#datepicker').datepicker('setDate', 'today');
 
-    // === 전체 datepicker 옵션 일괄 설정하기 ===  
-    //     한번의 설정으로 $("input#fromDate"), $('input#toDate')의 옵션을 모두 설정할 수 있다.
     $(function() {
         //모든 datepicker에 대한 공통 옵션 설정
         $.datepicker.setDefaults({
-             dateFormat: 'yy-mm-dd' //Input Display Format 변경
-            ,showOtherMonths: true //빈 공간에 현재월의 앞뒤월의 날짜를 표시
-            ,showMonthAfterYear:true //년도 먼저 나오고, 뒤에 월 표시
-            ,changeYear: true //콤보박스에서 년 선택 가능
-            ,changeMonth: true //콤보박스에서 월 선택 가능  
-            ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'] //달력의 월 부분 텍스트
-            ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] //달력의 월 부분 Tooltip 텍스트
-            ,dayNamesMin: ['일','월','화','수','목','금','토'] //달력의 요일 부분 텍스트
-            ,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일'] //달력의 요일 부분 Tooltip 텍스트                    
+             dateFormat: 'yy-mm-dd' 
+            ,showOtherMonths: true 
+            ,showMonthAfterYear:true 
+            ,changeYear: true
+            ,changeMonth: true 
+            ,monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12']
+            ,monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'] 
+            ,dayNamesMin: ['일','월','화','수','목','금','토'] 
+            ,dayNames: ['일요일','월요일','화요일','수요일','목요일','금요일','토요일']                  
         });
  
         // input을 datepicker로 선언
@@ -255,10 +252,10 @@ $(document).ready(function() {
         $("input#toDate").datepicker();
         
         // From의 초기값을 오늘 날짜로 설정
-        $('input#fromDate').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
+        $('input#fromDate').datepicker('setDate', 'today'); 
         
         // To의 초기값을 3일후로 설정
-        $('input#toDate').datepicker('setDate', '+3D'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
+        $('input#toDate').datepicker('setDate', '+3D');
      });
 
     ////////////////////////////////////////////////////////////////////
@@ -268,15 +265,15 @@ $(document).ready(function() {
     }); // 공지사항 등록일에 키보드로 입력하는 경우 
     
  	// === datepicker 끝 === //
- 
  	
  	
- 	
- 	
- 	
- 	
- 	
-	
+ 	// 공지 종료일을 시작일보다 빠르게 한 경우 //
+   	$(document).on("change", "#toDate", function() {
+ 		if($("#datepicker").val() > $("#toDate").val()){
+ 			alert("공지 종료일을 정확하게 입력해주세요.");
+ 			$("#toDate").val("");
+ 		}
+     });
  	
  	// === 게시글 등록 버튼 클릭 시 === // 
 	$(document).on("click", "#addPostBtn", function(){
@@ -285,6 +282,8 @@ $(document).ready(function() {
 			alert("게시판을 선택해주세요.");
 			return;
 		}
+		
+
 		
 	   <%-- === 스마트 에디터 구현 시작 === --%>
 	   // id가 content인 textarea에 에디터에서 대입
@@ -299,26 +298,14 @@ $(document).ready(function() {
     	  $("input:text[name='subject']").val("");
     	  return; // 종료
       }	
+      if ($("input[name='subject']").val().length > 60) {
+	      alert("제목은 60자 이하로 작성해주세요.");
+	      return;
+	  }
 	  
         <%-- === 내용 유효성 검사(스마트 에디터 사용 할 경우) 시작 === --%>
 	    var contentval = $("textarea#content").val();
-	        
-	    // 내용 유효성 검사 하기 
-	    // alert(contentval); // content에  공백만 여러개를 입력하여 쓰기할 경우 알아보는것.
-	    // <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p> 이라고 나온다.
-	 
 	      contentval = contentval.replace(/&nbsp;/gi, ""); // 공백을 "" 으로 변환
-	    /*    
-		         대상문자열.replace(/찾을 문자열/gi, "변경할 문자열");
-		     ==> 여기서 꼭 알아야 될 점은 나누기(/)표시안에 넣는 찾을 문자열의 따옴표는 없어야 한다는 점입니다. 
-		                  그리고 뒤의 gi는 다음을 의미합니다.
-		
-		 	 g : 전체 모든 문자열을 변경 global
-		 	 i : 영문 대소문자를 무시, 모두 일치하는 패턴 검색 ignore
-		 */ 
-	    // alert(contentval);
-	    // <p>             </p>
-	  
 	      contentval = contentval.substring(contentval.indexOf("<p>")+3);
 	      contentval = contentval.substring(0, contentval.indexOf("</p>"));
 	          
@@ -329,9 +316,7 @@ $(document).ready(function() {
 	    <%-- === 내용 유효성 검사(스마트 에디터 사용 할 경우) 끝 === --%>
 	    
       var formData = new FormData($("form[name='addPostFrm']").get(0)); // $("form[name='addFrm']").get(0) 폼 에 작성된 모든 데이터 보내기 
-     	//console.log("file_arr: " + file_arr.length);
       if(file_arr.length > 0) { // 파일첨부가 있을 경우 
-          
     	  // 첨부한 파일의 총합의 크기가 10MB 이상 이라면 메일 전송을 하지 못하게 막는다.
     	  let sum_file_size = 0;
           for(let i=0; i<file_arr.length; i++) {
@@ -350,7 +335,7 @@ $(document).ready(function() {
               });
           }
       }
-  	console.log("ctxPath 확인용 : " + ctxPath);
+      
       $.ajax({
           url : ctxPath+"/board/addPost",
           type : "post",
@@ -362,10 +347,11 @@ $(document).ready(function() {
         	   console.log("~~~ 확인용 : " + JSON.stringify(json));
               // ~~~ 확인용 : {"result":1}
               if(json.result == 1) {
-        	     location.href= ctxPath+"/board/board"; 
+        	     location.href= ctxPath+"/board/selectPostBoardGroupView?boardNo=" + json.boardNo; 
               }
               else {
             	  alert("게시글 등록에 실패했습니다.");
+            	  location.href= ctxPath+"/board/board"; 
               }
           },
           error: function(request, status, error){
@@ -373,7 +359,125 @@ $(document).ready(function() {
 		      }
       });
 	}); // end of $(document).on("click", "#addPostBtn", function(){}-----------------------
+			
+			
 	
+			
+	///////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////게시판 추가////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////
+	
+	let selectDepartment = []; // 선택된 부서를 저장할 배열
+	
+	// --- 게시판 생성하기 클릭 시  시작 --- // 
+	$(document).on("click", "#addBoard", function() {
+	     $('#addBoardModal').fadeIn(300); // 모달 띄우기
+	});
+	// ---게시판 생성하기 클릭 시 끝 --- // 
+	
+	// 모달 닫기 이벤트
+	$('#close').click(e => {
+		$('#addBoardModal').fadeOut(300);
+	});
+
+	// 모달 바깥 영역 클릭 시 닫기
+	$(window).click(e => {
+	    if ($(e.target).is('#addBoardModal')) {
+	        $('#addBoardModal').fadeOut(300);
+	    }
+	});
+	// --- 게시판 생성하기 모달 끝 --- // 
+	
+	// 처음에는 부서 선택 박스를 숨김.
+	$("#isPublicDept").hide(); 
+	
+	// 공개 범위 라디오 버튼 변경 시
+    $("input[name='isPublic']").change(function() {
+        if ($(".isPublic:checked").val() == "0") {
+            $("#isPublicDept").show();
+            goSearchAllDept(); // 부서 전체 조회
+        } else {
+            $("#isPublicDept").hide();
+            selectDepartment = []; // 전체 공개 시 선택된 부서 초기화
+            updateSelectDepartment();
+        }
+    });
+	
+	// ========= 부서 검색 input ( 부서별 공개 라디오 버튼 선택 후 input 태그에 글자 입력 시 ) ========= //
+	// 부서 검색 이벤트
+    $("input[name='searchWord']").on("input", function() {
+        const searchWord = $(this).val().trim();
+        if (searchWord.length == 0) {
+            goSearchAllDept(); // 검색어가 없으면 모든 부서 표시
+        } else {
+            $.ajax({
+                url: ctxPath + "/board/addBoardSearchDept",
+                type: "get",
+                data: { "searchWord": searchWord },
+                dataType: "json",
+                success: function(json) {
+                    if (json.length > 0) {
+                        let v_html = "";
+                        $.each(json, function(index, item) {
+                            const deptName = item.departmentname;
+                            const deptNo = item.departmentno;
+                            v_html += `<span class="result" data-dept-no="\${deptNo}" data-dept-name="\${deptName}" style="cursor:pointer;">\${deptName} [\${deptNo}]</span><br>`;
+
+                        });
+                        $("#displayList").html(v_html).show();
+                    } else {
+                        $("#displayList").hide();
+                    }
+                }
+            });
+        }
+    });
+	
+ 	// 부서 선택 이벤트 (클릭 시 선택 목록에 추가)
+    $(document).on("click", "span.result", function() {
+        const deptNo = $(this).data("dept-no");
+        const deptName = $(this).data("dept-name");
+
+        // 중복 선택 방지
+        if (!selectDepartment.some(dept => dept.deptNo === deptNo)) { // 선택한 부서가 selectDepartment에 있다면 true 
+        	selectDepartment.push({ deptNo, deptName }); // 배열에 부서 추가 
+            updateSelectDepartment();					 // 선택한 부서를 부서목록에 추가
+        }
+
+        $("#displayList").hide();
+        $("input[name='searchWord']").val(""); // 검색어 초기화
+        goSearchAllDept();
+    });
+ 	
+ 	// 선택한 부서 목록 업데이트 (  선택한 부서목을 담고 있는 selectDepartment 배열을 통해 업데이트)
+    function updateSelectDepartment() { 
+        let html = "";
+        let hiddenInput = "";
+        
+        selectDepartment.forEach((dept, index) => {
+        	html += `<span class="select-dept" data-index="\${index}">
+				\${dept.deptName}
+    			<button type="button" class="remove-dept btnDefaultDesignNone" data-index="\${index}">
+   					<i class="fa-solid fa-circle-xmark"></i>
+   				</button>
+				</span> `;
+
+            hiddenInput += `<input type="hidden" name="fk_departmentNo" value="\${dept.deptNo}">`; // form에 hidden input 추가 (배열을 폼으로 전송하기위해)
+        });
+        $("#selectDeptList").html(html);
+        $("#selectDeptHideInput").html(hiddenInput);
+    }
+
+    // 선택한 부서 삭제 이벤트
+    $(document).on("click", ".remove-dept", function() {
+        const index = $(this).data("index"); // 선택한 부서 목록의 index를 활용함
+        selectDepartment.splice(index, 1);   // 배열에서 해당 인덱스 요소를 삭제
+        updateSelectDepartment();
+    });
+	
+	$(document).on("click", "#addBoardGroup", function(){ // 생성 버튼 클릭 이벤트
+ 		goAddBoardGroup(); // 게시판 생성하기
+	});
 	
     
 }); // end of $(document).ready(function() {})----------------------
@@ -407,6 +511,57 @@ $(document).ready(function() {
 		
 	}// end of function getAccessBoardList(){}------------------
 	
+	
+    ///////////////////////////////////////////////////////////////////////////////////////
+	///////////////////////////////////////게시판 추가////////////////////////////////////////
+	///////////////////////////////////////////////////////////////////////////////////////
+	
+	// ===== 부서 전체 조회하기(부서공개라디오 클릭 시) ===== //
+	function goSearchAllDept(){
+	$.ajax({ //게시판 생성의 공개여부 부서 설정 시 부서 전체 검색(부서 검색)
+		   url: ctxPath + "/board/addBoardSearchAllDept",
+		   type:"get",
+		   dataType:"json",
+		   success:function(json){
+			   if(json.length > 0){
+				   // 검색된 데이터가 있는 경우임.
+				   
+				   let v_html = ``;
+				   
+				   $.each(json, function(index, item){
+					   const departmentname = item.departmentname;
+					   const departmentno = item.departmentno;
+					   
+					   const idx = departmentname.toLowerCase().indexOf(\$("input[name='searchWord']").val().toLowerCase());
+					   
+				       const len = \$("input[name='searchWord']").val().length; 
+					   
+				       const result = departmentname.substring(0, idx) + "<span style='color:blue;'>"+departmentname.substring(idx, idx+len)+"</span>" + departmentname.substring(idx+len); 
+				       
+					   v_html += `<span data-dept-no='\${departmentno}' data-dept-name='\${departmentname}' style='cursor:pointer;' class='result'>\${result}[\${departmentno}]</span><br>`;
+					   
+				   }); // end of $.each(json, function(index, item){})-----------
+				   
+				   const input_width = $("input[name='searchWord']").css("width"); // 검색어 input 태그 width 값 알아오기  
+				   
+				   $("div#displayList").css({"width":input_width}); // 검색결과 div 의 width 크기를 검색어 입력 input 태그의 width 와 일치시키기 
+				   
+				   $("div#displayList").html(v_html).show();
+			   }
+		   },
+		   error: function(request, status, error){
+			   alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		   }    
+	   });
+} 
+
+// ===== 게시판 생성하기 ===== //
+function goAddBoardGroup(){
+	const frm = document.addBoardGroup;
+    frm.method = "POST";
+    frm.action = ctxPath + "/board/addBoard";
+    frm.submit();  
+}
       
       
 </script>
@@ -428,7 +583,7 @@ $(document).ready(function() {
 					<table>
 						<tr>
 							<td>제목</td>
-							<td><input type="text" name="subject"></td>
+							<td><input type="text" name="subject" autocomplete="off"></td>
 						</tr>
 						<tr>
 							<td>파일첨부</td>
@@ -476,6 +631,75 @@ $(document).ready(function() {
     </div> <!-- end of <div class="modal_container"> -->
     <!-- 글작성 폼 -->
     
+    <!-- 게시판 생성하기 모달 -->
+	<div id="addBoardModal" class="addBoardModal">
+	    <div class="modal-content" id="modal-content">
+	        <span id="createBoard_Modal_title">게시판 생성</span>
+            
+            
+            <div id="addBoardGroupFrmTag" >
+		    <form name="addBoardGroup">
+				<table id = "addBoardGroupTbl">
+					<tr>
+						<td class="columnTitle">
+							제목
+						</td>
+						<td style="width: 100%;">
+							<input type="text" name="boardName"  class="w_max" autocomplete="off"/>
+						</td>
+					</tr>
+					<tr>
+						<td class="columnTitle">
+							설명
+						</td>
+						<td>
+							<input type="text" name="boardDesc" class="w_max" autocomplete="off"/>
+						</td>
+					</tr>
+					<tr>
+					    <td class="columnTitle">공개 범위 설정</td>
+					    <td>
+					        <div class="radio-container">
+					            <label>
+					                <input type="radio" name="isPublic" value="0" class="isPublic" /> 부서별
+					            </label>
+					            <label>
+					                <input type="radio" name="isPublic" value="1" class="isPublic"  checked/> 전체
+					            </label>
+					        </div>
+					    </td>
+					</tr>
+					<tr>
+						<td class="columnTitle">
+							운영자
+						</td>
+						<td>
+							<input type="text" name="createdBy" value=""  class="w_max" autocomplete="off"/>
+						</td>
+					</tr>
+				</table>
+				
+				<div id="isPublicDept">
+						<p style="font-weight: bold;margin: 0px;">공개 부서 선택하기</p>
+						<div id="selectDeptList"></div>
+						<input type="text" name="searchWord" size="50" autocomplete="off" placeholder="부서를 검색하세요."  style="width: 100%;"/>
+						<input type="text" style="display: none;"/> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>	  
+					<div id="displayList"  style="border:solid 1px gray; border-top:0px; height:100px; margin-top:-1px; margin-bottom:30px; overflow:auto;"></div>
+				</div>     
+			
+    			<div id="selectDeptHideInput"> <%--  여기에 선택된 부서들의 hidden input이 추가됨 --%> </div> 
+			</form>
+			
+			 			
+		</div>
+			<div style="display: flex; margin-left: auto; ">
+				<button type="button" id="addBoardGroup" class="btnDefaultDesignNone">생성</button>
+	        	<span id="close">닫기</span>
+        	</div>
+	    </div>
+	</div> <!-- end of <div id="addBoardModal" class="addBoardModal"> -->
+	<!-- 게시판 생성하기 모달-->
+    
     
 <!-- 왼쪽 사이드바 -->
   <div id="left_bar">
@@ -490,11 +714,11 @@ $(document).ready(function() {
       <div class="board_menu_container">
           <ul>
               <li>
-                  <a href="#">게시판 목록</a>
+                  <a href="<%=ctxpath%>/board/">전체게시판</a>
               </li>
           </ul>
           
       </div>
-      <div id="addBoardContainer"><a href="<%=ctxpath%>/board/addBoardView" id="addBoard">게시판 생성하기+</a></div>
+      <div id="addBoardContainer"><span id="addBoard">게시판 생성하기+</span></div>
   </div>
  <!-- 왼쪽 사이드바 -->

@@ -28,44 +28,9 @@
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
             <div id="right_menu_container">
                 <span>
-                    <a href="#">
+                    <a href="<%=ctxpath%>/board/">
                         <span>전체 게시판</span>
                     </a>
-                </span>
-
-                <span id="reBtn_box">
-                    <span>
-                        <span id="sort_btn" title="정렬"> <!-- 정렬 버튼입니다! -->
-                            <i class="fa-solid fa-arrow-down-short-wide"></i>
-                            <ul>
-                                <li class="list_title">정렬순서</li>
-                                <!-- 각 li 태그 마다 ajax 보내주세요 -->
-                                <li>제목</li> 
-                                <li>받은날짜</li>
-                                <li>크기</li>
-
-                                <li class="list_title">빠른검색</li>
-                                <li>중요메일</li>
-                                <li>안읽은 메일</li>
-                                <li>읽은 메일</li>
-                                <li>오늘온 메일</li>
-                                <li>어제온 메일</li>
-                                <!-- 각 li 태그 마다 ajax 보내주세요 -->
-                            </ul>
-                        </span>
-                        <span id="re_btn" title="새로고침">
-                            <i class="fa-solid fa-rotate-right"></i>
-                        </span>
-                        <span id="sortCnt_btn">
-                            <span>20</span>
-                            <i class="fa-solid fa-angle-right"></i>
-                            <ul>
-                                <li>5</li>
-                                <li>10</li>
-                                <li>20</li>
-                            </ul>
-                        </span>
-                    </span>
                 </span>
             </div>
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
@@ -83,18 +48,32 @@
 								<div class="article_wrap">
 									<span class="postBoard">${post.boardvo.boardName}</span>
 									<span onclick="goView('${post.postNo}')">
-										<span class="postSubject">${post.subject}</span><span class="postCommentCount">[댓개수] ${post.commentCount}</span>
+										<span class="postSubject">${post.subject}</span><span class="postCommentCount"><i class="fa-regular fa-comment"></i> ${post.commentCount}</span>
 										<span class="postContent">${post.content}</span>
 									</span>
 								</div>
 								<div>
-									<div class="postLikeBtn"><i class="fa-regular fa-heart"></i></div>
-									<div class="likeCount">10</div> <!-- 좋아요도 조인해야긋네..~ -->
+									<div class="likeBtn" onclick="goLike.call(this, '${post.postNo}')"><i class="<c:choose>
+				                        <c:when test='${post.liked}'>fa-solid</c:when>
+				                        <c:otherwise>fa-regular</c:otherwise>
+					                    </c:choose> fa-heart"></i>
+				                    </div>
+									<div class="likeCount">${post.likeCount}</div><%-- 좋아요 --%>
 								</div>
 							</div>
 							
-							<span id="profileImg">프사</span><!-- 프사도 조인해야긋네~.. -->
-							<span id="postCreateBy">${post.name}</span>
+							
+							<span id="profileImg"> <!-- 프로필 사진 -->
+								<c:if test="${post.profileImg == null}">
+									<i class="fa-regular fa-user"></i>
+								</c:if>
+								<c:if test="${post.profileImg != null}">
+									<i class="fa-regular fa-user">
+										<span>프로필사진 존재 경우(경로설정필요)</span>
+									</i>
+								</c:if>
+							</span>
+							<span id="postCreateBy">${post.name} ${post.positionName}</span>
 							<span id="postCreateAt">${post.regDate}</span>
 						</div>
 					</c:forEach>
@@ -113,20 +92,32 @@
 			  </c:if>
 			</div>
 			
-			<%-- 게시판 별 게시글 조회 --%>
+			<%-- 좋아요 상위 Top 5 조회 --%>
 			<div id="postOfBoardGroup">
-			<p id="postOfBoardGroup_name">전사게시판</p>
-			<ul>
-                <li>
-                	<div>
-		                <div id="postOfBoardGroup_post">
-		                <div>2025년 하반기 야유회</div><div>06-24</div>
-		                </div>
-	                </div>
-                </li> 
-            </ul>
+				<p id="postOfBoardGroup_name">좋아요 상위 Top 5</p>
+				<ul>
+					<c:forEach var="topLikepost" items="${topLikeList}">
+						<li>
+			                <div class="topLikepost" onclick="goView('${topLikepost.postNo}')">
+			                	<div class="topLikeSubject">${topLikepost.subject}</div><div>${topLikepost.regDate}</div>
+			                </div>
+		                </li> 
+					</c:forEach>
+	            </ul>
+	            
+	            <p id="postOfBoardGroup_name">조회수 상위 Top 5</p>
+				<ul>
+					<c:forEach var="topReadpost" items="${topReadList}">
+						<li>
+			                <div class="topLikepost" onclick="goView('${topReadpost.postNo}')">
+			                	<div class="topLikeSubject">${topReadpost.subject}</div><div>${topReadpost.regDate}</div>
+			                </div>
+		                </li> 
+					</c:forEach>
+	            </ul>
 			</div>
-		
+			
+			<%-- 조회수 상위 Top 5 조회 --%>
 		</div>
 		<%-- 이곳에 각 해당되는 뷰 페이지를 작성 끝 --%>
         
@@ -139,7 +130,7 @@
    <input type="hidden" name="goBackURL" />
 </form>	     
     
-	
+<span id="login_userid" style="display: none">${login_userid}</span>	<%-- 필요한 것 --%>
 	
 	
 <jsp:include page="../../footer/footer.jsp" /> 

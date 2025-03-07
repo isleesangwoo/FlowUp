@@ -8,9 +8,9 @@
 
 <script>
 	var ctxPath = "<%= request.getContextPath() %>";
-	const goBackURL = "<%= request.getAttribute("goBackURL") %>";
 </script>
 <%-- 각자 페이지에 해당되는 js 연결 --%>
+<input type="hidden" id="goBackURL" value="<%= request.getAttribute("goBackURL") %>">
 <script src="<%=ctxPath%>/js/board/onePostView.js"></script>
 
 <!-- 글작성 폼 -->
@@ -29,7 +29,7 @@
 					<table>
 						<tr>
 							<td>제목</td>
-							<td><input type="text" name="subject" id="subject"value="${postvo.subject}" maxlength="60"></td>
+							<td><input type="text" name="subject" id="subject"value="${postvo.subject}"></td>
 						</tr>
 						<tr>
 							<td>파일첨부</td>
@@ -91,7 +91,9 @@
 	<!-- 오른쪽 바 -->
     <div id="right_bar">
         <div id="right_title_box">
-            <span id="right_title">${postvo.boardvo.boardName} </span>
+            <a href="<%=ctxpath%>/board/selectPostBoardGroupView?boardNo=${postvo.fk_boardNo}" id="right_title_a">
+            	<span id="right_title">${postvo.boardvo.boardName}</span>
+            </a> 
 			<span id="boardMaster">운영 : ${postvo.boardvo.createdBy}</span>
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
             
@@ -111,12 +113,18 @@
 
                 <span id="tool_box_right">
                     <span>
+                    <span id="preOrNextBtn">
+                    <c:if test="${postvo.previouspostNo ne null}">
                         <span id="re_btn">
-                            <a href="#"><i class="fa-solid fa-arrow-left"></i>이전</a>
+                            <button type="button" onclick="goView('${postvo.previouspostNo}')" class="btnDefaultDesignNone"><i class="fa-solid fa-caret-left"></i>이전</button>
                         </span>
+                    </c:if>   
+                    <c:if test="${postvo.nextpostNo ne null}"> 
                         <span id="sortCnt_btn">
-                            <a href="#">다음<i class="fa-solid fa-arrow-right"></i></a>
+                            <button type="button" onclick="goView('${postvo.nextpostNo}')" class="btnDefaultDesignNone">다음<i class="fa-solid fa-caret-right"></i></button> 
                         </span>
+                    </c:if>  
+                    </span>   
                         <span>
                             <button type="button" onclick="javascript:location.href='<%= ctxPath%>${requestScope.goBackURL}'" class="btnDefaultDesignNone">
                             	<i class="fa-solid fa-list"></i> 목록
@@ -130,8 +138,22 @@
         
         <!-- 게시글 하나 내용보여주기 시작  -->
        	<div id="onePostHeader" class="padding">
-       		<span id="postSubject">제목 : ${postvo.subject}</span>
-       		<span id="postCommentCount">[${postvo.commentCount}]</span>
+       		<div style="display: flex; justify-content: space-between;">
+	       		<div>
+		       		<span id="postSubject">제목 : ${postvo.subject}</span>
+		       		<span id="postCommentCount"><%-- ajax를 통하여 댓글 개수가 렌더링 됨 --%></span>
+	       		</div>
+	       		<div id="likeBtn">
+		       		<c:if test="${likeCnt == 1}"> <%-- 좋아요를 한 상태--%>
+		       			<button type="button" id="postLitkBtn" class="btnDefaultDesignNone"><i class='fa-solid fa-heart' id='heartIcon'></i></button>
+		       		</c:if>
+		       		<c:if test="${likeCnt == 0}"> <%-- 좋아요를 하지않은 상태--%>
+		       			<button type="button" id="postLitkBtn" class="btnDefaultDesignNone"><i class='fa-regular fa-heart' id='heartIcon'></i></button>
+		       		</c:if>
+		       		<div id="likeCount">${postvo.likeCount}</div><%-- 좋아요 개수 --%>
+	       		</div> <%-- 좋아요 버튼 --%>
+	       		
+       		</div>
        		<div>
        			<span id="postCreatBy">${postvo.name}</span>
        			<span id="postRegDate">${postvo.regDate}</span>
@@ -149,57 +171,118 @@
         </c:forEach>
         
         <div id="ViewOption" class="padding">
-        	<span class="tranBlock">댓글 ${postvo.commentCount}개</span>
+        	<span class="tranBlock" id="commentCount"><%-- 댓글의 개 수가 ajax를 통해 렌더링 됨 --%></span>
         	<span class="tranBlock">조회 ${postvo.readCount}</span>
-        	<span class="tranBlock">좋아요 누른 사람 0명</span>
-        </div>
-        <div class="padding">
-	        <div class="commentOfpost ">
-	        	<span id="profile"> P </span>
-	        	<div id="commentInfo" class="CommentMarginLeft">
-	        		<div class="topInfoBox">
-	        			<div class="infoBox">
-			        		<span>이상우 대표이사</span>
-			        		<span class="comment_regDate_Color" id="commentElmt"><i class="fa-solid fa-reply" id="commentIcon"></i>댓글</span>
-			        		<span class="comment_regDate_Color">2021-10-07(목) 09:15</span>
-		        		</div>
-		        		
-		        		<div class="deleteBtnBox">
-		        			<span><i class="fa-regular fa-pen-to-square"></i></span> <!-- 수정 -->
-		        			<span><i class="fa-regular fa-trash-can"></i></span> <!-- 삭제 -->
-		        		</div>
-	        		</div>
-	        		<div>댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.댓글 내용입니다.</div>
-	        	</div>
-	        		
-	        </div>
-	        
-        </div>
-        <div id="commentCreate" class="padding">
-        	<span id="profile"> P </span>
-        	<div id="commentEdit">
-        		<input type="text" name="content" placeholder="댓글을 남겨보세요">
-        		<div id="commentBottom">
-        			<div><i class="fa-solid fa-paperclip"></i></div>
-        			<div><button id="commentEnterBtn" class="btnDefaultDesignNone">등록</button></div>
-        		</div>
-        	</div>
-        </div>
-	        
-	     <div id="noticeEndDate" style="display: none;">${postvo.noticeEndDate}</div>   
-        <form name="postFrm">
-	        <div>
-		        게시글 번호 : <input type="text" name="postNo" value="${postvo.postNo}"><br> <%-- 필요한 것임 지우지말 것 --%>
-		        댓글 허용 여부 : ${postvo.allowComments}<br>
-		        공지글 여부 : ${postvo.isNotice}<br>
-		        공지글 종료일 : ${postvo.noticeEndDate}<br>
-				게시판 번호 : ${postvo.fk_boardNo}<br>
-				작성자 번호 : ${postvo.fk_employeeNo}<br>
+        	<span class="tranBlock" id="likeListElmt">좋아요 누른 사람 <span id="span_likeCount">${postvo.likeCount}</span>명</span>
+        	<!-- 모달 -->
+			<div id="likeModal" class="modal">
+			    <div class="modal-content">
+			        <span>좋아요 누른 사람 목록</span>
+		            <!-- 좋아요 누른 사람 목록이 동적으로 추가될 공간 -->
+			        <table id="likeUserList">
+			        </table>
+		        	<span class="close">확인</span>
+			    </div>
 			</div>
-		</form>
+			<!-- 모달 -->
+        </div>
+        <div id="commentListElmt">
+	        <%-- ajax로 페이지가 로드 될 때 댓글 목록이 같이 조회되는 공간 --%>
+        </div>
+        
+        <%-- 댓글 작성 시 ajax로 서버에 넘김 --%>
+		<input type="hidden" name="name" value="이상우"/><%-- 로그인한 사원명이 됨. 추후 수정 --%>
+		<c:if test="${postvo.allowComments == 1}"> <%-- 댓글이 허용이라면 댓글입력 요소를 보여줌. --%>
+	        <div id="commentCreate" class="padding">
+	        	<span id="profile"> <%-- 이 곳은 로그인된 사원의 프로필이 들어올 자리 --%>
+	        	<c:if test="${login_profileImg != null}">
+	        		프로필이미지 존재의 경우(경로설정 필요)
+	        	</c:if>
+	        	<c:if test="${login_profileImg == null}">
+	        		<i class="fa-regular fa-user"></i>
+	        	</c:if> 
+	        	 </span>
+	        	<div id="commentEdit">
+	        		<input type="text" name="content" id="commentContent" placeholder="댓글을 남겨보세요" autocomplete='off'>
+	        		<div id="commentBottom">
+	        			<button id="commentEnterBtn" class="btnDefaultDesignNone">등록</button>
+	        		</div>
+	        	</div>
+	        </div>
+        </c:if>
+        <%-- 댓글 작성 시 ajax로 서버에 넘김 --%>
+        
+       	<table id="preoOrNextPostElmt">
+        	<c:if test="${postvo.previouspostNo ne null}">
+        		<tr class="onePostInfoElmt">
+	        		<td>글</td>
+	        		<td>제목</td>
+	        		<td>작성자</td>
+	        		<td>작성일</td>
+	        		<td>조회</td>
+	        		<td>좋아요</td>
+        		</tr>
+        		<tr class="onePostElmt" onclick="goView('${postvo.previouspostNo}')">
+        			<td>이전글</td>
+        			<td>${postvo.previoussubject}</td>
+        			<td>${postvo.previousname}</td>
+        			<td>${postvo.previousregDate}</td>
+        			<td>${postvo.previousreadCount}</td>
+					<td>${postvo.previouslikeCount}</td>
+        		</tr>
+        	</c:if>	
+        		<tr class="onePostElmt" id="currentPost" style="background-color: #f2f2f2; ">
+        			<td> <span class="currentPost"><i class="fa-solid fa-angles-right"></i> 현재글</span></td>
+        			<td><span class="currentPost">${postvo.subject}</span></td>
+        			<td><span class="currentPost">${postvo.name}</span></td>
+        			<td><span class="currentPost">${postvo.regDate}</span></td>
+        			<td>${postvo.readCount}</td>
+					<td id="td_likeCnt">${postvo.likeCount}</td>
+        		</tr>
+        	<c:if test="${postvo.nextpostNo ne null}">	
+        		<tr class="onePostElmt" onclick="goView('${postvo.nextpostNo}')">
+        			<td>다음글</td>
+        			<td>${postvo.nextsubject}</td>
+        			<td>${postvo.name}</td>
+        			<td>${postvo.nextregDate}</td>
+        			<td>${postvo.nextreadCount}</td>
+					<td>${postvo.nextlikeCount}</td>
+        		</tr>
+        	</c:if>		
+       	</table>
+	     <div id="noticeEndDate" style="display: none;">${postvo.noticeEndDate}</div>   
+	     
+<form name="postFrm">
+	<div>
+	  게시글 번호 : <input type="text" name="postNo" value="${postvo.postNo}"><br> <%-- 필요한 것임 지우지말 것 --%>
+	  상세보기 페이지 이전 url : <input type="text" name="goBackURL" value="<%= request.getAttribute("goBackURL") %>"/><%-- 필요한 것임 지우지말 것 --%><br>
+	  전체 or 게시판별 게시글 구분 번호 : <input type="text" name="checkAll_or_boardGroup" value="${checkAll_or_boardGroup}"> <%-- 필요한 것임 지우지말 것 --%><br>
+	  게시판 번호 : <input type="text" name="boardNo" value="${postvo.fk_boardNo}"> <%-- 필요한 것임 지우지말 것 --%><br>
+	  로그인 사원번호 : <span id="login_userid">${login_userid}</span><br><%-- 필요한 것임 지우지말 것 --%>
+	</div>
+</form>
+
+<%-- 이전글제목 보기, 다음글제목 보기시 POST 방식으로 넘기기 위한것 --%>
+<form name="postFrm_2">
+	<input type="hidden" name="postNo" />
+	<input type="hidden" name="goBackURL" />
+	<input type="hidden" name="fk_boardNo" value="${postvo.fk_boardNo}"/>
+	<input type="hidden" name="checkAll_or_boardGroup" value="${checkAll_or_boardGroup}"> 
+</form>
+
 	
-		
-   </div>
+	
+	
+	
+	공지글 여부 : ${postvo.isNotice}<br>
+	공지글 종료일 : ${postvo.noticeEndDate}<br>
+	작성자 번호 : ${postvo.fk_employeeNo}<br>
+	댓글 허용 여부 : <span id="allowComments">${postvo.allowComments}</span> <%-- loadComment()에서 사용 --%><br>
+	로그인 사원번호 : <span id="login_userid">${login_userid}</span><%-- addReply()에서 사용 --%><br>
+	로그인 사원이름 : <span id="login_name">${login_name}</span><%-- addReply()에서 사용 --%><br>
+	좋아요 여부 : ${likeCnt}<br>
+
+</div>
 
 
 

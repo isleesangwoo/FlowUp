@@ -1,7 +1,10 @@
 package com.spring.app.board.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.spring.app.board.domain.BoardVO;
 import com.spring.app.board.domain.PostFileVO;
@@ -13,7 +16,7 @@ public interface BoardService {
 	int addBoard(BoardVO boardvo) throws Exception;
 
 	// 게시판 수정하기
-	int updateBoard(BoardVO boardvo) throws Exception;
+	int updateBoard(Map<String, String> map) throws Exception;
 
 	// 게시판삭제(비활성화)하기(status 값변경)
 	int disableBoard(String boardNo);
@@ -37,7 +40,7 @@ public interface BoardService {
 	int addPost(PostVO postvo,PostFileVO postfilevo,List<Map<String, Object>> mapList);
 
 	// 게시판 메인 페이지에 뿌려줄 모든 게시글 조회
-	List<PostVO> selectAllPost(Map<String, String> paraMap);
+	List<PostVO> selectAllPost(Map<String, String> paraMap,String login_userid);
 
 	// 총 게시물 건수 (totalCount)
 	int getTotalCount();
@@ -83,6 +86,52 @@ public interface BoardService {
 	
 	//해당 게시판의 총 게시물 건수(totalCount) 구하기
 	int getBoardGroupPostTotalCount(String boardNo);
+
+	// 좋아요를 추가 또는 삭제함
+	Map<String, Object> toggleLike(String postNo, String login_userid);
+
+	// 로그인 된 사원이 해당 게시글에 좋아요 여부를 검사.
+	int checkLike(String login_userid, String postNo);
+
+	// 좋아요 누른 사람(사원) 조회
+	List<Map<String, Object>> getLikeList(String postNo);
+
+	// 댓글 등록
+	int insertComment(String postNo, String login_userid, String login_name, String commentContent);
+
+	// 해당 게시글의 댓글 조회
+	List<Map<String, Object>> getComment(String postNo);
+
+	// 댓글 수정하기
+	int updateComment(String commentNo,String content);
+
+	// 댓글 삭제하기 ( 대댓글 개발 시  대댓글까지 삭제(status 값 변경) 추가해야 함.)
+	int deleteComment(String commentNo,String depthNo);
+
+	// 대댓글 등록
+	int insertReComment(String postNo, String login_userid, String login_name, String replyContent, String fk_commentNo,String depthNo);
+
+	// 댓글 개수 
+	int getCommentCount(String postNo);
+
+	// 부서별 공개일 경우 게시판 생성하기
+	void addDepartmentBoard(BoardVO boardvo, List<Integer> departmentNoList);
+
+	// 수정하는 게시판에 접근할 수 있는 부서를 알아옴
+	List<Map<String, String>> getboardAccessList(String boardNo);
+
+	// 부서별 공개일 경우 권한이 부여된 부서 모두 삭제 
+	void deleteDepartmentBoard(HashMap<String, String> map);
+
+	// 부서별 공개일 경우 게시판 삭제후 insert하기
+	void addDepartmentBoard_2(HashMap<String, String> map, List<Integer> departmentNoList);
+
+	// 좋아요 상위 5개 글
+	List<Map<String, String>> getTopLikedPosts();
+
+	// 조회수 상위 5개 글
+	List<Map<String, String>> getTopReadPosts();
+
 
 
 	
