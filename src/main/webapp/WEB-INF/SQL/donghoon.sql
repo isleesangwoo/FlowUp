@@ -774,6 +774,9 @@ select count(*)
 from tbl_mail;
 
 select *
+from tbl_mail;
+
+select *
 from tbl_employee;
 
 SELECT M.mailNo, M.fk_employeeNo, M.subject, M.content, 
@@ -787,7 +790,7 @@ FROM
                to_char(sendDate, 'yyyy-mm-dd hh24:mi:ss') AS sendDate, 
                readStatus, deleteStatus, saveStatus, importantStatus
         FROM tbl_mail
-        WHERE deleteStatus = 0
+        WHERE deleteStatus = 1
     ) M
 JOIN tbl_employee e
   ON M.fk_employeeNo = e.employeeNo
@@ -839,16 +842,34 @@ CREATE TABLE tbl_tag
 ,constraint fk_tbl_tag_fk_mailNo foreign key(fk_mailNo) references tbl_mail(mailNo)
 );
 
+create sequence tagSeq
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+commit;
+
 CREATE TABLE tbl_mailFile
 (fileNo        NUMBER         NOT NULL -- 첨부파일번호
 ,fileName      VARCHAR2(50)   NOT NULL -- 첨부파일명
 ,orgFileName   VARCHAR2(50)   NOT NULL -- 원래파일명
-,fileSize      VARCHAR2(6)    NOT NULL -- 파일용량
+,fileSize      NUMBER         NOT NULL -- 파일용량
 ,fk_mailNo     NUMBER         NOT NULL -- 메일번호
 
 ,constraint pk_tbl_mailFile_fileNo primary key(fileNo)
 ,constraint fk_tbl_mailFile_fk_mailNo foreign key(fk_mailNo) references tbl_mail(mailNo)
 );
+
+create sequence mailFileSeq
+start with 100001
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
 
 commit;
 
@@ -867,21 +888,9 @@ join tbl_employee e
 where M.mailNo = 100145;
 ----------------------------------------------------------------
 
-create sequence mailFileSeq
-start with 1
-increment by 1
-nomaxvalue
-nominvalue
-nocycle
-nocache;
-
-rollback;
-
-commit;
-
-SELECT importantStatus
+SELECT *
 FROM tbl_mail
-WHERE mailNo = 100150;
+WHERE mailNo = 100154;
 
 
 SELECT mailNo, subject, fk_employeeNo, importantStatus
@@ -961,5 +970,28 @@ where importantStatus = 1;
 	      AND M.fk_employeeNo = 100020
 	    ORDER BY M.mailNo DESC
         
+        select *
+from tbl_mailFile;
+
         
+        select M.mailNo, M.subject, M.content, M.sendDate, M.importantStatus, M.readStatus,
+	           f.fileSize, f.orgFileName, f.fileName,
+	           e.employeeNo, e.name, e.email,
+	           r.refStatus, r.refName, r.refMail
+	    from tbl_mail M
+	    left join tbl_mailFile f
+	      on M.mailNo = f.fk_mailNo
+	    left join tbl_referenced r
+	      on M.mailNo = r.fk_mailNo
+	    join tbl_employee e
+	      on M.fk_employeeNo = e.employeeNo
+	    where M.mailNo = 100154
+        
+
+	<select id="getMailFile" resultType="MailFileVO">
+	    SELECT fileNo, fileName, orgFileName, fileSize, fk_mailNo
+	    FROM tbl_mailFile
+	    WHERE fk_mailNo = 100154
+	</select>
+
     

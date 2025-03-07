@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -306,6 +307,18 @@ public class MailController {
 	        // 없는 메일이면 목록으로 리다이렉트
 	        return new ModelAndView("redirect:/mail/mail");
 	    }
+	    /*
+	    System.out.println("MailVO: " + mailvo);
+	    if (mailvo.getMailfilevo() != null) {
+	        System.out.println("첨부파일 개수: " + mailvo.getMailfilevo().size());
+	        for (MailFileVO file : mailvo.getMailfilevo()) {
+	            System.out.println("첨부파일: " + file.getOrgFileName());
+	        }
+	    } else {
+	        System.out.println("첨부파일 없음");
+	    }
+	    */
+
 
 	    // 2) 메일을 아직 안 읽었다면(readStatus 0 이라면) readStatus 1 로 업데이트
 	    //    (VO가 String이면 "0"인지 비교, int면 0인지 비교)
@@ -400,7 +413,7 @@ public class MailController {
         // 1, DB에서 해당 mailNo들에 대해 deleteStatus=1로 업데이트
         service.deleteMailStatus(mailNoList);
 
-        // 2. 성공시 "success" 등 리턴
+        // 2. 성공시 "success" 리턴
         return "success";
     }
     
@@ -418,6 +431,22 @@ public class MailController {
         List<MailVO> deletedList = service.selectDeletedMail(); 
         
         return deletedList; // JSON으로 반환
+    }
+    
+    // Ajax 요청 체크박스 체크된 메일 readStatus 1로 업데이트 하고 아이콘 변경
+    @PostMapping("/readMail")
+    @ResponseBody
+    public String readMail(@RequestBody Map<String, List<Integer>> request) {
+        List<Integer> mailNoList = request.get("mailNo");
+        // DB에서 해당 mailNo들에 대해 readStatus=1로 업데이트
+        service.readMailStatus(mailNoList);
+
+        // 업데이트된 메일의 상태를 조회
+        Map<String, Object> result = new HashMap<>();
+        result.put("status", "success");
+        result.put("updatedMails", service.getUpdatedMailStatus(mailNoList));
+        
+        return "result";
     }
 	
 }

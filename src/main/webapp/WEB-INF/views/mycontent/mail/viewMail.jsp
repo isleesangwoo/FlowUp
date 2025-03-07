@@ -392,12 +392,13 @@
             <th style="text-align: left; padding: 8px;">첨부파일</th>
             <td style="padding: 8px;">
                 <c:if test="${not empty mailfilevo}">
-                    <c:forEach var="file" items="${mailfilevo}">
+                <p>첨부파일 개수: ${mailfilevo.size()}</p>
+                    <c:forEach var="mailfile" items="${mailfilevo}">
                         <div>
-                            <i class="fa-solid fa-paperclip"></i>
                             <!-- 파일 다운로드 링크 예시 -->
-                            <a href="<%=ctxPath%>/mail/download?fileName=${file.fileName}&orgFileName=${file.orgFileName}">
-                                ${file.orgFileName} (${file.fileSize}KB)
+                            
+                            <i class="fa-solid fa-paperclip"></i><a href="<%=ctxPath%>/mail/download?fileName=${mailfile.fileName}&orgFileName=${mailfile.orgFileName}">
+                                ${mailfile.orgFileName} (${mailfile.fileSize}KB)
                             </a>
                         </div>
                     </c:forEach>

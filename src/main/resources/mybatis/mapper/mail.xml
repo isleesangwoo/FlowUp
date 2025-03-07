@@ -146,11 +146,6 @@
 	    <result property="importantStatus" column="importantStatus"/>
 	    <result property="readStatus"    column="readStatus"/>
 	    
-	    <!-- 첨부파일 관련 필드 매핑 -->
-	    <result property="fileSize"      column="fileSize"/>
-	    <result property="orgFileName"   column="orgFileName"/>
-	    <result property="fileName"      column="fileName"/>
-	
 	    <!-- 참조 정보 관련 필드 매핑 -->
 	    <result property="refStatus"     column="refStatus"/>
 	    <result property="refName"       column="refName"/>
@@ -162,6 +157,13 @@
 	        <result property="name"       column="name"/>
 	        <result property="email"      column="email"/>
 	    </association>
+	    
+   	    <!-- 첨부파일 관련 필드 매핑 -->
+   	    <collection property="mailfilevo" ofType="MailFileVO">
+		    <result property="fileSize"      column="fileSize"/>
+		    <result property="orgFileName"   column="orgFileName"/>
+		    <result property="fileName"      column="fileName"/>
+	    </collection>
 	</resultMap>
 
 	<select id="viewMail" resultMap="viewMail" parameterType="HashMap">
@@ -216,8 +218,8 @@
 	</select>
 	<!-- 메일함 정렬 선택 끝 -->
 	
-	
-	<update id="updateDeleteStatus" parameterType="list">
+	<!-- 체크된 메일 deleteStatus=1 로 변경 -->
+	<update id="updateCheckDeleteStatus" parameterType="list">
 	    UPDATE tbl_mail
 	    SET deleteStatus = 1
 	    WHERE mailNo IN
@@ -248,6 +250,28 @@
 	    ORDER BY M.mailNo DESC
 	</select>
 	
+	
+	<!-- 체크된 메일 readStatus=1 로 변경 -->
+	<update id="updateCheckReadStatus" parameterType="list">
+	    UPDATE tbl_mail
+	    SET readStatus = 1
+	    WHERE mailNo IN
+	    <foreach collection="list" item="mailNo" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	</update>
+	
+	<!-- readStatus=1 로 변경된 체크된 메일 조회 -->
+	<select id="getUpdatedMailStatus" resultType="MailVO">
+	    SELECT mailNo, readStatus
+	    FROM tbl_mail
+	    WHERE mailNo IN
+	    <foreach collection="list" item="mailNo" open="(" separator="," close=")">
+	        #{mailNo}
+	    </foreach>
+	</select>
+	
+	
 	<!-- 총 행수 구하기 (페이지바 계산) -->
 	<select id="getMailCount" resultType="int" parameterType="HashMap">
 	    SELECT COUNT(*)
@@ -260,7 +284,11 @@
 	    </if>
 	</select>
 		
-	
+	<select id="getMailFile" resultType="MailFileVO">
+	    SELECT fileNo, fileName, orgFileName, fileSize, fk_mailNo
+	    FROM tbl_mailFile
+	    WHERE fk_mailNo = #{mailNo}
+	</select>
 
 </mapper>
 
