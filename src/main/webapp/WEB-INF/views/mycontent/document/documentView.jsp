@@ -19,13 +19,26 @@ String ctxPath = request.getContextPath();
 		
 	 	// 결재 버튼 클릭 시
 		$("button#approve_btn").click(e=>{
+			$("h3#approve_title").text("결재하기");
+			$("th.reason").text("결재의견");
+			$("button#execute_btn").text("승인");
+			$("button#execute_btn").addClass("approve_btn");
+			$("button#execute_btn").removeClass("reject_btn");
 			open_modal();
 		});
 		
 		// 반려 버튼 클릭 시
 		$("button#reject_btn").click(e=>{
-			
+			$("h3#approve_title").text("반려하기");
+			$("th.reason").text("반려의견");
+			$("button#execute_btn").text("반려");
+			$("button#execute_btn").addClass("reject_btn");
+			$("button#execute_btn").removeClass("approve_btn");
+			open_modal();
 		});
+		
+		// 모달 창에서 승인/반려 버튼 클릭시
+		
 		
 	}); // end of $(document).ready(function(){})---------------------
 
@@ -70,174 +83,146 @@ String ctxPath = request.getContextPath();
 </script>
 
 
-<!-- 결재처리 모달 -->
-<div id="approve_modal_bg" class="modal_bg">
-	<!-- 모달창을 띄웠을때의 뒷 배경 -->
-</div>
-<div id="approve_modal_container" class="box_modal_container">
-
-	<div class="m-5">
-		<h3 class="mb-5">결재하기</h3>
-		<table>
-			<tbody>
-				<tr>
-					<th>결재문서명</th>
-					<td>${document.subject}</td>
-				</tr>
-				<tr>
-					<th class="reason"><span>결재의견</span></th>
-					<td><textarea name="approve_reason" class="approve_modal_reason"></textarea></td>
-				</tr>
-			</tbody>
-		</table>
-		<div class="mt-5 text-right">
-			<button onclick="approve()" class="approve_btn">승인</button>
-			<button onclick="close_modal()" class="approve_btn ml-3">취소</button>
-		</div>
+	<!-- 결재처리 모달 -->
+	<div id="approve_modal_bg" class="modal_bg">
+		<!-- 모달창을 띄웠을때의 뒷 배경 -->
 	</div>
-</div>
-
-
-<div style="width: 1000px;">
-	<h1>${document.documentType}</h1>
-
-	<!-- 결재해야할 문서 (결재 순서가 자기 차례인 문서)를 보는 경우 결재/반려 버튼이 보이도록 -->
-	<c:if test="${not empty requestScope.approvalList}">
-		<c:set var="isOrder" value="true" />
-		<c:forEach var="approval" items="${requestScope.approvalList}">
-			<c:if test="${isOrder}">
-				<c:if
-					test="${approval.approvalStatus eq 0 && sessionScope.loginuser.employeeNo ne approval.fk_approver}">
-					<c:set var="isOrder" value="false" />
-				</c:if>
-				<c:if
-					test="${approval.approvalStatus eq 0 && sessionScope.loginuser.employeeNo eq approval.fk_approver}">
-					<button id="approve_btn">결재</button>
-					<button id="reject_btn">반려</button>
-				</c:if>
-			</c:if>
-		</c:forEach>
-	</c:if>
-	<!-- 결재해야할 문서 (결재 순서가 자기 차례인 문서)를 보는 경우 결재/반려 버튼이 보이도록 -->
-
-	<div style="width: 300px; display: inline-block;">
-		<table class="table">
-			<tbody>
-				<tr>
-					<td style="border: solid 1px black;">기안자</td>
-					<td style="border: solid 1px black;">${document.name}</td>
-				</tr>
-				<tr>
-					<td style="border: solid 1px black;">소속</td>
-					<td style="border: solid 1px black;">${document.teamName}</td>
-				</tr>
-				<tr>
-					<td style="border: solid 1px black;">기안일</td>
-					<td style="border: solid 1px black;">${document.draftDate}</td>
-				</tr>
-				<tr>
-					<td style="border: solid 1px black;">문서번호</td>
-					<td style="border: solid 1px black;">${document.documentNo}</td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-
-	<div style="display: inline-block; width: 600px;">
-
-		<c:if test="${not empty requestScope.approvalList}">
-			<c:forEach var="approval" items="${requestScope.approvalList}">
-				<table style="display: inline-block;">
-					<tbody>
-						<tr>
-							<td rowspan="4" style="border: solid 1px black">승인</td>
-							<td style="border: solid 1px black">${approval.positionName}</td>
-						</tr>
-						<tr>
-							<td style="border: solid 1px black">${approval.approvalStatus}</td>
-						</tr>
-						<tr>
-							<td style="border: solid 1px black">${approval.name}</td>
-						</tr>
-						<tr>
-							<td style="border: solid 1px black">
-								${approval.executionDate}</td>
-						</tr>
-					</tbody>
-				</table>
-			</c:forEach>
-		</c:if>
-	</div>
-
-	<div style="border: solid 1px gray; width: 1000px;">
-		<form name="annualDraftForm">
-			<input type="hidden" name="documentType" value="휴가신청서" /> <input
-				type="hidden" name="temp" value="0" />
-			<h1 style="text-align: center">연차신청서</h1>
-			<div style="display: inline-block; width: 300px">
-				<table>
-					<tbody>
-						<tr>
-							<td>기안자</td>
-							<td>${document.name}</td>
-						</tr>
-						<tr>
-							<td>기안부서</td>
-							<td>${document.teamName}</td>
-						</tr>
-						<tr>
-							<td>기안일</td>
-							<td>${document.draftDate}</td>
-						</tr>
-						<tr>
-							<td>문서번호</td>
-							<td>${document.documentNo}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-
-			<div id="approval_line"
-				style="text-align: right; display: inline-block; width: 690px">
-
-				<!-- 결재 라인이 들어올 곳 -->
-
-			</div>
-
-			<table class="mt-5" style="width: 1000px;">
+	<div id="approve_modal_container" class="box_modal_container">
+	
+		<div class="m-5">
+			<h3 id="approve_title" class="mb-5"></h3>
+			<table>
 				<tbody>
 					<tr>
-						<td>제목</td>
+						<th>결재문서명</th>
 						<td>${document.subject}</td>
 					</tr>
 					<tr>
-						<td>휴가 종류</td>
+						<th class="reason"><span></span></th>
+						<td><textarea name="approve_reason" class="approve_modal_reason"></textarea></td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="mt-5 text-right">
+				<button id="execute_btn">승인</button>
+				<button onclick="close_modal()" class="approve_btn ml-3">취소</button>
+			</div>
+		</div>
+	</div>
+	
+
+	<div class="m-3 draftForm">
+		<h1 class="mb-3">${document.documentType}</h1>
+		
+		<!-- 결재해야할 문서 (결재 순서가 자기 차례인 문서)를 보는 경우 결재/반려 버튼이 보이도록 -->
+		<c:if test="${not empty requestScope.approvalList}">
+			<c:set var="isOrder" value="true" />
+			<c:forEach var="approval" items="${requestScope.approvalList}">
+				<c:if test="${isOrder}">
+					<c:if
+						test="${approval.approvalStatus eq 0 && sessionScope.loginuser.employeeNo ne approval.fk_approver}">
+						<c:set var="isOrder" value="false" />
+					</c:if>
+					<c:if
+						test="${approval.approvalStatus eq 0 && sessionScope.loginuser.employeeNo eq approval.fk_approver}">
+						<button id="approve_btn" class="doc_btn">결재</button>
+						<button id="reject_btn" class="doc_btn">반려</button>
+					</c:if>
+				</c:if>
+			</c:forEach>
+		</c:if>
+		<!-- 결재해야할 문서 (결재 순서가 자기 차례인 문서)를 보는 경우 결재/반려 버튼이 보이도록 -->
+		
+		<h3 style="text-align: center">연차신청서</h3>
+	
+		<div class="drafter_info" style="display: inline-block;">
+			
+			<table>
+				<tbody>
+					<tr>
+						<th>기안자</th>
+						<td>${document.name}</td>
+					</tr>
+					<tr>
+						<th>소속</th>
+						<td>${document.teamName}</td>
+					</tr>
+					<tr>
+						<th>기안일</th>
+						<td>${document.draftDate}</td>
+					</tr>
+					<tr>
+						<th>문서번호</th>
+						<td>${document.documentNo}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="m-3 p-3" style="display: inline-block;">
+		
+			<!-- 결재 라인이 들어올 곳 -->
+			<div class="approval_info" id="approval_line">
+				<c:if test="${not empty requestScope.approvalList}">
+					<c:forEach var="approval" items="${requestScope.approvalList}">
+						<table class="ml-2" style="display: inline-block;">
+							<tbody>
+								<tr>
+									<th rowspan="4" style="width: 50px;">승인</th>
+									<td>${approval.positionName}</td>
+								</tr>
+								<tr>
+									<td>${approval.approvalStatus}</td>
+								</tr>
+								<tr>
+									<td>${approval.name}</td>
+								</tr>
+								<tr>
+									<td>${approval.executionDate}</td>
+								</tr>
+							</tbody>
+						</table>
+					</c:forEach>
+				</c:if>
+			</div>
+			<!-- 결재 라인이 들어올 곳 -->
+		</div>
+		<div>	
+			<table class="mt-5" style="width: 1000px;">
+				<tbody>
+					<tr>
+						<th>제목</th>
+						<td>${document.subject}</td>
+					</tr>
+					<tr>
+						<th>휴가 종류</th>
 						<td><c:if test="${document.annualType == 1}">연차</c:if> <c:if
 								test="${document.annualType == 2}">오전반차</c:if> <c:if
 								test="${document.annualType == 3}">오후반차</c:if></td>
 					</tr>
 					<tr>
-						<td>사유</td>
+						<th>사유</th>
 						<td>${document.reason}</td>
 					</tr>
 					<tr>
-						<td>기간 및 일시</td>
+						<th>기간 및 일시</th>
 						<td>${document.startDate} ~ ${document.endDate}</td>
 					</tr>
 					<tr>
-						<td></td>
-						<td></td>
+						<th>신청 연차 일수</th>
+						<td>${document.useAmount}</td>
 					</tr>
 					<tr>
-						<td>연차 일수</td>
-						<td>${document.useAmount}</td>
+						<th class="pl-4" colspan="2" style="text-align: left;">
+							1. 연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 잔여 연차에 한하여 사용함을 원칙으로 한다.
+							<br>단, 최초 입사시에는 근로 기준법에 따라 발생 예정된 연차를 차용하여 월 1회 사용 할 수 있다.
+							<br>2. 경조사 휴가는 행사일을 증명할 수 있는 가족 관계 증명서 또는 등본, 청첩장 등 제출
+							<br>3. 공가(예비군/민방위)는 사전에 통지서를, 사후에 참석증을 반드시 제출
+						</th>
 					</tr>
 				</tbody>
 			</table>
-		</form>
+		</div>
 	</div>
-
-</div>
 
 </div>
 <jsp:include page="../../footer/footer.jsp" />

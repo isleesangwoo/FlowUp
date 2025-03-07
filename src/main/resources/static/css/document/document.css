@@ -4,24 +4,19 @@ tr.document:hover {
 	background-color: gray;
 }
 
-/* 문서함에서 다운로드 버튼 */
-button.doc_download {
+/* 전자결재 모든 버튼 */
+button.doc_btn {
 	background-color: white;
 	border: none;
+	padding: 2px;
+	border: solid 0.5px black;
+	border-radius: 2px;
 }
-button.doc_download:hover {
+button.doc_btn:hover {
 	background-color: gray;
 }
 
-/* 임시저장함 삭제 버튼 */
-button.doc_delete {
-	background-color: white;
-	border: none;
-}
-button.doc_delete:hover {
-	background-color: gray;
-}
-
+/* 화면 가운데 뜨게 되는 네모 모양 모달의 컨테이너 */
 .box_modal_container {
 	text-align: left;
 	border-radius: 3%;
@@ -39,18 +34,18 @@ button.doc_delete:hover {
 	overflow: hidden;
 }
 
+/* 결재 처리하는 모달의 th 태그 */
 div#approve_modal_container th {
 	width: 150px;
 }
 
+/* 결재 처리하는 모달의 tr 태그 */
 div#approve_modal_container tr {
 	line-height: 80px;
 }
 
-th.reason {
-	vertical-align: top;
-}
-
+/*  */
+button.reject_btn,
 button.approve_btn {
 	padding: 2px;
 	font-size: 20px;
@@ -62,4 +57,30 @@ button.approve_btn {
 textarea.approve_modal_reason {
 	width: 410px;
 	height: 150px;
+}
+
+/* 결재요청 form 의 th 태그 */
+div.draftForm th {
+	background-color: #ddd;
+	text-align: center;
+	border: solid 1px black;
+	width: 150px;
+	padding: 5px;
+}
+
+div.draftForm td {
+	border: solid 1px black;
+	padding: 5px;
+}
+
+div.drafter_info td {
+	width: 200px;
+}
+
+div#approval_line {
+	text-align: center;
+}
+
+div#approval_line td {
+	min-width: 120px;
 }

@@ -13,17 +13,17 @@
 
 	$(document).ready(function(){
 		
+		$("h1#doc_title").text("임시저장함");
+		$("span.doc_delete").show();
+		$("a.doc_search_btn").click(e=>{
+			alert("ddd");
+		});
 		
 	}); // end of $(document).ready(function(){})-------------------------------------------------
 	
 </script>
 
 	<div>
-		<div class="mt-3 ml-3 mb-3">
-			<h3 class="mb-3">임시저장함</h3>
-			<button class="doc_download mr-3">목록 다운로드</button>
-			<button class="doc_delete">문서 삭제</button>
-		</div>
 		<table class="table">
 			<thead>
 				<tr>

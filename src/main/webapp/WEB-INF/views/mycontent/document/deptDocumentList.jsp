@@ -13,17 +13,17 @@
 
 	$(document).ready(function(){
 		
+		$("h1#doc_title").text("부서문서함");
+		$("span.doc_delete").hide();
+		$("a.doc_search_btn").click(e=>{
+			alert("ddd");
+		});
 		
 	}); // end of $(document).ready(function(){})-------------------------------------------------
 	
 </script>
 
 	<div>
-		<div class="mt-3 ml-3 mb-3">
-			<h3 class="mb-3">부서문서함</h3>
-			<button class="doc_download">목록 다운로드</button>
-		</div>
-		
 		<table class="table">
 			<thead>
 				<tr>

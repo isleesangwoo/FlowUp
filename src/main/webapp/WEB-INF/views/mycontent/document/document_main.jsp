@@ -96,52 +96,29 @@
     <!-- 오른쪽 바 -->
     <div id="right_bar">
         <div id="right_title_box">
-            <span id="right_title">Inbox</span>
-            <span id="right_info">
-                <span>
-                    All
-                    <span class="right_info_cnt">66</span> <!-- 전체 메일의 개수를 띄워주세요! -->
-                </span>
-                <span>/</span>
-                <span>
-                    Unread
-                    <span class="right_info_cnt">10</span> <!-- 읽은 메일의 개수를 띄워주세요! -->
-                </span>
-            </span>
+            <h1 id="doc_title"></h1>
 
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
             <div id="right_menu_container">
-                <input id="mailListAllCheck" type="checkbox" />
                 <span>
-                    <a href="#">
-                        <span>답장</span>
-                        <i class="fa-solid fa-share"></i>
-                    </a>
-                </span>
+					<a href="#">
+						<span>목록 다운로드</span>
+						<i class="fa-solid fa-download"></i>
+					</a>
+				</span>
                 
-                <span>
+                <span class="doc_delete">
                     <a href="#">
                         <span>삭제</span>
                         <i class="fa-regular fa-trash-can"></i>
                     </a>
                 </span>
+                
                 <span>
-                    <a href="#">
-                        <span>태그</span>
-                        <i class="fa-solid fa-tags"></i>
-                    </a>
-                </span>
-                <span>
-                    <a href="#">
-                        <span>읽음</span>
-                        <i class="fa-regular fa-envelope-open"></i>
-                    </a>
-                </span>
-                <span>
-                    <a href="#">
-                        <span>메일이동</span>
-                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
-                    </a>
+                	<input class="doc_search_text" type="text" placeholder="검색" />
+                	<a class="doc_search_btn">
+	                	<i class="fa-solid fa-magnifying-glass"></i>
+                	</a>
                 </span>
 
                 <span id="reBtn_box">
@@ -154,7 +131,7 @@
                                 <li>제목</li> 
                                 <li>받은날짜</li>
                                 <li>크기</li>
-
+ 
                                 <li class="list_title">빠른검색</li>
                                 <li>중요메일</li>
                                 <li>안읽은 메일</li>
