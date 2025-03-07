@@ -35,8 +35,8 @@ ORDER BY createdAt DESC
 
 
 <!-- 게시판 수정하기 -->
-<update id="updateBoard" parameterType="BoardVO">
-	update tbl_board set boardName = #{boardName}, boardDesc = #{boardDesc}, isPublic = #{isPublic}
+<update id="updateBoard" parameterType="HashMap">
+	update tbl_board set boardName = #{boardName}, boardDesc = #{boardDesc}, isPublic = #{isPublicUpdate}
 	where boardNo = #{boardNo}
 </update>
 
@@ -98,7 +98,9 @@ ORDER BY createdAt DESC
     <result property="status" 			column="status"/>
     <result property="isNotice" 		column="isNotice"/>
     <result property="noticeEndDate" 	column="noticeEndDate"/>
-
+    <result property="likeCount" 		column="likeCount"/>
+	<result property="profileImg"       column="profileImg"/>
+	<result property="positionName"     column="positionName"/>
  <!-- BoardVO의 필드 매핑 -->
     <association property="boardvo" javaType="BoardVO">
         <result property="boardNo" column="boardNo"/>
@@ -106,24 +108,6 @@ ORDER BY createdAt DESC
     </association>
 </resultMap>
 <select id="selectAllPost" resultMap="selectAllPost_Map" parameterType="HashMap">
-	<!-- 	스마트에디터 이미지첨부 하기 전 전체 게시판 조회
-	SELECT 
-    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, V.subject, V.content, 
-    V.readCount, V.regDate, V.commentCount, V.allowComments, V.status, 
-    V.isNotice, V.noticeEndDate,
-    b.boardNo, b.boardName
-	FROM 
-	    ( 
-	        SELECT row_number() OVER (ORDER BY postNo DESC) AS rno, 
-	               postNo, fk_boardNo, fk_employeeNo, name, subject, content,
-	               readCount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate, 
-	               commentCount, allowComments, status, isNotice, noticeEndDate
-	        FROM tbl_post
-	        WHERE status = 1
-	    ) V
-	JOIN tbl_board b ON V.fk_boardNo = b.boardNo
-	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno}) 
-	-->
 	<!-- 스마트에디터 이미지첨후 구현 후 전체게시판 조회 -->
 	SELECT 
 	    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, 
@@ -134,18 +118,21 @@ ORDER BY createdAt DESC
         ELSE REGEXP_REPLACE(V.content,'&lt;[^>]*>', '') 
     END AS content,
 	    V.readCount, V.regDate, V.commentCount, V.allowComments, V.status, 
-	    V.isNotice, V.noticeEndDate,
-	    b.boardNo, b.boardName
+	    V.isNotice, V.noticeEndDate,likeCount,
+	    b.boardNo, b.boardName,
+	    e.profileImg , p.positionName
 	FROM 
 	    ( 
 	        SELECT row_number() OVER (ORDER BY postNo DESC) AS rno, 
 	               postNo, fk_boardNo, fk_employeeNo, name, subject, content,
 	               readCount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate, 
-	               commentCount, allowComments, status, isNotice, noticeEndDate
+	               commentCount, allowComments, status, isNotice, noticeEndDate,likeCount
 	        FROM tbl_post
 	        WHERE status = 1
 	    ) V
 	JOIN tbl_board b ON V.fk_boardNo = b.boardNo
+	JOIN tbl_employee e ON V.fk_employeeNo = e.employeeNo
+    JOIN tbl_position p on e.FK_positionNo = p.positionNo
 	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
 </select>
 
@@ -166,6 +153,19 @@ ORDER BY createdAt DESC
 <!--    게시글 하나 조회하기(조인함) -->
 	<resultMap id="goViewOnePost_Map" type="PostVO">
 	 <!-- PostVO의 필드 매핑 -->
+	 <result property="previouspostNo" column="previouspostNo"/>
+	 <result property="previoussubject" column="previoussubject"/>
+	 <result property="previousreadCount" column="previousreadCount"/>
+	 <result property="previousregDate" column="previousregDate"/>
+	 <result property="previousname" column="previousname"/>
+	 <result property="previouslikeCount" column="previouslikeCount"/>
+	 <result property="nextpostNo" column="nextpostNo"/>
+	 <result property="nextsubject" column="nextsubject"/>
+	 <result property="nextreadCount" column="nextreadCount"/>
+	 <result property="nextregDate" column="nextregDate"/>
+	 <result property="nextname" column="nextname"/>
+	 <result property="nextlikeCount" column="nextlikeCount"/>
+	 
 	    <result property="postNo" column="postNo"/>
 	    <result property="fk_boardNo" column="fk_boardNo"/>
 	    <result property="fk_employeeNo" column="fk_employeeNo"/>
@@ -178,6 +178,8 @@ ORDER BY createdAt DESC
 	    <result property="allowComments" column="allowComments"/>
 	    <result property="isNotice" column="isNotice"/>
 	    <result property="noticeEndDate" column="noticeEndDate"/>
+	    <result property="likeCount" 		column="likeCount"/>
+	    <result property="profileImg"       column="profileImg"/>
 	
 	 	<!-- BoardVO의 필드 매핑 -->
 	    <association property="boardvo" javaType="BoardVO">
@@ -186,11 +188,44 @@ ORDER BY createdAt DESC
 	    </association>
 	</resultMap>
 	<select id="goViewOnePost" resultMap="goViewOnePost_Map" parameterType="HashMap">
-		select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount,P.allowComments,P.isNotice,P.noticeEndDate
-		from tbl_post P
-		join tbl_board B
-		on P.FK_BOARDNO = B.boardNo
-		where postNo = #{postNo}
+		SELECT previouspostNo, previousreadCount, previousregDate,previousname
+		     , case when length(previoussubject) &lt; 30 then previoussubject 
+                    else substr(previoussubject, 1, 28)||'..' end AS previoussubject,previouslikeCount
+		     , postNo, fk_employeeNo, name, subject, content, readCount, regDate
+		     , nextpostNo
+		     , nextreadCount,nextregDate,nextname,nextlikeCount
+		     , case when length(nextsubject) &lt; 30 then nextsubject 
+                    else substr(nextsubject, 1, 28)||'..' end AS nextsubject
+             , V.commentCount,V.allowComments,V.isNotice,V.noticeEndDate,V.likeCount
+             , fk_boardNo,V.boardName,V.createdBy  
+             , V.profileImg    
+		FROM
+		 (
+		     select lag(P.postNo) over(order by P.postNo desc) AS previouspostNo
+		          , lag(P.subject) over(order by P.postNo desc) AS previoussubject
+		          , lag(P.readCount) over(order by P.postNo desc) AS previousreadCount
+                  , lag(P.regDate) over(order by P.postNo desc) AS previousregDate
+                  , lag(P.name) over(order by P.postNo desc) AS previousname
+                  , lag(P.likeCount) over(order by P.postNo desc) AS previouslikeCount
+		          , P.postNo, P.fk_employeeNo, P.name, P.subject, P.content, P.readCount, P.regDate
+		          , lead(P.postNo) over(order by P.postNo desc) AS nextpostNo
+		          , lead(p.subject) over(order by P.postNo desc) AS nextsubject
+		          , lead(p.readCount) over(order by P.postNo desc) AS nextreadCount
+                  , lead(p.regDate) over(order by P.postNo desc) AS nextregDate
+                  , lead(p.name) over(order by P.postNo desc) AS nextname
+                  , lead(p.likeCount) over(order by P.postNo desc) AS nextlikeCount
+		          , P.fk_boardNo,P.commentCount,P.allowComments,P.isNotice,P.noticeEndDate,P.likeCount
+                  ,B.boardName,B.createdBy
+                  ,e.profileImg
+		     from tbl_post P
+             join tbl_board B
+             on P.FK_BOARDNO = B.boardNo
+			 join tbl_employee e 
+			 on P.fk_employeeNo = e.employeeNo
+		     where p.status = 1
+		     <if test="checkAll_or_boardGroup == 1"> and B.boardNo=to_number(#{fk_boardNo})</if>
+			) V
+		WHERE V.postNo = to_number(#{postNo})
 	</select>
 	
 <!--  글 하나의 첨부파일 기존파일명,새로운 파일명 추출 -->
@@ -240,16 +275,16 @@ ORDER BY createdAt DESC
    </select>
    
    <!-- 1개글 삭제하기-->
-   <delete id="postDel" parameterType="String">
-        delete from tbl_post
+   <update id="postDel" parameterType="String">
+        update tbl_post set status = 0
         where postNo = #{postNo}
-   </delete>
+   </update>
    
    <!-- 1개글 삭제하기 -->
-   <delete id="postFileDel" parameterType="String">
-        delete from tbl_postFile
+   <update id="postFileDel" parameterType="String">
+   		update tbl_postFile set status = 0
         where fk_postNo = #{postNo}
-   </delete>
+   </update>
    
 <!--    파일다운로드에 필요한 컬럼 추출하기(파일고유번호,새로운파일명,기존파일명) -->
    <select id="getWithFileDownload" parameterType="HashMap" resultType="PostFileVO">
@@ -325,7 +360,8 @@ ORDER BY createdAt DESC
 	    <result property="allowComments" column="allowComments"/>
 	    <result property="isNotice" column="isNotice"/>
 	    <result property="noticeEndDate" column="noticeEndDate"/>
-	
+	    <result property="likeCount" column="likeCount"/>
+	<result property="currentDate" column="currentDate"/>
 	 	<!-- BoardVO의 필드 매핑 -->
 	    <association property="boardvo" javaType="BoardVO">
 	    	<result property="boardNo" 	column="boardNo"/>
@@ -334,30 +370,29 @@ ORDER BY createdAt DESC
 	    </association>
 	</resultMap>
 	<select id="selectPostBoardGroup" resultMap="selectPostBoardGroup_Map" parameterType="map">
-<!-- 	select B.boardName,B.createdBy,P.postNo,P.fk_boardNo,P.fk_employeeNo,p.name,P.subject,P.content,P.readCount,P.regDate,P.commentCount,P.allowComments,P.isNotice,P.noticeEndDate
-		from tbl_post P
-		join tbl_board B
-		on P.FK_BOARDNO = B.boardNo
-		where boardNo = #{boardNo}
-		order by p.postNo desc  필요없음-->
-		
 		SELECT  
 	    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, V.subject,V.content, 
 	    V.readCount, V.regDate, V.commentCount, V.allowComments,
-	    V.isNotice, V.noticeEndDate,
-	    b.boardNo, b.boardName,B.createdBy
+	    V.isNotice, V.noticeEndDate, V.likeCount,
+	    b.boardNo, b.boardName,B.createdBy,sysdate AS currentDate 
 	FROM 
 	    ( 
-	        SELECT row_number() OVER (ORDER BY postNo DESC) AS rno, 
+	        SELECT row_number() OVER (ORDER BY
+             CASE 
+                WHEN isNotice = 1 AND noticeEndDate >= CURRENT_DATE THEN 1
+                ELSE 2
+            END, 
+            noticeEndDate ASC,
+            postNo DESC ) AS rno, 
 	               postNo, fk_boardNo, fk_employeeNo, name, subject, content,
 	               readCount, to_char(regDate, 'yyyy-mm-dd') AS regDate, 
-	               commentCount, allowComments,  isNotice, noticeEndDate
+	               commentCount, allowComments,  isNotice, noticeEndDate,likeCount
 	        FROM tbl_post
-	        WHERE status = 1 and fk_boardNo = #{boardNo}
+	        WHERE status = 1 and fk_boardNo =#{boardNo}
 	    ) V
 	JOIN tbl_board b ON V.fk_boardNo = b.boardNo
 	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
-	order by V.postNo desc
+	order by rno
 	</select>
 	
 <!-- 	게시판의 정보를 추출하기 위해(게시판명, 운영자 등등) -->
@@ -367,6 +402,220 @@ ORDER BY createdAt DESC
 	where boardNo = to_number(#{boardNo})
 	</select>
    
+<!--    좋아요 테이블에서 로그인된 사원이 해당 게시글에 좋아요를 했는지 조회 -->
+   <select id="getLikeInfo" parameterType="String" resultType="LikeVO">
+   select * from tbl_like
+   where fk_employeeno=#{login_userid} and fk_postNo=#{postNo}
+   </select>
+   
+<!--    좋아요 테이블에서 행 삭제(좋아요 삭제) -->
+   <delete id="removeLike">
+  	delete from tbl_like
+  	where fk_employeeno=#{login_userid} and fk_postNo=#{postNo}
+   </delete>
+   
+<!--    좋아요 테이블에서 행 추가(좋아요 추가) -->
+	<insert id="addLike">
+	insert into tbl_like (likeno,fk_postno,fk_employeeno,regdate) values(likeSeq.nextval,#{postNo},#{login_userid},sysdate)
+	</insert>
+
+<!-- 	게시글테이블의 좋아요 수 누적 -->
+	<update id="updatePostLikeCnt">
+		update tbl_post set likeCount = likeCount + 1
+		where postNo = #{postNo}
+	</update>
+
+<!-- 	게시글테이블의 좋아요 수 차감 -->	
+	<update id="updatePostLikeMinusCnt">
+	update tbl_post set likeCount = likeCount - 1
+	where postNo = #{postNo}
+	</update>
+
+<!-- 로그인 된 사원이 해당 게시글에 좋아요 여부를 검사 -->
+	<select id="checkLike" parameterType="String" resultType="int">
+	select COUNT(*)  from tbl_like 
+	where fk_postNo = #{postNo} and fk_employeeno=#{login_userid}
+	</select>
+	
+<!-- 	차감된 게시글의 좋아요 수 -->
+	<select id="likeCnt" parameterType="String" resultType="int">
+	select likeCount  from tbl_post 
+	where postNo = #{postNo}
+	</select>
+
+<!-- 로그인한 사원이 좋아요한 게시글 조회 -->
+	<select id="getLikedPosts" parameterType="map" resultType="int">
+    select fk_postNo from tbl_like
+    where fk_employeeNo = #{login_userid}
+	</select>
+	
+<!-- 	좋아요 누른 사람(사원) 조회 -->
+	<select id="getLikeList" parameterType="String" resultType="map">
+	SELECT fk_employeeNo, E.name, TO_CHAR(regDate, 'YYYY-MM-DD HH24:MI:SS') AS regDate
+	FROM tbl_like L 
+	JOIN tbl_employee E
+	on L.fk_employeeNo = E.employeeNo
+	where fk_postNo = #{postNo}
+	</select>
+
+<!-- 댓글등록 -->
+	<insert id="insertComment">
+	insert into tbl_comment (COMMENTNO,FK_POSTNO,FK_EMPLOYEENO,NAME,CONTENT,GROUPNO) 
+	values(commentSeq.nextval,#{postNo},#{login_userid},#{login_name},#{commentContent},commentSeq.currval)
+	</insert>
+	
+<!-- 	해당 게시글의 댓글 조회 -->
+	<resultMap type="HashMap" id="getComment_map">
+		<result property="commentNo" 	 column="commentNo"  	javaType="String" />
+   		<result property="name" 		 column="name" 			javaType="String" />
+   		<result property="content" 		 column="content" 		javaType="String" />
+   		<result property="regDate" 		 column="regDate"  		javaType="String" />
+   		<result property="fk_postNo" 	 column="fk_postNo"  	javaType="String" />
+   		<result property="fk_employeeNo" column="fk_employeeNo" javaType="String" />
+   		<result property="groupNo" 		 column="groupNo" 		javaType="String" />
+   		<result property="fk_commentNo"  column="fk_commentNo"  javaType="String" />
+   		<result property="depthNo" 	   	 column="depthNo"  		javaType="String" />
+   		<result property="profileImg"    column="profileImg"    javaType="String"/>
+   </resultMap>
+	<select id="getComment" parameterType="String" resultMap="getComment_map">
+	
+	select 
+    C.commentNo, C.fk_postNo, C.fk_employeeNo, C.name, C.content, C.regDate, C.groupNo, C.fk_commentNo, C.depthNo,E.profileImg
+	from tbl_comment C
+	join tbl_employee E 
+	on C.fk_employeeNo = E.employeeNo
+	WHERE fk_postNo = #{postNo} and C.status=1
+	ORDER BY C.groupNo ASC, C.commentNo ASC
+	</select>
+	
+	
+<!-- 	댓글 수정하기 -->
+	<update id="updateComment">
+	update tbl_comment set content=#{content},regdate = sysdate
+	where commentNo = #{commentNo}
+	</update>
+	
+<!-- 	대댓글 등록 -->
+	<insert id="insertReComment">
+	insert into tbl_comment (COMMENTNO,FK_POSTNO,FK_EMPLOYEENO,NAME,CONTENT,GROUPNO,fk_commentNo,depthNo) 
+	values(commentSeq.nextval,#{postNo},#{login_userid},#{login_name},#{replyContent},#{fk_commentNo},#{fk_commentNo},#{depthNo})
+	</insert>
+	
+<!-- 	댓글 삭제하기 -->
+	<update id="deleteComment" parameterType="String">
+	 update tbl_comment set status=0
+	 where groupNo = #{commentNo}
+	</update>
+		
+<!-- 	대댓글 삭제의 경우 -->
+	<update id="deleteReComment">
+	update tbl_comment set status=0
+	where commentNo = #{commentNo}
+	</update>
+	
+<!-- 	댓글 개수  -->
+	<select id="getCommentCount" parameterType="String" resultType="int">
+	select count(fk_postNo)
+	from tbl_comment
+	where fk_postno = #{postNo} and status = 1
+	</select>
+	
+<!-- 	해당 게시글의 댓글 개수 증감하기 -->
+	<select id="addCommentCount" parameterType="String">
+	update tbl_post set commentCount = commentCount+1
+	where postNo = #{postNo}
+	</select>
+	
+<!-- 	부서별 공개일 경우 게시판 생성하기 -->
+	<insert id="addDepartmentBoard">
+    insert into tbl_board_department (fk_boardNo, fk_departmentNo)
+	    select boardNo, #{deptNo} 
+	    from tbl_board 
+    where boardNo = (select MAX(boardNo) FROM tbl_board)
+	</insert>
+	
+<!-- 	게시글 삭제 시 해당 게시글의 댓글 삭제(상태값 변경)하기 -->
+	<update id="delCommentOfPost">
+	update tbl_comment set status=0
+	where fk_postNo = #{postNo}
+	</update>
+	
+<!-- 	수정하는 게시판에 접근할 수 있는 부서를 알아옴 -->
+	<resultMap type="HashMap" id="getboardAccessList_map">
+		<result property="fk_boardNo" 	 column="fk_boardNo"  	javaType="String" />
+		<result property="departmentName" 		 column="departmentName" 			javaType="String" />
+   		<result property="fk_departmentNo" 		 column="fk_departmentNo" 			javaType="String" />
+   </resultMap>
+	<select id="getboardAccessList" parameterType="String" resultMap="getboardAccessList_map">
+	select d.departmentName,fk_boardNo,fk_departmentNo 
+	from tbl_board_department bd
+	join tbl_department d
+	on d.departmentNo = bd.fk_departmentNo
+	where fk_boardNo = #{boardNo}
+	</select>
+	
+<!-- 	부서별 공개일 경우 권한이 부여된 부서 모두 삭제 -->
+	<delete id="deleteDepartmentBoard">
+	delete from tbl_board_department
+	where fk_boardNo = #{boardNo}
+	</delete>
+	
+<!-- 	부서별 공개일 경우 게시판 삭제후 insert하기 -->
+	<insert id="addDepartmentBoard_2">
+    insert into tbl_board_department (fk_boardNo, fk_departmentNo) values(#{boardNo},#{deptNo})
+	</insert>
+	
+	<update id="delPostOfBoard">
+	<!-- 게시판 내 모든 게시글 상태값 변경 -->
+    update tbl_post 
+    set status = 0 
+    where fk_boardNo = #{boardNo}
+	</update>
+	
+	<update id="delCommentOfBoard">
+	<!-- 해당 게시판 내 모든 게시글의 댓글 상태값 변경 -->
+    update tbl_comment 
+    set status = 0 
+    where fk_postNo IN (
+        select postNo from tbl_post where fk_boardNo = #{boardNo}
+    )
+	</update>
+	
+<!-- 	좋아요 상위 5개 글 -->
+	<resultMap type="HashMap" id="getTopLikedPosts_map">
+		<result property="postNo" 	 	 column="postNo"  			javaType="String" />
+		<result property="subject" 		 column="subject" 			javaType="String" />
+   		<result property="regDate" 		 column="regDate" 			javaType="String" />
+   </resultMap>
+	<select id="getTopLikedPosts" resultMap="getTopLikedPosts_map">
+	select postNo
+   	 	   ,case when length(subject) &lt; 11 then subject 
+			else substr(subject, 1, 11)||'..' end AS subject
+			,to_char(regDate,'yyyy-mm-dd') as regDate from (
+    select p.*, ROWNUM AS rn
+    from (select * FROM tbl_post order by likecount DESC) p
+    where rownum &lt;= 5
+	)
+	</select>
+	
+<!-- 	조회수 상위 5개 글 -->
+	<resultMap type="HashMap" id="getTopReadPosts_map">
+		<result property="postNo" 	 	 column="postNo"  			javaType="String" />
+		<result property="subject" 		 column="subject" 			javaType="String" />
+	  	<result property="regDate" 		 column="regDate" 			javaType="String" />
+   </resultMap>
+	<select id="getTopReadPosts" resultMap="getTopReadPosts_map">
+	select postNo
+			,case when length(subject) &lt; 11 then subject 
+				else substr(subject, 1, 11)||'..' end AS subject
+			,to_char(regDate,'yyyy-mm-dd') as regDate from (
+    select p.*, ROWNUM AS rn
+    from (select * from tbl_post order by readCount DESC) p
+    where rownum &lt;= 5
+	)
+	</select>
+
+
 </mapper>
 
 

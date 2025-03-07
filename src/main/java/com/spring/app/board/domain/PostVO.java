@@ -14,10 +14,34 @@ public class PostVO {
 	private String status;             // 글 삭제 여부 (1: 활성, 0: 삭제)
 	private String isNotice;           // 공지글 여부 (1: 공지글, 0: 일반글)
 	private String noticeEndDate ;     // 공지사항 종료일 (공지글일 경우 사용)
+	private String likeCount ;     	   // 좋아요 개수 누적
 	
+	private String previouspostNo;      // 이전글 번호
+	private String previoussubject;  	// 이전글 제목
+	private String previousname;		// 이전글 작성자
+	private String previousregDate;		// 이전글 작성일
+	private String previousreadCount;	// 이전글 조회수
+	private String previouslikeCount;	// 이전글 좋아요수
+	
+	private String nextpostNo;          // 다음글 번호
+	private String nextsubject;      	// 다음글 제목
+	private String nextname;			// 다음글 작성자
+	private String nextregDate;			// 다음글 작성일
+	private String nextreadCount;		// 다음글 조회수
+	private String nextlikeCount;		// 다음글 좋아요수
+	
+	
+	private String currentDate;	 		// 현재 시각
+	
+	private String profileImg; // 게시판 메인에 글 렌더링 시 글 작성자의 프로필 사진을 알아오기 위함.
+	private String positionName; // 게시판 메인에 글 렌더링 시 글 작성자의 직급을 알기위함.
+	
+	private boolean liked; // 로그인한 사원이 좋아요한 상태인지 저장하는 필드
+	
+	
+
 	private BoardVO boardvo; // 조인을 위해
 	private PostFileVO postfilevo; // 조인을 위해
-	
 	
 	public String getPostNo() {
 		return postNo;
@@ -97,6 +121,12 @@ public class PostVO {
 	public void setNoticeEndDate(String noticeEndDate) {
 		this.noticeEndDate = noticeEndDate;
 	}
+	public String getLikeCount() {
+		return likeCount;
+	}
+	public void setLikeCount(String likeCount) {
+		this.likeCount = likeCount;
+	}
 	
 	
 	public BoardVO getBoardvo() {
@@ -111,6 +141,117 @@ public class PostVO {
 	public void setPostfilevo(PostFileVO postfilevo) {
 		this.postfilevo = postfilevo;
 	}
+	
+	
+	
+	public String getPreviouspostNo() {
+		return previouspostNo;
+	}
+	public void setPreviouspostNo(String previouspostNo) {
+		this.previouspostNo = previouspostNo;
+	}
+	public String getPrevioussubject() {
+		return previoussubject;
+	}
+	public void setPrevioussubject(String previoussubject) {
+		this.previoussubject = previoussubject;
+	}
+	public String getNextpostNo() {
+		return nextpostNo;
+	}
+	public void setNextpostNo(String nextpostNo) {
+		this.nextpostNo = nextpostNo;
+	}
+	public String getNextsubject() {
+		return nextsubject;
+	}
+	public void setNextsubject(String nextsubject) {
+		this.nextsubject = nextsubject;
+	}
+	public String getPreviousname() {
+		return previousname;
+	}
+	public void setPreviousname(String previousname) {
+		this.previousname = previousname;
+	}
+	public String getPreviousregDate() {
+		return previousregDate;
+	}
+	public void setPreviousregDate(String previousregDate) {
+		this.previousregDate = previousregDate;
+	}
+	public String getPreviousreadCount() {
+		return previousreadCount;
+	}
+	public void setPreviousreadCount(String previousreadCount) {
+		this.previousreadCount = previousreadCount;
+	}
+	public String getNextname() {
+		return nextname;
+	}
+	public void setNextname(String nextname) {
+		this.nextname = nextname;
+	}
+	public String getNextregDate() {
+		return nextregDate;
+	}
+	public void setNextregDate(String nextregDate) {
+		this.nextregDate = nextregDate;
+	}
+	public String getNextreadCount() {
+		return nextreadCount;
+	}
+	public void setNextreadCount(String nextreadCount) {
+		this.nextreadCount = nextreadCount;
+	}
+	public String getPreviouslikeCount() {
+		return previouslikeCount;
+	}
+	public void setPreviouslikeCount(String previouslikeCount) {
+		this.previouslikeCount = previouslikeCount;
+	}
+	public String getNextlikeCount() {
+		return nextlikeCount;
+	}
+	public void setNextlikeCount(String nextlikeCount) {
+		this.nextlikeCount = nextlikeCount;
+	}
+	
+	
+	
+	
+    public String getCurrentDate() {
+		return currentDate;
+	}
+	public void setCurrentDate(String currentDate) {
+		this.currentDate = currentDate;
+	}
+	
+	
+	public String getProfileImg() {
+		return profileImg;
+	}
+	public void setProfileImg(String profileImg) {
+		this.profileImg = profileImg;
+	}
+	public String getPositionName() {
+		return positionName;
+	}
+	public void setPositionName(String positionName) {
+		this.positionName = positionName;
+	}
+	public boolean isLiked() { // JSP에서 ${post.liked}로 사용
+        return liked;
+    }
+
+    public void setLiked(boolean liked) { // 로그인한 사원이 좋아요한 상태를 설정
+        this.liked = liked;
+    }
+    
+    
+	
+	
+	
 	
 	
 	
