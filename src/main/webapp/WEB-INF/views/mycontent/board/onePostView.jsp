@@ -155,7 +155,7 @@
 	       		
        		</div>
        		<div>
-       			<span id="postCreatBy">${postvo.name}</span>
+       			<span id="postCreatBy">${postvo.name} ${postvo.positionName}</span>
        			<span id="postRegDate">${postvo.regDate}</span>
        		</div>
        	</div>

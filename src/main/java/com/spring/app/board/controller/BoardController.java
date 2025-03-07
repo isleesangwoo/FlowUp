@@ -402,6 +402,19 @@ public class BoardController {
 		
 		// WAS 의 webapp 의 절대경로를 알아와야 한다.
 		HttpSession session = mtp_request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String login_userid = null;
+		String login_userName = null;
+		
+		if(loginuser != null) {
+			login_userid = loginuser.getEmployeeNo();
+			login_userName = loginuser.getName();
+			
+			postvo.setLogin_userid(login_userid);
+			postvo.setLogin_userName(login_userName);
+		  }
+
 		String root = session.getServletContext().getRealPath("/");
 	    //	System.out.println("~~~ 확인용 webapp 의 절대경로 ==> " + root);
 		

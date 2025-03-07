@@ -523,7 +523,7 @@ $(document).ready(()=>{
 			  	        	<div id="commentInfo" class="CommentMarginLeft">
 			  	        		<div class="topInfoBox">
 			  	        			<div class="infoBox">
-			  			        		<span>${comment.name}</span>`;
+			  			        		<span>${comment.name} ${comment.positionName}</span>`;
 										
 										if(`${comment.depthNo }`== 0 && $(`#allowComments`).text() == 1){
 			  			        			html += `<span onclick='showReplyBox(${comment.commentNo})' class="comment_regDate_Color" id="commentElmt"><i class="fa-solid fa-reply" id="commentIcon"></i>댓글</span>`;
@@ -667,7 +667,7 @@ $(document).ready(()=>{
           data: {
               postNo: $("input[name='postNo']").val(),  			// 글번호
               login_userid: $("#login_userid").text(), 				// 대댓글 작성자 사원번호
-              login_name: $("input[name='name']").val(), 			// 대댓글 작성자명
+              login_name: $("#login_name").text(), 			// 대댓글 작성자명
               replyContent: replyContent, 							// 대댓글 내용
               fk_commentNo: parentCommentNo, 						// 부모 댓글 번호
               depthNo: 1 											// 대댓글이므로 depth 1

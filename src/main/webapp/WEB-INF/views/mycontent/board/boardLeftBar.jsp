@@ -344,7 +344,6 @@ $(document).ready(function() {
           contentType:false,  // 파일 전송시 설정 
           dataType:"json",
           success:function(json){
-        	   console.log("~~~ 확인용 : " + JSON.stringify(json));
               // ~~~ 확인용 : {"result":1}
               if(json.result == 1) {
         	     location.href= ctxPath+"/board/selectPostBoardGroupView?boardNo=" + json.boardNo; 

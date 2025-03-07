@@ -60,8 +60,8 @@ ORDER BY createdAt DESC
 	SELECT to_char(b.boardNo) AS boardNo , b.boardName
 	FROM tbl_board b
 	LEFT JOIN tbl_board_department bd ON b.boardNo = bd.fk_boardNo
-	WHERE b.isPublic = 1 and status = 1 
-   OR bd.fk_departmentNo = (SELECT fk_departmentNo FROM tbl_employee WHERE employeeNo = 100013)
+	WHERE (b.isPublic = 1 and status = 1) 
+   OR bd.fk_departmentNo = (SELECT fk_departmentNo FROM tbl_employee WHERE employeeNo = 100013)  and status = 1
 </select>
 
 <!-- 게시글 등록하기 -->
@@ -71,13 +71,13 @@ ORDER BY createdAt DESC
             INSERT INTO tbl_post 
                 (postNo, fk_boardNo, fk_employeeNo, name, subject, content, allowComments, isNotice, noticeEndDate) 
             VALUES 
-                (postSeq.nextval, #{fk_boardNo}, 100013, '이상우', #{subject}, #{content}, #{allowComments}, #{isNotice}, TO_DATE(#{noticeEndDate}, 'YYYY-MM-DD'))
+                (postSeq.nextval, #{fk_boardNo}, #{login_userid}, #{login_userName}, #{subject}, #{content}, #{allowComments}, #{isNotice}, TO_DATE(#{noticeEndDate}, 'YYYY-MM-DD'))
         </when>
         <otherwise>   <!-- 공지사항 글이 아닌 경우 -->
             INSERT INTO tbl_post 
                 (postNo, fk_boardNo, fk_employeeNo, name, subject, content, allowComments) 
             VALUES 
-                (postSeq.nextval, #{fk_boardNo}, 100013, '이상우', #{subject}, #{content}, #{allowComments})
+                (postSeq.nextval, #{fk_boardNo}, #{login_userid}, #{login_userName}, #{subject}, #{content}, #{allowComments})
         </otherwise>
     </choose>
 </insert>
@@ -180,6 +180,7 @@ ORDER BY createdAt DESC
 	    <result property="noticeEndDate" column="noticeEndDate"/>
 	    <result property="likeCount" 		column="likeCount"/>
 	    <result property="profileImg"       column="profileImg"/>
+	    <result property="positionName"     column="positionName"/>
 	
 	 	<!-- BoardVO의 필드 매핑 -->
 	    <association property="boardvo" javaType="BoardVO">
@@ -199,6 +200,7 @@ ORDER BY createdAt DESC
              , V.commentCount,V.allowComments,V.isNotice,V.noticeEndDate,V.likeCount
              , fk_boardNo,V.boardName,V.createdBy  
              , V.profileImg    
+             , V.positionName
 		FROM
 		 (
 		     select lag(P.postNo) over(order by P.postNo desc) AS previouspostNo
@@ -217,13 +219,15 @@ ORDER BY createdAt DESC
 		          , P.fk_boardNo,P.commentCount,P.allowComments,P.isNotice,P.noticeEndDate,P.likeCount
                   ,B.boardName,B.createdBy
                   ,e.profileImg
+                  , ps.positionName
 		     from tbl_post P
              join tbl_board B
              on P.FK_BOARDNO = B.boardNo
 			 join tbl_employee e 
 			 on P.fk_employeeNo = e.employeeNo
+             JOIN tbl_position ps on e.FK_positionNo = ps.positionNo
 		     where p.status = 1
-		     <if test="checkAll_or_boardGroup == 1"> and B.boardNo=to_number(#{fk_boardNo})</if>
+             <if test="checkAll_or_boardGroup == 1"> and B.boardNo=to_number(#{fk_boardNo})</if>
 			) V
 		WHERE V.postNo = to_number(#{postNo})
 	</select>
@@ -361,7 +365,8 @@ ORDER BY createdAt DESC
 	    <result property="isNotice" column="isNotice"/>
 	    <result property="noticeEndDate" column="noticeEndDate"/>
 	    <result property="likeCount" column="likeCount"/>
-	<result property="currentDate" column="currentDate"/>
+		<result property="currentDate" column="currentDate"/>
+		<result property="positionName" column="positionName"/>
 	 	<!-- BoardVO의 필드 매핑 -->
 	    <association property="boardvo" javaType="BoardVO">
 	    	<result property="boardNo" 	column="boardNo"/>
@@ -374,7 +379,8 @@ ORDER BY createdAt DESC
 	    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, V.subject,V.content, 
 	    V.readCount, V.regDate, V.commentCount, V.allowComments,
 	    V.isNotice, V.noticeEndDate, V.likeCount,
-	    b.boardNo, b.boardName,B.createdBy,sysdate AS currentDate 
+	    b.boardNo, b.boardName,B.createdBy,sysdate AS currentDate ,
+         ps.positionName
 	FROM 
 	    ( 
 	        SELECT row_number() OVER (ORDER BY
@@ -390,7 +396,12 @@ ORDER BY createdAt DESC
 	        FROM tbl_post
 	        WHERE status = 1 and fk_boardNo =#{boardNo}
 	    ) V
-	JOIN tbl_board b ON V.fk_boardNo = b.boardNo
+	JOIN tbl_board b 
+    ON V.fk_boardNo = b.boardNo
+    join tbl_employee E 
+	on v.fk_employeeNo = E.employeeNo
+    JOIN tbl_position ps 
+    on e.FK_positionNo = ps.positionNo
 	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
 	order by rno
 	</select>
@@ -476,14 +487,16 @@ ORDER BY createdAt DESC
    		<result property="fk_commentNo"  column="fk_commentNo"  javaType="String" />
    		<result property="depthNo" 	   	 column="depthNo"  		javaType="String" />
    		<result property="profileImg"    column="profileImg"    javaType="String"/>
+   		<result property="positionName"    column="positionName"    javaType="String"/>
    </resultMap>
 	<select id="getComment" parameterType="String" resultMap="getComment_map">
-	
 	select 
-    C.commentNo, C.fk_postNo, C.fk_employeeNo, C.name, C.content, C.regDate, C.groupNo, C.fk_commentNo, C.depthNo,E.profileImg
+    C.commentNo, C.fk_postNo, C.fk_employeeNo, C.name, C.content, C.regDate, C.groupNo, C.fk_commentNo, C.depthNo,E.profileImg, ps.positionName
 	from tbl_comment C
 	join tbl_employee E 
 	on C.fk_employeeNo = E.employeeNo
+    JOIN tbl_position ps 
+    on e.FK_positionNo = ps.positionNo
 	WHERE fk_postNo = #{postNo} and C.status=1
 	ORDER BY C.groupNo ASC, C.commentNo ASC
 	</select>

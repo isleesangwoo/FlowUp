@@ -483,6 +483,7 @@ public class BoardService_imple implements BoardService {
 			deleteCount = dao.deleteReComment(commentNo); //대댓글 삭제의 경우 where commentNo = #{commentNo}
 		}
 		
+		
 		return deleteCount;
 	}
 

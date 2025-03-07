@@ -114,7 +114,7 @@ function fetchBoardData(sizePerPage, currentPage = 1) {
 					}
 
 								 
-                   html +=`<td>${post.name}</td>
+                   html +=`<td>${post.name} ${post.positionName}</td>
                              <td>${post.regDate}</td>
                              <td>${post.readCount}</td>
                              <td>${post.likeCount}</td>
