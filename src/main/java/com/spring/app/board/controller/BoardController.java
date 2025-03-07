@@ -4,6 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -20,6 +23,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.ModelAndViewDefiningException;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.spring.app.board.domain.BoardVO;
 import com.spring.app.board.domain.PostFileVO;
@@ -73,6 +78,16 @@ public class BoardController {
 		반드시 웹브라우저에서 주소창에 "/board/list" 이라고 입력해야만 얻어올 수 있음. 
 		*/
 		
+		
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+	    String login_userid = null;
+	    //int likeCnt = 0;
+	  
+	    if(loginuser != null) {
+		  login_userid = loginuser.getEmployeeNo();
+	    }
+	    
 		// 총 게시물 건수(totalCount)를 구하기
 		int totalCount = 0;   // 총 게시물 건수
 		int sizePerPage = 5;  // 한 페이지당 보여줄 게시물 건수
@@ -109,15 +124,8 @@ public class BoardController {
 		 paraMap.put("endRno", String.valueOf(endRno)); 
 		 
 		// === 게시판 메인 페이지에 뿌려줄 모든 게시글 조회 === //
-		 List<PostVO> postAllList = service.selectAllPost(paraMap); 
+		 List<PostVO> postAllList = service.selectAllPost(paraMap,login_userid); 
 		 mav.addObject("postAllList",postAllList);
-		 
-//				 List<PostVO> postList = null;
-//				 
-//				 postList = service.postList_withPaging();
-//				 // 글목록 가져오기(페이징 처리 완료.)
-//				
-//				 mav.addObject("postList", postList);
 		 
 		 // === 페이지바 만들기 === //
 		 int blockSize = 10;
@@ -133,17 +141,17 @@ public class BoardController {
 		String url = "list";
 		
 		// === [맨처음][이전] 만들기 === //
-		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?currentShowPageNo=1'>[맨처음]</a></li>";
+		pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo=1'><i style='transform: scaleX(-1)' class=\'fa-solid fa-forward-step\'></i></a></li>";
 		
 		if(pageNo != 1) {
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>"; 
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+(pageNo-1)+"'><i class=\"fa-solid fa-chevron-left\"></i></a></li>"; 
 		}
 		
 		
 		while( !(loop > blockSize || pageNo > totalPage) ) {
 			
 			if(pageNo == Integer.parseInt(currentShowPageNo)) {
-				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</li>"; 
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; padding:2px 4px;'>"+pageNo+"</li>"; 
 			}
 			else {
 				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>"; 
@@ -156,26 +164,35 @@ public class BoardController {
 		
 		// === [다음][마지막] 만들기 === //
 		if(pageNo <= totalPage) {
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"'>[다음]</a></li>"; 	
+			pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"'><i class=\"fa-solid fa-chevron-right\"></i></a></li>"; 	
 		}
 		
-		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+		pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+totalPage+"'><i class=\"fa-solid fa-forward-step\"></i></a></li>";
 					
 		pageBar += "</ul>";	
+		
+		
+		// 좋아요 상위 5개 글
+		List<Map<String, String>> topLikeList = service.getTopLikedPosts();
+		
+		// 조회수 상위 5개 글
+		List<Map<String, String>> topReadList = service.getTopReadPosts();
+		
 		
 		mav.addObject("pageBar", pageBar);
 		 
 		mav.addObject("totalCount", totalCount);   // 페이징 처리시 보여주는 순번을 나타내기 위한 것
 		mav.addObject("currentShowPageNo", currentShowPageNo); // 페이징 처리시 보여주는 순번을 나타내기 위한 것
 		mav.addObject("sizePerPage", sizePerPage); // 페이징 처리시 보여주는 순번을 나타내기 위한 것
-        
+		mav.addObject("topLikeList", topLikeList); // 좋아요 상위 5개 글 리스트
+		mav.addObject("topReadList", topReadList); // 조회수 상위 5개 글 리스트
 		
 		
 		
 		// 페이징 처리된 후 특정 글을 클릭하여 글을 본 후 사용자가 목록보기 버튼을 클릭했을 때 돌아갈페이지를 알려주기위해 넘김 
 		String currentURL = MyUtil.getCurrentURL(request);
 		mav.addObject("goBackURL", currentURL);
-		
+		mav.addObject("login_userid",login_userid);
 		////////////////////////////////////////
         mav.setViewName("mycontent/board/board");
         
@@ -190,26 +207,21 @@ public class BoardController {
 	    return boardList; // JSON 데이터로 반환됨
 	}
 	
-	// 게시판 생성폼 View 단으로 이동하기
-	@GetMapping("addBoardView") 
-	public ModelAndView addBoardView(ModelAndView mav) {
-		
-		mav.setViewName("mycontent/board/addBoard");
-		
-		return mav;
-	}
-	
 	// 게시판 생성하기
 	@PostMapping("addBoard") 
-	public ModelAndView addBoard(ModelAndView mav,BoardVO boardvo) {
+	public ModelAndView addBoard(ModelAndView mav,BoardVO boardvo,@RequestParam(value = "fk_departmentNo", required = false) List<Integer> departmentNoList) {
 		
-		int n1 = 0,n2=0;
+		// value = "fk_departmentNo" : 여러 개의 <input name="fk_departmentNo"> 값이 있으면 자동으로 리스트(List<>)로 처리 ( 여러개인 이유는 여러 부서를 선택할 수도 있기 때문)
+		// required = false : 파라미터가 필수가 아님을 의미 (isPublic = 1(전체 공개)일 때는 부서 목록이 필요 없음 / isPublic = 0(부서별 공개)일 때만 부서 목록을 받아야 함)
+		
+		int n1 = 0;
 		try {
-			n1 = service.addBoard(boardvo); // 게시판 생성하기
-			if (n1 == 1) {
-	            // int n2 = service.addDepartmentBoard(departmentNo, board.getBoardNo()); // 게시판 & 부서 권한매핑
-	        }
+			n1 = service.addBoard(boardvo); // 전체공개일 경우 게시판 생성하기
 			
+			
+		    if (departmentNoList != null) {
+		        service.addDepartmentBoard(boardvo, departmentNoList); // 부서별 공개일 경우 게시판 생성하기
+		    }
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("BoardController_addBoard에서 예외 발생.");
@@ -271,6 +283,12 @@ public class BoardController {
 	public ModelAndView updateBoardView(ModelAndView mav,@RequestParam String boardNo) {
 			
 			BoardVO boardvo = service.getBoardDetailByNo(boardNo); // 수정할 input 요소에 기존값을 뿌려주기 위함.
+			
+			List<Map<String,String>> boardAccessList = service.getboardAccessList(boardNo); // 수정하는 게시판에 접근할 수 있는 부서를 알아옴
+			
+			
+			
+			mav.addObject("boardAccessList", boardAccessList);
 			mav.addObject("boardvo", boardvo);
 			mav.setViewName("mycontent/board/updateBoard");
 		return mav;
@@ -278,10 +296,28 @@ public class BoardController {
 	
 	// 게시판 수정하기
 	@PostMapping("updateBoard")
-	public ModelAndView updateBoard(ModelAndView mav,BoardVO boardvo) {
+	public ModelAndView updateBoard(ModelAndView mav,@RequestParam(value = "fk_departmentNo_update", required = false) List<Integer> departmentNoList,HttpServletRequest request) {
 		int n = 0;
+		String boardName =request.getParameter("boardName");
+		String boardDesc =request.getParameter("boardDesc");
+		String isPublicUpdate =request.getParameter("isPublicUpdate");
+		String boardNo =request.getParameter("boardNo");
+		
+		HashMap<String,String> map = new HashMap<>();
+		map.put("boardNo", boardNo);
+		map.put("boardName", boardName);
+		map.put("boardDesc", boardDesc);
+		map.put("isPublicUpdate", isPublicUpdate);
+		
 		try {
-			n = service.updateBoard(boardvo); // 게시판 수정하기
+			n = service.updateBoard(map); // 게시판 수정하기
+			
+			service.deleteDepartmentBoard(map); // 전체 공개여도 일단 삭제 
+			if (departmentNoList != null) {
+				
+		        service.addDepartmentBoard_2(map, departmentNoList); // 부서별 공개일 경우 해당 게시판의 게시판권한부여테이블 값 삭제후 insert하기
+		    }
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("BoardController_updateBoard에서 예외 발생.");
@@ -303,12 +339,13 @@ public class BoardController {
 		int n = 0;
 		try {
 			n = service.disableBoard(boardNo); // 게시판 삭제(비활성화)하기
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.out.println("BoardController_deleteBoard에서 예외 발생.");
 			mav.setViewName("mycontent/board/board");
 		}
-		if(n != 1) {
+		if(n ==0) {
 			System.out.println("게시판 삭제 실패!");
 		}
 		Map<String, Integer> map = new HashMap<>();
@@ -422,12 +459,12 @@ public class BoardController {
     		  n = service.addPost(postvo,postfilevo,mapList); 
     		  
     		  if(n>0) {
-    			  System.out.println("게시글 등록이 완료되었습니다!");
+    			  //System.out.println("게시글 등록이 완료되었습니다!");
     		  }
     		  else {
-    			  System.out.println("게시글 등록이 실패되었습니다");
+    			  //System.out.println("게시글 등록이 실패되었습니다");
     		  }
-    		  
+    		jsonObj.put("boardNo", postvo.getFk_boardNo());  // 글 작성시 삭성한 게시판으로 이동하기 위함.
     		jsonObj.put("result", 1);
     	}catch (Exception e) {
 			e.printStackTrace();
@@ -438,28 +475,40 @@ public class BoardController {
   }
   
   // 게시글 하나 조회하기 (조회수 증가 포함)
-  @GetMapping("goViewOnePost")
-  public ModelAndView goViewOnePost(ModelAndView mav, HttpServletRequest request,@RequestParam String postNo,@RequestParam String goBackURL) {
+  @RequestMapping("goViewOnePost")
+  public ModelAndView goViewOnePost(ModelAndView mav, HttpServletRequest request) {
+	  
+	  String postNo = request.getParameter("postNo");
+	  String goBackURL = request.getParameter("goBackURL");
+	  String checkAll_or_boardGroup = request.getParameter("checkAll_or_boardGroup");
+	  // 글 상세페이지의 이전/다음글 을 전체게시판 기준으로 조회할지, 해당게시판 조건으로 조회할지
+	  // 1이면 해당게시판을 조건으로, 값이 없으면 전체게시판(조건없음)
+	  
+	  String fk_boardNo = request.getParameter("fk_boardNo");
 	  
 	  HttpSession session = request.getSession();
 	  EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 	
 	  String login_userid = null;
+	  String login_name = null;
+	  String login_profileImg = null;
+	  int likeCnt = 0;
+	  
 	  if(loginuser != null) {
 		login_userid = loginuser.getEmployeeNo();
-		// login_userid 는 로그인 되어진 사용자의 userid 이다. 
-	  }
+		login_name = loginuser.getName();
+		login_profileImg = loginuser.getProfileImg();
+		// login_userid 는 로그인 되어진 사용자의 EmployeeNo 이다. 
 		
+		likeCnt = service.checkLike(login_userid,postNo); // 로그인 된 사원이 해당 게시글 하나 클릭 시 좋아요 여부를 검사.(1:좋아요 완료, 0:좋아요 x)
+	  }
 	
 	  Map<String, String> paraMap = new HashMap<>();
 	  paraMap.put("postNo", postNo);
 	  paraMap.put("login_userid", login_userid);
+	  paraMap.put("checkAll_or_boardGroup", checkAll_or_boardGroup);
+	  paraMap.put("fk_boardNo", fk_boardNo);	// 이전/다음 글 계속 클릭하여 이동 시 현재 게시판그룹을 유지시켜주기 위해
 	  
-	  
-	  
-	  //  웹브라우저에서 페이지 새로고침을 할 경우 update문이 실행되니 select만 하고 글조회수 증가인 update문은 실행x
-     
-
 	  // 위의 글목록보기 에서 session.setAttribute("readCountPermission", "yes"); 설정함.
 	  PostVO postvo = null;
 	  List<PostFileVO> postfilevo =null;
@@ -471,83 +520,43 @@ public class BoardController {
 		  // 글 조회수 증가와 함께 글 1개를 조회를 해오는 것( 조회수 증가는 service 단에서 처리를 해줌.)
 		  
 		  session.removeAttribute("readCountPermission");
-		  // 중요함!! session 에 저장된 readCountPermission 을 삭제한다.
 	  }
 
 	  else {
+		  postvo = service.getView_no_increase_readCount(paraMap); // 글 조회수 증가는 없고 단순히 글 1개만 조회를 해오는 것
 		  // 글목록에서 특정 글제목을 클릭하여 본 상태에서
 		  // 웹브라우저에서 새로고침(F5)을 클릭한 경우 
-		
-		  // 글 조회수 증가는 없고 단순히 글 1개만 조회를 해오는 것
-		  postvo = service.getView_no_increase_readCount(paraMap);
 		  
 	  		  if (postvo == null) {
-				  mav.setViewName("redirect:/board/list");
+				  mav.setViewName("redirect:/board/");
 				  return mav;
 			  }
 	  		  
 		  }
-	  
+	  	
 	  	  postfilevo = service.getFileOfOnePost(paraMap); // 글 하나의 첨부파일 테이블의 고유번호,기존파일명,새로운 파일명 추출
 	  	  
+	  	  
+	  	  mav.addObject("login_profileImg", login_profileImg);
+	  	  mav.addObject("login_name", login_name);
+	  	  mav.addObject("login_userid", login_userid);
 	  	  mav.addObject("postfilevo", postfilevo);
 		  mav.addObject("postvo", postvo);
 		  mav.addObject("goBackURL", goBackURL); // 글 하나 클릭 시 클릭된 페이지의 해당 URL을 넘겨줌.
+		  mav.addObject("likeCnt", likeCnt); // 특정 게시글에 대한 로그인된 사용자의 좋아요 여부
+	  	  mav.addObject("checkAll_or_boardGroup", checkAll_or_boardGroup);
 		  mav.setViewName("mycontent/board/onePostView");
 	  
 	  return mav;
   }
-  
-  // 이거  CommonController 로 옮겼음. attach_photo.js 도 매핑url  수정함
-//  //=== 스마트에디터. 글쓰기 또는 글수정시 드래그앤드롭을 이용한 다중 사진 파일 업로드 하기 === // 
-//  @PostMapping("image/multiplePhotoUpload")
-//  public void multiplePhotoUpload(HttpServletRequest request, HttpServletResponse response) {
-//	  /*
-//	   1. 사용자가 보낸 파일을 WAS(톰캣)의 특정 폴더에 저장해주어야 함.
-//	   >>>> 파일이 업로드 되어질 특정 경로(폴더)지정해주기
-//	        WAS 의 webapp/board_resources/photo_upload 라는 폴더로 지정.
-//	  */
-//	  // WAS 의 webapp 의 절대경로를 알아오기.
-//	  HttpSession session = request.getSession();
-//	  String root = session.getServletContext().getRealPath("/");
-//	  String path = root + "board_resources"+File.separator+"photo_upload";
-//	  // path 가 첨부파일들을 저장할 WAS(톰캣)의 폴더가 됨.
-//	
-//	  File dir = new File(path);
-//	  if(!dir.exists()) {
-//		  dir.mkdirs();
-//	  }
-//	
-//	  try {
-//		  String filename = request.getHeader("file-name"); // 파일명(문자열)을 받는다 - 일반 원본파일명
-//		  // 네이버 스마트에디터를 사용한 파일업로드시 싱글파일업로드와는 다르게 멀티파일업로드는 파일명이 header 속에 담겨져 넘어오게 되어있다. 
-//		  
-//		  InputStream is = request.getInputStream(); // is는 네이버 스마트 에디터를 사용하여 사진첨부하기 된 이미지 파일임.
-//		
-//		  // === 사진 이미지 파일 업로드 하기 === //
-//		  String newFilename = fileManager.doFileUpload(is, filename, path);
-//		
-//		
-//		  // === 웹브라우저 상에 업로드 되어진 사진 이미지 파일 이미지를 쓰기 === //
-//		  String ctxPath = request.getContextPath(); //  
-//		
-//		  String strURL = "";
-//		  strURL += "&bNewLine=true&sFileName="+newFilename; 
-//		  strURL += "&sFileURL="+ctxPath+"/board_resources/photo_upload/"+newFilename;
-//					
-//		  PrintWriter out = response.getWriter();
-//		  out.print(strURL);
-//		
-//	  } catch(Exception e) {
-//		e.printStackTrace();
-//	  }
-//	
-//  }
 	
 
-  // 글 삭제하기( 경로의 실제 파일 삭제와 db 행 삭제)
+  // 글 삭제하기( 경로의 실제 파일 삭제와 db 행 삭제, 댓글/대댓글 상태변경) 
   @PostMapping("postDel")
   public  ModelAndView postDel(ModelAndView mav, @RequestParam String postNo, HttpServletRequest request){
+	  
+	  String boardNo = request.getParameter("boardNo");
+	  
 	  /*
 	    일단 삭제할 행을 테이블에서 지운다. 
 		그리고 
@@ -570,9 +579,6 @@ public class BoardController {
 			
 	         HttpSession session = request.getSession(); 
 	         String root = session.getServletContext().getRealPath("/");  
-	         
-	         //System.out.println("~~~ 확인용 webapp 의 절대경로 => " + root);
-	         //~~~ 확인용 webapp 의 절대경로 => C:\GitHub\FlowUp\src\main\webapp\
 	         String filepath = root+"board_resources"+File.separator+"files";
 	         
 	         paraMap.put("filepath", filepath); // 삭제해야할 첨부파일이 저장된 경로
@@ -600,17 +606,18 @@ public class BoardController {
 	  paraMap.put("postNo", postNo); // 삭제할 글번호
 	  int n = service.postDel(paraMap,postListmap); // 파일첨부, 사진이미지가 들었는 경우의 글 삭제하기
 	  if(n==1) {
-		  mav.addObject("message", "글 삭제 성공!!");
-	      mav.addObject("loc", request.getContextPath()+"/board/board");
-	      mav.setViewName("msg");
+		  if(boardNo!=null) { // 게시판 별 게시글에서 삭제한 경우
+			  mav.setViewName("redirect:/board/selectPostBoardGroupView?boardNo="+ boardNo); // 삭제한 글의 게시판으로 이동
+		  }
+		  else { 
+			  mav.setViewName("redirect:/board/");
+		  }
+	      
 	  }
-	  
-	    //String filename = postListmap.get("filename");
-	    // 202502071215204988403314512900.pdf  이것이 바로 WAS(톰캣) 디스크에 저장된 '첨부 파일명' 이다. 
 	    return mav;
     }
   
-  	//=== #161. 첨부파일 다운로드 받기 === //
+  	//=== 첨부파일 다운로드 받기 === //
 	@GetMapping("fileDownload")
 	public void fileDownload(HttpServletRequest request, HttpServletResponse response) {
 		
@@ -717,11 +724,8 @@ public class BoardController {
   @PostMapping("updatePost")
   @ResponseBody
   public String updatePost(PostVO postvo,PostFileVO postfilevo,MultipartHttpServletRequest mtp_request) {
-	  System.out.println("일단 도착");
 	  String postNo = mtp_request.getParameter("postNo");
 	  String deleteFiles = mtp_request.getParameter("deleteFiles");
-	  //System.out.println("deleteFiles : " + deleteFiles );
-	  //System.out.println("postNo  : " + postNo); // postNo  : 100136
 	  
 	  
 	Map<String,String> paraMap = new HashMap<>();
@@ -754,10 +758,7 @@ public class BoardController {
 	      String fileNo = fileObj.getString("fileNo");
 	      String fileName = fileObj.getString("fileName");
 	      String newFileName = fileObj.getString("newFileName");
-
-//	      System.out.println("파일 번호: " + fileNo);
-//	      System.out.println("기존 파일명: " + fileName);
-//	      System.out.println("새 파일명: " + newFileName);
+	      
 	      
 	      
 	      paraMap.put("fileNo", fileNo);
@@ -770,7 +771,6 @@ public class BoardController {
 	
 	// 수정 전 이미지 목록 가져오기 (DB에서 조회)
     List<String> oldFileList = Arrays.asList(service.getBeforeUpdateFileNames(postNo).get(0).split("/"));
-	System.out.println("oldFileList : " + oldFileList);
 	
 	/////////////////////////////////////////////////////////////////////
 	  
@@ -832,7 +832,6 @@ public class BoardController {
         	
         	
         } // end of if(fileList != null && fileList.size() > 0) {}-----------------
-        System.out.println("여기까지는 오나..");
         JSONObject jsonObj = new JSONObject();
         
     	try {
@@ -842,7 +841,6 @@ public class BoardController {
     		
 		    		  // 2️ 수정 후 새로운 이미지 목록 추출 (db에서 조회)
 		    		  List<String> newFileList = Arrays.asList(service.getAfterUpdateFileNames(postNo).get(0).split("/"));
-		    		  System.out.println("newFileList : " + newFileList);
 		    		  
 		    		  
 		    		  // 3 기존 목록과 새 목록 비교하여 삭제할 파일 찾기
@@ -852,15 +850,12 @@ public class BoardController {
 		    		            filesToDelete.add(oldFile);
 		    		        }
 		    		    }
-		    		    System.out.println("filesToDelete : " + filesToDelete);
     		            //filesToDelete : [2025022517021816086751960400.jpg, 2025022517021816086751960300.jpg]
 		    		   
 		    		    ////////////////////////
 		    		// 4️ 서버에서 필요 없는 파일 삭제
 		    		    for (String fileName : filesToDelete) {
-		    		    	System.out.println("fileName : " + fileName);
 		    		    	String filepath = root+"board_resources"+File.separator+"photo_upload";
-		    		    	System.out.println("filepath : " + filepath);
 		    		    	paraMap.put("photo_upload_path", filepath); // 삭제해야할 첨부파일이 저장된 경로
 		    		    	
 		    		    	//paraMap.put("postNo", postNo); // 삭제할 글번호
@@ -883,17 +878,17 @@ public class BoardController {
     	return jsonObj.toString();
   }	  	
   
-  // 게시판 '별' 게시글 조회
+  // 게시판 '별' 게시글 조회 (조회페이지에 접속하기 위한 비중이 큼. getChoicePostRow URL의 ajax의 기본값으로 20행을 조회함.)
   @GetMapping("selectPostBoardGroupView")
   public ModelAndView selectPostBoardGroupView(ModelAndView mav,@RequestParam String boardNo,HttpServletRequest request,
           											@RequestParam(defaultValue = "1") String currentShowPageNo) {
-	  // 게시판의 정보를 추출하기 위해(게시판명, 운영자 등등)
-	  BoardVO boardInfoMap = service.getBoardInfo(boardNo);
+	    // 게시판의 정보를 추출하기 위해(게시판명, 운영자 등등)
+	    BoardVO boardInfoMap = service.getBoardInfo(boardNo);
 	  
-	  // 해당 게시판 클릭 시 글 상세페이지로 이동은 전체 게시판 참조.
+	    // 해당 게시판 클릭 시 글 상세페이지로 이동은 전체 게시판 참조.
 	  
 	  
-	  HttpSession session = request.getSession();
+	    HttpSession session = request.getSession();
 		session.setAttribute("readCountPermission", "yes");
 		/*
 		session 에  "readCountPermission" 키값으로 저장된 value값은 "yes" 이다.
@@ -910,10 +905,6 @@ public class BoardController {
 		
 		// 해당 게시판의 총 게시물 건수(totalCount) 구하기
 		totalCount = service.getBoardGroupPostTotalCount(boardNo);
-		
-		totalPage = (int) Math.ceil((double)totalCount/sizePerPage);
-		// 총 게시물 건수(totalCount)가 124 개 이라면 총 페이지수(totalPage)는 13 페이지가 되어야 함.
-		// (double)124/10 ==> 12.4 ==> Math.ceil(12.4) ==> 13.0 ==> 13 
 		
 		try {
 			  n_currentShowPageNo = Integer.parseInt(currentShowPageNo);
@@ -941,75 +932,218 @@ public class BoardController {
 		 // 게시판 별 게시글 조회 :: 게시판/게시글 테이블 조인 -> 조건 boardNo 인 것만 조회
 		 List<PostVO> groupPostMapList =  service.selectPostBoardGroup(paraMap);
 		 mav.addObject("groupPostMapList",groupPostMapList);
-		 System.out.println("조회된 게시글 수: " + (groupPostMapList != null ? groupPostMapList.size() : "null"));
-		 // === 페이지바 만들기 === //
-		 int blockSize = 10;
-		 // blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수
-		 //1  2  3  4  5  6  7  8  9 10 [다음][마지막]  -- 1개블럭
 		 
-		 int loop = 1; //loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수까지만 증가하는 용도
-	     
-		 
-		 int pageNo = ((n_currentShowPageNo - 1)/blockSize) * blockSize + 1;
-		 
-		String pageBar = "<ul style='list-style:none;'>";
-		String url = "selectPostBoardGroupView";
-		
-		// === [맨처음][이전] 만들기 === //
-		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?currentShowPageNo=1&boardNo="+boardNo+"'>[맨처음]</a></li>";
-		
-		if(pageNo != 1) {
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+(pageNo-1)+"&boardNo="+boardNo+"'>[이전]</a></li>"; 
-		}
 		
 		
-		while( !(loop > blockSize || pageNo > totalPage) ) {
-			
-			if(pageNo == Integer.parseInt(currentShowPageNo)) {
-				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</li>"; 
-			}
-			else {
-				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"&boardNo="+boardNo+"'>"+pageNo+"</a></li>"; 
-			}
-			
-			loop++;
-			pageNo++;
-		}// end of while-------------------------------
-		
-		
-		// === [다음][마지막] 만들기 === //
-		if(pageNo <= totalPage) {
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"'>[다음]</a></li>"; 	
-		}
-		
-		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+totalPage+"&boardNo="+boardNo+"'>[마지막]</a></li>";
-					
-		pageBar += "</ul>";	
-		
-		mav.addObject("pageBar", pageBar);
-		 
 		mav.addObject("totalCount", totalCount);   // 페이징 처리시 보여주는 순번을 나타내기 위한 것
 		mav.addObject("currentShowPageNo", currentShowPageNo); // 페이징 처리시 보여주는 순번을 나타내기 위한 것
 		mav.addObject("sizePerPage", sizePerPage); // 페이징 처리시 보여주는 순번을 나타내기 위한 것
-      
 		
-		
-		
-		// 페이징 처리된 후 특정 글을 클릭하여 글을 본 후 사용자가 목록보기 버튼을 클릭했을 때 돌아갈페이지를 알려주기위해 넘김 
-		String currentURL = MyUtil.getCurrentURL(request);
-		mav.addObject("goBackURL", currentURL);
-		
-		////////////////////////////////////////
-      //mav.setViewName("mycontent/board/board");
-      
-
-	  mav.addObject("boardInfoMap",boardInfoMap);
-	  mav.setViewName("mycontent/board/selectPostBoardGroupView");
+		mav.addObject("boardNo", boardNo);
+	    mav.addObject("boardInfoMap",boardInfoMap);
+	    mav.setViewName("mycontent/board/selectPostBoardGroupView");
 	  
 	  
 	  return mav;
   }
+
+  
+  // 이전글제목보기, 다음글제목보기를 할때 글조회수 증가하기 위한 것
+  @PostMapping("goViewOnePost_2")
+  public String view_2(ModelAndView mav, 
+				           @RequestParam(defaultValue = "") String postNo,
+				           @RequestParam(defaultValue = "") String goBackURL,
+				           HttpServletRequest request,
+				           RedirectAttributes redirectArr) {
+	  	String checkAll_or_boardGroup = request.getParameter("checkAll_or_boardGroup");
+	  	String fk_boardNo = request.getParameter("fk_boardNo");
+		try {
+			goBackURL = URLEncoder.encode(goBackURL, "UTF-8");
+			
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		
+		
+		HttpSession session = request.getSession();
+		session.setAttribute("readCountPermission", "yes");
 	
+		// redirect(GET방식) 시 데이터를 넘길때 GET 방식이 아닌 POST 방식처럼 데이터를 넘기려면 RedirectAttributes 를 사용
+		Map<String, String> redirect_map = new HashMap<>();
+		redirect_map.put("postNo", postNo);
+		redirect_map.put("goBackURL", goBackURL);
+		redirect_map.put("checkAll_or_boardGroup", checkAll_or_boardGroup);
+		redirect_map.put("fk_boardNo", fk_boardNo);
+		
+		//redirectArr.addAttribute("redirect_map", redirect_map); // url에 파라미터가 들어가서 수명이 유지됨.
+		//redirectArr.addFlashAttribute("redirect_map", redirect_map); // url에 보이지 않아 값이 휘발성임
+		//mav.addObject(redirect_map);
+		
+		//mav.setViewName("redirect:/board/goViewOnePost"); // 실제로 redirect:/board/view 은 POST 방식이 아닌 GET 방식이다.
+		return "redirect:/board/goViewOnePost?postNo=" + postNo + "&goBackURL=" + goBackURL + "&checkAll_or_boardGroup="+checkAll_or_boardGroup+"&fk_boardNo="+fk_boardNo;
+  }
+	
+  // 좋아요 추가 또는 취소 ( post 테이블의 likeCount 컬럼 누적 또는 차감 포함)
+  @PostMapping("like")
+  @ResponseBody
+  public Map<String,Object> like(@RequestParam String postNo, @RequestParam String login_userid){
+	  
+	  Map<String,Object> map = service.toggleLike(postNo,login_userid); // 좋아요를 추가(추가시 게시글의 좋아요 게수 누적) 또는 삭제함
+	  
+	  return map;
+  }
+  
+  // 게시글 상세의 좋아요 누른 사람 클릭 시 모달로 조회
+  @GetMapping("likeList")
+  @ResponseBody
+  public List<Map<String,Object>> likeList(@RequestParam String postNo){
+	  
+	  List<Map<String,Object>> map = service.getLikeList(postNo); // 좋아요 누른 사람(사원) 조회
+	  return map;
+  }
+  
+  // 게시판 '별' 게시글 보기에서 선택한 행 수만큼 게시글 보여주기
+  @GetMapping("getChoicePostRow")
+  @ResponseBody
+  public Map<String, Object> getChoicePostRow(@RequestParam String boardNo,@RequestParam int sizePerPage,
+			@RequestParam(defaultValue = "1") String currentShowPageNo,HttpServletRequest request){
+	  
+	  int totalCount = service.getBoardGroupPostTotalCount(boardNo);// 총게시물
+	  
+	  int n_currentShowPageNo = 0; 
+	  
+		try {
+			  n_currentShowPageNo = Integer.parseInt(currentShowPageNo);
+		
+			  if(n_currentShowPageNo < 1 || n_currentShowPageNo > totalCount) {
+				 n_currentShowPageNo = 1;
+			  }
+			  
+		} catch(NumberFormatException e) {
+			// get 방식이므로 currentShowPageNo 에 입력한 값이 숫자가 아닌 문자를 입력하거나 int 범위를 초과한 경우
+			n_currentShowPageNo = 1;
+		}
+	  
+	  	// 게시글 개수에 맞춰 행번호 계산
+		int startRno = ((n_currentShowPageNo - 1) * sizePerPage) + 1; // 시작 행번호
+	    //int endRno = sizePerPage; // 사용자가 선택한 개수만큼 조회
+	    int endRno = startRno + sizePerPage - 1;
+	    
+	    Map<String, String> paraMap = new HashMap<>();
+	    paraMap.put("boardNo", boardNo);
+	    paraMap.put("startRno", String.valueOf(startRno));
+	    paraMap.put("endRno", String.valueOf(endRno));
+	    paraMap.put("currentShowPageNo", currentShowPageNo);
+	  
+	    List<PostVO> postList = service.selectPostBoardGroup(paraMap); //선택한 개수만큼 게시글 가져오기
+	    
+	    Map<String, Object> map = new HashMap<>();
+	    map.put("totalCount", totalCount);
+	    map.put("postList", postList);
+	  
+	    //String currentURL = MyUtil.getCurrentURL(request);
+	    //map.put("currentURL", currentURL);
+	    
+	  return map;
+  }
+  
+  // 댓글 등록하기
+  @PostMapping("insertComment")
+  @ResponseBody
+  public Map<String, Object> insertComment (@RequestParam String postNo, @RequestParam  String login_userid,
+		  								@RequestParam  String login_name, @RequestParam String commentContent) {
+	  
+	  Map<String, Object> map = new HashMap<>();
+	  int insertCount = service.insertComment(postNo, login_userid, login_name,commentContent); // 댓글 등록
+	
+	  map.put("success", insertCount > 0); // true 또는 false
+	  return map;
+  }
+  
+  // 댓글 목록조회하기
+  @GetMapping("getComment")
+  @ResponseBody
+  public Map<String, Object> getComment (@RequestParam String postNo,HttpServletRequest request) {
+	  
+	   List<Map<String, Object>> commentList = service.getComment(postNo); // 댓글 목록
+	   int commentCount = service.getCommentCount(postNo); // 댓글 개수 
+	
+	   Map<String, Object> map = new HashMap<>();
+	   map.put("commentList", commentList);
+	   map.put("commentCount", commentCount);
+	   
+	   
+	   String login_profileImg = ""; // 대댓글을 작성하는 사용자의 프로필 이미지값을 알아오기 위함.
+	   
+	   HttpSession session = request.getSession();
+	   EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+	   if(loginuser != null) {
+			  login_profileImg = loginuser.getProfileImg();
+	   }
+	   
+	   map.put("login_profileImg", login_profileImg);
+	   
+	   return map;
+  }
+  
+  // 댓글 수정하기
+  @PostMapping("updateComment")
+  @ResponseBody
+  public Map<String, Object> updateComment(@RequestParam String commentNo,@RequestParam String content){
+	  
+	  Map<String, Object> map = new HashMap<>(); 
+			  
+	  int updateCount = service.updateComment(commentNo,content); // 댓글 수정하기
+	  
+	  map.put("success", updateCount > 0); // true 또는 false
+	  
+	  return map;
+  }
+  
+  //댓글 삭제하기(status 값 변경)
+  @PostMapping("deleteComment")
+  @ResponseBody
+  public Map<String, Object> deleteComment(@RequestParam String commentNo,@RequestParam String depthNo){
+	  
+	   Map<String, Object> map = new HashMap<>(); 
+			  
+	   int deleteCount = service.deleteComment(commentNo,depthNo); // 댓글 삭제하기 
+	   
+	   map.put("success", deleteCount > 0); // true 또는 false
+	   
+	   return map;
+  }
+  
+ //대댓글 등록
+ @PostMapping("insertReComment")
+ @ResponseBody
+ public Map<String, Object> insertReComment (@RequestParam String postNo, @RequestParam  String login_userid, @RequestParam  String login_name,
+		 									@RequestParam String replyContent, @RequestParam String fk_commentNo, @RequestParam String depthNo) {
+	 
+	  Map<String, Object> map = new HashMap<>();
+	  int insertCount = service.insertReComment(postNo, login_userid, login_name,replyContent,fk_commentNo,depthNo); // 대댓글 등록
+	
+	  map.put("success", insertCount > 0); // true 또는 false
+	  return map;
+ }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 	
 	
 	

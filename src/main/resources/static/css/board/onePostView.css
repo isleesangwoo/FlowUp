@@ -29,6 +29,38 @@
 	display: block;
 }
 /* === 모달 끝 === */
+
+
+
+/* === 좋아요 누른 사람 조회 모달 시작 === */
+.modal {
+    display: none; /* 기본적으로 숨김 */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.modal-content {
+    background-color: white;
+    padding: var(--size24);
+    margin: 10% auto;
+    width: 20%;
+    border-radius: 10px;
+}
+#likeUserList{
+	margin: var(--size18) 0 ;
+}
+.close {
+	margin-left: auto;
+    font-size:var(--size18);
+    cursor: pointer;
+}
+
+/* === 좋아요 누른 사람 조회 모달 끝 === */
+
 #right_bar {
 	width: 100%;
 	height: auto;
@@ -43,6 +75,18 @@
 
 #right_title {
 	font-size: var(--size22);
+}
+#right_title_a{
+	
+}
+#right_title_a {
+    text-decoration: none; /* 밑줄 제거 */
+    color: inherit; /* 부모 요소의 색상 유지 */
+}
+
+#right_title_a:hover{
+    text-decoration: none;
+    color: inherit;
 }
 
 #right_menu_container {
@@ -81,6 +125,9 @@
 	box-sizing: border-box;
 	cursor: pointer;
 }
+#preOrNextBtn{
+	margin-right: var(--size12);
+}
 
 #sortCnt_btn>ul {
 	display: none;
@@ -97,14 +144,6 @@
 	padding: var(--size10) var(--size20);
 	transition: all 0.5s;
 }
-
-/* #delete_btn > ul > li:hover { */
-/*     background-color: #eee; */
-/* } */
-
-/* #tool_box_right > span > span:hover{ */
-/*     background-color: #eee; */
-/* } */
 #boardMaster {
 	display: inline-block;
 	font-size: var(--size12)
@@ -124,7 +163,13 @@
 	display: inline-block;
 	font-size: var(--size24)
 }
-
+#heartIcon{
+	font-size: 35px;
+	color:red;
+}
+#heartIcon:hover{
+	color:pink;
+}
 #postCreatBy, #postRegDate {
 	font-size: var(--size14)
 }
@@ -132,7 +177,9 @@
 #postRegDate {
 	color: #999999;
 }
-
+#likeCount{
+	text-align: center;
+}
 #onePostContent {
 	width: 100%;
 	min-width: 600px;
@@ -163,7 +210,10 @@
 #ViewOption {
 	border-bottom: 1px solid #c8c8c8;
 }
-
+#likeListElmt:hover{
+	cursor: pointer;	
+	color: black;
+}
 .tranBlock {
 	width: max-content;
 	box-sizing: content-box;
@@ -191,9 +241,13 @@
 	display: none;
 }
 
+#commentListElmt{
+	padding: 0 var(--size22) var(--size22) var(--size22);
+}
+
 .commentOfpost {
 	display: flex;
-	border: solid 1px red;
+	padding : var(--size22) 0;
 }
 
 .commentInfoBetween:nth-child(1) {
@@ -233,6 +287,9 @@
 .comment_regDate_Color {
 	color: #a6a6a6;
 }
+.comment_content{
+	height: auto;
+}
 
 #commentElmt:hover {
 	color: #212529;
@@ -246,7 +303,11 @@
 
 #commentCreate {
 	display: flex;
-	border-bottom: 1px solid #c8c8c8;
+/* 	border-bottom: 1px solid #c8c8c8; */
+}
+#reCommentCreate{
+	display: flex;
+	padding: var(--size22) 0 0 var(--size22);
 }
 
 #commentEdit {
@@ -258,8 +319,31 @@
 	height: 92px;
 	margin-left: 20px;
 }
+#reCommentEdit {
+	display: flex;
+	flex-direction: column; /* 세로 배치임*/
+	justify-content: space-between;
+	border: solid 1px #c8c8c8;
+	width: 100%;
+	height: 92px;
+	margin-top: var(--size16);
+}
 
-input[name='content'] {
+#commentContent {
+	width: 100%;
+	outline: none;
+	border: none;
+	padding: var(--size10) var(--size16);
+}
+
+.reCommentContent{
+	width: 100%;
+	outline: none;
+	border: none;
+	padding: var(--size10) var(--size16) ;
+}
+
+.updateCommentContent {
 	width: 100%;
 	outline: none;
 	border: none;
@@ -273,8 +357,35 @@ input[name='content'] {
 	cursor: pointer;
 }
 
-#commentBottom { /*파일첨부, 댓글등록 버튼*/
-	display: flex;
-	justify-content: space-between;
+#commentBottom { /*  댓글등록 버튼*/
 	padding: 0 var(--size16) var(--size10) var(--size16);
+	margin-left: auto;
+}
+#preoOrNextPostElmt{
+	width: 100%;
+	border-top: solid 1px #c8c8c8;
+	border-bottom: solid 1px #c8c8c8;
+}
+.onePostInfoElmt td:nth-child(1) {
+	padding: 0 var(--size22);
+}
+.onePostInfoElmt{
+	border-bottom: solid 1px #c8c8c8;
+}
+.onePostElmt td:nth-child(1) {
+	padding: var(--size12) var(--size22);
+}
+.onePostElmt td:last-child {
+	padding-right: var(--size12);
+}
+.currentPost{
+	padding-left:var(--size12);
+}
+
+.onePostElmt {
+    background-color: white;
+    transition: background-color 0.3s; 
+}
+.onePostElmt:hover {
+    background-color: #f9f9f9; 
 }
