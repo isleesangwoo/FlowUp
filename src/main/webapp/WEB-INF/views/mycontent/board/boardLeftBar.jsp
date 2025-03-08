@@ -18,6 +18,7 @@ $(document).ready(function() {
    getAccessBoardList();
    
 	$("#isNoticeElmt").hide(); // 공지사항 등록 미체크시 hide 상태
+	$("#addBoard").hide();     // 로그인하지 않은 상태 또는 보안등급 10이 아닐 경우 hide
 	
 	/////////////////////////////////////////////////////////////////
 	
@@ -108,7 +109,7 @@ $(document).ready(function() {
         dataType: "json",
         success: function(json) {
             let v_html = "";
-            $.each(json, function(index, board) {
+            $.each(json.boardList, function(index, board) {
                v_html += `
                		
 	                <li>
@@ -122,6 +123,18 @@ $(document).ready(function() {
             });
             $(".board_menu_container ul li").not(":first").remove(); // 첫 번째 항목 제외하고 삭제
             $(".board_menu_container ul").append(v_html); // 새 목록 추가
+            
+            // login_securityLevel 값을 가져와서 사용
+            var loginSecurityLevel = json.login_securityLevel;
+            
+            // 값이 10일 경우 #addBoard 보이기
+            if (loginSecurityLevel == "10") {
+                $("#addBoard").show();  
+            }
+            
+            var login_Name = json.login_Name;;
+            $("input[name='createdBy']").val(login_Name);
+            
         },
         error: function() {
         }
@@ -656,7 +669,7 @@ function goAddBoardGroup(){
 						</td>
 					</tr>
 					<tr>
-					    <td class="columnTitle">공개 범위 설정</td>
+					    <td class="columnTitle">공개 설정</td>
 					    <td>
 					        <div class="radio-container">
 					            <label>
@@ -673,7 +686,7 @@ function goAddBoardGroup(){
 							운영자
 						</td>
 						<td>
-							<input type="text" name="createdBy" value=""  class="w_max" autocomplete="off"/>
+							<input type="text" name="createdBy" value=""  class="w_max" autocomplete="off" readonly/>
 						</td>
 					</tr>
 				</table>

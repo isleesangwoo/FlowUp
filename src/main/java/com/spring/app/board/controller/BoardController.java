@@ -202,9 +202,9 @@ public class BoardController {
 	// 생성된 게시판 LeftBar에 나열하기 (출력)
 	@GetMapping("selectBoardList")
 	@ResponseBody
-	public List<BoardVO> selectBoardList(HttpServletRequest request) {
+	public Map<String, Object> selectBoardList(HttpServletRequest request) {
 		
-		
+		/*
 		HttpSession session = request.getSession();
 	    EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 	
@@ -218,6 +218,28 @@ public class BoardController {
 		
 	    List<BoardVO> boardList = service.selectBoardList(login_departNo);  // 게시판 목록 조회
 	    return boardList; // JSON 데이터로 반환됨
+	    */
+		
+	    HttpSession session = request.getSession();
+	    EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+	
+	    String login_departNo = null;
+	    String login_securityLevel = null;
+	    String login_Name = null;
+	  
+	    if(loginuser != null) {
+	    	login_departNo = loginuser.getFK_departmentNo();
+	    	login_securityLevel = loginuser.getSecurityLevel();
+	    	login_Name = loginuser.getName();
+	    }
+		
+		Map<String, Object> map = new HashMap<>();
+	    List<BoardVO> boardList = service.selectBoardList(login_departNo);  // 게시판 목록 조회
+	    
+	    map.put("boardList", boardList);
+	    map.put("login_securityLevel", login_securityLevel);
+	    map.put("login_Name", login_Name);
+	    return map; // JSON 데이터로 반환됨
 	}
 	
 	// 게시판 생성하기
@@ -233,7 +255,7 @@ public class BoardController {
 			
 			
 		    if (departmentNoList != null) {
-		        service.addDepartmentBoard(boardvo, departmentNoList); // 부서별 공개일 경우 게시판 생성하기
+		        service.addDepartmentBoard(boardvo, departmentNoList); // 부서별 공개일 경우 게시판 생성하기(매핑 테이블에 insert)
 		    }
 		} catch (Exception e) {
 			e.printStackTrace();
