@@ -74,8 +74,8 @@ public class BoardService_imple implements BoardService {
 
 	// 생성된 게시판 LeftBar에 나열하기 (출력)
 	@Override
-	public List<BoardVO> selectBoardList() {
-		List<BoardVO> boardList = dao.selectBoardList();
+	public List<BoardVO> selectBoardList(String login_departNo) {
+		List<BoardVO> boardList = dao.selectBoardList(login_departNo);
 		return boardList;
 	}
 

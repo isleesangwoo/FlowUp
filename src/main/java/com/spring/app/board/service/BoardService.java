@@ -28,7 +28,7 @@ public interface BoardService {
 	List<Map<String, String>> addBoardSearchAllDept();
 
 	// 생성된 게시판 LeftBar에 나열하기 (출력)
-	List<BoardVO> selectBoardList();
+	List<BoardVO> selectBoardList(String login_departNo);
 	
 	// 수정할 input 요소에 기존값을 뿌려주기 위함.
 	BoardVO getBoardDetailByNo(String boardNo);

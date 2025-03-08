@@ -202,8 +202,21 @@ public class BoardController {
 	// 생성된 게시판 LeftBar에 나열하기 (출력)
 	@GetMapping("selectBoardList")
 	@ResponseBody
-	public List<BoardVO> selectBoardList() {
-	    List<BoardVO> boardList = service.selectBoardList();  // 게시판 목록 조회
+	public List<BoardVO> selectBoardList(HttpServletRequest request) {
+		
+		
+		HttpSession session = request.getSession();
+	    EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+	
+	    String login_departNo = null;
+	  
+	    if(loginuser != null) {
+	    	login_departNo = loginuser.getFK_departmentNo();
+	    }
+		
+		
+		
+	    List<BoardVO> boardList = service.selectBoardList(login_departNo);  // 게시판 목록 조회
 	    return boardList; // JSON 데이터로 반환됨
 	}
 	
