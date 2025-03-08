@@ -433,7 +433,11 @@ $(document).ready(()=>{
 		
 		// --- 댓글 등록 버튼 클릭 시 --- //
 		$(document).on("click", "#commentEnterBtn", function(){
-			
+			if($("#isExit").text() == ""){ //  id="isExit" 는 boardLeftBar.jsp에 존재
+	    		alert("로그인 후 이용하실 수 있습니다.");
+	    		return;
+	    	}
+					
 			if (!$("#commentContent").val().trim()) {
 			        alert("댓글 내용을 입력해주세요.");
 			        return;
@@ -525,17 +529,20 @@ $(document).ready(()=>{
 			  	        			<div class="infoBox">
 			  			        		<span>${comment.name} ${comment.positionName}</span>`;
 										
-										if(`${comment.depthNo }`== 0 && $(`#allowComments`).text() == 1){
+										if(`${comment.depthNo }`== 0 && $(`#allowComments`).text() == 1){ // 댓글인 경우 && 댓글허용일 시
 			  			        			html += `<span onclick='showReplyBox(${comment.commentNo})' class="comment_regDate_Color" id="commentElmt"><i class="fa-solid fa-reply" id="commentIcon"></i>댓글</span>`;
 			  			        		}
-										html +=`<span class="comment_regDate_Color">${comment.regDate}</span>
-			  		        		</div>
+					html +=`<span class="comment_regDate_Color">${comment.regDate}</span>
+			  		        		</div>`;
 			  		        		
-			  		        		<div class="deleteBtnBox">
-			  		        			<span class="udpateComment" onclick='getUpdateCommentInfo(${comment.commentNo})'><i class="fa-regular fa-pen-to-square"></i></span> 
-			  		        			<span onclick='deleteComment(${comment.commentNo},${comment.depthNo})'><i class="fa-regular fa-trash-can"></i></span> 
-			  		        		</div>
-			  	        		</div>
+					if(comment.fk_employeeNo == $("#isExit").text()){ // 작성자의 사원번호와 로그인한 사원번호가 일치하는 경우 수정/삭제를 렌더링
+						html +=`<div class="deleteBtnBox">
+		  		        			<span class="udpateComment" onclick='getUpdateCommentInfo(${comment.commentNo})'><i class="fa-regular fa-pen-to-square"></i></span> 
+		  		        			<span class="deleteComment" onclick='deleteComment(${comment.commentNo},${comment.depthNo})'><i class="fa-regular fa-trash-can"></i></span> 
+		  		        		</div>`;
+					}
+			  		        		
+  	        		html +=`</div>
 			  	        		<div class="comment_content">${comment.content}</div>
 								
 								<div id="replyBox_${comment.commentNo}" class="replyBox" style="display:none;">
@@ -655,6 +662,11 @@ $(document).ready(()=>{
   
   // 대댓글 추가
   function addReply(parentCommentNo) {
+	
+	  if($("#isExit").text() == ""){ // id="isExit" 는 boardLeftBar.jsp에 존재
+		  alert("로그인 후 이용하실 수 있습니다.");
+		  return;
+	  }
 	
       let replyContent = $(`#replyContent_${parentCommentNo}`).val().trim();
       if (!replyContent) {

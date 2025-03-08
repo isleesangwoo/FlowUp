@@ -34,7 +34,7 @@ public interface BoardService {
 	BoardVO getBoardDetailByNo(String boardNo);
 
 	// 글쓰기 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기
-	List<Map<String, String>> getAccessibleBoardList(String employeeNo);
+	List<Map<String, String>> getAccessibleBoardList(String employeeNo, String login_userid) throws Exception;
 
 	// 게시글 등록하기
 	int addPost(PostVO postvo,PostFileVO postfilevo,List<Map<String, Object>> mapList);

@@ -12,10 +12,18 @@
 	FROM tbl_board b
 	LEFT JOIN tbl_board_department bd 
 	ON b.boardNo = bd.fk_boardNo
-	WHERE b.status = 1 				 		<!--  활성화된 게시판만 조회  -->
-	  AND (b.isPublic = 1  					<!-- 전체 공개된 게시판이거나  -->
-	       OR bd.fk_departmentNo = #{login_departNo})  <!-- 사용자의 부서가 접근 가능한 경우  -->
-	       ORDER BY createdAt DESC
+		<if test="login_departNo != null"><!-- 로그인을 한 경우  -->
+		  WHERE b.status = 1 				 				<!--  활성화된 게시판만 조회  -->
+		  AND (b.isPublic = 1  								<!-- 전체 공개된 게시판이거나  -->
+		       OR bd.fk_departmentNo = #{login_departNo})   <!-- 사용자의 부서가 접근 가능한 경우  -->
+		       ORDER BY createdAt DESC
+		</if>       
+		<if test="login_departNo == null">		    <!-- 로그인을 안한 경우  -->
+		  WHERE b.status = 1 				 		<!--  활성화된 게시판만 조회  -->
+		  AND b.isPublic = 1  					    <!-- 전체 공개된 게시판이거나  -->
+		  ORDER BY createdAt DESC
+		</if>         
+	       
 </select>
 
 <!-- 게시판 생성하기 -->
@@ -65,7 +73,9 @@
 	FROM tbl_board b
 	LEFT JOIN tbl_board_department bd ON b.boardNo = bd.fk_boardNo
 	WHERE (b.isPublic = 1 and status = 1) 
-   OR bd.fk_departmentNo = (SELECT fk_departmentNo FROM tbl_employee WHERE employeeNo = 100013)  and status = 1
+   <if test="login_userid != null"><!-- 로그인을 한 경우  -->
+	   OR bd.fk_departmentNo = (SELECT fk_departmentNo FROM tbl_employee WHERE employeeNo = #{login_userid})  and status = 1
+	</if>
 </select>
 
 <!-- 게시글 등록하기 -->

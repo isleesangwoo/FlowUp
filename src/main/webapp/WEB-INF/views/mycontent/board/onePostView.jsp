@@ -99,15 +99,16 @@
             
             <div id="right_menu_container">
             
+            
             	<span id="tool_box_left">
-                    <span>
-                        <span id="re_btn">
-                            <button type="button" id="postUpdate" class="btnDefaultDesignNone" ><i class="fa-regular fa-pen-to-square"></i> 수정</button>
+                   <c:if test="${postvo.fk_employeeNo eq login_userid}"> <%-- 글 작성자사번과 로그인 사번이 같다면 수정/삭제 렌더링 --%>
+						<span id="re_btn">
+                           <button type="button" id="postUpdate" class="btnDefaultDesignNone" ><i class="fa-regular fa-pen-to-square"></i> 수정</button>
                         </span>
                         <span>
-                            <button type="button" id="postDel" class="btnDefaultDesignNone"><i class="fa-regular fa-trash-can"></i>삭제</button>
+                           <button type="button" id="postDel" class="btnDefaultDesignNone"><i class="fa-regular fa-trash-can"></i>삭제</button>
                         </span>
-                    </span>
+					</c:if>     
                 </span>
 	                
 

@@ -300,6 +300,17 @@
 	transform: rotate(180deg);
 	margin-right: 5px;
 }
+.deleteBtnBox{
+	color: #a6a6a6;
+}
+.udpateComment:hover {
+	color: #212529;
+	cursor: pointer;
+}
+.deleteComment:hover {
+	color: #212529;
+	cursor: pointer;
+}
 
 #commentCreate {
 	display: flex;

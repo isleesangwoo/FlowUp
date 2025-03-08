@@ -20,6 +20,7 @@ $(document).ready(function() {
 	$("#isNoticeElmt").hide(); // 공지사항 등록 미체크시 hide 상태
 	$("#addBoard").hide();     // 로그인하지 않은 상태 또는 보안등급 10이 아닐 경우 hide
 	
+	
 	/////////////////////////////////////////////////////////////////
 	
 	<%-- === jQuery 를 사용하여 드래그앤드롭(DragAndDrop)을 통한 파일 업로드 시작 === --%>
@@ -114,15 +115,18 @@ $(document).ready(function() {
                		
 	                <li>
             	   		<a href='<%=ctxpath%>/board/selectPostBoardGroupView?boardNo=\${board.boardNo}'>`+board.boardName+`</a>  <%-- 게시판명 --%>
-			            <a href='<%=ctxpath%>/board/updateBoardView?boardNo=\${board.boardNo}' class='upateBoard'>
+			            <a href='<%=ctxpath%>/board/updateBoardView?boardNo=\${board.boardNo}' class='upateBoard settingBtn'>
 			                <i class="fa-solid fa-gear" style="margin-right:9px;"></i> <%-- 게시판 수정 아이콘 --%> 
 		                </a>
 		                
-		                <i class="fa-regular fa-trash-can disableBoardIcon" data-boardno="\${board.boardNo}"></i> <%-- 게시판 삭제 아이콘 --%>
+		                <i class="fa-regular fa-trash-can disableBoardIcon settingBtn" data-boardno="\${board.boardNo}"></i> <%-- 게시판 삭제 아이콘 --%>
 	                </li>`; 
             });
             $(".board_menu_container ul li").not(":first").remove(); // 첫 번째 항목 제외하고 삭제
             $(".board_menu_container ul").append(v_html); // 새 목록 추가
+            
+            
+            $(".settingBtn").hide();// 로그인하지 않은 상태 또는 보안등급 10이 아닐 경우 hide
             
             // login_securityLevel 값을 가져와서 사용
             var loginSecurityLevel = json.login_securityLevel;
@@ -130,11 +134,15 @@ $(document).ready(function() {
             // 값이 10일 경우 #addBoard 보이기
             if (loginSecurityLevel == "10") {
                 $("#addBoard").show();  
+                $(".settingBtn").show();
             }
             
-            var login_Name = json.login_Name;;
+            var login_Name = json.login_Name;
             $("input[name='createdBy']").val(login_Name);
+
+            var login_employeeNo = json.login_employeeNo; // '글쓰기 버튼 클릭 시'에서 로그인 여부 유효성 검사 시 필요
             
+            $("#isExit").html(login_employeeNo);
         },
         error: function() {
         }
@@ -186,6 +194,11 @@ $(document).ready(function() {
  	// ========= 글쓰기버튼 토글 ========= //
 
     $('#writePostBtn').click(e=>{
+    	
+    	if($("#isExit").text() == ""){
+    		alert("로그인 후 이용하실 수 있습니다.");
+    		return;
+    	}
 
         $('#modal').fadeIn();
         $('.modal_container').css({
@@ -488,6 +501,34 @@ $(document).ready(function() {
     });
 	
 	$(document).on("click", "#addBoardGroup", function(){ // 생성 버튼 클릭 이벤트
+		
+		if($("input[name='boardName']").val() == ""){
+			alert("게시판 제목을 입력해주세요.");
+			return;
+		}
+		
+		if($("input[name='boardName']").val().length > 15){
+			alert("게시판 제목을 15자 이내로 입력해주세요.")
+			return;
+		}
+		
+		if($("input[name='boardDesc']").val() == ""){
+			alert("게시판 설명을 입력해주세요.")
+			return;
+		}
+		
+		if($("input[name='boardDesc']").val().length > 500){
+			alert("게시판 설명을 500자 이내로 입력해주세요.")
+			return;
+		}
+		
+		if($("input[name='isPublic']").val() == 0 ){
+			if($("#selectDeptList").text() == ""){ // 부서 목록이 없데이트 되는 요소에 아무 값이 없다면
+				alert("게시판을 공개할 대상 부서를 선택하세요.");
+				return;
+			}
+		}
+		
  		goAddBoardGroup(); // 게시판 생성하기
 	});
 	
@@ -732,5 +773,6 @@ function goAddBoardGroup(){
           
       </div>
       <div id="addBoardContainer"><span id="addBoard">게시판 생성하기+</span></div>
+      <div id="isExit" style="display: none;"></div> <%-- 로그인 여부 판별을 위함 --%>
   </div>
  <!-- 왼쪽 사이드바 -->

@@ -36,7 +36,7 @@ public interface BoardDAO {
 	BoardVO getBoardDetailByNo(String boardNo);
 
 	// 글쓰기 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기
-	List<Map<String, String>> getAccessibleBoardList(String employeeNo);
+	List<Map<String, String>> getAccessibleBoardList(String employeeNo,String login_userid) throws Exception;
 
 	// 게시글 등록하기 // 파일첨부가 있는 글쓰기 // 첨부파일이 있다면 첨부파일테이블(tbl_postFile) 테이블에 파일 정보 삽입  
 	int addPost(PostVO postvo);

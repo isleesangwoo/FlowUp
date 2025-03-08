@@ -88,8 +88,9 @@ public class BoardService_imple implements BoardService {
 
 	// 글쓰기 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기
 	@Override
-	public List<Map<String, String>> getAccessibleBoardList(String employeeNo) {
-		List<Map<String, String>> boardList = dao.getAccessibleBoardList(employeeNo);
+	public List<Map<String, String>> getAccessibleBoardList(String employeeNo, String login_userid) throws Exception{
+		System.out.println("login_userid : " + login_userid);
+		List<Map<String, String>> boardList = dao.getAccessibleBoardList(employeeNo,login_userid);
 		return boardList;
 	}
 	

@@ -224,10 +224,12 @@ public class BoardController {
 	    EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 	
 	    String login_departNo = null;
+	    String login_employeeNo = null;
 	    String login_securityLevel = null;
 	    String login_Name = null;
 	  
 	    if(loginuser != null) {
+	    	login_employeeNo = loginuser.getEmployeeNo();
 	    	login_departNo = loginuser.getFK_departmentNo();
 	    	login_securityLevel = loginuser.getSecurityLevel();
 	    	login_Name = loginuser.getName();
@@ -239,6 +241,7 @@ public class BoardController {
 	    map.put("boardList", boardList);
 	    map.put("login_securityLevel", login_securityLevel);
 	    map.put("login_Name", login_Name);
+	    map.put("login_employeeNo", login_employeeNo);
 	    return map; // JSON 데이터로 반환됨
 	}
 	
@@ -392,17 +395,32 @@ public class BoardController {
 	// 글쓰기 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기
 	@GetMapping("getAccessibleBoardList")
 	@ResponseBody 
-	public List<Map<String,String>> getAccessibleBoardList(@RequestParam String employeeNo){
+	public List<Map<String,String>> getAccessibleBoardList(@RequestParam String employeeNo,HttpServletRequest request) throws Exception{
 		
-		List<Map<String, String>>  boardList = service.getAccessibleBoardList(employeeNo);
-		/*System.out.println("boardList : " + boardList);
-		 boardList : 
-		 [{BOARDNO=100037, BOARDNAME=일수게시판}, 
-		 {BOARDNO=100035, BOARDNAME=부춘게시판}, 
-		 {BOARDNO=100033, BOARDNAME=전사게시판}, 
-		 {BOARDNO=100036, BOARDNAME=공공게시판}, 
-		 {BOARDNO=100034, BOARDNAME=전공게시판}]
-		 */
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String login_userid = null;
+		  
+		if(loginuser != null) {
+		  login_userid = loginuser.getEmployeeNo();
+		}
+		List<Map<String, String>>  boardList = new ArrayList<>();
+		try {
+			boardList = service.getAccessibleBoardList(employeeNo,login_userid);
+			/*System.out.println("boardList : " + boardList);
+			 boardList : 
+			 [{BOARDNO=100037, BOARDNAME=일수게시판}, 
+			 {BOARDNO=100035, BOARDNAME=부춘게시판}, 
+			 {BOARDNO=100033, BOARDNAME=전사게시판}, 
+			 {BOARDNO=100036, BOARDNAME=공공게시판}, 
+			 {BOARDNO=100034, BOARDNAME=전공게시판}]
+			 */
+		} catch (Exception e) {} // 로그인을 하지 않을 시 getAccessibleBoardList(employeeNo,login_userid)에서 sql 예외가 나옴.(loginuser의 값이 null 이기 때문)
+		
+		
+		
+		  
 		List<Map<String, String>> mapList = new ArrayList<>(); // 새로운 리스트
 		
 		if(boardList != null) {
