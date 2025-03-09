@@ -7,10 +7,11 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.mail.domain.MailFileVO;
 import com.spring.app.mail.domain.MailVO;
+import com.spring.app.mail.domain.ReferencedVO;
 import com.spring.app.mail.model.MailDAO;
 
 
@@ -210,7 +211,47 @@ public class MailService_imple implements MailService {
 	}
 
 
-	
+    // 메일 작성 기능 구현
+    @Override
+    @Transactional
+    public void sendMail(MailVO mail, List<ReferencedVO> referencedList, List<MailFileVO> fileList) {
+        // 1. 메일 정보 저장
+        mailDAO.insertMail(mail);
+
+        // 2. 참조자 정보 저장
+        for (ReferencedVO ref : referencedList) {
+            ref.setFk_mailNo(mail.getMailNo()); // 메일 번호 설정
+            mailDAO.insertReferenced(ref);
+        }
+
+        // 3. 첨부 파일 정보 저장
+        for (MailFileVO file : fileList) {
+            file.setFk_mailNo(mail.getMailNo()); // 메일 번호 설정
+            mailDAO.insertMailFile(file);
+        }
+    }
+
+
+    @Override
+    @Transactional
+    public void insertMail(MailVO mail) {
+        // 메일 정보를 데이터베이스에 저장
+        mailDAO.insertMail(mail);
+    }
+
+    @Override
+    @Transactional
+    public void insertReferenced(ReferencedVO ref) {
+        // 참조자 정보를 데이터베이스에 저장
+        mailDAO.insertReferenced(ref);
+    }
+
+    @Override
+    @Transactional
+    public void insertMailFile(MailFileVO mailFile) {
+        // 첨부 파일 정보를 데이터베이스에 저장
+        mailDAO.insertMailFile(mailFile);
+    }
 
 
 	

@@ -549,12 +549,86 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 		        error: function(err){
 		            console.log(err);
 		            alert("메일 읽음 처리 중 오류 발생");
-	        }
-    });
-});
+	        	}
+		    });
+		});
        <%-- 읽음 버튼 클릭 ajax 끝 --%>
        
        
+       
+       <%-- 메일 작성 시작 --%>
+    	// 보내기 버튼 클릭 이벤트
+       $("#btnWrite").on("click", function(e) {
+           e.preventDefault(); // 기본 동작(폼 제출) 막기
+           
+           // 스마트 에디터의 내용을 일반 텍스트로 변환
+           obj.getById["content"].exec("UPDATE_CONTENTS_FIELD", []); // 에디터의 내용을 textarea에 반영
+           const content = $("#content").val().replace(/<[^>]*>/g, '').trim(); // HTML 태그 제거
+           
+           // 1. 폼 데이터 수집
+           const recipient = $("#recipient").val().trim(); // 받는 사람
+           const cc = $("#cc").val().trim(); // 참조
+           const subject = $("#subject").val().trim(); // 제목
+           const files = $("#fileInput")[0].files; // 첨부 파일
+           
+           console.log(content); // 디버깅용
+           
+
+           // 2. 유효성 검사
+/*            if (!recipient || !subject || !content) {
+               alert("받는 사람, 제목, 내용을 모두 입력해주세요.");
+               return;
+           } */
+           if (!recipient) {
+               alert("받는 사람을 입력해주세요.");
+               return;
+           }
+           if (!subject) {
+               alert("제목을 입력해주세요.");
+               return;
+           }
+           if (!content) {
+        	    alert("내용을 입력해주세요.");
+        	    return;
+        	}
+
+        // 3. FormData 객체 생성
+           const formData = new FormData();
+           formData.append("recipient", recipient);
+           formData.append("cc", cc);
+           formData.append("subject", subject);
+           formData.append("content", content);
+
+           // 4. 첨부 파일 추가
+           if (files.length > 0) {
+               for (let i = 0; i < files.length; i++) {
+                   formData.append("attach", files[i]);
+               }
+           }
+
+           // 5. Ajax로 서버에 데이터 전송
+           $.ajax({
+               url: "<%=ctxPath%>/mail/sendMail",
+               type: "POST",
+               data: formData,
+               processData: false,
+               contentType: false,
+               dataType: "json",
+               success: function(response) {
+                   if (response.status === "success") {
+                       alert("메일이 성공적으로 전송되었습니다.");
+                       location.href = "<%=ctxPath%>/mail"; // 메일 목록 페이지로 이동
+                   } else {
+                       alert("메일 전송에 실패했습니다.");
+                   }
+               },
+               error: function(request, status, error) {
+                   alert("code: " + request.status + "\n" + "message: " + request.responseText + "\n" + "error: " + error);
+               }
+           });
+       });
+	       <%-- 메일 작성 끝 --%>
+	       
    });
 	  
    
@@ -606,136 +680,113 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 	            </div>
 	        </div>
 	        
-   <form name="addFrm" enctype="multipart/form-data">
-	    <div id="writeArea">
-	    
-			  <table id="writeAreaTable">
-			    <!-- 받는사람 -->
-			    <tr>
-			    
-			      <th>
-			      받는사람
-			      
-			      <label id="meWrite"><input type="checkbox" /> 내게쓰기</label>
-			      
-			      </th>
-			      <td id="mailWriteReference" colspan="2">
-			      
-		      		<div id="mailWriteReferenceDiv">
-		      		
-		      			<div id="addrWrap">
-			      			<ul class="nameTag">
-			      				<li class="addrCreate">
-			      					<div class="addrInput">
-				        				<textarea id="addrWrite" type="text" style="display:inline; white-pace:nowrap;" autocomplete="off"></textarea>
-				        			</div>
-				        		</li>
-				        	</ul>
-			        	</div>
-			        	
-			        	<select id="addrSelect">
-			        		<option value='' selected>최근주소</option>
-			        	</select>
-			        	
-			        	<span class="btnWrap">
-				        	<a class="btnAddr">
-				        		<span class="text">주소록</span>
-				        	</a>
-			        	</span>
-			        	
-		      		</div>
-		      		
-			      </td>
-			      
-			    </tr>
-			    
-			    <!-- 참조 -->
-			    <tr>
-			    
-			      <th>참조</th>
-			      <td id="mailWriteReference" colspan="2">
-			      
-		      		<div id="mailWriteReferenceDiv">
-		      		
-		      			<div id="addrWrap">
-			      			<ul class="nameTag">
-			      				<li class="addrCreate">
-			      					<div class="addrInput">
-				        				<textarea id="addrWrite" type="text" style="display:inline; white-pace:nowrap;" autocomplete="off"></textarea>
-				        			</div>
-				        		</li>
-				        	</ul>
-			        	</div>
-			        	
-			        	<select id="addrSelect">
-			        		<option value='' selected>최근주소</option>
-			        	</select>
-			        	
-			        	<span class="btnWrap">
-				        	<a class="btnAddr">
-				        		<span class="text">주소록</span>
-				        	</a>
-			        	</span>
-			        	
-		      		</div>
-		      		
-			      </td>
-			      
-			    </tr>
-			    
-			    <!-- 제목 -->
-			    <tr>
-			      <th>제목</th>
-			      <td id="mailWriteTitle" colspan="2">
-			        <input id="mailWriteTitleBox" type="text" />
-			      </td>
-			    </tr>
-			    
-			    <!-- 파일첨부 -->
-			    <tr>
-			      <th>파일첨부</th>
-			      <td colspan="2">
-			        <!-- 파일첨부 영역 (기존과 동일) -->
-			        <div class="file-upload-area">
-			          <div class="file-btn-group">
-			            <input type="file" id="fileInput" multiple style="display: none;" />
-			            <button type="button" id="btnFileSelect">파일선택</buztton>
-			            <button type="button" id="btnFileArchive">자료실</button>
-			            <button type="button" id="btnFileDeleteAll">모두삭제</button>
-			            
-			            <span class="file-limit-info">
-			              일반 (0Byte / 20MB), 대용량 (0Byte / 500.0MB)
-			            </span>
-			          </div>
-			          
-			          <div class="file-drag-drop-zone" id="dragDropZone">
-			            여기에 첨부 파일을 끌어오세요.
-			            <br />
-<!-- 			            	<br />
-			            	<input class="filePick" style="text-align: center" type="file" name="attach" multiple/>
-			            <button type="button" class="inline-file-btn" id="btnFileSelect2">파일선택</button>
-			          </div>
-			          <ul class="file-list" id="fileList"></ul> -->
-		              <span style="text-align: center;">
-				        또는<!--  <label class="inline-file-btn" id="btnFileSelect2" for="fileInput">파일 선택</label> -->
-				    	<br />
-				    </span>
-				    <input type="file" id="fileInput" class="fileInput" name="attach" multiple/>
-			        </div>
-			      </td>
-			    </tr>
-			    
-			  </table>
-	        
-	    	<div id="smartedit">
-	    		<textarea style="width: 100%; height: 612px; padding: var(--size24);" id="content"></textarea>
+		<form name="addFrm" enctype="multipart/form-data">
+		    <div id="writeArea">
+		        <table id="writeAreaTable">
+		            <!-- 받는 사람 -->
+		            <tr>
+		                <th>
+		                    받는사람
+		                    <label id="meWrite"><input type="checkbox" id="sendToMe" /> 내게쓰기</label>
+		                </th>
+		                <td id="mailWriteReference" colspan="2">
+		                    <div id="mailWriteReferenceDiv">
+		                        <div id="addrWrap">
+		                            <ul class="nameTag">
+		                                <li class="addrCreate">
+		                                    <div class="addrInput">
+		                                        <textarea id="recipient" name="recipient" style="display:inline; white-space:nowrap;" autocomplete="off"></textarea>
+		                                    </div>
+		                                </li>
+		                            </ul>
+		                        </div>
+		                        <select id="addrSelect">
+		                            <option value='' selected>최근주소</option>
+		                        </select>
+		                        <span class="btnWrap">
+		                            <a class="btnAddr">
+		                                <span class="text">주소록</span>
+		                            </a>
+		                        </span>
+		                    </div>
+		                </td>
+		            </tr>
+		
+		            <!-- 참조 -->
+		            <tr>
+		                <th>참조</th>
+		                <td id="mailWriteReference" colspan="2">
+		                    <div id="mailWriteReferenceDiv">
+		                        <div id="addrWrap">
+		                            <ul class="nameTag">
+		                                <li class="addrCreate">
+		                                    <div class="addrInput">
+		                                        <textarea id="cc" name="cc" style="display:inline; white-space:nowrap;" autocomplete="off"></textarea>
+		                                    </div>
+		                                </li>
+		                            </ul>
+		                        </div>
+		                        <select id="addrSelect">
+		                            <option value='' selected>최근주소</option>
+		                        </select>
+		                        <span class="btnWrap">
+		                            <a class="btnAddr">
+		                                <span class="text">주소록</span>
+		                            </a>
+		                        </span>
+		                    </div>
+		                </td>
+		            </tr>
+		
+		            <!-- 제목 -->
+		            <tr>
+		                <th>제목</th>
+		                <td id="mailWriteTitle" colspan="2">
+		                    <input id="subject" name="subject" type="text" />
+		                </td>
+		            </tr>
+		
+		            <!-- 파일 첨부 -->
+		            <tr>
+		                <th>파일첨부</th>
+		                <td colspan="2">
+		                    <div class="file-upload-area">
+		                        <div class="file-btn-group">
+		                            <input type="file" id="fileInput" name="attach" multiple style="display: none;" />
+		                            <button type="button" id="btnFileSelect">파일선택</button>
+		                            <button type="button" id="btnFileArchive">자료실</button>
+		                            <button type="button" id="btnFileDeleteAll">모두삭제</button>
+		                            <span class="file-limit-info">
+		                                일반 (0Byte / 20MB), 대용량 (0Byte / 500.0MB)
+		                            </span>
+		                        </div>
+		                        <div class="file-drag-drop-zone" id="dragDropZone">
+		                            여기에 첨부 파일을 끌어오세요.
+		                            <br />
+		                            <span style="text-align: center;">
+		                                또는
+		                                <br />
+		                            </span>
+		                            <input type="file" id="fileInput" class="fileInput" name="attach" multiple />
+		                        </div>
+		                    </div>
+		                </td>
+		            </tr>
+		        </table>
+		
+				<!-- 내용 -->
+				<div id="smartedit">
+				    <textarea style="width: 100%; height: 612px; padding: var(--size24);" id="content" name="content"></textarea>
+				</div>
+		
+		        <!-- 버튼 -->
+		        <div style="margin: 20px;">
+		            <button type="button" id="btnReservationMail">예약메일</button>
+		            <button type="button" id="btnWrite">보내기</button>
+		        </div>
 		    </div>
-	
-	   		<div style="margin: 20px;">
-	            <button type="button" id="btnReservationMail">예약메일</button>
-	        </div>
-        </div>
 		</form>
+
     </div>
 	    
     </div>

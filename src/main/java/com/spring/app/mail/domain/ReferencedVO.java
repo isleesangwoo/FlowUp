@@ -3,9 +3,9 @@ package com.spring.app.mail.domain;
 public class ReferencedVO {
 
 	private String refMailNo;      // 참조 이메일번호
-	private String reference;      // 참조수신여부 / 0:수신자, 1:참조자
-	private String referenceName;  // 참조/수신자이름
-	private String referenceMail;  // 참조/수신자이메일
+	private String refStatus;      // 참조수신여부 / 0:수신자, 1:참조자
+	private String refName;  	   // 참조/수신자이름
+	private String refMail;  	   // 참조/수신자이메일
 	
 	private String fk_mailNo;      // 메일번호
 	private String fk_adrsBNo;     // 주소록 고유번호
@@ -17,23 +17,23 @@ public class ReferencedVO {
 	public void setRefMailNo(String refMailNo) {
 		this.refMailNo = refMailNo;
 	}
-	public String getReference() {
-		return reference;
+	public String getRefStatus() {
+		return refStatus;
 	}
-	public void setReference(String reference) {
-		this.reference = reference;
+	public void setRefStatus(String refStatus) {
+		this.refStatus = refStatus;
 	}
-	public String getReferenceName() {
-		return referenceName;
+	public String getRefName() {
+		return refName;
 	}
-	public void setReferenceName(String referenceName) {
-		this.referenceName = referenceName;
+	public void setRefName(String refName) {
+		this.refName = refName;
 	}
-	public String getReferenceMail() {
-		return referenceMail;
+	public String getRefMail() {
+		return refMail;
 	}
-	public void setReferenceMail(String referenceMail) {
-		this.referenceMail = referenceMail;
+	public void setRefMail(String refMail) {
+		this.refMail = refMail;
 	}
 	public String getFk_mailNo() {
 		return fk_mailNo;
@@ -47,8 +47,5 @@ public class ReferencedVO {
 	public void setFk_adrsBNo(String fk_adrsBNo) {
 		this.fk_adrsBNo = fk_adrsBNo;
 	}
-	
-	
-	
 	
 }

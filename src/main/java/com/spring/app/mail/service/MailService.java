@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.spring.app.mail.domain.MailFileVO;
 import com.spring.app.mail.domain.MailVO;
+import com.spring.app.mail.domain.ReferencedVO;
 
 public interface MailService {
 
@@ -59,7 +60,17 @@ public interface MailService {
 	// 체크박스 체크된 메일 readStatus 1로 업데이트 하고 아이콘 변경
 	List<MailVO> getUpdatedMailStatus(List<Integer> mailNoList);
 
+    // 메일 작성 기능
+    void sendMail(MailVO mail, List<ReferencedVO> referencedList, List<MailFileVO> fileList);
 
+    // 메일 정보 저장 후 mailNo 반환
+	void insertMail(MailVO mail);
+
+	// 참조자 정보 저장
+	void insertReferenced(ReferencedVO ref);
+	
+	// 첨부 파일 정보 저장
+	void insertMailFile(MailFileVO mailFile);
 
 	
 	

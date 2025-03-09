@@ -1,5 +1,7 @@
 package com.spring.app.mail.controller;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -12,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.app.common.MyUtil;
 import com.spring.app.employee.domain.EmployeeVO;
 import com.spring.app.mail.domain.MailFileVO;
 import com.spring.app.mail.domain.MailVO;
+import com.spring.app.mail.domain.ReferencedVO;
 import com.spring.app.mail.service.MailService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -448,5 +452,120 @@ public class MailController {
         
         return "result";
     }
+
+    
+
+    // 메일 작성 폼 보여주기
+    @GetMapping("/writeMail")
+    public ModelAndView writeMail(ModelAndView mav) {
+        mav.setViewName("mycontent/mail/writeMail"); // 메일 작성 폼 JSP 경로
+        return mav;
+    }
+
+    // 메일 작성 폼 데이터 처리
+    @PostMapping("/sendMail")
+    @ResponseBody
+    public Map<String, String> sendMail(
+            @RequestParam("recipient") String recipient, // 받는 사람
+            @RequestParam("cc") String cc, // 참조
+            @RequestParam("subject") String subject, // 제목
+            @RequestParam("content") String content, // 내용
+            @RequestParam(value = "attach", required = false) MultipartFile[] files, // 첨부 파일
+            HttpSession session) {
+
+        System.out.println("sendMail 메서드 호출됨");
+        System.out.println("받는 사람: " + recipient);
+        System.out.println("참조: " + cc);
+        System.out.println("제목: " + subject);
+        System.out.println("내용: " + content);
+        System.out.println("첨부 파일 개수: " + (files != null ? files.length : 0));
+    	
+        Map<String, String> response = new HashMap<>();
+
+        try {
+            // 로그인된 사용자 정보 세션에서 가져오기
+            EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+            if (loginuser == null) {
+                response.put("status", "fail");
+                response.put("message", "로그인이 필요합니다.");
+                return response;
+            }
+            
+            String sender = loginuser.getEmployeeNo(); // 발신자 사번
+
+            // 메일 정보 저장
+            MailVO mail = new MailVO();
+            mail.setSubject(subject);
+            mail.setContent(content);
+            mail.setFk_employeeNo(sender); // 발신자 사번
+            mail.setReadStatus("0"); // 기본값: 미열람
+            mail.setDeleteStatus("0"); // 기본값: 삭제되지 않음s
+            mail.setSaveStatus("0"); // 기본값: 일반 상태
+            mail.setImportantStatus("0"); // 기본값: 중요하지 않음
+            mail.setSendDate(new Date().toString()); // 현재 날짜로 설정
+            
+            // 메일 정보 저장 후 mailNo 반환
+            service.insertMail(mail); // mailNo가 설정됨
+            int mailNo = Integer.parseInt(mail.getMailNo()); // 생성된 mailNo
+
+            // 받는 사람과 참조자 정보 저장
+            List<ReferencedVO> referencedList = new ArrayList<>();
+
+            // 받는 사람 처리 (refStatus = 0)
+            if (recipient != null && !recipient.isEmpty()) {
+                String[] recipients = recipient.split(",");
+                for (String r : recipients) {
+                    ReferencedVO ref = new ReferencedVO();
+                    ref.setRefMail(r.trim());
+                    ref.setRefStatus(String.valueOf(0)); // 받는 사람
+                    referencedList.add(ref);
+                }
+            }
+
+            // 참조 처리 (refStatus = 1)
+            if (cc != null && !cc.isEmpty()) {
+                String[] ccs = cc.split(",");
+                for (String c : ccs) {
+                    ReferencedVO ref = new ReferencedVO();
+                    ref.setRefMail(c.trim());
+                    ref.setRefStatus(String.valueOf(0)); // 참조
+                    referencedList.add(ref);
+                }
+            }
+
+            // 첨부 파일 처리
+            List<MailFileVO> fileList = new ArrayList<>();
+            if (files != null && files.length > 0) {
+                for (MultipartFile file : files) {
+                    MailFileVO mailFile = new MailFileVO();
+                    mailFile.setFileName(file.getOriginalFilename());
+                    mailFile.setFileSize(String.valueOf(file.getSize()));
+                    mailFile.setOrgFileName(file.getOriginalFilename());
+                    fileList.add(mailFile);
+                }
+            }
+            
+            // 참조자 정보 저장
+            for (ReferencedVO ref : referencedList) {
+                service.insertReferenced(ref);
+            }
+            
+            // 첨부 파일 정보 저장
+            for (MailFileVO mailFile : fileList) {
+                service.insertMailFile(mailFile);
+            }
+
+            // 메일 전송 실행
+            // service.sendMail(mail, referencedList, fileList);
+
+            response.put("status", "success");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("status", "fail");
+        }
+
+        return response;
+    }
+    
 	
 }

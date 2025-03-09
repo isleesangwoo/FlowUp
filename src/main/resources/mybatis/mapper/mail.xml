@@ -289,6 +289,27 @@
 	    FROM tbl_mailFile
 	    WHERE fk_mailNo = #{mailNo}
 	</select>
+	
+	
+	<!-- 메일 작성 -->
+	
+	<!-- 메일 정보 저장 -->
+	<insert id="insertMail" parameterType="MailVO" useGeneratedKeys="true" keyProperty="mailNo">
+	    INSERT INTO tbl_mail (mailNo, subject, content, fk_employeeNo, readStatus, deleteStatus, saveStatus, importantStatus, sendDate)
+	    VALUES (mailSeq.nextval, #{subject}, #{content}, #{fk_employeeNo}, #{readStatus}, #{deleteStatus}, #{saveStatus}, #{importantStatus}, #{sendDate})
+	</insert>
+	
+	<!-- 참조자 정보 저장 -->
+	<insert id="insertReferenced" parameterType="ReferencedVO">
+	    INSERT INTO tbl_referenced (refMailNo, refStatus, refMail, fk_mailNo)
+	    VALUES (referencedSeq.nextval, #{refStatus}, #{refMail}, #{fk_mailNo})
+	</insert>
+	
+	<!-- 첨부 파일 정보 저장 -->
+	<insert id="insertMailFile" parameterType="MailFileVO">
+	    INSERT INTO tbl_mailFile (fileNo, fileName, orgFileName, fileSize, fk_mailNo)
+	    VALUES (mailFileSeq.nextval, #{fileName}, #{orgFileName}, #{fileSize}, #{fk_mailNo})
+	</insert>
 
 </mapper>
 
