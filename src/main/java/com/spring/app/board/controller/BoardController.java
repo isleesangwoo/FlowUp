@@ -1126,17 +1126,33 @@ public class BoardController {
 	  return map;
   }
   
-  // 댓글 목록조회하기
-  @GetMapping("getComment")
-  @ResponseBody
-  public Map<String, Object> getComment (@RequestParam String postNo,HttpServletRequest request) {
+	//댓글 목록조회하기
+	 @GetMapping("getComment")
+	 @ResponseBody
+	 public Map<String, Object> getComment (@RequestParam String postNo,
+											  @RequestParam(value = "page", defaultValue = "1") int page,
+										        @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+										        @RequestParam(required = false, defaultValue = "0") Integer reload,
+										        HttpServletRequest request) {
+		  
+		 System.out.println("page : " + page);
+		 int start = 0 ;
+		 if(reload == 1) { // 댓글 수정 삭제 일 시 
+			 start = (1 - 1) * pageSize + 1; // 시작 ROWNUM
+		 }
+		 else {
+			 start = (page - 1) * pageSize + 1; // 시작 ROWNUM
+		 }
+	      
+	   int end = page * pageSize; // 끝 ROWNUM
 	  
-	   List<Map<String, Object>> commentList = service.getComment(postNo); // 댓글 목록
+	   List<Map<String, Object>> commentList = service.getComment(postNo,start, end); // 댓글 목록
 	   int commentCount = service.getCommentCount(postNo); // 댓글 개수 
 	
 	   Map<String, Object> map = new HashMap<>();
 	   map.put("commentList", commentList);
 	   map.put("commentCount", commentCount);
+	   map.put("hasMore", commentCount > end); // 더 불러올 댓글이 있는지 확인
 	   
 	   
 	   String login_profileImg = ""; // 대댓글을 작성하는 사용자의 프로필 이미지값을 알아오기 위함.
@@ -1150,7 +1166,7 @@ public class BoardController {
 	   map.put("login_profileImg", login_profileImg);
 	   
 	   return map;
-  }
+ }
   
   // 댓글 수정하기
   @PostMapping("updateComment")

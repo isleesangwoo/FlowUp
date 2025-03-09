@@ -469,8 +469,8 @@ public class BoardService_imple implements BoardService {
 
 	// 해당 게시글의 댓글 조회
 	@Override
-	public List<Map<String, Object>> getComment(String postNo) {
-		List<Map<String, Object>> commentList= dao.getComment(postNo); // 해당 게시글의 댓글 조회
+	public List<Map<String, Object>> getComment(String postNo,int start,int end) {
+		List<Map<String, Object>> commentList= dao.getComment(postNo,start,end); // 해당 게시글의 댓글 조회
 		return commentList;
 	}
 

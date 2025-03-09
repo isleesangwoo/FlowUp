@@ -132,7 +132,7 @@ public interface BoardDAO {
 	int insertComment(String postNo, String login_userid, String login_name, String commentContent);
 
 	// 해당 게시글의 댓글 조회
-	List<Map<String, Object>> getComment(String postNo);
+	List<Map<String, Object>> getComment(String postNo,int start,int end);
 
 	// 댓글 수정하기
 	int updateComment(String commentNo,String content);

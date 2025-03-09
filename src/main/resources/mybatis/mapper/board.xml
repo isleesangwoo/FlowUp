@@ -503,17 +503,25 @@
    		<result property="profileImg"    column="profileImg"    javaType="String"/>
    		<result property="positionName"    column="positionName"    javaType="String"/>
    </resultMap>
-	<select id="getComment" parameterType="String" resultMap="getComment_map">
-	select 
-    C.commentNo, C.fk_postNo, C.fk_employeeNo, C.name, C.content, C.regDate, C.groupNo, C.fk_commentNo, C.depthNo,E.profileImg, ps.positionName
-	from tbl_comment C
-	join tbl_employee E 
-	on C.fk_employeeNo = E.employeeNo
-    JOIN tbl_position ps 
-    on e.FK_positionNo = ps.positionNo
-	WHERE fk_postNo = #{postNo} and C.status=1
-	ORDER BY C.groupNo ASC, C.commentNo ASC
-	</select>
+	<select id="getComment" parameterType="map" resultMap="getComment_map">
+    SELECT * FROM (
+        SELECT A.*, ROWNUM AS RNUM 
+        FROM (
+            SELECT 
+                C.commentNo, C.fk_postNo, C.fk_employeeNo, C.name, 
+                C.content, C.regDate, C.groupNo, C.fk_commentNo, C.depthNo, 
+                E.profileImg, ps.positionName
+            FROM tbl_comment C
+            JOIN tbl_employee E ON C.fk_employeeNo = E.employeeNo
+            JOIN tbl_position ps ON E.FK_positionNo = ps.positionNo
+            WHERE C.fk_postNo = #{postNo} AND C.status = 1
+            ORDER BY C.groupNo desc, C.commentNo ASC
+        ) A
+        WHERE ROWNUM &lt;= #{end} 
+    )
+    WHERE RNUM >= #{start}
+</select>
+
 	
 	
 <!-- 	댓글 수정하기 -->

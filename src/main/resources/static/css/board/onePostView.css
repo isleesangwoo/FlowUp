@@ -360,7 +360,15 @@
 	border: none;
 	padding: var(--size10) var(--size16);
 }
-
+#loadMoreBtnElmt{
+	text-align: center;
+	border-top : solid 1px #a6a6a6;
+	height: 40px;
+	line-height: 40px;
+}
+#loadMoreBtn:hover{
+	color: #a6a6a6;
+}
 .btnDefaultDesignNone { /* 버튼의 기본 디자인을 없애는 클래스 */
 	background-color: transparent;
 	border: none;
