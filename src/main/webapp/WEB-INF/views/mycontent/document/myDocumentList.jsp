@@ -23,13 +23,40 @@
 
 	$(document).ready(function(){
 		
-		$("h1#doc_title").text("기안문서함");
+		$("h1#doc_title").text("기안문서함"); // 문서함 이름
+		
+		$("span#sortCnt_btn span").text("${requestScope.sizePerPage}");	// 페이지를 이동하더라도 한 페이지에 보여줄 문서 갯수가 저장되도록
+		$("input#searchWord").val("${requestScope.searchWord}");		// 페이지를 이동하더라도 검색어가 저장되도록
+		
+		// 검색 아이콘을 클릭했을 때
 		$("a.doc_search_btn").click(e=>{
-			alert("ddd");
+			getDocumentList()
+		});
+		
+		// 정렬 갯수를 클릭했을 때
+		$("span#sortCnt_btn ul li").on("click", function() {
+			getDocumentList()
+		});
+		
+		// 검색창에서 엔터 키를 눌렀을 때
+		$("input#searchWord").on("keydown", function(e){
+			if(e.keyCode===13){
+				getDocumentList();
+			}
+		});
+		
+		// 새로고침 버튼을 눌렀을 때
+		$("span#re_btn").click(e=>{
+			location.href = `<%= ctxPath%>/document/myDocumentList`;
 		});
 		
 	}); // end of $(document).ready(function(){})-------------------------------------------------
 	
+	function getDocumentList() {
+		let pageSize = $("span#sortCnt_btn span").text().trim(); // 한 페이지에 보여줄 문서 갯수
+		let searchWord = $("input#searchWord").val().trim(); // 검색어
+		location.href = `<%= ctxPath%>/document/myDocumentList?currentShowPageNo=1&sizePerPage=\${pageSize}&searchWord=\${searchWord}`;
+	}
 	
 </script>
 
@@ -99,6 +126,11 @@
 				</c:if>
 			</tbody>
 		</table>
+		
+		<%-- === #103. 페이지바 보여주기 === --%>
+		<div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+			${requestScope.pageBar}
+		</div>
 		
 	</div>
 </div>

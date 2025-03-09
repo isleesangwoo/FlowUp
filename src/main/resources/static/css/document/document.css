@@ -95,3 +95,7 @@ div#approval_line td {
 	min-width: 120px;
 }
 
+span.alert {
+	color: red;
+	font-weight: bold;
+}

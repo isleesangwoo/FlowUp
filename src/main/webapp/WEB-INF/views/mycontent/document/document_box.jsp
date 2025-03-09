@@ -27,7 +27,7 @@
             </span>
             
             <span>
-            	<input class="doc_search_text" type="text" placeholder="검색" />
+            	<input id="searchWord" class="doc_search_text" type="text" placeholder="검색" />
             	<a class="doc_search_btn">
              	<i class="fa-solid fa-magnifying-glass"></i>
             	</a>

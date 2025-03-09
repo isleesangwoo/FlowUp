@@ -16,6 +16,17 @@
 <%-- 각자 페이지에 해당되는 js 연결 --%>
 <script src="<%=ctxPath%>/js/document/document.js"></script>
 
+<!-- ikon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+
+<!-- jsTree -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+
+<!-- jsTree boot jQ cdn -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
 <script type="text/javascript">
 	
 	$(document).ready(function(){
@@ -51,9 +62,9 @@
 		<div class="mail_menu_container">
 			<ul>
 				<li onclick="location.href='<%= ctxPath%>/document/annual'"><a>휴가신청</a></li>
-				<li><a href="#">업무기안</a></li>
+				<li onclick="location.href='<%= ctxPath%>/document/overtime'"><a>연장근무신청</a></li>
 				<li><a href="#">지출품의</a></li>
-				<li><a href="#">연장근무신청</a></li>
+				<li><a href="#">업무기안</a></li>
 			</ul>
 		</div>
         <!-- 여기에 메일작성 폼을 만들어주세요!! -->

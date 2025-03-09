@@ -226,41 +226,71 @@ String ctxPath = request.getContextPath();
 					
 				</div>
 			</div>
-			<div>	
-				<table class="mt-5" style="width: 100%;">
-					<tbody>
-						<tr>
-							<th>제목</th>
-							<td>${document.subject}</td>
-						</tr>
-						<tr>
-							<th>휴가 종류</th>
-							<td><c:if test="${document.annualType == 1}">연차</c:if> <c:if
-									test="${document.annualType == 2}">오전반차</c:if> <c:if
-									test="${document.annualType == 3}">오후반차</c:if></td>
-						</tr>
-						<tr>
-							<th>사유</th>
-							<td>${document.reason}</td>
-						</tr>
-						<tr>
-							<th>기간 및 일시</th>
-							<td>${document.startDate} ~ ${document.endDate}</td>
-						</tr>
-						<tr>
-							<th>신청 연차 일수</th>
-							<td>${document.useAmount}</td>
-						</tr>
-						<tr>
-							<th class="pl-4" colspan="2" style="text-align: left;">
-								1. 연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 잔여 연차에 한하여 사용함을 원칙으로 한다.
-								<br>단, 최초 입사시에는 근로 기준법에 따라 발생 예정된 연차를 차용하여 월 1회 사용 할 수 있다.
-								<br>2. 경조사 휴가는 행사일을 증명할 수 있는 가족 관계 증명서 또는 등본, 청첩장 등 제출
-								<br>3. 공가(예비군/민방위)는 사전에 통지서를, 사후에 참석증을 반드시 제출
-							</th>
-						</tr>
-					</tbody>
-				</table>
+			<div>
+				<c:if test="${document.documentType == '휴가신청서'}">
+					<table class="mt-5" style="width: 100%;">
+						<tbody>
+							<tr>
+								<th>제목</th>
+								<td>${document.subject}</td>
+							</tr>
+							<tr>
+								<th>휴가 종류</th>
+								<td><c:if test="${document.annualType == 1}">연차</c:if> <c:if
+										test="${document.annualType == 2}">오전반차</c:if> <c:if
+										test="${document.annualType == 3}">오후반차</c:if></td>
+							</tr>
+							<tr>
+								<th>사유</th>
+								<td>${document.reason}</td>
+							</tr>
+							<tr>
+								<th>기간 및 일시</th>
+								<td>${document.startDate} ~ ${document.endDate}</td>
+							</tr>
+							<tr>
+								<th>신청 연차 일수</th>
+								<td>${document.useAmount} 일</td>
+							</tr>
+							<tr>
+								<th class="pl-4" colspan="2" style="text-align: left;">
+									1. 연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 잔여 연차에 한하여 사용함을 원칙으로 한다.
+									<br>단, 최초 입사시에는 근로 기준법에 따라 발생 예정된 연차를 차용하여 월 1회 사용 할 수 있다.
+									<br>2. 경조사 휴가는 행사일을 증명할 수 있는 가족 관계 증명서 또는 등본, 청첩장 등 제출
+									<br>3. 공가(예비군/민방위)는 사전에 통지서를, 사후에 참석증을 반드시 제출
+								</th>
+							</tr>
+						</tbody>
+					</table>
+				</c:if>
+				<c:if test="${document.documentType == '연장근무신청서'}">
+					<table class="mt-5" style="width: 100%;">
+						<tbody>
+							<tr>
+								<th>제목</th>
+								<td>${document.subject}</td>
+							</tr>
+							<tr>
+								<th>사유</th>
+								<td>${document.reason}</td>
+							</tr>
+							<tr>
+								<th>연장 근무 일자</th>
+								<td>${document.overtimeDate}</td>
+							</tr>
+							<tr>
+								<th>연장 근무 시간</th>
+								<td>3 시간</td>
+							</tr>
+							<tr>
+								<th class="pl-4" colspan="2" style="text-align: left;">
+									1. 연장 근무는 3시간을 규정으로 한다.
+									<br>2. 연장 근무 신청은 반드시 퇴근 시간 이전에 이루어져야 한다. 
+								</th>
+							</tr>
+						</tbody>
+					</table>
+				</c:if>
 			</div>
 		</div>
 	</div>
