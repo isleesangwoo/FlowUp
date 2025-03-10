@@ -34,11 +34,11 @@ $(document).ready(function() {
     }).on("dragover", function(e){ /* "dragover" 이벤트는 드롭대상인 박스 안에 Drag 한 파일이 머물러 있는 중일 때. 필수이벤트이다. dragover 이벤트를 적용하지 않으면 drop 이벤트가 작동하지 않음 */ 
         e.preventDefault();
         e.stopPropagation();
-        $(this).css("background-color", "#ffd8d8");
+        $(this).css("background-color", "#f9f9f9");
     }).on("dragleave", function(e){ /* "dragleave" 이벤트는 Drag 한 파일이 드롭대상인 박스 밖으로 벗어났을 때  */
         e.preventDefault();
         e.stopPropagation();
-        $(this).css("background-color", "#fff");
+        $(this).css("background-color", "");
     }).on("drop", function(e){      /* "drop" 이벤트는 드롭대상인 박스 안에서 Drag 한것을 Drop(Drag 한 파일(객체)을 놓는것) 했을 때. 필수이벤트이다. */
         e.preventDefault();
 
@@ -508,7 +508,7 @@ $(document).ready(function() {
 		}
 		
 		if($("input[name='boardName']").val().length > 15){
-			alert("게시판 제목을 15자 이내로 입력해주세요.")
+			alert("게시판 제목을 15자 이하로 입력해주세요.")
 			return;
 		}
 		
@@ -620,64 +620,69 @@ function goAddBoardGroup(){
 </script>
 
 <!-- 글작성 폼 -->
-    <div id="modal" class="modal_bg">
+    <div id="modal" class="modal_bg" >
     </div>
-    <div class="modal_container">
-	    <div style="padding: var(--size22);">
+    <div class="modal_container" style="overflow-y: auto;">
+	    <div>
 	        <!-- 여기에 글작성 폼을 만들어주세요!! -->
 			<span id="modal_title">글쓰기</span>
 			
 			<div id="modal_content_page">
 				<form name="addPostFrm" enctype="multipart/form-data">
-					<span>To.</span>
-					<select name="fk_boardNo">
-					</select>
-					<hr>
-					<table style="width: 100%;">
-						<tr>
-							<td style="width: 95px;">제목</td>
-							<td ><input type="text" name="subject" autocomplete="off" style="width: 100%; "></td>
-						</tr>
-						<tr>
-							<td>파일첨부</td>
-							<td>
-								<div id="fileDrop" class="fileDrop border border-secondary">
-									<p>이 곳에 파일을 드래그 하세요.</p>
-								</div>
-							</td>
-						</tr>
-						<tr>
-						     <td>내 용</td>
-						     <td>
-						 	    <textarea name="content" id="content" rows="10" cols="100" style="width: 100%;height:500px;"></textarea>
-						     </td>
-					  	</tr>
-					  	<tr>
-					  		<td>댓글작성</td>
-					  		<td>
-					  			<input type="radio" id="allowYes" name="allowComments" value="1" checked>
-								<label for="allowYes" style="margin:0;" >허용</label>
-								
-								<input type="radio" id="allowNo" name="allowComments" value="0">
-								<label for="allowNo" style="margin:0;">허용하지 않음</label>
-					  		</td>
-					  	</tr>
-					  	<tr>
-					  		<td>공지 유무</td>
-					  		<td>
-					  			<input type="checkbox" id="isnotice" name="isNotice" value=1>
-								<label for="isnotice" style="margin:0;">클릭 시 선택</label>
-								
-								<div id="isNoticeElmt"> <!-- 미체크시 hide 상태임 -->
-									<input type="text" name="startNotice" id="datepicker" maxlength="10" autocomplete='off' size="4"/> 
-									-
-									<input type="text" name="noticeEndDate" id="toDate" maxlength="10" autocomplete='off' size="4"/>
-								</div> 
-					  		</td>
-					  	</tr>
-					</table>
+					<span id="selectBoardGroup">To.
+						<select name="fk_boardNo">
+						</select>
+					</span>
+					<div style="padding:var(--size22);">
+						<table style="width: 100%;">
+							<tr>
+								<td style="width: 95px;">제목</td>
+								<td ><input type="text" name="subject" autocomplete="off" style="width: 100%; "></td>
+							</tr>
+							<tr>
+								<td>파일첨부</td>
+								<td>
+									<div id="fileDrop" class="fileDrop"><%-- class= border border-secondary --%>
+										<p style="text-align: center;">이 곳에 파일을 드래그 하세요.</p>
+									</div>
+								</td>
+							</tr>
+							<tr>
+							     <td>내 용</td>
+							     <td>
+							 	    <textarea name="content" id="content" rows="10" cols="100" style="width: 100%;height:450px;"></textarea>
+							     </td>
+						  	</tr>
+						  	<tr>
+						  		<td>댓글작성</td>
+						  		<td>
+						  			<input type="radio" id="allowYes" name="allowComments" value="1" checked>
+									<label for="allowYes" style="margin:0;" >허용</label>
+									
+									<input type="radio" id="allowNo" name="allowComments" value="0">
+									<label for="allowNo" style="margin:0;">허용하지 않음</label>
+						  		</td>
+						  	</tr>
+						  	<tr>
+						  		<td>공지 유무</td>
+						  		<td>
+						  			<input type="checkbox" id="isnotice" name="isNotice" value=1>
+									<label for="isnotice" style="margin:0;">클릭 시 선택</label>
+									<span id="addPostBtnElmt">
+										<button type="button" id="addPostBtn" class="btnDefaultDesignNone"><i class="fa-solid fa-pencil"></i> 등록</button>
+									</span>
+									<div id="isNoticeElmt"> <!-- 미체크시 hide 상태임 -->
+										<input type="text" name="startNotice" id="datepicker" maxlength="10" autocomplete='off' size="4"/> 
+										-
+										<input type="text" name="noticeEndDate" id="toDate" maxlength="10" autocomplete='off' size="4"/>
+									</div> 
+									
+									
+						  		</td>
+						  	</tr>
+						</table>
+					</div>
 					
-					<button type="button" id="addPostBtn" class="btnDefaultDesignNone">등록</button>
 				</form>
 			</div>
 		</div>

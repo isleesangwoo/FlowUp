@@ -24,11 +24,11 @@ $(document).ready(()=>{
     }).on("dragover", function(e){ /* "dragover" 이벤트는 드롭대상인 박스 안에 Drag 한 파일이 머물러 있는 중일 때. 필수이벤트이다. dragover 이벤트를 적용하지 않으면 drop 이벤트가 작동하지 않음 */ 
         e.preventDefault();
         e.stopPropagation();
-        $(this).css("background-color", "#ffd8d8");
+        $(this).css("background-color", "#f9f9f9");
     }).on("dragleave", function(e){ /* "dragleave" 이벤트는 Drag 한 파일이 드롭대상인 박스 밖으로 벗어났을 때  */
         e.preventDefault();
         e.stopPropagation();
-        $(this).css("background-color", "#fff");
+        $(this).css("background-color", "");
     }).on("drop", function(e){      /* "drop" 이벤트는 드롭대상인 박스 안에서 Drag 한것을 Drop(Drag 한 파일(객체)을 놓는것) 했을 때. 필수이벤트이다. */
         e.preventDefault();
 

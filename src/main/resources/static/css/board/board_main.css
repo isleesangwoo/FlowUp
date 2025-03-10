@@ -64,7 +64,7 @@
 	min-height: 590px;
 }
 .onePostElmt{
-	padding: 10px 15px;
+	padding: var(--size12) var(--size22);;
 	border-bottom: solid 1px #c8c8c8;
 	border-right: solid 1px #c8c8c8;
 }
@@ -88,6 +88,7 @@
 .postContent{
 	display: block;
 	font-size: 11pt;
+	margin-bottom: var(--size14);
 }
 .postContent:hover{
 	color:#808080;
@@ -96,7 +97,11 @@
 	margin-right: 15px;
 }
 .postCreateBy{
-	margin-right: 15px;
+	margin-right: var(--size8);
+	font-size:var(--size14);
+}
+.postCreateAt{
+	font-size:var(--size14);
 }
 .postLikeBtn{
 /* 	display:inline-block; */

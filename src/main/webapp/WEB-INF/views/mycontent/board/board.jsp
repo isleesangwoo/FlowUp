@@ -73,8 +73,8 @@
 									</i>
 								</c:if>
 							</span>
-							<span id="postCreateBy">${post.name} ${post.positionName}</span>
-							<span id="postCreateAt">${post.regDate}</span>
+							<span class="postCreateBy">${post.name} ${post.positionName}</span>
+							<span class="postCreateAt">${post.regDate}</span>
 						</div>
 					</c:forEach>
 				</div>

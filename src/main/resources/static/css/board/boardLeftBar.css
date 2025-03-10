@@ -23,7 +23,7 @@
 
 #modal_title {
     font-size: var(--size24);
-    padding-bottom: var(--size12);
+    padding: var(--size12) var(--size22);
     display: block;
 }
 /* === 모달 끝 === */
@@ -163,6 +163,35 @@ label{
     background-color: var(--baseColor1);
 }
 
+#selectBoardGroup{
+	width: 100%;
+	display:inline-block;
+	padding: 0 var(--size22) var(--size18) var(--size22);
+	border-bottom: solid 1px #c8c8c8;
+}
+td {
+    padding: var(--size8) 0; 
+    vertical-align: top;     
+    text-align: left;
+}
+
+#fileDrop{
+	border: 2px dashed #ddd;
+    padding: 20px;
+    margin-bottom: 10px;
+    color: #666;
+}
+
+#fileDrop:hover {
+  background-color: #f9f9f9;
+  width: 100%;
+}
+.delete:hover{
+	cursor: pointer;
+}
+#addPostBtnElmt{
+	float: right;
+}
 
 
 /* 현재 페이지에 이렇게 넣어주세요! */

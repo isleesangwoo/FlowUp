@@ -29,7 +29,7 @@
 							제목  
 						</td>
 						<td style="width: 100%;">
-							<input type="text" value='${boardvo.boardName}' name="boardName"  class="w_max"/>
+							<input type="text" value='${boardvo.boardName}' name="boardName" id="updateBoardName" class="w_max"/>
 						</td>
 					</tr>
 					
@@ -38,12 +38,12 @@
 							설명
 						</td>
 						<td>
-							<input type="text" value='${boardvo.boardDesc}' name="boardDesc" class="w_max"/>
+							<input type="text" value='${boardvo.boardDesc}' name="boardDesc" id="updateBoardDesc" class="w_max"/>
 						</td>
 					</tr>
 					
 					<tr>
-					    <td class="columnTitle">공개 범위 설정</td>
+					    <td class="columnTitle">공개 설정</td>
 					    <td>
 					        <div class="radio-container">
 							    <label>
@@ -66,9 +66,9 @@
 						</td>
 					</tr>
 					
-					<tr>
+					<tr id="departmentSelect">
 						<td class="columnTitle">
-							<p style="font-weight: bold;margin: 0px;">공개 설정</p>
+							<p style="font-weight: bold;margin: 0px;">공개 부서<br>선택하기</p>
 						</td>
 						<td>
 							<div id="isPublicDeptUpdate">
