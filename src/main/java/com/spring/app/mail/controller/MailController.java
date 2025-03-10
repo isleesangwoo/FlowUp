@@ -466,32 +466,33 @@ public class MailController {
     @PostMapping("/sendMail")
     @ResponseBody
     public Map<String, String> sendMail(
-            @RequestParam("recipient") String recipient, // 받는 사람
+            @RequestParam("recipient") String recipient, // 받는 사람 (이름)
             @RequestParam("cc") String cc, // 참조
             @RequestParam("subject") String subject, // 제목
             @RequestParam("content") String content, // 내용
             @RequestParam(value = "attach", required = false) MultipartFile[] files, // 첨부 파일
             HttpSession session) {
 
-        System.out.println("sendMail 메서드 호출됨");
-        System.out.println("받는 사람: " + recipient);
-        System.out.println("참조: " + cc);
-        System.out.println("제목: " + subject);
-        System.out.println("내용: " + content);
-        System.out.println("첨부 파일 개수: " + (files != null ? files.length : 0));
-    	
         Map<String, String> response = new HashMap<>();
 
+        // 로그인된 사용자 정보 가져오기
+        EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+        if (loginuser == null) {
+            response.put("status", "fail");
+            response.put("message", "로그인이 필요합니다.");
+            return response;
+        }
+
+        String sender = loginuser.getEmployeeNo(); // 발신자 사번
+
         try {
-            // 로그인된 사용자 정보 세션에서 가져오기
-            EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
-            if (loginuser == null) {
+            // 받는 사람의 employeeNo 조회
+            String recipientEmployeeNo = service.findEmployeeNoByName(recipient);
+            if (recipientEmployeeNo == null || recipientEmployeeNo.isEmpty()) {
                 response.put("status", "fail");
-                response.put("message", "로그인이 필요합니다.");
+                response.put("message", "받는 사람의 정보를 찾을 수 없습니다.");
                 return response;
             }
-            
-            String sender = loginuser.getEmployeeNo(); // 발신자 사번
 
             // 메일 정보 저장
             MailVO mail = new MailVO();
@@ -499,37 +500,39 @@ public class MailController {
             mail.setContent(content);
             mail.setFk_employeeNo(sender); // 발신자 사번
             mail.setReadStatus("0"); // 기본값: 미열람
-            mail.setDeleteStatus("0"); // 기본값: 삭제되지 않음s
+            mail.setDeleteStatus("0"); // 기본값: 삭제되지 않음
             mail.setSaveStatus("0"); // 기본값: 일반 상태
             mail.setImportantStatus("0"); // 기본값: 중요하지 않음
             mail.setSendDate(new Date().toString()); // 현재 날짜로 설정
-            
-            // 메일 정보 저장 후 mailNo 반환
-            service.insertMail(mail); // mailNo가 설정됨
-            int mailNo = Integer.parseInt(mail.getMailNo()); // 생성된 mailNo
 
-            // 받는 사람과 참조자 정보 저장
-            List<ReferencedVO> referencedList = new ArrayList<>();
+            // 메일 정보 저장 (MAILNO는 MyBatis에서 자동 생성)
+            service.insertMail(mail);
 
-            // 받는 사람 처리 (refStatus = 0)
-            if (recipient != null && !recipient.isEmpty()) {
-                String[] recipients = recipient.split(",");
-                for (String r : recipients) {
-                    ReferencedVO ref = new ReferencedVO();
-                    ref.setRefMail(r.trim());
-                    ref.setRefStatus(String.valueOf(0)); // 받는 사람
-                    referencedList.add(ref);
-                }
+            // 생성된 MAILNO 확인
+            String mailNo = mail.getMailNo();
+            if (mailNo == null || mailNo.isEmpty()) {
+                throw new Exception("메일 번호 생성 실패");
             }
+
+            // 받는 사람 정보 저장
+            ReferencedVO recipientRef = new ReferencedVO();
+            recipientRef.setRefMail(recipientEmployeeNo); // 받는 사람의 employeeNo
+            recipientRef.setRefStatus("0"); // 받는 사람
+            recipientRef.setFk_mailNo(mailNo); // 메일 번호 설정
+            service.insertReferenced(recipientRef);
 
             // 참조 처리 (refStatus = 1)
             if (cc != null && !cc.isEmpty()) {
                 String[] ccs = cc.split(",");
                 for (String c : ccs) {
-                    ReferencedVO ref = new ReferencedVO();
-                    ref.setRefMail(c.trim());
-                    ref.setRefStatus(String.valueOf(0)); // 참조
-                    referencedList.add(ref);
+                    String ccEmployeeNo = service.findEmployeeNoByName(c.trim());
+                    if (ccEmployeeNo != null && !ccEmployeeNo.isEmpty()) {
+                        ReferencedVO ccRef = new ReferencedVO();
+                        ccRef.setRefMail(ccEmployeeNo); // 참조자의 employeeNo
+                        ccRef.setRefStatus("1"); // 참조
+                        ccRef.setFk_mailNo(mailNo); // 메일 번호 설정
+                        service.insertReferenced(ccRef);
+                    }
                 }
             }
 
@@ -541,27 +544,22 @@ public class MailController {
                     mailFile.setFileName(file.getOriginalFilename());
                     mailFile.setFileSize(String.valueOf(file.getSize()));
                     mailFile.setOrgFileName(file.getOriginalFilename());
+                    mailFile.setFk_mailNo(mailNo); // 메일 번호 설정
                     fileList.add(mailFile);
                 }
             }
-            
-            // 참조자 정보 저장
-            for (ReferencedVO ref : referencedList) {
-                service.insertReferenced(ref);
-            }
-            
+
             // 첨부 파일 정보 저장
             for (MailFileVO mailFile : fileList) {
                 service.insertMailFile(mailFile);
             }
 
-            // 메일 전송 실행
-            // service.sendMail(mail, referencedList, fileList);
-
             response.put("status", "success");
+            response.put("message", "메일이 성공적으로 전송되었습니다.");
         } catch (Exception e) {
             e.printStackTrace();
             response.put("status", "fail");
+            response.put("message", "메일 전송 중 오류가 발생했습니다.");
         }
 
         return response;

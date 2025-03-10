@@ -72,7 +72,8 @@ public interface MailService {
 	// 첨부 파일 정보 저장
 	void insertMailFile(MailFileVO mailFile);
 
-	
+	// 이름으로 employeeNo 조회
+    String findEmployeeNoByName(String name);
 	
 
 }

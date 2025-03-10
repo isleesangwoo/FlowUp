@@ -311,6 +311,11 @@
 	    VALUES (mailFileSeq.nextval, #{fileName}, #{orgFileName}, #{fileSize}, #{fk_mailNo})
 	</insert>
 
+	<!-- 받는사람 이름으로 사원 번호 조회 -->
+	<select id="findEmployeeNoByName" resultType="String">
+	    SELECT employeeNo FROM tbl_employee WHERE name = #{name}
+	</select>
+
 </mapper>
 
 

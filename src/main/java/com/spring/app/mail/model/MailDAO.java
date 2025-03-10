@@ -80,5 +80,7 @@ public interface MailDAO {
     // 첨부 파일 정보 저장
     void insertMailFile(MailFileVO file);
 
+	String findEmployeeNoByName(String name);
+
 	
 }

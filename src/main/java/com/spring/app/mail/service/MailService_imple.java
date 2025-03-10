@@ -253,6 +253,15 @@ public class MailService_imple implements MailService {
         mailDAO.insertMailFile(mailFile);
     }
 
+    
+    // 이름으로 employeeNo 조회
+	@Override
+	public String findEmployeeNoByName(String name) {
+		
+        return mailDAO.findEmployeeNoByName(name);
+	}
+
+    
 
 	
 }
