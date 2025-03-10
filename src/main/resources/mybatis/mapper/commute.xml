@@ -133,6 +133,7 @@
 		on D.DOCUMENTNO = A.DOCUMENTNO
 		where fk_employeeno = #{fk_employeeNo}
 		and to_char(startdate, 'yyyy') = #{year}
+		and D.status = 1
 		group by to_char(startdate, 'yyyy')
    	</select>
    	
@@ -145,7 +146,9 @@
    		select to_char(startdate, 'mm/dd')|| ' - ' ||to_char(enddate, 'mm/dd') as userange, useamount, reason
 		from tbl_document D join tbl_draft_annual A
 		on D.DOCUMENTNO = A.DOCUMENTNO
-		where D.fk_employeeno = #{fk_employeeNo} and to_char(startdate, 'yyyy') = #{year}
+		where D.fk_employeeno = #{fk_employeeNo}
+		and to_char(startdate, 'yyyy') = #{year}
+		and D.status = 1
 		order by startdate asc 
    	</select>
    	
@@ -226,8 +229,8 @@
    	<select id="totalCnt" parameterType="HashMap" resultType="int">
    		select count(*) as totalcount
 		from tbl_employee
-		where 1=1
-		<if test="departmentNo != 'all'">
+		where status = 1
+		<if test="departmentNo != 'all' and departmentNo != null">
 		and fk_departmentno = #{departmentNo}
 		</if>
 		<if test='searchType == "name" and searchWord != ""'>
@@ -260,6 +263,90 @@
 			and E.fk_departmentNo = #{departmentNo}
 		</if>
    	</select>
+   	
+   	
+   	
+   	
+   	<resultMap type="HashMap" id="getAnnualTableInfoMap">
+   		<result property="rno" 				column="rno" 			javaType="String" />
+   		<result property="name" 			column="name" 			javaType="String" />
+   		<result property="departmentname" 	column="departmentname" javaType="String" />
+   		<result property="registerDate" 	column="registerDate" 	javaType="String" />
+   		<result property="workYear" 		column="workYear" 		javaType="String" />
+   		<result property="occurAnnual" 		column="occurAnnual" 	javaType="String" />
+   		<result property="overAnnual" 		column="overAnnual" 	javaType="String" />
+   		<result property="addAnnual" 		column="addAnnual" 		javaType="String" />
+   		<result property="totalannual" 		column="totalannual" 	javaType="String" />
+   		<result property="usedannual" 		column="usedannual" 	javaType="String" />
+   		<result property="remainingannual" 	column="remainingannual" javaType="String" />
+   	</resultMap>
+   	<select id="getAnnualTableInfo" parameterType="HashMap" resultMap="getAnnualTableInfoMap">
+   		select rno, name, departmentname, registerDate, workYear, occurAnnual, overAnnual, addAnnual, totalannual, usedannual, remainingannual
+	    from
+	    (
+	        select row_number() over(order by registerDate asc) as rno
+	             , name
+	             , departmentname
+	             , to_char(registerDate, 'yyyy-mm-dd') as registerDate
+			     , workYear
+	             , nvl(occurAnnual, 0) as occurAnnual
+	             , nvl(overAnnual, 0) as overAnnual
+	             , nvl(addAnnual, 0) as addAnnual
+			     , nvl(occurAnnual, 0) + nvl(overAnnual, 0) + nvl(addAnnual, 0) as totalannual
+			     , nvl(usedannual, 0) as usedannual
+				 , nvl(occurAnnual, 0) + nvl(overAnnual, 0) + nvl(addAnnual, 0) - nvl(usedannual, 0) as remainingannual
+			from
+			(
+			select employeeNo
+	             , case when sysdate - to_date( to_char(sysdate, 'yyyy') || to_char(registerDate,'mmdd'), 'yyyymmdd') >= 0
+                    then extract(year from sysdate) - to_number( to_char(registerDate,'yyyy') ) + 1
+                    else extract(year from sysdate) - to_number( to_char(registerDate,'yyyy') ) 
+                    end AS workYear
+	             , name
+	             , departmentname
+	             , registerDate
+			from tbl_employee E join tbl_department D
+	        on E.fk_departmentno = D.departmentno
+			where E.status = 1 
+			<if test='searchType == "name" and searchWord != ""'>
+			and lower(name) like '%'||lower(#{searchWord})||'%' 
+			</if>
+			)E 
+			join
+			(
+			select occurAnnual, overAnnual, addAnnual, fk_employeeNo
+			from tbl_annual
+			where year = #{year}
+			)A
+			on E.employeeNo = A.fk_employeeNo 
+			left join
+			(
+			    select D.fk_employeeNo , sum(useamount) as usedannual
+			    from tbl_document D join tbl_draft_annual T
+			    on D.DOCUMENTNO = T.DOCUMENTNO
+			    where to_char(draftdate, 'yyyy') = #{year} and D.status = 1
+			    group by D.fk_employeeNo
+			)B
+			on E.employeeNo = B.fk_employeeNo
+	    )
+	    WHERE rno between to_number(#{startRno}) and to_number(#{endRno})
+   	</select>
+   	
+   	<select id="totalCnt_annaul" parameterType="HashMap" resultType="int">
+   		select count(*)
+		from tbl_employee E join tbl_annual A
+		on E.employeeno = A.fk_employeeno
+		where E.status = 1
+		and A.year = #{year}
+		<if test='searchType == "name" and searchWord != ""'>
+		and lower(name) like '%'||lower(#{searchWord})||'%' 
+		</if>
+   	</select>
+   	
+   	
+   	
+   	
+   	
    	
    	
    	

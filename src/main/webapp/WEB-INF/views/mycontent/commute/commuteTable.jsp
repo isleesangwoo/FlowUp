@@ -296,10 +296,6 @@ div.hoverDiv:hover {
    		const searchType = $("select#searchType").val();
    		const searchWord = $("input#searchWord").val();
    		
-   		console.log("sizePerPage : " + sizePerPage);
-   		console.log("searchType : " + searchType);
-   		console.log("searchWord : " + searchWord);
-   		
    		
     	$.ajax({
     		url:"<%=ctxPath%>/commute/getCommuteTableInfo",
@@ -376,6 +372,8 @@ div.hoverDiv:hover {
 				
 				$("tbody#tbody").html(html_b);
 				
+				getCommuteCnt(today);
+				
 			},
 			error: function(request, status, error){
 			    alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -384,7 +382,71 @@ div.hoverDiv:hover {
 	   	});
 		
     };
- 
+
+
+    
+    
+    
+    
+    
+    
+    
+   	function getCommuteCnt(today) {
+    	
+    	const departmentNo = "${requestScope.departmentNo}";
+    	
+    	const year = today.getFullYear();
+    	const month = String(today.getMonth()+1).padStart(2, '0'); 
+    	const year_month = year + "-" + month
+    	
+   		$.ajax({
+    		url:"<%=ctxPath%>/commute/getCommuteCnt",
+			type:"get",
+			data:{"departmentNo":departmentNo
+				 ,"year_month":year_month},
+			dataType:"json",
+			success:function(json) {
+				
+				$("div#latenessCnt").html(json.latenessCnt);
+				$("div#earlyLeaveCnt").html(json.earlyLeaveCnt);
+				$("div#absenceCnt").html(json.absenceCnt);
+				$("div#halfdayMorningCnt").html(json.halfdayMorningCnt);
+				$("div#halfdayAfternoonCnt").html(json.halfdayAfternoonCnt);
+				$("div#vacationCnt").html(json.vacationCnt);
+				$("div#autoEndCnt").html(json.autoEndCnt);
+				
+				
+				
+				
+			},
+			error: function(request, status, error){
+		        alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		    }
+    		
+    	}); // ajax
+    	
+    	
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     // 그 달이 몇주차 까지 있는지 
     function last_week(today) {
@@ -469,6 +531,76 @@ div.hoverDiv:hover {
 				</div>
 	
 			</div>
+			
+			
+			
+			
+			
+			
+			
+			<div class="ml-1 mr-1 mb-5" style="border: solid 1px #e5e5e5;">
+		
+			<div style="display: flex; height: 120px; align-items: center; ">
+			
+					<div style="align-items: center; width: 12%; margin-left: auto;">
+						<div style="text-align: center;  width: 100%; font-size:14pt; margin-bottom:10px; color:#2985DB">늦은 출근</div>
+						<div id="latenessCnt" style="text-align: center;  width: 100%; font-size:14pt;">0</div>
+					</div>
+					
+					<div style="align-items: center; width: 12%;">
+						<div style="text-align: center;  width: 100%; font-size:14pt; margin-bottom:10px; color:#2985DB">이른 퇴근</div>
+						<div id="earlyLeaveCnt" style="text-align: center;  width: 100%; font-size:14pt;">0</div>
+					</div>
+					
+					<div style="align-items: center; width: 12%;">
+						<div style="text-align: center;  width: 100%; font-size:14pt; margin-bottom:10px; color:#2985DB">결근</div>
+						<div id="absenceCnt" style="text-align: center;  width: 100%; font-size:14pt;">0</div>
+					</div>
+					
+					<div style="height: 120px; width: 3px;">
+						<span style="background-color: #e5e5e5; width: 1px; height: 70px; display: inline-block; margin: 25px 1px;"></span>
+					</div>
+					
+					<div style="align-items: center; width: 12%;">
+						<div style="text-align: center;  width: 100%; font-size:14pt; margin-bottom:10px; color:#2985DB">오전 반차</div>
+						<div id="halfdayMorningCnt" style="text-align: center;  width: 100%; font-size:14pt;">0</div>
+					</div>
+					
+					<div style="align-items: center; width: 12%;">
+						<div style="text-align: center;  width: 100%; font-size:14pt; margin-bottom:10px; color:#2985DB">오후 반차</div>
+						<div id="halfdayAfternoonCnt" style="text-align: center;  width: 100%; font-size:14pt;">0</div>
+					</div>
+					
+					<div style="align-items: center; width: 12%;">
+						<div style="text-align: center;  width: 100%; font-size:14pt; margin-bottom:10px; color:#2985DB">연차</div>
+						<div id="vacationCnt" style="text-align: center;  width: 100%; font-size:14pt;">0</div>
+					</div>
+					
+					<div style="height: 120px; width: 3px;">
+						<span style="background-color: #e5e5e5; width: 1px; height: 70px; display: inline-block; margin: 25px 1px;"></span>
+					</div>
+					
+					<div style="align-items: center; width: 12%; margin-right: auto;">
+						<div style="text-align: center;  width: 100%; font-size:14pt; margin-bottom:10px; color:#2985DB">자동 퇴근</div>
+						<div id="autoEndCnt" style="text-align: center;  width: 100%; font-size:14pt;">0</div>
+					</div>
+					
+			</div>
+	
+		</div>
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			<div>
 			

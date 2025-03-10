@@ -66,6 +66,12 @@ public interface CommuteService {
 	// 부서별 
 	Map<String, String> getCommuteCnt(Map<String, String> paraMap);
 
+	// 전직원 연차정보 조회 
+	List<Map<String, String>> getAnnualTableInfo(Map<String, String> paraMap);
+
+	// 사원수 조회 (연차 테이블에 데이터가 있는...? 연도별)
+	int totalCnt_annaul(Map<String, String> paraMap);
+
 
 
 	
