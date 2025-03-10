@@ -175,13 +175,21 @@
 	
 	<!-- 조직도에 뿌려주기 위한 부서 목록 가져오기 -->
 	<select id="getDepartmentList" resultType="DepartmentVO">
-		select DEPARTMENTNO, FK_MANAGERNO, DEPARTMENTNAME
+		select departmentNo, departmentName
 		from tbl_department
 	</select>
 	
+	
+	<!-- 조직도에 뿌려주기 위한 팀 목록 가져오기 -->
+	<select id="getTeamList" resultType="TeamVO">
+		select teamNo, teamName, FK_departmentNo
+		from tbl_team
+	</select>
+	
+	
 	<!-- 조직도에 뿌려주기 위한 사원 목록 가져오기 -->
 	<select id="getEmployeeList" resultType="EmployeeVO">
-		select employeeNo, departmentName, FK_departmentNo, name, securityLevel
+		select employeeNo, departmentName, FK_departmentNo, name, securityLevel, FK_teamNo
 		from tbl_employee E JOIN tbl_department D
 		ON FK_departmentNo = departmentNo
 		order by FK_departmentNo, securityLevel

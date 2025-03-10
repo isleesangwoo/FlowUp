@@ -14,6 +14,7 @@ import com.spring.app.document.domain.DocumentVO;
 import com.spring.app.document.model.DocumentDAO;
 import com.spring.app.employee.domain.DepartmentVO;
 import com.spring.app.employee.domain.EmployeeVO;
+import com.spring.app.employee.domain.TeamVO;
 
 
 // === 서비스 선언 === //
@@ -112,6 +113,15 @@ public class DocumentService_imple implements DocumentService {
 
 		List<DepartmentVO> departmentList = mapper_dao.getDepartmentList();
 		return departmentList;
+	}
+	
+	
+	// 조직도에 뿌려주기 위한 팀 목록 가져오기
+	@Override
+	public List<TeamVO> getTeamList() {
+
+		List<TeamVO> teamList = mapper_dao.getTeamList();
+		return teamList;
 	}
 
 	
@@ -231,6 +241,9 @@ public class DocumentService_imple implements DocumentService {
 		
 		return n*m;
 	}
+
+
+	
 
 	
 

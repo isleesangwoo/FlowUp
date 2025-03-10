@@ -9,6 +9,7 @@ import com.spring.app.document.domain.ApprovalVO;
 import com.spring.app.document.domain.DocumentVO;
 import com.spring.app.employee.domain.DepartmentVO;
 import com.spring.app.employee.domain.EmployeeVO;
+import com.spring.app.employee.domain.TeamVO;
 
 @Mapper
 public interface DocumentDAO {
@@ -43,6 +44,9 @@ public interface DocumentDAO {
 	// 조직도에 뿌려주기 위한 부서 목록 가져오기
 	List<DepartmentVO> getDepartmentList();
 	
+	// 조직도에 뿌려주기 위한 팀 목록 가져오기
+	List<TeamVO> getTeamList();
+	
 	// 조직도에 뿌려주기 위한 사원 목록 가져오기
 	List<EmployeeVO> getEmployeeList();
 
@@ -72,6 +76,8 @@ public interface DocumentDAO {
 
 	// 결재 반려하기
 	int reject(Map<String, String> map);
+
+	
 
 	
 

@@ -270,4 +270,7 @@ from
             and lower(subject) like '%'||lower('휴가')||'%'
     order by documentNo desc
 )
-WHERE rno BETWEEN 1 AND 10
+WHERE rno BETWEEN 1 AND 10;
+
+select teamNo, teamName, FK_departmentNo
+		from tbl_team;

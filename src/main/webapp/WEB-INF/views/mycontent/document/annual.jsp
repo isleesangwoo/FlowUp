@@ -14,8 +14,18 @@
 	
 %>
 
-
 <jsp:include page="document_main.jsp" />
+
+<!-- ikon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+
+<!-- jsTree -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+
+<!-- jsTree boot jQ cdn -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
 <style type="text/css">
 	
@@ -38,14 +48,17 @@
 	
 	$(document).ready(function(){
 	
+		<%-- jsTree 에 들어갈 객체 배열 --%>
 		let jsonData = [];
 		
+		<%-- jsTree 조직도에 들어갈 부서 목록 가져오기 --%>
 		$.ajax({
 			url:"<%= ctxPath%>/document/getDepartmentList",
 			dataType:"json",
+			async:false,
 			success: function(json){
 				$.each(json, function(index, item){
-					let data = { "id" : item.departmentNo, "parent" : "#", "text" : item.departmentName, "icon" : "glyphicon glyphicon-home" }
+					let data = { "id" : "D-" + item.departmentNo, "parent" : "#", "text" : item.departmentName, "icon" : "fa-solid fa-building" }
 					jsonData.push(data);
 				}); // end of $.each--------------
 			},
@@ -55,91 +68,85 @@
 			
 		}); // end of $.ajax-------------------
   
-		console.log(jsonData);
-		
-		$('#jstree').jstree({
-			'core' : {
-				"animation" : 0,
-				"check_callback": true,
-				'data' : jsonData
+		<%-- jsTree 조직도에 들어갈 팀 목록 가져오기 --%>
+		$.ajax({
+			url:"<%= ctxPath%>/document/getTeamList",
+			dataType:"json",
+			async:false,
+			success: function(json){
+				$.each(json, function(index, item){
+					let data = { "id" : "T-" + item.teamNo, "parent" : "D-" + item.fk_departmentNo , "text" : item.teamName, "icon" : "fa-solid fa-users-between-lines" }
+					jsonData.push(data);
+				}); // end of $.each--------------
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
+			
+		}); // end of $.ajax-------------------
+		
+		<%-- jsTree 조직도에 들어갈 사원 목록 가져오기 --%>
+		$.ajax({
+			url:"<%= ctxPath%>/document/getEmployeeList",
+			dataType:"json",
+			async:false,
+			success: function(json){
+				$.each(json, function(index, item){
+					let data = { "id" : "E-" + item.employeeNo, "parent" : "T-" + item.fk_teamNo , "text" : item.name, "icon" : "fa-solid fa-user" }
+					jsonData.push(data);
+				}); // end of $.each--------------
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+			
+		}); // end of $.ajax-------------------
+		
+		<%-- jsTree 띄우는 이벤트 --%>
+		$('#jstree').jstree({
+			'plugins': ["wholerow", "search", "html"], // 플러그인 배열 합침
+			'core' : {
+				"check_callback": true,
+				'data' : jsonData,
+ 				'state': {
+ 					'opened': true
+ 				},
+			},
+			"search": {
+		        "case_sensitive": false,  // 대소문자 구분하지 않음
+		        "show_only_matches": true,  // 일치하는 노드만 검색
+		        "search_leaves_only": true  // 리프노드만 검색
+		    }
 		});
 		
+		<%-- 사원명 검색시 해당 노드만 펼쳐지는 이벤트 --%>
+		$("input:text[name='member_name']").on("keyup", function(e){
+			
+			const member_name = $(e.target).val();
+			$('#jstree').jstree(true).search(member_name);
+			
+		});
+		
+		<%-- show 버튼을 누르면 모든 노드를 펼치는 이벤트 --%>
+		$("button#btnShow").click(function() {
+			$('#jstree').jstree("open_all");
+		});
+
+		<%-- hide 버튼을 누르면 모든 노드를 접는 이벤트 --%>
+		$("button#btnHide").click(function() {
+			$('#jstree').jstree("close_all");
+		});
+		
+		// $('#jstree').jstree('get_selected',true)
+				
 		
 		// 결재 정보 버튼을 눌렀을 때
 		$('#approval_line_btn').click(e=>{
-
+			
 	        $('#approval_line_bg').fadeIn();
 			$('.box_modal_container').css({
 				'display':'block'
 			})
-			
-			// 모달 조직도에 뿌려주기 위한 사원 목록 가져오기
-			<%-- $.ajax({
-				url:"<%= ctxPath%>/document/getEmployeeList",
-				dataType:"json",
-				success: function(json){
-					let departmentName = json[0].departmentName;
-					let v_html = `<ul>
-									<li class='departmentName'>\${departmentName}</li>
-									<ul class='closed ml-1'>`;
-					
-					$.each(json, function(index, item){
-						if(departmentName == item.departmentName) {
-							v_html += `<li class='employee_name'>\${item.name}</li>
-										<li class='employee_no' style='display:none'>\${item.employeeNo}</li>
-										<li class='security_level' style='display:none'>\${item.securityLevel}</li>`;
-						}
-						else {
-							departmentName = item.departmentName
-							v_html += `</ul>
-											<li class='departmentName'>\${departmentName}</li>
-											<ul class='closed ml-1'>
-												<li class='employee_name'>\${item.name}</li>
-												<li class='employee_no' style='display:none'>\${item.employeeNo}</li>
-												<li class='security_level' style='display:none'>\${item.securityLevel}</li>`;
-						}
-					});
-					
-					v_html += `</ul>
-								</ul>`;
-					
-					$("div#organization_chart").html(v_html);
-					
-					 
-					
-				},
-				error: function(request, status, error){
-					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-				}
-			}); --%>
-			
-			let jsonData = [];
-			
-			$.ajax({
-				url:"<%= ctxPath%>/document/getDepartmentList",
-				dataType:"json",
-				success: function(json){
-					$.each(json, function(index, item){
-						let data = { "id" : item.departmentNo, "parent" : "#", "text" : item.departmentName, "icon" : "glyphicon glyphicon-home" }
-						jsonData.push(data);
-					}); // end of $.each--------------
-				},
-				error: function(request, status, error){
-					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-				}
-				
-			}); // end of $.ajax-------------------
-	  
-			console.log(jsonData);
-			
-			$('#jstree').jstree({
-				'core' : {
-					"animation" : 0,
-					"check_callback": true,
-					'data' : jsonData
-				}
-			});
 			
 	    }) // end of $('#goMail').click(e=>{})-----------
 	    
@@ -166,6 +173,8 @@
 		
 		// 모달에서 사원을 결재 라인으로 추가 하는 버튼
 		$("button#add_approval_btn").on('click', function(e) {
+			
+			console.log($('#jstree').jstree('get_selected',true));
 			
 			if($("tbody#added_approval_line").children().length > 2) {
 				alert("더 이상 추가할 수 없습니다.");
@@ -430,6 +439,8 @@
 		
 	} // end of function annualTemp(){}-----------------------------------------------
 	
+	
+	
 	</script>
 	
 	
@@ -438,57 +449,55 @@
 	<div id="approval_line_bg" class="modal_bg">
 		<!-- 모달창을 띄웠을때의 뒷 배경 -->
 	</div>
-	<div id="approval_line_container" class="box_modal_container">
-		<div>
-			<h1>결재 정보</h1>
+	<div id="approval_line_container" class="box_modal_container p-3">
+		<div class="mt-3 mb-5">
+			<h3>결재 정보</h3>
 		</div>
-		<div style="border: solid 1px gray; width: 40%; display: inline-block;" >
-			<span>결재선</span>
-			<div id="approval_line_content" class="approval_line_modal_content" style="border: solid 1px gray;" >
-				<div style="border: solid 1px gray">
-					<span>조직도</span>
+		<div style="display: flex;">
+			<div style="width: 40%;" >
+				<div id="approval_line_content" class="approval_line_modal_content">
+					<div>
+						<button type="button" id="btnShow" class="doc_btn">Show</button>
+						<button type="button" id="btnHide" class="doc_btn">Hide</button>
+						<input type="text" name='member_name' placeholder="사원 검색" class="my-1"/>
+						<div id="jstree" style="overflow: scroll; max-height: 250px; border: solid 1px #333;"></div>
+					</div>
 				</div>
+			</div>
+			<div style="border: solid 1px gray; width: 55%; margin-left: auto;">
 				<div>
-					<input type="text" />
-				</div>
-				<div id="organization_chart" class="organization_chart"></div>
-				
-			</div>
-		</div>
-		<div style="border: solid 1px gray; display: inline-block; width: 40%">
-			<div>
-				<table class="table">
-					<thead>
-						<tr>
-							<th></th>
-							<th>타입</th>
-							<th>이름</th>
-							<th>부서</th>
-							<th>상태</th>
-							<th>삭제</th>
-						</tr>
-					</thead>
-				</table>
-			</div>
-			<div>
-				승인
-			</div>
-			<div>
-				<div style="display: inline-block;">
-					<button id="add_approval_btn">>></button>
-				</div>
-				<div style="display: inline-block;">
 					<table class="table">
-						<tbody style="border: solid 1px gray" id="added_approval_line">
-							
-						</tbody>
+						<thead>
+							<tr>
+								<th></th>
+								<th>타입</th>
+								<th>이름</th>
+								<th>부서</th>
+								<th>삭제</th>
+							</tr>
+						</thead>
 					</table>
 				</div>
+				<div>
+					승인
+				</div>
+				<div>
+					<div style="display: inline-block;">
+						<button id="add_approval_btn" class="doc_btn">>></button>
+					</div>
+					<div style="display: inline-block;">
+						<table class="table">
+							<tbody style="border: solid 1px gray" id="added_approval_line">
+								
+							</tbody>
+						</table>
+					</div>
+				</div>
 			</div>
 		</div>
 		<div>
-			<button id="submit_approval_line">확인</button>
-			<button id="cancel_approval_line">취소</button>
+			<button id="submit_approval_line" class="doc_btn">확인</button>
+			<button id="cancel_approval_line" class="doc_btn">취소</button>
 		</div>
 		<input id="selected_employee_name"/>
 		<input id="selected_employee_departmentName"/>
@@ -498,8 +507,6 @@
 		
 
     <!-- 휴가신청서 폼 -->
-	
-	<div id="jstree"></div>
 	
 	<div class="m-3">
 		<h1 class="mb-3">휴가신청서</h1>

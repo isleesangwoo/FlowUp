@@ -20,6 +20,7 @@ import com.spring.app.document.domain.DocumentVO;
 import com.spring.app.document.service.DocumentService;
 import com.spring.app.employee.domain.DepartmentVO;
 import com.spring.app.employee.domain.EmployeeVO;
+import com.spring.app.employee.domain.TeamVO;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -383,6 +384,17 @@ public class DocumentController {
 		
 		List<DepartmentVO> departmentList = service.getDepartmentList();
 		return departmentList;
+		
+	}
+	
+	
+	// 조직도에 뿌려주기 위한 팀 목록 가져오기
+	@GetMapping("getTeamList")
+	@ResponseBody
+	public List<TeamVO> getTeamList(){
+		
+		List<TeamVO> teamList = service.getTeamList();
+		return teamList;
 		
 	}
 	
