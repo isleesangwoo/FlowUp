@@ -633,10 +633,10 @@ function goAddBoardGroup(){
 					<select name="fk_boardNo">
 					</select>
 					<hr>
-					<table>
+					<table style="width: 100%;">
 						<tr>
-							<td>제목</td>
-							<td><input type="text" name="subject" autocomplete="off"></td>
+							<td style="width: 95px;">제목</td>
+							<td ><input type="text" name="subject" autocomplete="off" style="width: 100%; "></td>
 						</tr>
 						<tr>
 							<td>파일첨부</td>
@@ -648,8 +648,8 @@ function goAddBoardGroup(){
 						</tr>
 						<tr>
 						     <td>내 용</td>
-						     <td style="width: 767px; border: solid 1px red;">
-						 	    <textarea name="content" id="content" rows="10" cols="100" style="width:766px; height:412px;"></textarea>
+						     <td>
+						 	    <textarea name="content" id="content" rows="10" cols="100" style="width: 100%;height:500px;"></textarea>
 						     </td>
 					  	</tr>
 					  	<tr>
@@ -663,10 +663,10 @@ function goAddBoardGroup(){
 					  		</td>
 					  	</tr>
 					  	<tr>
-					  		<td>공지로 등록</td>
+					  		<td>공지 유무</td>
 					  		<td>
 					  			<input type="checkbox" id="isnotice" name="isNotice" value=1>
-								<label for="isnotice" style="margin:0;">공지로 등록</label>
+								<label for="isnotice" style="margin:0;">클릭 시 선택</label>
 								
 								<div id="isNoticeElmt"> <!-- 미체크시 hide 상태임 -->
 									<input type="text" name="startNotice" id="datepicker" maxlength="10" autocomplete='off' size="4"/> 
@@ -677,7 +677,7 @@ function goAddBoardGroup(){
 					  	</tr>
 					</table>
 					
-					<button type="button" id="addPostBtn">등록</button><button type="reset">취소</button>
+					<button type="button" id="addPostBtn" class="btnDefaultDesignNone">등록</button>
 				</form>
 			</div>
 		</div>

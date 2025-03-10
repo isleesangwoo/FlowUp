@@ -18,18 +18,31 @@
 
 /* ------------------------------  */
 
-#updateBoardGroupFrmTag{
-	border: solid 1px blue;
+#updateSelectDeptList{
+	padding: 10px 0;
 }
 #updateBoardGroupFrmButtonTag{
 	text-align: center;
 	margin: 30px 0;
 }
-/* .w_max{ */
-/* 	min-width:90%; */
-/* 	min-width: 900px; */
-/* 	border: solid 1px red; */
-/* } */
+#updateSearchWord{
+	width: 100%;
+}
+#updateBoardGroup{
+	width: 600px;
+    height: var(--size44);
+    font-size: var(--size18);
+    transition-duration: 150ms;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: calc(var(--size2) + var(--size2));
+    align-items: center;
+    text-wrap: nowrap;
+    background-color: #2985db;
+    border-color: #056ac9;
+    color: #fff;
+    margin-bottom: var(--size10);
+}
 .columnTitle{ /* 테이블 각 tr의 첫 번째 td */
 	min-width:140px;
 	padding: 10px 10px;

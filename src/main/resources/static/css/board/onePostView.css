@@ -262,6 +262,7 @@
 
 #profile {
 	text-align: center;
+	line-height: 30px;
 	min-width: 32px;
 	height: 32px;
 	background-color: gray;

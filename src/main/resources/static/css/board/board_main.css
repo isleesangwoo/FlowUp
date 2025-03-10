@@ -17,7 +17,6 @@
 #right_bar{
     width: 100%;
     height: auto;
-    border: 0px solid red;
 }
 
 #right_title_box {
@@ -59,7 +58,6 @@
 #postContainer{
 	width: 100%;
 	min-width:1050px;
-	border: solid 1px red;
 	display:flex;
 }
 #allPostElmt{
@@ -67,11 +65,11 @@
 }
 .onePostElmt{
 	padding: 10px 15px;
-	border: solid 1px blue;
+	border-bottom: solid 1px #c8c8c8;
+	border-right: solid 1px #c8c8c8;
 }
 .article_wrap{
 	width:85%;
-	border: solid 1px orange;
 }
 .postBoard{
 	display: block;
@@ -123,10 +121,17 @@
 	width:20%;
 	min-width:300px;
 	height: 100%;
-	border: solid 1px red;
+	border-right: solid 1px #c8c8c8;
+	border-bottom: solid 1px #c8c8c8;
 }
-#postOfBoardGroup_name{
+#postOfBoardGroup_name_1{
 	padding: 15px 16px 8px;
+	margin-bottom: 0px;
+	font-weight: bold;
+}
+#postOfBoardGroup_name_2{
+	padding: 15px 16px 8px;
+	margin-top:50px;
 	margin-bottom: 0px;
 	font-weight: bold;
 }
