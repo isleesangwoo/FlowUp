@@ -1134,8 +1134,6 @@ public class BoardController {
 										        @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
 										        @RequestParam(required = false, defaultValue = "0") Integer reload,
 										        HttpServletRequest request) {
-		  
-		 System.out.println("page : " + page);
 		 int start = 0 ;
 		 if(reload == 1) { // 댓글 수정 삭제 일 시 
 			 start = (1 - 1) * pageSize + 1; // 시작 ROWNUM

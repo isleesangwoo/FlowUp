@@ -504,7 +504,6 @@ $(document).ready(()=>{
   function loadComment(postNo, page = 1,reload) {
 	
 	currentPage = page;
-	console.log("최종 페이지 : " + currentPage)
       $.ajax({
           type: "GET",
           url: ctxPath + "/board/getComment", // 댓글 목록 조회
@@ -526,7 +525,7 @@ $(document).ready(()=>{
 				  <div class="commentOfpost"id="comment_${comment.commentNo}" style="margin-left:${marginLeft}px;">
 					  <span id="profile">`;
 					  if(comment.profileImg == null){ // 프로필 이미지가 없을 경우
-						html +=`<i class="fa-regular fa-user"></i> `;
+						html +=`<i class="fa-solid fa-user"></i> `;
 					  }
 					  else{
 						html +=`프로필이미지 존재(경로설정 필요) `;

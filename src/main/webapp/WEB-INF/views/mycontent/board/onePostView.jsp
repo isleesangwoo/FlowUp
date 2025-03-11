@@ -204,7 +204,7 @@
 	        		프로필이미지 존재의 경우(경로설정 필요)
 	        	</c:if>
 	        	<c:if test="${login_profileImg == null}">
-	        		<i class="fa-regular fa-user"></i>
+	        		<i class="fa-solid fa-user"></i>
 	        	</c:if> 
 	        	 </span>
 	        	<div id="commentEdit">

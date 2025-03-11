@@ -45,7 +45,7 @@
     padding: var(--size24);
     margin: 10% auto;
     border-radius: 10px;
-/*     width: 600px; */
+    filter: drop-shadow(4px 5px 22px rgba(0, 0, 0, 0.2));
 }
 label{
 	margin-bottom:0px;
@@ -111,7 +111,7 @@ label{
 }
 #left_bar {
     position: sticky;
-    top: var(--size60);
+    top: 0px;
     width: var(--size250);
     height: 100vh;
     background-color: #eff4fc;
