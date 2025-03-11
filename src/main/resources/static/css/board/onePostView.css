@@ -76,11 +76,8 @@
 #right_title {
 	font-size: var(--size22);
 }
-#right_title_a{
-	
-}
 #right_title_a {
-    text-decoration: none; /* 밑줄 제거 */
+    text-decoration: none; 
     color: inherit; /* 부모 요소의 색상 유지 */
 }
 
@@ -187,6 +184,30 @@
 	padding: var(--size22);
 }
 
+#updateBoardGroup{
+	width: 100%;
+	display:inline-block;
+	padding: 0 var(--size22) var(--size18) var(--size22);
+	border-bottom: solid 1px #c8c8c8;
+}
+
+td {
+    padding: var(--size8) 0; 
+    vertical-align: top;     
+    text-align: left;
+}
+
+#update_fileDrop{
+	border: 2px dashed #ddd;
+    padding: 20px;
+    margin-bottom: 10px;
+    color: #666;
+}
+#update_fileDrop:hover {
+  background-color: #f9f9f9;
+  width: 100%;
+}
+
 .file {
 	padding: 0 var(--size22);
 }
@@ -205,6 +226,10 @@
 .fileSize {
 	font-size: var(--size12);
 	color: #666666;
+}
+
+#updatePostBtnElmt{
+	float: right;
 }
 
 #ViewOption {
@@ -262,6 +287,7 @@
 
 #profile {
 	text-align: center;
+	line-height: 30px;
 	min-width: 32px;
 	height: 32px;
 	background-color: gray;
@@ -299,6 +325,17 @@
 #commentIcon {
 	transform: rotate(180deg);
 	margin-right: 5px;
+}
+.deleteBtnBox{
+	color: #a6a6a6;
+}
+.udpateComment:hover {
+	color: #212529;
+	cursor: pointer;
+}
+.deleteComment:hover {
+	color: #212529;
+	cursor: pointer;
 }
 
 #commentCreate {
@@ -349,7 +386,15 @@
 	border: none;
 	padding: var(--size10) var(--size16);
 }
-
+#loadMoreBtnElmt{
+	text-align: center;
+	border-top : solid 1px #a6a6a6;
+	height: 40px;
+	line-height: 40px;
+}
+#loadMoreBtn:hover{
+	color: #a6a6a6;
+}
 .btnDefaultDesignNone { /* 버튼의 기본 디자인을 없애는 클래스 */
 	background-color: transparent;
 	border: none;

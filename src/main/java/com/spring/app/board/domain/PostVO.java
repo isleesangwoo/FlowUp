@@ -33,12 +33,13 @@ public class PostVO {
 	
 	private String currentDate;	 		// 현재 시각
 	
-	private String profileImg; // 게시판 메인에 글 렌더링 시 글 작성자의 프로필 사진을 알아오기 위함.
-	private String positionName; // 게시판 메인에 글 렌더링 시 글 작성자의 직급을 알기위함.
+	private String profileImg; 			//글 렌더링 시 글 작성자의 프로필 사진을 알아오기 위함.
+	private String positionName; 		// 글 렌더링 시 글 작성자의 직급을 알기위함.
 	
 	private boolean liked; // 로그인한 사원이 좋아요한 상태인지 저장하는 필드
 	
-	
+	private String login_userid; 	
+	private String login_userName; 	
 
 	private BoardVO boardvo; // 조인을 위해
 	private PostFileVO postfilevo; // 조인을 위해
@@ -247,6 +248,18 @@ public class PostVO {
     public void setLiked(boolean liked) { // 로그인한 사원이 좋아요한 상태를 설정
         this.liked = liked;
     }
+	public String getLogin_userid() {
+		return login_userid;
+	}
+	public void setLogin_userid(String login_userid) {
+		this.login_userid = login_userid;
+	}
+	public String getLogin_userName() {
+		return login_userName;
+	}
+	public void setLogin_userName(String login_userName) {
+		this.login_userName = login_userName;
+	}
     
     
 	

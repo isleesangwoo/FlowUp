@@ -202,9 +202,47 @@ public class BoardController {
 	// 생성된 게시판 LeftBar에 나열하기 (출력)
 	@GetMapping("selectBoardList")
 	@ResponseBody
-	public List<BoardVO> selectBoardList() {
-	    List<BoardVO> boardList = service.selectBoardList();  // 게시판 목록 조회
+	public Map<String, Object> selectBoardList(HttpServletRequest request) {
+		
+		/*
+		HttpSession session = request.getSession();
+	    EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+	
+	    String login_departNo = null;
+	  
+	    if(loginuser != null) {
+	    	login_departNo = loginuser.getFK_departmentNo();
+	    }
+		
+		
+		
+	    List<BoardVO> boardList = service.selectBoardList(login_departNo);  // 게시판 목록 조회
 	    return boardList; // JSON 데이터로 반환됨
+	    */
+		
+	    HttpSession session = request.getSession();
+	    EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+	
+	    String login_departNo = null;
+	    String login_employeeNo = null;
+	    String login_securityLevel = null;
+	    String login_Name = null;
+	  
+	    if(loginuser != null) {
+	    	login_employeeNo = loginuser.getEmployeeNo();
+	    	login_departNo = loginuser.getFK_departmentNo();
+	    	login_securityLevel = loginuser.getSecurityLevel();
+	    	login_Name = loginuser.getName();
+	    }
+		
+		Map<String, Object> map = new HashMap<>();
+	    List<BoardVO> boardList = service.selectBoardList(login_departNo);  // 게시판 목록 조회
+	    
+	    map.put("boardList", boardList);
+	    map.put("login_securityLevel", login_securityLevel);
+	    map.put("login_Name", login_Name);
+	    map.put("login_employeeNo", login_employeeNo);
+	    return map; // JSON 데이터로 반환됨
 	}
 	
 	// 게시판 생성하기
@@ -220,7 +258,7 @@ public class BoardController {
 			
 			
 		    if (departmentNoList != null) {
-		        service.addDepartmentBoard(boardvo, departmentNoList); // 부서별 공개일 경우 게시판 생성하기
+		        service.addDepartmentBoard(boardvo, departmentNoList); // 부서별 공개일 경우 게시판 생성하기(매핑 테이블에 insert)
 		    }
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -357,17 +395,32 @@ public class BoardController {
 	// 글쓰기 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기
 	@GetMapping("getAccessibleBoardList")
 	@ResponseBody 
-	public List<Map<String,String>> getAccessibleBoardList(@RequestParam String employeeNo){
+	public List<Map<String,String>> getAccessibleBoardList(@RequestParam String employeeNo,HttpServletRequest request) throws Exception{
 		
-		List<Map<String, String>>  boardList = service.getAccessibleBoardList(employeeNo);
-		/*System.out.println("boardList : " + boardList);
-		 boardList : 
-		 [{BOARDNO=100037, BOARDNAME=일수게시판}, 
-		 {BOARDNO=100035, BOARDNAME=부춘게시판}, 
-		 {BOARDNO=100033, BOARDNAME=전사게시판}, 
-		 {BOARDNO=100036, BOARDNAME=공공게시판}, 
-		 {BOARDNO=100034, BOARDNAME=전공게시판}]
-		 */
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String login_userid = null;
+		  
+		if(loginuser != null) {
+		  login_userid = loginuser.getEmployeeNo();
+		}
+		List<Map<String, String>>  boardList = new ArrayList<>();
+		try {
+			boardList = service.getAccessibleBoardList(employeeNo,login_userid);
+			/*System.out.println("boardList : " + boardList);
+			 boardList : 
+			 [{BOARDNO=100037, BOARDNAME=일수게시판}, 
+			 {BOARDNO=100035, BOARDNAME=부춘게시판}, 
+			 {BOARDNO=100033, BOARDNAME=전사게시판}, 
+			 {BOARDNO=100036, BOARDNAME=공공게시판}, 
+			 {BOARDNO=100034, BOARDNAME=전공게시판}]
+			 */
+		} catch (Exception e) {} // 로그인을 하지 않을 시 getAccessibleBoardList(employeeNo,login_userid)에서 sql 예외가 나옴.(loginuser의 값이 null 이기 때문)
+		
+		
+		
+		  
 		List<Map<String, String>> mapList = new ArrayList<>(); // 새로운 리스트
 		
 		if(boardList != null) {
@@ -402,6 +455,19 @@ public class BoardController {
 		
 		// WAS 의 webapp 의 절대경로를 알아와야 한다.
 		HttpSession session = mtp_request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String login_userid = null;
+		String login_userName = null;
+		
+		if(loginuser != null) {
+			login_userid = loginuser.getEmployeeNo();
+			login_userName = loginuser.getName();
+			
+			postvo.setLogin_userid(login_userid);
+			postvo.setLogin_userName(login_userName);
+		  }
+
 		String root = session.getServletContext().getRealPath("/");
 	    //	System.out.println("~~~ 확인용 webapp 의 절대경로 ==> " + root);
 		
@@ -1060,17 +1126,33 @@ public class BoardController {
 	  return map;
   }
   
-  // 댓글 목록조회하기
-  @GetMapping("getComment")
-  @ResponseBody
-  public Map<String, Object> getComment (@RequestParam String postNo,HttpServletRequest request) {
+	//댓글 목록조회하기
+	 @GetMapping("getComment")
+	 @ResponseBody
+	 public Map<String, Object> getComment (@RequestParam String postNo,
+											  @RequestParam(value = "page", defaultValue = "1") int page,
+										        @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
+										        @RequestParam(required = false, defaultValue = "0") Integer reload,
+										        HttpServletRequest request) {
+		  
+		 System.out.println("page : " + page);
+		 int start = 0 ;
+		 if(reload == 1) { // 댓글 수정 삭제 일 시 
+			 start = (1 - 1) * pageSize + 1; // 시작 ROWNUM
+		 }
+		 else {
+			 start = (page - 1) * pageSize + 1; // 시작 ROWNUM
+		 }
+	      
+	   int end = page * pageSize; // 끝 ROWNUM
 	  
-	   List<Map<String, Object>> commentList = service.getComment(postNo); // 댓글 목록
+	   List<Map<String, Object>> commentList = service.getComment(postNo,start, end); // 댓글 목록
 	   int commentCount = service.getCommentCount(postNo); // 댓글 개수 
 	
 	   Map<String, Object> map = new HashMap<>();
 	   map.put("commentList", commentList);
 	   map.put("commentCount", commentCount);
+	   map.put("hasMore", commentCount > end); // 더 불러올 댓글이 있는지 확인
 	   
 	   
 	   String login_profileImg = ""; // 대댓글을 작성하는 사용자의 프로필 이미지값을 알아오기 위함.
@@ -1084,7 +1166,7 @@ public class BoardController {
 	   map.put("login_profileImg", login_profileImg);
 	   
 	   return map;
-  }
+ }
   
   // 댓글 수정하기
   @PostMapping("updateComment")
@@ -1103,11 +1185,13 @@ public class BoardController {
   //댓글 삭제하기(status 값 변경)
   @PostMapping("deleteComment")
   @ResponseBody
-  public Map<String, Object> deleteComment(@RequestParam String commentNo,@RequestParam String depthNo){
+  public Map<String, Object> deleteComment(@RequestParam String commentNo,@RequestParam String depthNo,@RequestParam(required = false) String postNo){
+	  
+	  System.out.println("댓글 삭제하기의 postNo : " + postNo);
 	  
 	   Map<String, Object> map = new HashMap<>(); 
 			  
-	   int deleteCount = service.deleteComment(commentNo,depthNo); // 댓글 삭제하기 
+	   int deleteCount = service.deleteComment(commentNo,depthNo,postNo); // 댓글 삭제하기 
 	   
 	   map.put("success", deleteCount > 0); // true 또는 false
 	   

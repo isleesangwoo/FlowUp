@@ -29,7 +29,7 @@
 							제목  
 						</td>
 						<td style="width: 100%;">
-							<input type="text" value='${boardvo.boardName}' name="boardName"  class="w_max"/>
+							<input type="text" value='${boardvo.boardName}' name="boardName" id="updateBoardName" class="w_max"/>
 						</td>
 					</tr>
 					
@@ -38,12 +38,12 @@
 							설명
 						</td>
 						<td>
-							<input type="text" value='${boardvo.boardDesc}' name="boardDesc" class="w_max"/>
+							<input type="text" value='${boardvo.boardDesc}' name="boardDesc" id="updateBoardDesc" class="w_max"/>
 						</td>
 					</tr>
 					
 					<tr>
-					    <td class="columnTitle">공개 범위 설정</td>
+					    <td class="columnTitle">공개 설정</td>
 					    <td>
 					        <div class="radio-container">
 							    <label>
@@ -65,9 +65,13 @@
 							<input type="text" name="createdBy" value="${boardvo.createdBy}"  class="w_max" readonly/>
 						</td>
 					</tr>
-				</table>
-				<div id="isPublicDeptUpdate">
-						<p style="font-weight: bold;margin: 0px;">공개 부서 선택하기</p>
+					
+					<tr id="departmentSelect">
+						<td class="columnTitle">
+							<p style="font-weight: bold;margin: 0px;">공개 부서<br>선택하기</p>
+						</td>
+						<td>
+							<div id="isPublicDeptUpdate">
 						<!-- 기존 선택된 부서 목록을 화면에 출력 -->
 						<div id="updateSelectDeptList">
 							<c:if test="${not empty boardAccessList}">
@@ -90,6 +94,10 @@
 						<input type="text" style="display: none;"/> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%>	  
 					<div id="displayList"  style="border:solid 1px gray; border-top:0px; height:100px; margin-top:-1px; margin-bottom:30px; overflow:auto;"></div>
 				</div>
+						</td>
+					</tr>
+				</table>
+				
 				
 				<div id="selectDeptHideInputWithUpdate"> <%--  여기에 선택된 부서들의 hidden input이 추가됨 --%> </div> 
 				

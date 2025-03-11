@@ -38,14 +38,16 @@ $(document).ready(()=>{
 	
 	// 처음에는 부서 선택 박스를 숨김.
 	$("#isPublicDeptUpdate").hide(); 
-	
+	$("#departmentSelect").hide();
 	// 공개 범위 라디오 버튼 변경 시
     $("input[name='isPublicUpdate']").change(function() {
         if ($(".isPublicUpdate:checked").val() == "0") {
             $("#isPublicDeptUpdate").show();
+			$("#departmentSelect").show();
             goSearchAllDept(); // 부서 전체 조회
         } else {
             $("#isPublicDeptUpdate").hide();
+			$("#departmentSelect").hide();
            	selectDepartmentUpdate = []; // 전체 공개 시 선택된 부서 초기화 (이유 : 부서를 설정했다가 전체공개로 바꿀 시 input에 부서번호가 남아있으면 안됨.)
             updateSelectDepartmentWithUpdate();
         }
@@ -132,13 +134,42 @@ $(document).ready(()=>{
 	});
 	
 	$(document).on("click", "#updateBoardGroup", function(){ // 수정 버튼 클릭 이벤트
+		
+		if($("#updateBoardName").val() == ""){
+			alert("게시판 제목을 입력해주세요.");
+			return;
+		}
+		
+		if($("#updateBoardName").val().length > 15){
+			alert("게시판 제목을 15자 이하로 입력해주세요.")
+			return;
+		}
+		
+		if($("#updateBoardDesc").val() == ""){
+			alert("게시판 설명을 입력해주세요.")
+			return;
+		}
+		
+		if($("#updateBoardDesc").val().length > 500){
+			alert("게시판 설명을 500자 이내로 입력해주세요.")
+			return;
+		}
+		
+		if($("input[name='isPublicUpdate']:checked").val() == 0 ){
+			if($("#updateSelectDeptList").text() == ""){ // 부서 목록이 없데이트 되는 요소에 아무 값이 없다면
+				alert("게시판을 공개할 대상 부서를 선택하세요.");
+				return;
+			}
+		}
+		
  		goUpdateBoardGroup(); // 게시판 수정하기
 	});
 	
 
     // 라디오 버튼 상태 체크하여 '부서별' 공개일 경우 자동으로 부서 선택 표시
     if ($(".isPublicUpdate:checked").val() == "0") {
-        $("#isPublicDeptUpdate").show();    // 부서 선택 요소 보이기
+		$("#isPublicDeptUpdate").show();
+		$("#departmentSelect").show();
         updateSelectDepartmentWithUpdate(); // 기존 선택된 부서 목록 렌더링
         goSearchAllDept(); // 부서 목록 조회
     }
