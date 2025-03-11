@@ -1,7 +1,7 @@
 package com.spring.app.mail.domain;
 
 public class MailFileVO {
-
+	
 	private String fileNo;		 // 첨부파일번호
 	private String fileName;     // 첨부파일명
 	private String orgFileName;  // 원래파일명

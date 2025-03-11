@@ -830,6 +830,9 @@ select *
 from tbl_mailFile;
 
 select *
+from tbl_addressBook;
+
+select *
 from tbl_referenced;
 
 CREATE TABLE tbl_tag

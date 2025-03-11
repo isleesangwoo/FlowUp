@@ -7,7 +7,6 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.spring.app.mail.domain.MailFileVO;
 import com.spring.app.mail.domain.MailVO;
-import com.spring.app.mail.domain.ReferencedVO;
 
 @Mapper //@Mapper 어노테이션을 붙여서 DAO 역할의 Mapper 인터페이스 파일을 만든다. 
 		//EmpDAO 인터페이스를 구현한 DAO 클래스를 생성하면 오류가 뜨므로 절대로 DAO 클래스를 생성하면 안된다.!!! 
@@ -75,12 +74,18 @@ public interface MailDAO {
     void insertMail(MailVO mail);
 
     // 참조자 정보 저장
-    void insertReferenced(ReferencedVO ref);
+    void insertReferenced(Map<String, Object> referencedMap); // fk_adrsBNo 포함
 
     // 첨부 파일 정보 저장
-    void insertMailFile(MailFileVO file);
+    void insertMailFile(Map<String, Object> fileMap);
 
 	String findEmployeeNoByName(String name);
+
+	// 보낸 메일 조회
+	List<MailVO> selectSentMail(Map<String, String> paraMap);
+
+	// 보낸 메일 개수 조회
+	int getSentMailCount(String senderNo);
 
 	
 }

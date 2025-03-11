@@ -1,5 +1,6 @@
 package com.spring.app.mail.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -21,7 +22,6 @@ import com.spring.app.common.MyUtil;
 import com.spring.app.employee.domain.EmployeeVO;
 import com.spring.app.mail.domain.MailFileVO;
 import com.spring.app.mail.domain.MailVO;
-import com.spring.app.mail.domain.ReferencedVO;
 import com.spring.app.mail.service.MailService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,11 +39,22 @@ public class MailController {
 	public ModelAndView mail(ModelAndView mav, 
 	                         HttpServletRequest request,
 	                         @RequestParam(defaultValue = "1") String currentShowPageNo,
-	                         @RequestParam(defaultValue = "20") String sizePerPage, // sizePerPage 파라미터 (문자열)
+	                         @RequestParam(defaultValue = "20") String sizePerPage, // sizePerPage 파라미터
 	                         @RequestParam(required = false) String mailbox) { // 현재 어떤 메일함 조회중인지 식별용 (페이징 처리)
 	    
 	    HttpSession session = request.getSession();
 
+	    // mailbox가 null이면 세션에서 가져오거나 기본값 설정
+	    if (mailbox == null || mailbox.isEmpty()) {
+	        mailbox = (String) session.getAttribute("currentMailbox");
+	        if (mailbox == null) {
+	            mailbox = "default"; // 최종 기본값
+	        }
+	    }
+	    
+	    // 세션에 현재 mailbox 저장
+	    session.setAttribute("currentMailbox", mailbox);
+	    
 	    // mailbox 값 확인
 	    System.out.println("mailbox: " + mailbox);
 	    
@@ -150,6 +161,7 @@ public class MailController {
 	    int unreadCount = service.getUnreadCount(); 
 	    // 만약 휴지통/중요만의 미열람 수를 구하려면 동적 getMailCount를 쓰되 readStatus=0도 넣어야 함
 
+	    
 	    // ======================
 	    // 6) 페이지바 만들기
 	    // ======================
@@ -161,46 +173,51 @@ public class MailController {
 	    // String url = "list?sizePerPage=" + n_sizePerPage;
 	    // pageBar 생성 시에도 mailbox를 포함
 	    System.out.println("mailbox : " + mailbox);
-	    String url = request.getContextPath() + "/mail?mailbox=" + mailbox + "&sizePerPage=" + n_sizePerPage;
-	    System.out.println("URL: " + url); // url 로그 출력
+	    
+	    // currentShowPageNo 파라미터 추가 (초기값 1)
+	    String url = request.getContextPath() + "/mail?mailbox=" + mailbox + "&sizePerPage=" + n_sizePerPage + "&currentShowPageNo=";
+	    // URL 확인
+	    System.out.println("URL: " + url);
 	    
 	    String pageBar = "<ul style='list-style:none;'>";
 	    
-
-	    // [맨처음][이전]
+	    // [맨처음]
 	    pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'>" 
-	             + "<a href='" + url + "&currentShowPageNo=1'>"
-	             + "<i style='transform: scaleX(-1)' class='fa-solid fa-forward-step'></i></a></li>";
+	            + "<a href='" + url + "1'>" // URL에 페이지 번호 직접 추가
+	            + "<i style='transform: scaleX(-1)' class='fa-solid fa-forward-step'></i></a></li>";
 
-	    if(pageNo != 1) {
+	    // [이전]
+	    if (pageNo != 1) {
 	        pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'>"
-	                 + "<a href='" + url + "&currentShowPageNo=" + (pageNo-1) + "'>"
+	                 + "<a href='" + url + (pageNo - 1) + "'>" // 페이지 번호 직접 추가
 	                 + "<i style='transform: scaleX(-1)' class='fa-solid fa-chevron-right'></i></a></li>";
 	    }
 
-	    while(!(loop > blockSize || pageNo > totalPage)) {
-	        if(pageNo == n_currentShowPageNo) {
-	            pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; "
-	                     + "border:solid 1px gray; padding:2px 4px;'>" + pageNo + "</li>";
+	    // 페이지 번호
+	    while (!(loop > blockSize || pageNo > totalPage)) {
+	        if (pageNo == n_currentShowPageNo) {
+	            pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; padding:2px 4px;'>" + pageNo + "</li>";
 	        } else {
 	            pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'>"
-	                     + "<a href='" + url + "&currentShowPageNo=" + pageNo + "'>" + pageNo + "</a></li>";
+	                     + "<a href='" + url + pageNo + "'>" + pageNo + "</a></li>"; // 페이지 번호 직접 추가
 	        }
 	        loop++;
 	        pageNo++;
 	    }
 
-	    // [다음][마지막] 
-	    if(pageNo <= totalPage) {
+	    // [다음]
+	    if (pageNo <= totalPage) {
 	        pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'>"
-	                 + "<a href='" + url + "&currentShowPageNo=" + pageNo + "'>"
+	                 + "<a href='" + url + pageNo + "'>" // 페이지 번호 직접 추가
 	                 + "<i class='fa-solid fa-chevron-right'></i></a></li>";
 	    }
+	    
+	    // [마지막] 
 	    pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'>"
-	             + "<a href='" + url + "&currentShowPageNo=" + totalPage + "'>"
-	             + "<i class='fa-solid fa-forward-step'></i></a></li>";
+	            + "<a href='" + url + totalPage + "'>" // 페이지 번호 직접 추가
+	            + "<i class='fa-solid fa-forward-step'></i></a></li>";
 
-	    pageBar += "</ul>";
+	   pageBar += "</ul>";
 
 	    // ======================
 	    // 7) JSP에 값 전달
@@ -227,12 +244,17 @@ public class MailController {
 	    return mav;
 	}
 	
+	// 메일 목록
 	@GetMapping("/mailList")
 	@ResponseBody
 	public Map<String, Object> getMailList(@RequestParam String mailbox,
 	                                       @RequestParam(defaultValue = "1") int currentShowPageNo,
 	                                       @RequestParam(defaultValue = "20") int sizePerPage) {
-	    Map<String, String> paraMap = new HashMap<>();
+		System.out.println("mailbox: " + mailbox); // 디버깅용
+	    System.out.println("currentShowPageNo: " + currentShowPageNo); // 디버깅용
+	    System.out.println("sizePerPage: " + sizePerPage); // 디버깅용
+	    
+		Map<String, String> paraMap = new HashMap<>();
 
 	    // mailbox에 따라 조건 설정
 	    switch (mailbox) {
@@ -393,6 +415,7 @@ public class MailController {
 
         return mailList; // JSON으로 응답
     }
+    
 
     // Ajax 요청 메일 정렬 방법 선택
     @GetMapping("/sortMail")
@@ -503,7 +526,14 @@ public class MailController {
             mail.setDeleteStatus("0"); // 기본값: 삭제되지 않음
             mail.setSaveStatus("0"); // 기본값: 일반 상태
             mail.setImportantStatus("0"); // 기본값: 중요하지 않음
-            mail.setSendDate(new Date().toString()); // 현재 날짜로 설정
+            mail.setSendDate(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+
+            // 현재 날짜를 올바른 형식으로 변환
+            /*
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String formattedDate = dateFormat.format(new Date());
+            mail.setSendDate(formattedDate); // 현재 날짜로 설정
+            */
 
             // 메일 정보 저장 (MAILNO는 MyBatis에서 자동 생성)
             service.insertMail(mail);
@@ -515,11 +545,15 @@ public class MailController {
             }
 
             // 받는 사람 정보 저장
-            ReferencedVO recipientRef = new ReferencedVO();
-            recipientRef.setRefMail(recipientEmployeeNo); // 받는 사람의 employeeNo
-            recipientRef.setRefStatus("0"); // 받는 사람
-            recipientRef.setFk_mailNo(mailNo); // 메일 번호 설정
-            service.insertReferenced(recipientRef);
+            List<Map<String, Object>> referencedList = new ArrayList<>();
+            Map<String, Object> recipientMap = new HashMap<>();
+            recipientMap.put("refMail", recipientEmployeeNo);
+            recipientMap.put("refStatus", "0");
+            recipientMap.put("fk_mailNo", mailNo);
+            recipientMap.put("refName", recipient);
+            recipientMap.put("fk_adrsBNo", "1");
+            referencedList.add(recipientMap);
+
 
             // 참조 처리 (refStatus = 1)
             if (cc != null && !cc.isEmpty()) {
@@ -527,35 +561,39 @@ public class MailController {
                 for (String c : ccs) {
                     String ccEmployeeNo = service.findEmployeeNoByName(c.trim());
                     if (ccEmployeeNo != null && !ccEmployeeNo.isEmpty()) {
-                        ReferencedVO ccRef = new ReferencedVO();
-                        ccRef.setRefMail(ccEmployeeNo); // 참조자의 employeeNo
-                        ccRef.setRefStatus("1"); // 참조
-                        ccRef.setFk_mailNo(mailNo); // 메일 번호 설정
-                        service.insertReferenced(ccRef);
+                        Map<String, Object> ccMap = new HashMap<>();
+                        ccMap.put("refMail", ccEmployeeNo); // 참조자의 employeeNo
+                        ccMap.put("refStatus", "1"); // 참조
+                        ccMap.put("fk_mailNo", mailNo); // 메일 번호
+                        ccMap.put("refName", c.trim()); // 참조자의 이름
+                        ccMap.put("fk_adrsBNo", "1"); // 주소록 고유번호 (예시로 1 설정)
+                        service.insertReferenced(ccMap);
                     }
                 }
             }
 
-            // 첨부 파일 처리
-            List<MailFileVO> fileList = new ArrayList<>();
-            if (files != null && files.length > 0) {
-                for (MultipartFile file : files) {
-                    MailFileVO mailFile = new MailFileVO();
-                    mailFile.setFileName(file.getOriginalFilename());
-                    mailFile.setFileSize(String.valueOf(file.getSize()));
-                    mailFile.setOrgFileName(file.getOriginalFilename());
-                    mailFile.setFk_mailNo(mailNo); // 메일 번호 설정
-                    fileList.add(mailFile);
-                }
-            }
 
-            // 첨부 파일 정보 저장
-            for (MailFileVO mailFile : fileList) {
-                service.insertMailFile(mailFile);
+        // 첨부 파일 처리
+        List<Map<String, Object>> fileList = new ArrayList<>();
+        if (files != null && files.length > 0) {
+            for (MultipartFile file : files) {
+                Map<String, Object> fileMap = new HashMap<>();
+                fileMap.put("fileName", file.getOriginalFilename());
+                fileMap.put("fileSize", String.valueOf(file.getSize()));
+                fileMap.put("orgFileName", file.getOriginalFilename());
+                fileMap.put("fk_mailNo", Integer.valueOf(mailNo));
+                fileList.add(fileMap);
             }
+        }
+        
+        for (Map<String, Object> fileMap : fileList) {
+            service.insertMailFile(fileMap);
+        }
 
-            response.put("status", "success");
-            response.put("message", "메일이 성공적으로 전송되었습니다.");
+        service.sendMail(mail, referencedList, fileList);
+
+        response.put("status", "success");
+        response.put("message", "메일이 성공적으로 전송되었습니다.");
         } catch (Exception e) {
             e.printStackTrace();
             response.put("status", "fail");
@@ -565,5 +603,41 @@ public class MailController {
         return response;
     }
     
+    
+    // 보낸메일함 조회
+    @GetMapping("/sendMailList")
+    @ResponseBody
+    public Map<String, Object> sendMailList(
+            @RequestParam(defaultValue = "1") int currentShowPageNo,
+            @RequestParam(defaultValue = "20") int sizePerPage,
+            HttpSession session) {
+
+        // 로그인된 사용자 정보 가져오기
+        EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+        if (loginuser == null) {
+            throw new RuntimeException("로그인이 필요합니다.");
+        }
+
+        String senderNo = loginuser.getEmployeeNo(); // 보낸 사람(나)의 사번
+
+        // 보낸메일함 조회
+        Map<String, String> paraMap = new HashMap<>();
+        paraMap.put("senderNo", senderNo);
+        paraMap.put("currentShowPageNo", String.valueOf(currentShowPageNo));
+        paraMap.put("sizePerPage", String.valueOf(sizePerPage));
+
+        List<MailVO> mailList = service.selectSentMail(paraMap);
+        int totalCount = service.getSentMailCount(senderNo);
+
+        // 페이징 처리
+        int totalPage = (int) Math.ceil((double) totalCount / sizePerPage);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("mailList", mailList);
+        response.put("totalPage", totalPage);
+        response.put("sizePerPage", sizePerPage);
+
+        return response;
+    }
 	
 }

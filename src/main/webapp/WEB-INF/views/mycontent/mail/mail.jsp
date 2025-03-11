@@ -182,15 +182,88 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
             $(e.target).parent().remove(); // <div class='fileList'> 태그를 삭제하도록 한다. 	    
 	    });
 
-<%-- === jQuery 를 사용하여 드래그앤드롭(DragAndDrop)을 통한 파일 업로드 끝 === --%>
+		<%-- === jQuery 를 사용하여 드래그앤드롭(DragAndDrop)을 통한 파일 업로드 끝 === --%>
 		
-	  
-	  
-	  
+		//받은메일함 조회
+		$("#receivedMail").on("click", function(e){
+		    e.preventDefault(); // a 태그 이동 막기
+		    console.log("받은메일함 클릭됨"); // 디버깅용
+		    loadMailList("default", 1, 20); // 받은메일함 조회
+		});
+		
+		// 보낸메일함 조회
+		$("#sendMail").on("click", function(e){
+		    e.preventDefault(); // a 태그 이동 막기
+		    console.log("보낸메일함 클릭됨"); // 디버깅용
+		    loadMailList("send", 1, 20); // 보낸메일함 조회
+		});
+		
+		// 중요메일함 조회
+		$("#importantMail").on("click", function(e){
+		    e.preventDefault(); // a 태그 이동 막기
+		    console.log("중요메일함 클릭됨"); // 디버깅용
+		    loadMailList("important", 1, 20); // 중요메일함 조회
+		});
+		
+		// 휴지통 조회
+		$("#deleteMail").on("click", function(e){
+		    e.preventDefault(); // a 태그 이동 막기
+		    console.log("휴지통 클릭됨"); // 디버깅용
+		    loadMailList("trash", 1, 20); // 휴지통 조회
+		});
+		
+		// 임시보관함
+		$("#saveMail").on("click", function(e){
+		    e.preventDefault(); // a 태그 이동 막기
+		    loadMailList("save"); // 임시보관함 조회
+		});
+		
+		/*
+	    const mailbox = "default"; // 기본값은 받은메일함
+	    const currentShowPageNo = 1; // 초기 페이지 번호
+	    const sizePerPage = 20; // 페이지 크기
+	    loadMailList(mailbox, currentShowPageNo, sizePerPage); // loadMailList 호출
+	    */
+	    
+	    // 메일함 클릭 이벤트에 URL 업데이트 추가
+	    $("#receivedMail, #sendMail, #importantMail, #deleteMail, #saveMail").on("click", function(e) {
+	        e.preventDefault();
+	        const id = $(this).attr("id");
+	        let mailbox;
+	        
+	        // ID를 서버의 mailbox 값으로 매핑
+	        switch(id) {
+	            case "receivedMail": mailbox = "default"; break;
+	            case "sendMail": mailbox = "send"; break;
+	            case "importantMail": mailbox = "important"; break;
+	            case "deleteMail": mailbox = "trash"; break;
+	            case "saveMail": mailbox = "save"; break;
+	            default: mailbox = "default";
+	        }    
+	        
+	        // 페이지 전환 없이 AJAX로 데이터 로드
+	        loadMailList(mailbox, 1, 20);
+	        
+	        // URL만 변경 (히스토리 관리)
+	        const newUrl = `${ctxPath}/mail?mailbox=${mailbox}&currentShowPageNo=1&sizePerPage=20`;
+	        window.history.pushState({ mailbox }, '', newUrl);
+	    });
+	    
+	 	// 히스토리 상태 변경 이벤트 처리
+		window.onpopstate = function(event) {
+		    const urlParams = new URLSearchParams(window.location.search);
+		    const mailbox = urlParams.get('mailbox') || 'default';
+		    const currentShowPageNo = parseInt(urlParams.get('currentShowPageNo') || 1);
+		    const sizePerPage = parseInt(urlParams.get('sizePerPage') || 20);
+		    loadMailList(mailbox, currentShowPageNo, sizePerPage);
+		};
+	    
 	  <%-- ==== 메일함 통합 ajax 시작 ==== --%>
-	  function loadMailList(mailbox, currentShowPageNo = 1) {
-		    const sizePerPage = 20; // 페이지 크기 (기본값)
-		    
+	  function loadMailList(mailbox, currentShowPageNo = 1, sizePerPage = 20) {
+		  	// URL 업데이트
+		    const newUrl = `${ctxPath}/mail?mailbox=${mailbox}&currentShowPageNo=${currentShowPageNo}&sizePerPage=${sizePerPage}`;
+		    window.history.pushState({ mailbox }, '', newUrl);
+				  
 		    $.ajax({
 		        url: ctxPath + "/mail/mailList", // 공통 메서드 매핑
 		        type: "GET",
@@ -203,7 +276,6 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 		        success: function(response) {
 		            const data = response.mailList; // 메일 목록
 		            const totalPage = response.totalPage; // 전체 페이지 수
-		            const sizePerPage = response.sizePerPage; // 페이지 크기
 
 		            // 테이블 내용 새로 채움
 		            let html = "";
@@ -234,11 +306,10 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 		                    </td>
 		                    <td id="mailName">\${name}</td>
 		                    <td id="mailTitle">
-	                   			<a href="\${ctxPath}/mail/viewMail?mailNo=\${mail.mailNo}">
-								    \${mail.subject}
-								</a>
+		                        <a href="\${ctxPath}/mail/viewMail?mailNo=\${mail.mailNo}">
+		                            \${mail.subject}
+		                        </a>
 		                    </td>
-
 		                    <td id="right-content">
 		                        <span id="sendDate">\${mail.sendDate}</span>
 		                        <span id="fileSize">\${size}</span>
@@ -250,14 +321,16 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 		            // 페이지바 생성
 		            let pageBar = "<ul style='list-style:none;'>";
 		            for (let i = 1; i <= totalPage; i++) {
-		                pageBar += `<li style='display:inline-block; width:30px; font-size:12pt;'>
-		                            <a href='javascript:loadMailList("${mailbox}", ${i})'>${i}</a>
-		                         </li>`;
+		                pageBar += `
+		                    <li style='display:inline-block; width:30px; font-size:12pt;'>
+		                        <a href="javascript:loadMailList('${mailbox}', ${i}, ${sizePerPage})">${i}</a>
+		                    </li>
+		                `;
 		            }
 		            pageBar += "</ul>";
 
 		            // 기존 목록 지우고 새 목록 삽입
-		            $("#mailTable tbody").html(html);
+		            // $("#mailTable tbody").html(html);
 
 		            // 페이지바 삽입
 		            $("#pageBar").html(pageBar);
@@ -274,46 +347,6 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 		}
 	  
 	  	
-		// 이벤트 위임을 사용하여 동적 요소에 이벤트 바인딩
-		$(document).on("click", `#mailTable a[href^='${ctxPath}/mail/viewMail']`, function(e) {
-		    e.preventDefault(); // 기본 동작(페이지 이동) 막기
-		    const url = $(this).attr("href"); // 클릭한 링크의 URL 가져오기
-		    window.location.href = url; // 해당 URL로 이동
-		});
-	  	
-
-		// 받은메일함 조회
-		$("#receivedMail").on("click", function(e){
-		    e.preventDefault(); // a 태그 이동 막기
-		    loadMailList("default"); // 받은메일함 조회
-		});
-		
-		// 보낸메일함 조회
-		/* 
-		$("#sendMail").on("click", function(e){
-		    e.preventDefault(); // a 태그 이동 막기
-		    loadMailList("send"); // 보낸메일함 조회
-		});
-		 */
-	  	
-		// 휴지통 조회
-		$("#deleteMail").on("click", function(e){
-		    e.preventDefault(); // a 태그 이동 막기
-		    loadMailList("trash"); // 휴지통 조회
-		});
-		
-		 
-		// 중요메일함 조회
-		$("#importantMail").on("click", function(e){
-		    e.preventDefault(); // a 태그 이동 막기
-		    loadMailList("important"); // 중요메일함 조회
-		});
-		
-		// 임시메일함 조회
-		$("#saveMail").on("click", function(e){
-		    e.preventDefault(); // a 태그 이동 막기
-		    loadMailList("save"); // 중요메일함 조회
-		});
 		<%-- ==== 메일함 통합 ajax 끝 ==== --%>
 	  
 	  
@@ -631,10 +664,6 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 	       
    });
 	  
-   
-   $(document).ready(function() {
-	    loadPage(1); // 처음 페이지 로드 시 1페이지 데이터를 불러옴
-   });
    
 </script>	
 
