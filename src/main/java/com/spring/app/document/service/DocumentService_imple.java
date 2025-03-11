@@ -243,6 +243,15 @@ public class DocumentService_imple implements DocumentService {
 	}
 
 
+	// 결재 라인에 추가하기 위한 사원 1명 가져오기
+	@Override
+	public EmployeeVO getEmployeeOne(String employeeNo) {
+		
+		EmployeeVO employee = mapper_dao.getEmployeeOne(employeeNo);
+		return employee;
+	}
+
+
 	
 
 	

@@ -179,10 +179,10 @@ public class DocumentController {
 		String url = "myDocumentList";
 		
 		// === [맨처음][이전] 만들기 === //
-		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=1&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "'>[맨처음]</a></li>";
+		pageBar += "<li style='display:inline-block; width: 30px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=1&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "'><i style='transform: scaleX(-1)' class='fa-solid fa-forward-step'></i></a></li>";
 		
 		if(pageNo != 1) {
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + (pageNo-1) + "&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "'>[이전]</a></li>";
+			pageBar += "<li style='display:inline-block; width: 30px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + (pageNo-1) + "&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "'><i class='fa-solid fa-chevron-left'></i></a></li>";
 		}
 		
 		while( !(loop > blockSize || pageNo > totalPage) ) {
@@ -201,9 +201,9 @@ public class DocumentController {
 		
 		// === [다음][마지막] 만들기 === //
 		if(pageNo <= totalPage) {
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + pageNo + "&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "'>[다음]</a></li>";
+			pageBar += "<li style='display:inline-block; width: 30px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + pageNo + "&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "'><i class='fa-solid fa-chevron-right'></i></a></li>";
 		}
-		pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + totalPage + "&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "'>[마지막]</a></li>";
+		pageBar += "<li style='display:inline-block; width: 30px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + totalPage + "&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "'><i class='fa-solid fa-forward-step'></i></a></li>";
 		
 		pageBar += "</ul>";
 		
@@ -407,6 +407,16 @@ public class DocumentController {
 		List<EmployeeVO> employeeList = service.getEmployeeList();
 		return employeeList;
 		
+	}
+	
+	
+	// 결재 라인에 추가하기 위한 사원 1명 가져오기
+	@GetMapping("getEmployeeOne")
+	@ResponseBody
+	public EmployeeVO getEmployeeOne(@RequestParam String employeeNo) {
+		
+		EmployeeVO employee = service.getEmployeeOne(employeeNo);
+		return employee;
 	}
 	
 	

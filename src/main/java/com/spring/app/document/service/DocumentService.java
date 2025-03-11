@@ -59,6 +59,9 @@ public interface DocumentService {
 	// 결재 반려하기
 	int reject(Map<String, String> map);
 
+	// 결재 라인에 추가하기 위한 사원 1명 가져오기
+	EmployeeVO getEmployeeOne(String employeeNo);
+
 	
 
 	

@@ -196,6 +196,15 @@
 	</select>
 	
 	
+	<!-- 결재 라인에 추가하기 위한 사원 1명 가져오기 -->
+	<select id="getEmployeeOne" parameterType="String" resultType="EmployeeVO">
+		select employeeNo, departmentName, name, securityLevel
+		from tbl_employee E JOIN tbl_department D
+		ON FK_departmentNo = departmentNo
+		where employeeNo = #{employeeNo}
+	</select>
+	
+	
 	<!-- 결재 라인 승인자 추가하기 -->
 	<insert id="insertApprover" parameterType="HashMap">
 		insert into tbl_approval(APPROVALNO, FK_DOCUMENTNO, FK_APPROVER, APPROVALORDER, APPROVALSTATUS)

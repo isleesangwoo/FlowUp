@@ -152,9 +152,12 @@ String ctxPath = request.getContextPath();
 			
 			<!-- 결재해야할 문서 (결재 순서가 자기 차례인 문서)를 보는 경우 결재/반려 버튼이 보이도록 -->
 			<c:if test="${not empty requestScope.approvalList}">
+			
 				<!-- 결재자 리스트는 결재순서의 역순으로 가져온다 -->
 				<c:set var="isOrder" value="true" /> <!-- 나보다 결재 순서가 빠른 결재자가 있는지 확인하는 변수 -->
+				
 				<c:forEach var="approval" items="${requestScope.approvalList}">
+				
 					<c:if test="${isOrder}">
 						<c:if test="${approval.approvalStatus eq 0 && sessionScope.loginuser.employeeNo ne approval.fk_approver}">
 						<!-- 나보다 결재 순서가 빠른데 아직 결재 처리를 하지 않은 사람이 있는 경우 -->
@@ -166,13 +169,16 @@ String ctxPath = request.getContextPath();
 							<button id="reject_btn" class="doc_btn">반려</button>
 						</c:if>
 					</c:if>
+					
 				</c:forEach>
+				
 			</c:if>
 			<!-- 결재해야할 문서 (결재 순서가 자기 차례인 문서)를 보는 경우 결재/반려 버튼이 보이도록 -->
+			
 		</div>
 		<div class="m-3 draftForm">
 		
-			<h3 style="text-align: center">연차신청서</h3>
+			<h3 style="text-align: center">${document.documentType}</h3>
 			<div style="display: flex">
 				<div class="drafter_info">
 					<table>
@@ -227,6 +233,9 @@ String ctxPath = request.getContextPath();
 				</div>
 			</div>
 			<div>
+			
+			
+				<!-- 휴가신청서 폼 -->
 				<c:if test="${document.documentType == '휴가신청서'}">
 					<table class="mt-5" style="width: 100%;">
 						<tbody>
@@ -263,6 +272,10 @@ String ctxPath = request.getContextPath();
 						</tbody>
 					</table>
 				</c:if>
+				<!-- 휴가신청서 폼 -->
+				
+				
+				<!-- 연장근무신청서 폼 -->
 				<c:if test="${document.documentType == '연장근무신청서'}">
 					<table class="mt-5" style="width: 100%;">
 						<tbody>
@@ -291,6 +304,10 @@ String ctxPath = request.getContextPath();
 						</tbody>
 					</table>
 				</c:if>
+				<!-- 연장근무신청서 폼 -->
+				
+				
+				
 			</div>
 		</div>
 	</div>

@@ -37,10 +37,6 @@
 		background: yellow;
 	}
 	
-	button#add_approval_btn {
-		pointer-events : none;
-	}
-	
 	
 </style>
 
@@ -48,6 +44,8 @@
 	
 	$(document).ready(function(){
 	
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		
 		<%-- jsTree 에 들어갈 객체 배열 --%>
 		let jsonData = [];
 		
@@ -92,7 +90,7 @@
 			async:false,
 			success: function(json){
 				$.each(json, function(index, item){
-					let data = { "id" : "E-" + item.employeeNo, "parent" : "T-" + item.fk_teamNo , "text" : item.name, "icon" : "fa-solid fa-user" }
+					let data = { "id" : item.employeeNo, "parent" : "T-" + item.fk_teamNo , "text" : item.name, "icon" : "fa-solid fa-user" }
 					jsonData.push(data);
 				}); // end of $.each--------------
 			},
@@ -104,7 +102,7 @@
 		
 		<%-- jsTree 띄우는 이벤트 --%>
 		$('#jstree').jstree({
-			'plugins': ["wholerow", "search", "html"], // 플러그인 배열 합침
+			'plugins': ["search", "html"], // 플러그인 배열 합침
 			'core' : {
 				"check_callback": true,
 				'data' : jsonData,
@@ -113,7 +111,7 @@
  				},
 			},
 			"search": {
-		        "case_sensitive": false,  // 대소문자 구분하지 않음
+		        "case_sensitive": false,	// 대소문자 구분하지 않음
 		        "show_only_matches": true,  // 일치하는 노드만 검색
 		        "search_leaves_only": true  // 리프노드만 검색
 		    }
@@ -137,44 +135,42 @@
 			$('#jstree').jstree("close_all");
 		});
 		
-		// $('#jstree').jstree('get_selected',true)
-				
+		//////////////////////////////////////////////////////////////////////////////////////////////////
 		
-		// 결재 정보 버튼을 눌렀을 때
+		<%-- 결재 정보 버튼을 눌렀을 때 모달이 보이게 하는 이벤트 --%>
 		$('#approval_line_btn').click(e=>{
 			
 	        $('#approval_line_bg').fadeIn();
 			$('.box_modal_container').css({
 				'display':'block'
-			})
+			});
+	    });
+		
+		<%-- 조직도에서 사원을 선택하지 않으면 	사원추가를 할 수 없게 하는 이벤트 --%>
+		$("#add_approval_btn").css({"pointer-events":"none"}); // 추가 버튼 비활성화
+		
+		$("div#jstree").on("click", "a.jstree-anchor", function(e){
 			
-	    }) // end of $('#goMail').click(e=>{})-----------
-	    
-	    
-	    // 모달에서 조직도에서 사원을 클릭했을 때
-		$("div#organization_chart").on('click', "li.employee_name", function(e) {
-			$("li.employee_name").removeClass("selected");
-			$(e.target).addClass("selected");
-			$("button#add_approval_btn").css({"pointer-events":"auto"});
-			$("input#selected_employee_name").val($(e.target).html());
-			$("input#selected_employee_departmentName").val($(e.target).parent().prev().html());
-			$("input#selected_employee_no").val($(e.target).next().html());
-			$("input#selected_security_level").val($(e.target).next().next().html());
+			let id = $(e.target).attr("id"); // 선택한 태그의 id 값
 			
+			if(!isNaN(id.substr(0,1))) {
+				// id 의 첫글자가 숫자라면 (사원이라면)
+				
+				$("#add_approval_btn").css({"pointer-events":""}); // 추가 버튼 활성화
+			}
+			else {
+				// id 의 첫글자가 숫자가아니라면 (부서 또는 팀이라면)
+				
+				$("#add_approval_btn").css({"pointer-events":"none"}); // 추가 버튼 비활성화
+			}
 		});
 		
-		
-		// 모달에서 조직도에서 부서를 클릭했을 때
-		$("div#organization_chart").on('click', "li.departmentName", function(e) {
-	    	console.log($(e.target).html());
-	    	$(e.target).next().toggle('closed');
-		});
-		
-		
-		// 모달에서 사원을 결재 라인으로 추가 하는 버튼
+	    
+		<%-- 조직도에서 >> 버튼을 눌러 사원을 결재 라인으로 추가하는 이벤트 --%>
 		$("button#add_approval_btn").on('click', function(e) {
 			
-			console.log($('#jstree').jstree('get_selected',true));
+			// jstree 에서 선택한 사원의 사원번호
+			let employeeNo = $('#jstree').jstree('get_selected',true)[0].id;
 			
 			if($("tbody#added_approval_line").children().length > 2) {
 				alert("더 이상 추가할 수 없습니다.");
@@ -185,7 +181,7 @@
 				
 				// 이미 추가된 사원인지 확인하는 for 문
 				$("tbody#added_approval_line").find("td.selected_employee_no").each(function(){
-					if($('input#selected_employee_no').val() == $(this).html()) {
+					if(employeeNo == $(this).html()) {
 						// for 문 안에서 선택된 사원번호와 추가된 사원번호가 같은지 확인
 						
 						alert("이미 추가된 사원입니다.");
@@ -197,28 +193,34 @@
 				// 추가되지 않은 사원이라면
 				if(!isExist) {
 					
-					let v_html=`<tr>
-									<td>결재</td>
-									<td class='selected_employee_no' style='display: none'>\${$('input#selected_employee_no').val()}</td>
-									<td class='selected_security_level' style='display: none'>\${$('input#selected_security_level').val()}</td>
-									<td class='selected_employee_name'>\${$('input#selected_employee_name').val()}</td>
-									<td class='selected_employee_departmentName'>\${$('input#selected_employee_departmentName').val()}</td>
-									<td>예정</td>
-									<td class='delete_approver'>삭제</td>
-								</tr>`;
-					
-					$("tbody#added_approval_line").append(v_html);
+					$.ajax({
+						url:"<%= ctxPath%>/document/getEmployeeOne",
+						dataType:"json",
+						data:{"employeeNo":employeeNo},
+						success:function(json){
+							let v_html=`<tr>
+											<td>결재</td>
+											<td class='selected_employee_no' style='display: none'>\${json.employeeNo}</td>
+											<td class='selected_security_level' style='display: none'>\${json.securityLevel}</td>
+											<td class='selected_employee_name'>\${json.name}</td>
+											<td class='selected_employee_departmentName'>\${json.departmentName}</td>
+											<td>예정</td>
+											<td class='delete_approver'>삭제</td>
+										</tr>`;
+										
+							$("tbody#added_approval_line").append(v_html);
+							
+							$('#jstree').jstree("deselect_all"); // jstree 노드 전체 선택 해제
+							$("button#add_approval_btn").css({"pointer-events":"none"});	// 결재 라인 추가 버튼 비활성화
+						},
+						error: function(request, status, error){
+							alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+						}
+						
+					})
 				}
 			}
 			
-			$("input#selected_employee_name").val("");
-			$("input#selected_employee_departmentName").val("");
-			$("input#selected_employee_no").val("");
-			$("input#selected_security_level").val("");
-			// 선택되서 임시 저장된 데이터 초기화
-			
-			$("li.employee_name").removeClass("selected");	// 선택해제
-			$("button#add_approval_btn").css({"pointer-events":""});	// 결재 라인 추가 버튼 비활성화
 		}); 
 		
 		
@@ -450,7 +452,7 @@
 		<!-- 모달창을 띄웠을때의 뒷 배경 -->
 	</div>
 	<div id="approval_line_container" class="box_modal_container p-3">
-		<div class="mt-3 mb-5">
+		<div class="mt-3 mb-3">
 			<h3>결재 정보</h3>
 		</div>
 		<div style="display: flex;">
@@ -495,14 +497,10 @@
 				</div>
 			</div>
 		</div>
-		<div>
+		<div class="mt-1">
 			<button id="submit_approval_line" class="doc_btn">확인</button>
 			<button id="cancel_approval_line" class="doc_btn">취소</button>
 		</div>
-		<input id="selected_employee_name"/>
-		<input id="selected_employee_departmentName"/>
-		<input id="selected_employee_no"/>
-		<input id="selected_security_level"/>
 	</div>
 		
 
