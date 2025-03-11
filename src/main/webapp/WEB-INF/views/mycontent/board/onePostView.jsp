@@ -281,7 +281,7 @@
 	
 	공지글 여부 : ${postvo.isNotice}<br>
 	공지글 종료일 : ${postvo.noticeEndDate}<br>
-	작성자 번호 : ${postvo.fk_employeeNo}<br>
+	작성자 번호 : <span id="fk_employeeNo">${postvo.fk_employeeNo}</span><%-- $(document).on("click", "#commentEnterBtn", function(){})에서 사용 --%><br>
 	댓글 허용 여부 : <span id="allowComments">${postvo.allowComments}</span> <%-- loadComment()에서 사용 --%><br>
 	로그인 사원번호 : <span id="login_userid">${login_userid}</span><%-- addReply()에서 사용 --%><br>
 	로그인 사원이름 : <span id="login_name">${login_name}</span><%-- addReply()에서 사용 --%><br>

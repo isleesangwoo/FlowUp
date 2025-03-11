@@ -359,8 +359,12 @@ $(document).ready(()=>{
 			$.ajax({
 		          url : ctxPath+"/board/like",
 		          type : "post",
-				  data : { "postNo": $("input[name='postNo']").val(), 
-						   "login_userid": $("#login_userid").text() 
+				  data : {  "postNo": $("input[name='postNo']").val(), 
+						    "login_userid": $("#login_userid").text(),
+						    "postNo": $("input[name='postNo']").val(),
+		   					"login_name": $("#login_name").text(),
+		   					"fk_employeeNo": $("#fk_employeeNo").text(),
+		   					"notificationtype" : "like"
 				  },
 		          dataType:"json",
 		          success:function(json){
@@ -450,7 +454,9 @@ $(document).ready(()=>{
 					"postNo": $("input[name='postNo']").val(),
 					"login_userid": $("#login_userid").text(),
 					"login_name": $("#login_name").text(),
-					"commentContent": $("#commentContent").val()
+					"commentContent": $("#commentContent").val(),
+					"fk_employeeNo": $("#fk_employeeNo").text(),
+					"notificationtype" : "comment"
 			    },
 		        success: function(json) {
 					if (json.success) {
@@ -558,13 +564,13 @@ $(document).ready(()=>{
 						        	<span id="profile">`;
 									
 									if(json.login_profileImg == null || json.login_profileImg ==""){ // 로그인한 사원의 프로필이미지가 없는 경우
-										html+=`<i class="fa-regular fa-user"></i>`;
+										html+=`<i class="fa-solid fa-user"></i>`;
 									}
 									else if(json.login_profileImg != null || json.login_profileImg != ""){	// 프로필이미지가 있는 경우 프로필이미지 존재(경로설정 필요)
 										html +=`p`;
 									}
 									else{
-										html+=`<i class="fa-regular fa-user"></i>`;
+										html+=`<i class="fa-solid fa-user"></i>`;
 									}
 									
 									html+=  `</span>
@@ -706,7 +712,8 @@ $(document).ready(()=>{
               login_name: $("#login_name").text(), 			// 대댓글 작성자명
               replyContent: replyContent, 							// 대댓글 내용
               fk_commentNo: parentCommentNo, 						// 부모 댓글 번호
-              depthNo: 1 											// 대댓글이므로 depth 1
+              depthNo: 1, 											// 대댓글이므로 depth 1
+			  notificationtype : "reply"
           },
           dataType: "json",
           success: function(json) {

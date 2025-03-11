@@ -407,7 +407,7 @@ public class BoardService_imple implements BoardService {
 
 	// 좋아요를 추가 또는 삭제함
 	@Override
-	public Map<String,Object> toggleLike(String postNo, String login_userid) {
+	public Map<String,Object> toggleLike(String postNo, String login_userid,String notificationtype,String fk_employeeNo) {
 		
 		Map<String,Object> map = new HashMap<>();
 		
@@ -432,6 +432,12 @@ public class BoardService_imple implements BoardService {
 			if(n!=0) {
 				n = dao.updatePostLikeCnt(postNo); // 게시글테이블의 좋아요 수 누적
 				map.put("likeStatus", 1);
+				
+				System.out.println("notificationtype : " + notificationtype );
+				
+				String replyContent= null;
+				String fk_commentNo= null;
+				dao.insertNotificationInfo(postNo,login_userid,replyContent,fk_employeeNo,fk_commentNo,notificationtype); // 알림 테이블에 데이터 삽입
 			}
 		}
 		
@@ -457,11 +463,13 @@ public class BoardService_imple implements BoardService {
 
 	// 댓글 등록
 	@Override
-	public int insertComment(String postNo, String login_userid, String login_name, String commentContent) {
+	public int insertComment(String postNo, String login_userid, String login_name, String commentContent,String fk_employeeNo, String fk_commentNo,String notificationtype) {
 		int insertCount = dao.insertComment(postNo, login_userid, login_name,commentContent); // 댓글 등록
 		
 		if(insertCount>0) {
 			dao.addCommentCount(postNo); // 해당 게시글의 댓글 개수 증감하기
+			
+			dao.insertNotificationInfo(postNo,login_userid,commentContent,fk_employeeNo,fk_commentNo,notificationtype); // 알림 테이블에 데이터 삽입
 		}
 		return insertCount;
 	}
@@ -508,11 +516,16 @@ public class BoardService_imple implements BoardService {
 	// 대댓글 등록
 	@Override
 	public int insertReComment(String postNo, String login_userid, String login_name, String replyContent,
-			String fk_commentNo, String depthNo) {
+								String fk_commentNo, String depthNo,String notificationtype) {
+		
 		int insertCount = dao.insertReComment(postNo, login_userid, login_name,replyContent,fk_commentNo,depthNo); // 대댓글 등록
 		
 		if(insertCount>0) {
 			dao.addCommentCount(postNo); // 해당 게시글의 댓글 개수 증감하기
+			
+			String fk_employeeNo = dao.getNotificationReceiverEmployeeNo(fk_commentNo); // 알림을 받을 사원 번호를 추출
+			
+			dao.insertNotificationInfo(postNo,login_userid,replyContent,fk_employeeNo,fk_commentNo,notificationtype); // 알림 테이블에 데이터 삽입
 		}
 		
 		return insertCount;

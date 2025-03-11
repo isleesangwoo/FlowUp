@@ -182,6 +182,12 @@ public interface BoardDAO {
 
 	//삭제된 행의 개수만큼 해당 게시글의 댓글개수를 차감
 	void updateMinusCommentCount(Map<String, Integer> map);
+
+	// 알림 테이블에 데이터 삽입
+	void insertNotificationInfo(String postNo, String login_userid, String commentContent, String fk_employeeNo,String fk_commentNo,String notificationtype);
+
+	// 알림을 받을 사원 번호를 추출
+	String getNotificationReceiverEmployeeNo(String fk_commentNo);
 	
 
 	

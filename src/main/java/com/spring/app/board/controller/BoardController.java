@@ -1052,9 +1052,10 @@ public class BoardController {
   // 좋아요 추가 또는 취소 ( post 테이블의 likeCount 컬럼 누적 또는 차감 포함)
   @PostMapping("like")
   @ResponseBody
-  public Map<String,Object> like(@RequestParam String postNo, @RequestParam String login_userid){
+  public Map<String,Object> like(@RequestParam String postNo, @RequestParam String login_userid,
+								 @RequestParam String notificationtype, @RequestParam String fk_employeeNo){
 	  
-	  Map<String,Object> map = service.toggleLike(postNo,login_userid); // 좋아요를 추가(추가시 게시글의 좋아요 게수 누적) 또는 삭제함
+	  Map<String,Object> map = service.toggleLike(postNo,login_userid,notificationtype,fk_employeeNo); // 좋아요를 추가(추가시 게시글의 좋아요 게수 누적) 또는 삭제함
 	  
 	  return map;
   }
@@ -1117,10 +1118,13 @@ public class BoardController {
   @PostMapping("insertComment")
   @ResponseBody
   public Map<String, Object> insertComment (@RequestParam String postNo, @RequestParam  String login_userid,
-		  								@RequestParam  String login_name, @RequestParam String commentContent) {
+		  								@RequestParam  String login_name, @RequestParam String commentContent,
+		  								@RequestParam String fk_employeeNo,@RequestParam(required = false) String fk_commentNo,
+		  								@RequestParam String notificationtype) {
+	  System.out.println("흠 : " + fk_employeeNo);
 	  
 	  Map<String, Object> map = new HashMap<>();
-	  int insertCount = service.insertComment(postNo, login_userid, login_name,commentContent); // 댓글 등록
+	  int insertCount = service.insertComment(postNo, login_userid, login_name,commentContent,fk_employeeNo,fk_commentNo,notificationtype); // 댓글 등록
 	
 	  map.put("success", insertCount > 0); // true 또는 false
 	  return map;
@@ -1200,10 +1204,11 @@ public class BoardController {
  @PostMapping("insertReComment")
  @ResponseBody
  public Map<String, Object> insertReComment (@RequestParam String postNo, @RequestParam  String login_userid, @RequestParam  String login_name,
-		 									@RequestParam String replyContent, @RequestParam String fk_commentNo, @RequestParam String depthNo) {
+		 									@RequestParam String replyContent, @RequestParam String fk_commentNo, @RequestParam String depthNo,
+		 									@RequestParam String notificationtype) {
 	 
 	  Map<String, Object> map = new HashMap<>();
-	  int insertCount = service.insertReComment(postNo, login_userid, login_name,replyContent,fk_commentNo,depthNo); // 대댓글 등록
+	  int insertCount = service.insertReComment(postNo, login_userid, login_name,replyContent,fk_commentNo,depthNo,notificationtype); // 대댓글 등록
 	
 	  map.put("success", insertCount > 0); // true 또는 false
 	  return map;

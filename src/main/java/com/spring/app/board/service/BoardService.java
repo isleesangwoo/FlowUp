@@ -88,7 +88,7 @@ public interface BoardService {
 	int getBoardGroupPostTotalCount(String boardNo);
 
 	// 좋아요를 추가 또는 삭제함
-	Map<String, Object> toggleLike(String postNo, String login_userid);
+	Map<String, Object> toggleLike(String postNo, String login_userid,String notificationtype,String fk_employeeNo);
 
 	// 로그인 된 사원이 해당 게시글에 좋아요 여부를 검사.
 	int checkLike(String login_userid, String postNo);
@@ -97,7 +97,7 @@ public interface BoardService {
 	List<Map<String, Object>> getLikeList(String postNo);
 
 	// 댓글 등록
-	int insertComment(String postNo, String login_userid, String login_name, String commentContent);
+	int insertComment(String postNo, String login_userid, String login_name, String commentContent,String fk_employeeNo, String fk_commentNo,String notificationtype);
 
 	// 해당 게시글의 댓글 조회
 	List<Map<String, Object>> getComment(String postNo,int start,int end);
@@ -109,7 +109,7 @@ public interface BoardService {
 	int deleteComment(String commentNo,String depthNo,String postNo);
 
 	// 대댓글 등록
-	int insertReComment(String postNo, String login_userid, String login_name, String replyContent, String fk_commentNo,String depthNo);
+	int insertReComment(String postNo, String login_userid, String login_name, String replyContent, String fk_commentNo,String depthNo,String notificationtype);
 
 	// 댓글 개수 
 	int getCommentCount(String postNo);

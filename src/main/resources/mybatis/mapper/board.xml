@@ -655,6 +655,30 @@
 	update tbl_post set commentCount = commentCount - #{deleteCount}
 	where postNo = #{postNo}
 	</update>
+	
+<!-- 	알림을 받을 사원 번호를 추출 -->
+	<select id="getNotificationReceiverEmployeeNo" parameterType="String" resultType="String">
+	select fk_employeeNo from tbl_comment
+	where commentNo = #{fk_commentNo}
+	</select>
+	
+<!-- 	알림 테이블에 데이터 삽입 -->
+	<insert id="insertNotificationInfo" parameterType="String">
+		<choose>
+		    <when test="fk_commentNo != null"> <!-- 대댓글을 작성한 경우  -->
+		       insert into tbl_notification (notificationNo,fk_employeeNo,fk_postNo,fk_commentNo ,senderEmployeeNo,message,notificationtype,isRead)
+			   values(notificationSeq.nextval,#{fk_employeeNo},#{postNo},#{fk_commentNo},#{login_userid},#{commentContent},#{notificationtype},default)
+		    </when>
+		    <when test="notificationtype == 'like'"> <!-- 대댓글을 작성한 경우  -->
+		       insert into tbl_notification (notificationNo,fk_employeeNo,fk_postNo,senderEmployeeNo,notificationtype,isRead)
+			   values(notificationSeq.nextval,#{fk_employeeNo},#{postNo},#{login_userid},#{notificationtype},default)
+		    </when>
+		    <otherwise> <!-- 댓글을 작성한 경우 -->
+		       insert into tbl_notification (notificationNo, fk_employeeNo, fk_postNo, senderEmployeeNo, message, notificationtype, isRead)
+			   values(notificationSeq.nextval,#{fk_employeeNo},#{postNo},#{login_userid},#{commentContent},#{notificationtype},default)
+		    </otherwise>
+		</choose>
+	</insert>
 
 
 </mapper>
