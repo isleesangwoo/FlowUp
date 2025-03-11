@@ -24,11 +24,11 @@ $(document).ready(()=>{
     }).on("dragover", function(e){ /* "dragover" 이벤트는 드롭대상인 박스 안에 Drag 한 파일이 머물러 있는 중일 때. 필수이벤트이다. dragover 이벤트를 적용하지 않으면 drop 이벤트가 작동하지 않음 */ 
         e.preventDefault();
         e.stopPropagation();
-        $(this).css("background-color", "#ffd8d8");
+        $(this).css("background-color", "#f9f9f9");
     }).on("dragleave", function(e){ /* "dragleave" 이벤트는 Drag 한 파일이 드롭대상인 박스 밖으로 벗어났을 때  */
         e.preventDefault();
         e.stopPropagation();
-        $(this).css("background-color", "#fff");
+        $(this).css("background-color", "");
     }).on("drop", function(e){      /* "drop" 이벤트는 드롭대상인 박스 안에서 Drag 한것을 Drop(Drag 한 파일(객체)을 놓는것) 했을 때. 필수이벤트이다. */
         e.preventDefault();
 
@@ -396,7 +396,7 @@ $(document).ready(()=>{
 		        success: function(json) {
 		            $('#likeUserList').empty(); // 기존 목록 비우기
 
-		            if (json.length === 0) {
+		            if (json.length == 0) {
 		                $('#likeUserList').append('<tr><td>좋아요를 누른 사람이 없습니다.</td></tr>');
 		            } else {
 						json.forEach(function(item) {
@@ -433,7 +433,11 @@ $(document).ready(()=>{
 		
 		// --- 댓글 등록 버튼 클릭 시 --- //
 		$(document).on("click", "#commentEnterBtn", function(){
-			
+			if($("#isExit").text() == ""){ //  id="isExit" 는 boardLeftBar.jsp에 존재
+	    		alert("로그인 후 이용하실 수 있습니다.");
+	    		return;
+	    	}
+					
 			if (!$("#commentContent").val().trim()) {
 			        alert("댓글 내용을 입력해주세요.");
 			        return;
@@ -453,7 +457,7 @@ $(document).ready(()=>{
 		                alert("댓글이 등록되었습니다.");
 
 		               
-		                loadComment($("input[name='postNo']").val()); // 댓글 리스트를 새로 불러오기
+		                loadComment($("input[name='postNo']").val(),currentPage,1); // 댓글 리스트를 새로 불러오기
 
 		                $("#commentContent").val(""); // 댓글 입력창 비우기
 						
@@ -493,78 +497,98 @@ $(document).ready(()=>{
   
   
   // --- 댓글 목록 조회하기 --- //
-  function loadComment(postNo) {
+  
+  let currentPage = 0; // 현재 페이지 번호
+  const pageSize = 10; // 한 번에 불러올 댓글 개수
+  
+  function loadComment(postNo, page = 1,reload) {
+	
+	currentPage = page;
+	console.log("최종 페이지 : " + currentPage)
       $.ajax({
           type: "GET",
           url: ctxPath + "/board/getComment", // 댓글 목록 조회
-          data: { postNo: postNo },
+          data: { postNo: postNo, page: currentPage, pageSize: pageSize ,reload:reload },
           dataType: "json",
           success: function(json) {
 			  $("#commentCount").text(`댓글 ${json.commentCount}개`); 	// 댓글 개수 
 			  $("#postCommentCount").text(`[${json.commentCount}]`); // 댓글 개수
-              const commentList = $("#commentListElmt");
-              commentList.empty(); // 기존 댓글 비우기
+			  
+			  const commentList = $("#commentListElmt");
+			              if (page == 1) commentList.empty(); // 첫 페이지 로드 시 기존 댓글 초기화
+						  if (reload == 1) commentList.empty()
 
-              if (json.length === 0) {
+              if (json.commentList.length == 0) return; 
+
+              json.commentList.forEach(function(comment) {
+				  let marginLeft = comment.depthNo * 50; // 대댓글이면 들여쓰기 적용
+                  let html = `
+				  <div class="commentOfpost"id="comment_${comment.commentNo}" style="margin-left:${marginLeft}px;">
+					  <span id="profile">`;
+					  if(comment.profileImg == null){ // 프로필 이미지가 없을 경우
+						html +=`<i class="fa-regular fa-user"></i> `;
+					  }
+					  else{
+						html +=`프로필이미지 존재(경로설정 필요) `;
+					  }
+					   
+				html +=`</span>
+		  	        	<div id="commentInfo" class="CommentMarginLeft">
+		  	        		<div class="topInfoBox">
+		  	        			<div class="infoBox">
+		  			        		<span>${comment.name} ${comment.positionName}</span>`;
+									
+									if(`${comment.depthNo }`== 0 && $(`#allowComments`).text() == 1){ // 댓글인 경우 && 댓글허용일 시
+		  			        			html += `<span onclick='showReplyBox(${comment.commentNo})' class="comment_regDate_Color" id="commentElmt"><i class="fa-solid fa-reply" id="commentIcon"></i>댓글</span>`;
+		  			        		}
+				html +=`<span class="comment_regDate_Color">${comment.regDate}</span>
+		  		        		</div>`;
+		  		        		
+				if(comment.fk_employeeNo == $("#isExit").text()){ // 작성자의 사원번호와 로그인한 사원번호가 일치하는 경우 수정/삭제를 렌더링
+					html +=`<div class="deleteBtnBox">
+	  		        			<span class="udpateComment" onclick='getUpdateCommentInfo(${comment.commentNo})'><i class="fa-regular fa-pen-to-square"></i></span> 
+	  		        			<span class="deleteComment" onclick='deleteComment(${comment.commentNo},${comment.depthNo})'><i class="fa-regular fa-trash-can"></i></span> 
+	  		        		</div>`;
+				}
+		  		        		
+        		html +=`</div>
+		  	        		<div class="comment_content">${comment.content}</div>
+							
+							<div id="replyBox_${comment.commentNo}" class="replyBox" style="display:none;">
+								<div id="reCommentCreate">
+						        	<span id="profile">`;
+									
+									if(json.login_profileImg == null || json.login_profileImg ==""){ // 로그인한 사원의 프로필이미지가 없는 경우
+										html+=`<i class="fa-regular fa-user"></i>`;
+									}
+									else if(json.login_profileImg != null || json.login_profileImg != ""){	// 프로필이미지가 있는 경우 프로필이미지 존재(경로설정 필요)
+										html +=`p`;
+									}
+									else{
+										html+=`<i class="fa-regular fa-user"></i>`;
+									}
+									
+									html+=  `</span>
+						        	<div id="commentEdit">
+						        		<input type="text" id="replyContent_${comment.commentNo}" class="reCommentContent"  placeholder="댓글을 남겨보세요" autocomplete='off'>
+						        		<div id="commentBottom">
+						        			<button class="btnDefaultDesignNone" onclick='addReply(${comment.commentNo})'>등록</button>
+						        		</div>
+						        	</div>
+						        </div>
+                           </div>
+		  	        	</div>
+					</div>	`;
+                  commentList.append(html);
+              });
+			  
+			  // "더보기" 버튼 추가
+              if (json.hasMore) {
+                  if ($("#loadMoreBtn").length == 0) {
+                      commentList.after(`<div id="loadMoreBtnElmt"><button id="loadMoreBtn" onclick="loadMoreComments(${postNo})" class="btnDefaultDesignNone">댓글 더보기<i class="fa-solid fa-chevron-down"></i></button></div>`);
+                  }
               } else {
-                  json.commentList.forEach(function(comment) {
-					  let marginLeft = comment.depthNo * 50; // 대댓글이면 들여쓰기 적용
-                      let html = `
-					  <div class="commentOfpost"id="comment_${comment.commentNo}" style="margin-left:${marginLeft}px;">
-						  <span id="profile">`;
-						  if(comment.profileImg == null){ // 프로필 이미지가 없을 경우
-							html +=`<i class="fa-regular fa-user"></i> `;
-						  }
-						  else{
-							html +=`프로필이미지 존재(경로설정 필요) `;
-						  }
-						   
-					html +=`</span>
-			  	        	<div id="commentInfo" class="CommentMarginLeft">
-			  	        		<div class="topInfoBox">
-			  	        			<div class="infoBox">
-			  			        		<span>${comment.name}</span>`;
-										
-										if(`${comment.depthNo }`== 0 && $(`#allowComments`).text() == 1){
-			  			        			html += `<span onclick='showReplyBox(${comment.commentNo})' class="comment_regDate_Color" id="commentElmt"><i class="fa-solid fa-reply" id="commentIcon"></i>댓글</span>`;
-			  			        		}
-										html +=`<span class="comment_regDate_Color">${comment.regDate}</span>
-			  		        		</div>
-			  		        		
-			  		        		<div class="deleteBtnBox">
-			  		        			<span class="udpateComment" onclick='getUpdateCommentInfo(${comment.commentNo})'><i class="fa-regular fa-pen-to-square"></i></span> 
-			  		        			<span onclick='deleteComment(${comment.commentNo},${comment.depthNo})'><i class="fa-regular fa-trash-can"></i></span> 
-			  		        		</div>
-			  	        		</div>
-			  	        		<div class="comment_content">${comment.content}</div>
-								
-								<div id="replyBox_${comment.commentNo}" class="replyBox" style="display:none;">
-									<div id="reCommentCreate">
-							        	<span id="profile">`;
-										
-										if(json.login_profileImg == null || json.login_profileImg ==""){ // 로그인한 사원의 프로필이미지가 없는 경우
-											html+=`<i class="fa-regular fa-user"></i>`;
-										}
-										else if(json.login_profileImg != null || json.login_profileImg != ""){	// 프로필이미지가 있는 경우 프로필이미지 존재(경로설정 필요)
-											html +=`p`;
-										}
-										else{
-											html+=`<i class="fa-regular fa-user"></i>`;
-										}
-										
-										html+=  `</span>
-							        	<div id="commentEdit">
-							        		<input type="text" id="replyContent_${comment.commentNo}" class="reCommentContent"  placeholder="댓글을 남겨보세요" autocomplete='off'>
-							        		<div id="commentBottom">
-							        			<button class="btnDefaultDesignNone" onclick='addReply(${comment.commentNo})'>등록</button>
-							        		</div>
-							        	</div>
-							        </div>
-	                           </div>
-			  	        	</div>
-						</div>	`;
-                      commentList.append(html);
-                  });
+                  $("#loadMoreBtn").remove(); // 더 이상 불러올 댓글이 없으면 버튼 삭제
               }
           },
           error: function() {
@@ -572,6 +596,13 @@ $(document).ready(()=>{
           }
       });
   } // end of function loadComment(postNo) {}------------------------
+  
+  
+  // "더보기" 버튼 클릭 시 호출할 함수
+  function loadMoreComments(postNo) {
+      currentPage++; // 다음 페이지로 증가
+      loadComment(postNo, currentPage);
+  }
   
   // 댓글 수정하기위한 세팅 (기존 내용 가져오기/취소 시 기존 내용 복원하기)
   function getUpdateCommentInfo(commentNo){
@@ -609,11 +640,11 @@ $(document).ready(()=>{
 		 },
 	     dataType: "json",
 	     success: function(json) {
-			if (json.length === 0) {
+			if (json.length == 0) {
 	             alert("댓글 정보 조회를 실패하였습니다.")
 	        }
 			else{ // 댓글 수정 완료 시 
-				loadComment($("input[name='postNo']").val()); // 댓글 리스트를 새로 불러오기
+				loadComment($("input[name='postNo']").val(),currentPage,1); // 댓글 리스트를 새로 불러오기
 			}
 	     },
 	     error: function(request, status, error) {
@@ -630,14 +661,15 @@ $(document).ready(()=>{
 			     type: "post",
 			     url: ctxPath + "/board/deleteComment", 
 			     data: { commentNo: commentNo,
-						depthNo:depthNo},
+						depthNo:depthNo,
+						postNo : $("input[name='postNo']").val()},
 			     dataType: "json",
 			     success: function(json) {
-					if (json.length === 0) {
+					if (json.length == 0) {
 			             alert("댓글 삭제를 실패하였습니다.")
 			        }
 					else{ // 댓글 삭제 완료 시 
-						loadComment($("input[name='postNo']").val()); // 댓글 리스트를 새로 불러오기
+						loadComment($("input[name='postNo']").val(),currentPage,1); // 댓글 리스트를 새로 불러오기
 					}
 			     },
 			     error: function() {
@@ -655,6 +687,11 @@ $(document).ready(()=>{
   // 대댓글 추가
   function addReply(parentCommentNo) {
 	
+	  if($("#isExit").text() == ""){ // id="isExit" 는 boardLeftBar.jsp에 존재
+		  alert("로그인 후 이용하실 수 있습니다.");
+		  return;
+	  }
+	
       let replyContent = $(`#replyContent_${parentCommentNo}`).val().trim();
       if (!replyContent) {
           alert("답글을 입력해주세요.");
@@ -667,7 +704,7 @@ $(document).ready(()=>{
           data: {
               postNo: $("input[name='postNo']").val(),  			// 글번호
               login_userid: $("#login_userid").text(), 				// 대댓글 작성자 사원번호
-              login_name: $("input[name='name']").val(), 			// 대댓글 작성자명
+              login_name: $("#login_name").text(), 			// 대댓글 작성자명
               replyContent: replyContent, 							// 대댓글 내용
               fk_commentNo: parentCommentNo, 						// 부모 댓글 번호
               depthNo: 1 											// 대댓글이므로 depth 1
@@ -675,14 +712,14 @@ $(document).ready(()=>{
           dataType: "json",
           success: function(json) {
               if (json.success) {
-                  alert("답글이 등록되었습니다.");
-                  loadComment($("input[name='postNo']").val()); // 댓글 새로고침
+                  alert("댓글이 등록되었습니다.");
+                  loadComment($("input[name='postNo']").val(),currentPage,1); // 댓글 새로고침
               } else {
-                  alert("답글 등록에 실패했습니다.");
+                  alert("댓글 등록에 실패했습니다.");
               }
           },
           error: function() {
-              alert("답글 등록에 실패했습니다.");
+              alert("댓글 등록에 실패했습니다.");
           }
       });
   } // end of function addReply(parentCommentNo) {} -------------

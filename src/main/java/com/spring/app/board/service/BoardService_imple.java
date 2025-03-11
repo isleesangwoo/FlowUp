@@ -74,8 +74,8 @@ public class BoardService_imple implements BoardService {
 
 	// 생성된 게시판 LeftBar에 나열하기 (출력)
 	@Override
-	public List<BoardVO> selectBoardList() {
-		List<BoardVO> boardList = dao.selectBoardList();
+	public List<BoardVO> selectBoardList(String login_departNo) {
+		List<BoardVO> boardList = dao.selectBoardList(login_departNo);
 		return boardList;
 	}
 
@@ -88,8 +88,9 @@ public class BoardService_imple implements BoardService {
 
 	// 글쓰기 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기
 	@Override
-	public List<Map<String, String>> getAccessibleBoardList(String employeeNo) {
-		List<Map<String, String>> boardList = dao.getAccessibleBoardList(employeeNo);
+	public List<Map<String, String>> getAccessibleBoardList(String employeeNo, String login_userid) throws Exception{
+		System.out.println("login_userid : " + login_userid);
+		List<Map<String, String>> boardList = dao.getAccessibleBoardList(employeeNo,login_userid);
 		return boardList;
 	}
 	
@@ -200,10 +201,20 @@ public class BoardService_imple implements BoardService {
 	@Override
 	public int postDel(Map<String, String> paraMap,List<Map<String, Object>> postListmap) {
 		
+		
+		int deleteCount = 0; // 댓글테이블에서 삭제된 행의 개수
+		Map<String, Integer> map = new HashMap<>();
+		
 		int n = dao.postDel(paraMap.get("postNo")); // post 테이블에서 상태를 삭제(변경)하기 
 		if(n>0) {
 			dao.postFileDel(paraMap.get("postNo")); // postFile 테이블에서 상태를 삭제(변경)하기 
-			dao.delCommentOfPost(paraMap.get("postNo"));// 게시글 하나 삭제 시 해당 게시글 댓글의 상태를 삭제(변경)하기  
+			
+			deleteCount = dao.delCommentOfPost(paraMap.get("postNo"));// 게시글 하나 삭제 시 해당 게시글 댓글의 상태를 삭제(변경)하기
+			
+			map.put("deleteCount", deleteCount); // 차감할 수
+			map.put("postNo", Integer.parseInt(paraMap.get("postNo")));
+			
+			dao.updateMinusCommentCount(map); // 삭제된 행의 개수만큼 해당 게시글의 댓글개수를 차감
 		}
 		else{
 			System.out.println("게시글 행 삭제 전 댓글/대댓글의 상태변경을 실패하였습니다.");
@@ -458,8 +469,8 @@ public class BoardService_imple implements BoardService {
 
 	// 해당 게시글의 댓글 조회
 	@Override
-	public List<Map<String, Object>> getComment(String postNo) {
-		List<Map<String, Object>> commentList= dao.getComment(postNo); // 해당 게시글의 댓글 조회
+	public List<Map<String, Object>> getComment(String postNo,int start,int end) {
+		List<Map<String, Object>> commentList= dao.getComment(postNo,start,end); // 해당 게시글의 댓글 조회
 		return commentList;
 	}
 
@@ -472,7 +483,7 @@ public class BoardService_imple implements BoardService {
 
 	// 댓글 삭제하기
 	@Override
-	public int deleteComment(String commentNo,String depthNo) {
+	public int deleteComment(String commentNo,String depthNo,String postNo) {
 		
 		int deleteCount = 0 ;
 		
@@ -482,6 +493,15 @@ public class BoardService_imple implements BoardService {
 		else {
 			deleteCount = dao.deleteReComment(commentNo); //대댓글 삭제의 경우 where commentNo = #{commentNo}
 		}
+		
+		Map<String,Integer> map = new HashMap<>();
+		map.put("deleteCount", deleteCount);
+		map.put("postNo", Integer.parseInt(postNo));
+		
+		if(deleteCount > 0) { // 삭제된 행이 있다면
+			dao.updateMinusCommentCount(map); // 삭제된 행의 개수만큼 해당 게시글의 댓글개수를 차감
+		}
+		
 		
 		return deleteCount;
 	}

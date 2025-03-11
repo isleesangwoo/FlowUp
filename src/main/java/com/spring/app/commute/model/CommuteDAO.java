@@ -55,6 +55,10 @@ public interface CommuteDAO {
 
 	Map<String, String> getCommuteCnt(Map<String, String> paraMap);
 
+	List<Map<String, String>> getAnnualTableInfo(Map<String, String> paraMap);
+
+	int totalCnt_annaul(Map<String, String> paraMap);
+
 
 
 }

@@ -537,10 +537,8 @@
 					
 					$.each(json, (index,item)=>{
 						
-						html += `<div style="margin-bottom:10px;">
-			            			<div>&nbsp;&nbsp;&nbsp;\${item.departmentName}</div>
-				            		<div class="deptCommuteTable hhover">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;부서 근태현황</div>
-				            		<div class="deptCommuteChart hhover">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;부서 근태통계</div>
+						html += `<div style="margin-top:3px;">
+				            		<div class="deptCommuteTable hhover">&nbsp;&nbsp;&nbsp;\${item.departmentName} 근태현황</div>
 				            		<input type="hidden" value="\${item.departmentNo}" />
 			            		</div>`;
 						
@@ -555,9 +553,7 @@
 		else {
 			
 			html += `<div>
-			        	<div>&nbsp;&nbsp;&nbsp;\${sessionScope.loginuser.departmentName}</div>
-			        	<div class="deptCommuteTable hhover">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;부서 근태현황</div>
-			        	<div class="deptCommuteChart hhover">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;부서 근태통계</div>
+			        	<div class="deptCommuteTable hhover">&nbsp;&nbsp;&nbsp;\${sessionScope.loginuser.departmentName} 근태현황</div>
 			        	<input type="hidden" value="" />
 					</div>`;
 		}
@@ -633,8 +629,8 @@
             <div style="margin-top:5px;">
 	         	<div id="btn_myCommute" class="hhover" style="font-size:14pt; font-weight: bold;">내 근태관리</div>
 	            <div id="btn_myCommute_list" style="list-style: none; display: none;">
-            		<div id="myCommuteTable" class="hhover">&nbsp;&nbsp;&nbsp;내 근태현황</div>
-            		<div id="myAnnualInfo" class="hhover">&nbsp;&nbsp;&nbsp;내 연차내역</div>
+            		<div id="myCommuteTable" class="hhover" style="margin-top:3px;">&nbsp;&nbsp;&nbsp;내 근태현황</div>
+            		<div id="myAnnualInfo" class="hhover" style="margin-top:3px;">&nbsp;&nbsp;&nbsp;내 연차내역</div>
             	</div>
             </div>
             
@@ -653,9 +649,8 @@
             		<div id="btn_allCommute" class="hhover" style="font-size:14pt; font-weight: bold;">전사 근태관리</div>
 		         	
 		            <div id="btn_allCommute_list" style="list-style: none; display: none;">
-			            <div id="allCommuteTable" class="hhover">&nbsp;&nbsp;&nbsp;전사 근태현황</div>
-	            		<div id="allCommuteChart" class="hhover">&nbsp;&nbsp;&nbsp;전사 근태통계</div>
-	            		<div id="allAnnualInfo" class="hhover">&nbsp;&nbsp;&nbsp;전사 연차현황</div>
+			            <div id="allCommuteTable" class="hhover" style="margin-top:3px;">&nbsp;&nbsp;&nbsp;전사 근태현황</div>
+	            		<div id="allAnnualInfo" class="hhover" style="margin-top:3px;">&nbsp;&nbsp;&nbsp;전사 연차현황</div>
             		</div>
 		            
 		    	</div>

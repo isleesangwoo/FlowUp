@@ -28,13 +28,13 @@ public interface BoardService {
 	List<Map<String, String>> addBoardSearchAllDept();
 
 	// 생성된 게시판 LeftBar에 나열하기 (출력)
-	List<BoardVO> selectBoardList();
+	List<BoardVO> selectBoardList(String login_departNo);
 	
 	// 수정할 input 요소에 기존값을 뿌려주기 위함.
 	BoardVO getBoardDetailByNo(String boardNo);
 
 	// 글쓰기 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기
-	List<Map<String, String>> getAccessibleBoardList(String employeeNo);
+	List<Map<String, String>> getAccessibleBoardList(String employeeNo, String login_userid) throws Exception;
 
 	// 게시글 등록하기
 	int addPost(PostVO postvo,PostFileVO postfilevo,List<Map<String, Object>> mapList);
@@ -100,13 +100,13 @@ public interface BoardService {
 	int insertComment(String postNo, String login_userid, String login_name, String commentContent);
 
 	// 해당 게시글의 댓글 조회
-	List<Map<String, Object>> getComment(String postNo);
+	List<Map<String, Object>> getComment(String postNo,int start,int end);
 
 	// 댓글 수정하기
 	int updateComment(String commentNo,String content);
 
 	// 댓글 삭제하기 ( 대댓글 개발 시  대댓글까지 삭제(status 값 변경) 추가해야 함.)
-	int deleteComment(String commentNo,String depthNo);
+	int deleteComment(String commentNo,String depthNo,String postNo);
 
 	// 대댓글 등록
 	int insertReComment(String postNo, String login_userid, String login_name, String replyContent, String fk_commentNo,String depthNo);

@@ -46,27 +46,33 @@
    	</resultMap>
 	<select id="getEmpInfo" resultMap="getEmpInfoMap" parameterType="String"> 
 		select employeeNo
-			 , regYear
-			 , occurAnnual + overAnnual + addAnnual as totalannual
-			 , usedannual
-			 , occurAnnual + overAnnual + addAnnual - usedannual as remainingannual
-			 , name
+		     , regYear
+		     , nvl(occurAnnual, 0) + nvl(overAnnual, 0) + nvl(addAnnual, 0) as totalannual
+		     , nvl(usedannual, 0) as usedannual
+			 , nvl(occurAnnual, 0) + nvl(overAnnual, 0) + nvl(addAnnual, 0) - nvl(usedannual, 0) as remainingannual
+		     , name
 		from
 		(
-			select employeeNo, to_char(registerDate, 'yyyy') as regYear, occurAnnual, overAnnual, addAnnual, name
-			from tbl_employee E left join tbl_annual A
-			on E.employeeNo = A.fk_employeeNo 
-			where E.status = 1 and A.year = #{str_current_Year} 
-		)A
-		join
+			select employeeNo, to_char(registerDate, 'yyyy') as regYear, name
+			from tbl_employee
+			where status = 1 
+		)E 
+		left join
 		(
-			select D.fk_employeeNo , sum(useamount) as usedannual
-			from tbl_document D join tbl_draft_annual T
-			on D.DOCUMENTNO = T.DOCUMENTNO
-			where to_char(draftdate, 'yyyy') = #{str_current_Year} and T.status = 1
-			group by D.fk_employeeNo
+			select occurAnnual, overAnnual, addAnnual, fk_employeeNo
+			from tbl_annual
+			where year = #{str_current_Year}
+		)A
+		on E.employeeNo = A.fk_employeeNo 
+		left join
+		(
+		    select D.fk_employeeNo , sum(useamount) as usedannual
+		    from tbl_document D join tbl_draft_annual T
+		    on D.DOCUMENTNO = T.DOCUMENTNO
+		    where to_char(draftdate, 'yyyy') = #{str_current_Year} and D.status = 1
+		    group by D.fk_employeeNo
 		)B
-		on A.employeeNo = B.fk_employeeNo
+		on E.employeeNo = B.fk_employeeNo
 	</select>
 	
 	<insert id="insertAnnual" parameterType="HashMap">

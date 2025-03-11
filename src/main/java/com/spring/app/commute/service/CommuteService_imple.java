@@ -607,7 +607,17 @@ public class CommuteService_imple implements CommuteService {
 		return map;
 	}
 
-	
+	@Override
+	public List<Map<String, String>> getAnnualTableInfo(Map<String, String> paraMap) {
+		List<Map<String, String>> mapList = dao.getAnnualTableInfo(paraMap);
+		return mapList;
+	}
+
+	@Override
+	public int totalCnt_annaul(Map<String, String> paraMap) {
+		int totalCount = dao.totalCnt_annaul(paraMap);
+		return totalCount;
+	}
 	
 	
 	

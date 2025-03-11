@@ -17,7 +17,6 @@
 #right_bar{
     width: 100%;
     height: auto;
-    border: 0px solid red;
 }
 
 #right_title_box {
@@ -58,19 +57,19 @@
 /* 게시글 보여주는 요소 시작 */
 #postContainer{
 	width: 100%;
-	border: solid 1px red;
+	min-width:1050px;
 	display:flex;
 }
 #allPostElmt{
 	min-height: 590px;
 }
 .onePostElmt{
-	padding: 10px 15px;
-	border: solid 1px blue;
+	padding: var(--size12) var(--size22);;
+	border-bottom: solid 1px #c8c8c8;
+	border-right: solid 1px #c8c8c8;
 }
 .article_wrap{
 	width:85%;
-	border: solid 1px orange;
 }
 .postBoard{
 	display: block;
@@ -89,6 +88,7 @@
 .postContent{
 	display: block;
 	font-size: 11pt;
+	margin-bottom: var(--size14);
 }
 .postContent:hover{
 	color:#808080;
@@ -97,7 +97,11 @@
 	margin-right: 15px;
 }
 .postCreateBy{
-	margin-right: 15px;
+	margin-right: var(--size8);
+	font-size:var(--size14);
+}
+.postCreateAt{
+	font-size:var(--size14);
 }
 .postLikeBtn{
 /* 	display:inline-block; */
@@ -120,11 +124,19 @@
 
 #postOfBoardGroup{
 	width:20%;
+	min-width:300px;
 	height: 100%;
-	border: solid 1px red;
+	border-right: solid 1px #c8c8c8;
+	border-bottom: solid 1px #c8c8c8;
 }
-#postOfBoardGroup_name{
+#postOfBoardGroup_name_1{
 	padding: 15px 16px 8px;
+	margin-bottom: 0px;
+	font-weight: bold;
+}
+#postOfBoardGroup_name_2{
+	padding: 15px 16px 8px;
+	margin-top:50px;
 	margin-bottom: 0px;
 	font-weight: bold;
 }

@@ -18,6 +18,8 @@ $(document).ready(function() {
    getAccessBoardList();
    
 	$("#isNoticeElmt").hide(); // 공지사항 등록 미체크시 hide 상태
+	$("#addBoard").hide();     // 로그인하지 않은 상태 또는 보안등급 10이 아닐 경우 hide
+	
 	
 	/////////////////////////////////////////////////////////////////
 	
@@ -32,11 +34,11 @@ $(document).ready(function() {
     }).on("dragover", function(e){ /* "dragover" 이벤트는 드롭대상인 박스 안에 Drag 한 파일이 머물러 있는 중일 때. 필수이벤트이다. dragover 이벤트를 적용하지 않으면 drop 이벤트가 작동하지 않음 */ 
         e.preventDefault();
         e.stopPropagation();
-        $(this).css("background-color", "#ffd8d8");
+        $(this).css("background-color", "#f9f9f9");
     }).on("dragleave", function(e){ /* "dragleave" 이벤트는 Drag 한 파일이 드롭대상인 박스 밖으로 벗어났을 때  */
         e.preventDefault();
         e.stopPropagation();
-        $(this).css("background-color", "#fff");
+        $(this).css("background-color", "");
     }).on("drop", function(e){      /* "drop" 이벤트는 드롭대상인 박스 안에서 Drag 한것을 Drop(Drag 한 파일(객체)을 놓는것) 했을 때. 필수이벤트이다. */
         e.preventDefault();
 
@@ -108,20 +110,39 @@ $(document).ready(function() {
         dataType: "json",
         success: function(json) {
             let v_html = "";
-            $.each(json, function(index, board) {
+            $.each(json.boardList, function(index, board) {
                v_html += `
                		
 	                <li>
             	   		<a href='<%=ctxpath%>/board/selectPostBoardGroupView?boardNo=\${board.boardNo}'>`+board.boardName+`</a>  <%-- 게시판명 --%>
-			            <a href='<%=ctxpath%>/board/updateBoardView?boardNo=\${board.boardNo}' class='upateBoard'>
+			            <a href='<%=ctxpath%>/board/updateBoardView?boardNo=\${board.boardNo}' class='upateBoard settingBtn'>
 			                <i class="fa-solid fa-gear" style="margin-right:9px;"></i> <%-- 게시판 수정 아이콘 --%> 
 		                </a>
 		                
-		                <i class="fa-regular fa-trash-can disableBoardIcon" data-boardno="\${board.boardNo}"></i> <%-- 게시판 삭제 아이콘 --%>
+		                <i class="fa-regular fa-trash-can disableBoardIcon settingBtn" data-boardno="\${board.boardNo}"></i> <%-- 게시판 삭제 아이콘 --%>
 	                </li>`; 
             });
             $(".board_menu_container ul li").not(":first").remove(); // 첫 번째 항목 제외하고 삭제
             $(".board_menu_container ul").append(v_html); // 새 목록 추가
+            
+            
+            $(".settingBtn").hide();// 로그인하지 않은 상태 또는 보안등급 10이 아닐 경우 hide
+            
+            // login_securityLevel 값을 가져와서 사용
+            var loginSecurityLevel = json.login_securityLevel;
+            
+            // 값이 10일 경우 #addBoard 보이기
+            if (loginSecurityLevel == "10") {
+                $("#addBoard").show();  
+                $(".settingBtn").show();
+            }
+            
+            var login_Name = json.login_Name;
+            $("input[name='createdBy']").val(login_Name);
+
+            var login_employeeNo = json.login_employeeNo; // '글쓰기 버튼 클릭 시'에서 로그인 여부 유효성 검사 시 필요
+            
+            $("#isExit").html(login_employeeNo);
         },
         error: function() {
         }
@@ -173,6 +194,11 @@ $(document).ready(function() {
  	// ========= 글쓰기버튼 토글 ========= //
 
     $('#writePostBtn').click(e=>{
+    	
+    	if($("#isExit").text() == ""){
+    		alert("로그인 후 이용하실 수 있습니다.");
+    		return;
+    	}
 
         $('#modal').fadeIn();
         $('.modal_container').css({
@@ -344,7 +370,6 @@ $(document).ready(function() {
           contentType:false,  // 파일 전송시 설정 
           dataType:"json",
           success:function(json){
-        	   console.log("~~~ 확인용 : " + JSON.stringify(json));
               // ~~~ 확인용 : {"result":1}
               if(json.result == 1) {
         	     location.href= ctxPath+"/board/selectPostBoardGroupView?boardNo=" + json.boardNo; 
@@ -476,6 +501,34 @@ $(document).ready(function() {
     });
 	
 	$(document).on("click", "#addBoardGroup", function(){ // 생성 버튼 클릭 이벤트
+		
+		if($("input[name='boardName']").val() == ""){
+			alert("게시판 제목을 입력해주세요.");
+			return;
+		}
+		
+		if($("input[name='boardName']").val().length > 15){
+			alert("게시판 제목을 15자 이하로 입력해주세요.")
+			return;
+		}
+		
+		if($("input[name='boardDesc']").val() == ""){
+			alert("게시판 설명을 입력해주세요.")
+			return;
+		}
+		
+		if($("input[name='boardDesc']").val().length > 500){
+			alert("게시판 설명을 500자 이내로 입력해주세요.")
+			return;
+		}
+		
+		if($("input[name='isPublic']").val() == 0 ){
+			if($("#selectDeptList").text() == ""){ // 부서 목록이 없데이트 되는 요소에 아무 값이 없다면
+				alert("게시판을 공개할 대상 부서를 선택하세요.");
+				return;
+			}
+		}
+		
  		goAddBoardGroup(); // 게시판 생성하기
 	});
 	
@@ -567,64 +620,69 @@ function goAddBoardGroup(){
 </script>
 
 <!-- 글작성 폼 -->
-    <div id="modal" class="modal_bg">
+    <div id="modal" class="modal_bg" >
     </div>
-    <div class="modal_container">
-	    <div style="padding: var(--size22);">
+    <div class="modal_container" style="overflow-y: auto;">
+	    <div>
 	        <!-- 여기에 글작성 폼을 만들어주세요!! -->
 			<span id="modal_title">글쓰기</span>
 			
 			<div id="modal_content_page">
 				<form name="addPostFrm" enctype="multipart/form-data">
-					<span>To.</span>
-					<select name="fk_boardNo">
-					</select>
-					<hr>
-					<table>
-						<tr>
-							<td>제목</td>
-							<td><input type="text" name="subject" autocomplete="off"></td>
-						</tr>
-						<tr>
-							<td>파일첨부</td>
-							<td>
-								<div id="fileDrop" class="fileDrop border border-secondary">
-									<p>이 곳에 파일을 드래그 하세요.</p>
-								</div>
-							</td>
-						</tr>
-						<tr>
-						     <td>내 용</td>
-						     <td style="width: 767px; border: solid 1px red;">
-						 	    <textarea name="content" id="content" rows="10" cols="100" style="width:766px; height:412px;"></textarea>
-						     </td>
-					  	</tr>
-					  	<tr>
-					  		<td>댓글작성</td>
-					  		<td>
-					  			<input type="radio" id="allowYes" name="allowComments" value="1" checked>
-								<label for="allowYes" style="margin:0;" >허용</label>
-								
-								<input type="radio" id="allowNo" name="allowComments" value="0">
-								<label for="allowNo" style="margin:0;">허용하지 않음</label>
-					  		</td>
-					  	</tr>
-					  	<tr>
-					  		<td>공지로 등록</td>
-					  		<td>
-					  			<input type="checkbox" id="isnotice" name="isNotice" value=1>
-								<label for="isnotice" style="margin:0;">공지로 등록</label>
-								
-								<div id="isNoticeElmt"> <!-- 미체크시 hide 상태임 -->
-									<input type="text" name="startNotice" id="datepicker" maxlength="10" autocomplete='off' size="4"/> 
-									-
-									<input type="text" name="noticeEndDate" id="toDate" maxlength="10" autocomplete='off' size="4"/>
-								</div> 
-					  		</td>
-					  	</tr>
-					</table>
+					<span id="selectBoardGroup">To.
+						<select name="fk_boardNo">
+						</select>
+					</span>
+					<div style="padding:var(--size22);">
+						<table style="width: 100%;">
+							<tr>
+								<td style="width: 95px;">제목</td>
+								<td ><input type="text" name="subject" autocomplete="off" style="width: 100%; "></td>
+							</tr>
+							<tr>
+								<td>파일첨부</td>
+								<td>
+									<div id="fileDrop" class="fileDrop"><%-- class= border border-secondary --%>
+										<p style="text-align: center;">이 곳에 파일을 드래그 하세요.</p>
+									</div>
+								</td>
+							</tr>
+							<tr>
+							     <td>내 용</td>
+							     <td>
+							 	    <textarea name="content" id="content" rows="10" cols="100" style="width: 100%;height:450px;"></textarea>
+							     </td>
+						  	</tr>
+						  	<tr>
+						  		<td>댓글작성</td>
+						  		<td>
+						  			<input type="radio" id="allowYes" name="allowComments" value="1" checked>
+									<label for="allowYes" style="margin:0;" >허용</label>
+									
+									<input type="radio" id="allowNo" name="allowComments" value="0">
+									<label for="allowNo" style="margin:0;">허용하지 않음</label>
+						  		</td>
+						  	</tr>
+						  	<tr>
+						  		<td>공지 유무</td>
+						  		<td>
+						  			<input type="checkbox" id="isnotice" name="isNotice" value=1>
+									<label for="isnotice" style="margin:0;">클릭 시 선택</label>
+									<span id="addPostBtnElmt">
+										<button type="button" id="addPostBtn" class="btnDefaultDesignNone"><i class="fa-solid fa-pencil"></i> 등록</button>
+									</span>
+									<div id="isNoticeElmt"> <!-- 미체크시 hide 상태임 -->
+										<input type="text" name="startNotice" id="datepicker" maxlength="10" autocomplete='off' size="4"/> 
+										-
+										<input type="text" name="noticeEndDate" id="toDate" maxlength="10" autocomplete='off' size="4"/>
+									</div> 
+									
+									
+						  		</td>
+						  	</tr>
+						</table>
+					</div>
 					
-					<button type="button" id="addPostBtn">등록</button><button type="reset">취소</button>
 				</form>
 			</div>
 		</div>
@@ -657,7 +715,7 @@ function goAddBoardGroup(){
 						</td>
 					</tr>
 					<tr>
-					    <td class="columnTitle">공개 범위 설정</td>
+					    <td class="columnTitle">공개 설정</td>
 					    <td>
 					        <div class="radio-container">
 					            <label>
@@ -674,7 +732,7 @@ function goAddBoardGroup(){
 							운영자
 						</td>
 						<td>
-							<input type="text" name="createdBy" value=""  class="w_max" autocomplete="off"/>
+							<input type="text" name="createdBy" value=""  class="w_max" autocomplete="off" readonly/>
 						</td>
 					</tr>
 				</table>
@@ -720,5 +778,6 @@ function goAddBoardGroup(){
           
       </div>
       <div id="addBoardContainer"><span id="addBoard">게시판 생성하기+</span></div>
+      <div id="isExit" style="display: none;"></div> <%-- 로그인 여부 판별을 위함 --%>
   </div>
  <!-- 왼쪽 사이드바 -->

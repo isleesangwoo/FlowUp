@@ -171,39 +171,60 @@ div.hoverDiv:hover {
 <script>
     $(document).ready(() => {
     	
+    	let currentShowPageNo = ${requestScope.currentShowPageNo};
+    	
         // ====================== 날짜 리모컨 기능 생성 ====================== //
         const currentDate = new Date(); 
-        const currentDate_year = currentDate.getFullYear();
-        const currentDate_month = String(currentDate.getMonth()+1).padStart(2, '0');  
+        let year = currentDate.getFullYear();
         
         let today = new Date();
         
         
         // 이전 버튼 클릭 시
         $('#prev').click(() => {
-        	today.setMonth(today.getMonth() - 1);
-            week_div(today);
+        	year = year - 1;
+            week_div(year, currentShowPageNo);
             
         });
 
         // 다음 버튼 클릭 시
         $('#next').click(() => {
-        	today.setMonth(today.getMonth() + 1);
-            week_div(today);
+        	year = year + 1;
+            week_div(year, currentShowPageNo);
         });
 
         // 오늘 버튼 클릭 시
         $('#now').click(() => {
-        	today = new Date(currentDate); // 저장된 currentDate 날짜로 복구
-            week_div(today);
+        	year = currentDate.getFullYear();
+            week_div(year, currentShowPageNo);
         });
 
        
         // 페이지 로드 시 현재 날짜 및 테이표시
-        week_div(today);
+        week_div(year, currentShowPageNo);
         // ====================== 날짜 리모컨 기능 생성 ====================== //
  
         $('div.oneday').hide();
+        
+		$("select#sizePerPage").change(e=>{
+			
+			spread_tbody(currentShowPageNo);
+        });
+		
+		$("button#btn_search").click(function(e) {
+			
+			
+			spread_tbody(currentShowPageNo);
+			
+		});
+		
+		$("input#searchWord").keydown(function(e) {
+			
+			if(e.keyCode == 13) {
+				spread_tbody(currentShowPageNo);
+			}
+			
+		});
         
      	
 
@@ -213,32 +234,102 @@ div.hoverDiv:hover {
 
    
    
-    function week_div(today) {
-
-    	const year = today.getFullYear();
-    	let month = String(today.getMonth()+1).padStart(2, '0');  		// 오늘(선택일)의 월
+    function week_div(year, currentShowPageNo) {
     	
-    	const day = String(today.getDate()).padStart(2, '0');			// 오늘(선택일)의 일
-    	const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];		//
-    	const dayOfWeek = daysOfWeek[today.getDay()]; 					// 오늘(선택일)의 요일
- 
-    	const start = new Date(year, month-1, 1);
-    	const end = new Date(year, month, 0);
+        $('div#today').text(year);
     	
-    	const end_day = Number(String(end.getDate()));
-
-    	const timeString = `\${year}-\${month}`;
-    	
-    	
-        $('#today').text(timeString);
-    	
- 
-    	
+        spread_tbody(currentShowPageNo);
+        
     } //// week_div(today) 
+    
     	
-   
+   	function spread_tbody(currentShowPageNo) {
     	
+   		const year = $("div#today").text();
     	
+   		const sizePerPage = $("select#sizePerPage").val();
+   		const searchType = $("select#searchType").val();
+   		const searchWord = $("input#searchWord").val();
+   		
+   	    const currentDate = new Date(); 
+        const currentDate_year = currentDate.getFullYear();
+   		
+   		console.log("sizePerPage : " + sizePerPage);
+   		console.log("year : " + year);
+   		console.log("searchType : " + searchType);
+   		console.log("searchWord : " + searchWord);
+   		console.log("currentShowPageNo : " + currentShowPageNo);
+    	
+   		$.ajax({
+    		url:"<%=ctxPath%>/commute/getAnnualTableInfo",
+			type:"get",
+			data:{"year":year
+				 ,"searchType":searchType
+				 ,"searchWord":searchWord
+				 ,"sizePerPage":sizePerPage
+				 ,"currentShowPageNo":currentShowPageNo},
+			dataType:"json",
+			success:function(json) {
+				
+				console.log(JSON.stringify(json));
+				
+				$("input#year").val(json.paraMap.year);
+				$("input#currentShowPageNo").val(json.paraMap.currentShowPageNo);
+				
+				let html = ``;
+				
+				if(json.mapList.length > 0 ) {
+					
+					$.each(json.mapList, (index,item)=>{
+
+
+						html += `<tr>
+										<td style="text-align: center; vertical-align:middle">\${item.name}</td>
+										<td style="text-align: center; vertical-align:middle">\${item.departmentname}</td>
+										<td style="text-align: center; vertical-align:middle">\${item.registerDate}</td>
+										<td style="text-align: center; vertical-align:middle">\${item.workYear}년차</td>
+										<td style="text-align: center; vertical-align:middle">\${item.occurAnnual}</td>
+										<td style="text-align: center; vertical-align:middle">\${item.overAnnual}</td>
+										<td style="text-align: center; vertical-align:middle">\${item.addAnnual}</td>
+										<td style="text-align: center; vertical-align:middle">\${item.totalannual}</td>
+										<td style="text-align: center; vertical-align:middle">\${item.usedannual}</td>
+										<td style="text-align: center; vertical-align:middle">\${item.remainingannual}</td>
+								  </tr>`;
+					
+					});
+					
+					
+					$("div#pageBar").html(json.pageBar);
+					
+				}
+				else {
+					html += `<tr><td colspan="10" style="text-align: center; vertical-align:middle; font-size:12pt;">데이터가 없습니다.</td></tr>`;
+					
+					$("div#pageBar").html("");
+				}
+				
+				$("tbody#tbody").html(html);
+				
+				
+				
+				
+				
+				
+				
+				
+			
+			
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		    		
+		});
+    	
+   		
+    } // end of spread_tbody(year) 
+    	
+    
 	function secToHour(total_sec) {
 
 		const hour = Math.floor( total_sec / 60 / 60 ) ;
@@ -290,19 +381,72 @@ div.hoverDiv:hover {
 				<div class="dateTopBtn" style="width: 200px; margin: 0 auto;">
 					<span id="prev" style="cursor: pointer;">&#60;</span>
 					<!-- 이전날짜 버튼 -->
-					<div id="today" style="text-align: center;">today</div>
+					<div id="today" style="text-align: center;">year</div>
 					<!-- 날짜 표기 -->
 					<span id="next" style="cursor: pointer;">&#62;</span>
 					<!-- 다음날짜 버튼 -->
 
-					<span id="now" style="cursor: pointer;">오늘</span>
+					<span id="now" style="cursor: pointer;">올해</span>
 				</div>
 
 			</div>
 
 		</div>
 		
+	
+
+		<div>
 		
+			<div class="mb-1" style="display:flex" >
+				
+				<div style="margin:0 auto 0 0; display:flex; gap:8px;">
+					<select id="searchType" name="searchType" style="width:70px;">
+						<option value="">검색</option>
+						<option value="name">이름</option>
+					</select>
+					<input type="text" id="searchWord" name="searchWord" value="" style=""/>
+					<button type="button" id="btn_search" onclick="" class="btn btn-sm btn-outline-secondary" style="width:70px; height:30px; line-height:15px;">검색</button>
+				</div>
+					
+				<div style="margin:0 0 0 auto;display:flex; gap:8px;">
+				
+					<button type="button" id="btn_search" onclick="" class="btn btn-sm btn-outline-secondary" style="width:80px; height:30px; line-height:15px;">연차 조정</button>
+					<select id="sizePerPage" name="sizePerPage" style="width:70px;">
+						<option value="3">3</option>
+						<option value="5">5</option>
+						<option value="10">10</option>	
+					</select>				
+				</div>
+				
+			</div>
+		
+			
+			<table class="table table-striped table-hover">
+					
+				<thead class="thead text-center" style="font-size:14pt; color:#2985DB; font-weight: bold;">
+				
+					<tr>
+						<th>이름</th>
+						<th>부서</th>
+						<th>입사일</th>
+						<th>근속연수</th>
+						<th>발생 연차</th>
+						<th>이월 연차</th>
+						<th>조정 연차</th>
+						<th>총 연차</th>
+						<th>사용 연차</th>
+						<th>잔여 연차</th>
+					</tr>
+				
+				</thead>
+						
+				<tbody id="tbody"></tbody>
+					
+			</table>
+					
+			<div id="pageBar" style="width:100%; text-align:center;"></div>
+
+		</div>
 
 
 
@@ -310,6 +454,7 @@ div.hoverDiv:hover {
 	</div>
 
 </div>
-
+<input type="hidden" id="year" value="">
+<input type="hidden" id="currentShowPageNo" value="">
 
 <jsp:include page="../../footer/footer.jsp" />
