@@ -36,7 +36,7 @@ public class SpringschedulerService_imple implements SpringschedulerService {
 
 	@Scheduled(cron = "00 59 23 * * *")
 	@Override
-	public void scheduler_endtime_update() {
+	public void scheduler_endtime_update() { // 자동 퇴근 찍기
 		
 		// 퇴근 안찍고 퇴근 한놈들 퇴근시간 18:00시로 변경
 		dao.scheduler_endtime_update_noClick();
@@ -60,10 +60,9 @@ public class SpringschedulerService_imple implements SpringschedulerService {
 		
 	}// end of scheduler_endtime_update()
 	
-	
 	@Scheduled(cron = "00 00 01 * * *")
 	@Override
-	public void scheduler_absenceCnt_insert() {
+	public void scheduler_absenceCnt_insert() { // 무단결근 insert
 		
 		Calendar cal = Calendar.getInstance();
 		cal.add(cal.DATE, -1); //날짜를 하루 뺀다.
@@ -92,22 +91,18 @@ public class SpringschedulerService_imple implements SpringschedulerService {
 		
 	}// end of scheduler_endtime_update()
 	
-	
-	
-
+//	@Scheduled(cron = "0 * * * * *") 테스트용
 	@Scheduled(cron = "00 00 00 31 12 *")
 	@Override
-	public void newYear_annual_insert() {
+	public void scheduler_newYear_annual_insert() {
 		
 		LocalDate current_date = LocalDate.now();
 		int current_Year = current_date.getYear();
-		String str_current_Year = current_Year+"";
 		int next_Year = current_Year+1;
 		String nextYear = next_Year+"";
 		
-		
 		// 모든 직원 정보를 불러오는 메소드
-		List<Map<String, String>> empList = dao.getEmpInfo(str_current_Year);
+		List<Map<String, String>> empList = dao.getEmpInfo();
 		
 		String failList = "";
 		int cnt = 0;
@@ -125,7 +120,6 @@ public class SpringschedulerService_imple implements SpringschedulerService {
 
 			Map<String, String> paraMap = new HashMap<>();
 			paraMap.put("employeeNo", employeeNo);
-			paraMap.put("nextYear", nextYear);
 			paraMap.put("occurAnnual", occurAnnual+"");
 			paraMap.put("overAnnual", remainingAnnual);
 			
@@ -150,8 +144,44 @@ public class SpringschedulerService_imple implements SpringschedulerService {
 	} // end of newYear_annual_insert()
 	
 	
+	
+//	@Scheduled(cron = "0 * * * * *")// 테스트용
+	@Scheduled(cron = "00 00 00 10 * *")
+	@Override
+	public void scheduler_monthly_payment_insert() {
+	
+		// 모든 회원의 지난달 근무 정보 가져오기
+		List<Map<String, String>> empAnnaulList = dao.getEmpAnnualInfo();
+	
+		for(Map<String, String> empAnnaulMap : empAnnaulList) {
 			
+			int overtimePay = (int)(Double.parseDouble(empAnnaulMap.get("salary")) / 360 / 24 * 1.5 * (Double.parseDouble(empAnnaulMap.get("total_overtime_seconds")) / 3600 ) );
+			int monthSalary = (int) (Double.parseDouble(empAnnaulMap.get("salary")) / 12 );
 			
+			String str_overtimePay = overtimePay+"";
+			String str_monthSalary = monthSalary+"";
+			
+			empAnnaulMap.put("overtimePay", str_overtimePay);
+			empAnnaulMap.put("monthSalary", str_monthSalary);
+			
+			/*
+			 * System.out.println("employeeNo : "+empAnnaulMap.get("employeeNo"));
+			 * System.out.println("name : "+empAnnaulMap.get("name"));
+			 * System.out.println("departmentName : "+empAnnaulMap.get("departmentName"));
+			 * System.out.println("positionName : "+empAnnaulMap.get("positionName"));
+			 * System.out.println("salary : "+empAnnaulMap.get("salary"));
+			 * System.out.println("monthSalary : "+empAnnaulMap.get("monthSalary"));
+			 * System.out.println("overtimePay : "+overtimePay);
+			 */
+			
+			dao.scheduler_monthly_payment_insert(empAnnaulMap);
+			
+		}
+		
+	}
+		
+	
+	
 			
 }
 		

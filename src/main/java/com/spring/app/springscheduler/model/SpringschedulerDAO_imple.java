@@ -40,8 +40,8 @@ public class SpringschedulerDAO_imple implements SpringschedulerDAO {
 	}
 
 	@Override
-	public List<Map<String, String>> getEmpInfo(String str_current_Year) {
-		List<Map<String, String>> empList = sqlsession.selectList("springscheduler.getEmpInfo", str_current_Year);
+	public List<Map<String, String>> getEmpInfo() {
+		List<Map<String, String>> empList = sqlsession.selectList("springscheduler.getEmpInfo");
 		return empList;
 	}
 
@@ -66,6 +66,17 @@ public class SpringschedulerDAO_imple implements SpringschedulerDAO {
 	@Override
 	public void scheduler_absence_insert(String employeeNo) throws SQLException {
 		sqlsession.insert("springscheduler.scheduler_absence_insert", employeeNo);
+	}
+
+	@Override
+	public List<Map<String, String>> getEmpAnnualInfo() {
+		List<Map<String, String>> empAnnualList = sqlsession.selectList("springscheduler.getEmpAnnualInfo");
+		return empAnnualList;
+	}
+
+	@Override
+	public void scheduler_monthly_payment_insert(Map<String, String> empAnnaulMap) {
+		sqlsession.insert("springscheduler.scheduler_monthly_payment_insert",empAnnaulMap);
 	}
 
 	

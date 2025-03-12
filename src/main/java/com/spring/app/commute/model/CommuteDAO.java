@@ -59,6 +59,12 @@ public interface CommuteDAO {
 
 	int totalCnt_annaul(Map<String, String> paraMap);
 
+	Map<String, String> getMyinfo(String employeeNo);
+
+	int totalCnt_mySalary(Map<String, String> paraMap);
+
+	List<Map<String, String>> getMySalaryInfo(Map<String, String> paraMap);
+
 
 
 }

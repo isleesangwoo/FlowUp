@@ -618,6 +618,24 @@ public class CommuteService_imple implements CommuteService {
 		int totalCount = dao.totalCnt_annaul(paraMap);
 		return totalCount;
 	}
+
+	@Override
+	public Map<String, String> getMyinfo(String employeeNo) {
+		Map<String, String> map = dao.getMyinfo(employeeNo);
+		return map;
+	}
+
+	@Override
+	public int totalCnt_mySalary(Map<String, String> paraMap) {
+		int cnt = dao.totalCnt_mySalary(paraMap);
+		return cnt;
+	}
+
+	@Override
+	public List<Map<String, String>> getMySalaryInfo(Map<String, String> paraMap) {
+		List<Map<String, String>> mapList = dao.getMySalaryInfo(paraMap);
+		return mapList;
+	}
 	
 	
 	
