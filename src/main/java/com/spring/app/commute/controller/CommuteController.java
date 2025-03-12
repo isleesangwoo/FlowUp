@@ -609,9 +609,129 @@ public class CommuteController {
 		return jsonMap;
 	}
 	
+	// 내 연차 조회 및 페이지 이동
+	@GetMapping("mySalary")
+	public ModelAndView mySalary(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+
+		HttpSession session = request.getSession();
+
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+
+		if (loginuser == null) {
+			mav.setViewName("mycontent/employee/login");
+		} else {
+
+			String employeeNo = loginuser.getEmployeeNo();
+
+			Map<String, String> map = service.getMyinfo(employeeNo);
+			
+			mav.addObject("map", map);
+			mav.setViewName("mycontent/commute/mySalary");
+
+		}
+
+		return mav;
+	}
 	
-	
-	
+	@GetMapping("getMySalaryInfo")
+	@ResponseBody
+	public Map<String, Object> getMySalaryInfo (@RequestParam Map<String, String> paraMap) {
+		
+		Map<String, Object> jsonMap = new HashMap<>();
+		
+		String currentShowPageNo = "1";
+		int totalCount = 0; 	// 총 게시물 수
+		int sizePerPage = 0; 	// 페이지당 게시물 수
+		int totalPage = 0; 		// 총 페이지 수
+		int n_currentShowPageNo = 1;
+		
+		
+		if(paraMap.get("currentShowPageNo") != null) {
+			currentShowPageNo = paraMap.get("currentShowPageNo");
+		}
+		
+		if(!"name".equals(paraMap.get("searchType")) ) {
+			paraMap.put("searchType", "");
+		}
+		
+		if(paraMap.get("searchWord").trim() == null) {
+			paraMap.put("searchWord", "");
+		}
+		else {
+			paraMap.put("searchWord", paraMap.get("searchWord").trim());
+		}
+
+		if(paraMap.get("sizePerPage") != null ) {
+			sizePerPage = Integer.parseInt(paraMap.get("sizePerPage"));
+		}
+		
+		totalCount = service.totalCnt_mySalary(paraMap);
+
+		totalPage = (int)( Math.ceil((double)totalCount/sizePerPage) );
+		
+		try {
+			n_currentShowPageNo = Integer.parseInt(currentShowPageNo);
+			
+			if(n_currentShowPageNo < 1 || n_currentShowPageNo > totalPage) {
+	            n_currentShowPageNo = 1;
+	        }
+			
+		} catch (NumberFormatException e) {
+			n_currentShowPageNo = 1;
+		}
+		
+		int startRno = ((n_currentShowPageNo - 1) * sizePerPage ) + 1;
+		int endRno = startRno + sizePerPage -1;
+		
+		paraMap.put("startRno", String.valueOf(startRno));
+		paraMap.put("endRno", String.valueOf(endRno));
+		
+		List<Map<String, String>> mapList = service.getMySalaryInfo(paraMap);
+		
+		int blockSize = 5; 
+		int loop = 1;
+		int pageNo = ((n_currentShowPageNo - 1)/blockSize) * blockSize + 1;
+		
+		String pageBar = "<div style='width:100%; margin:0 auto;'>";
+		
+	    pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody(1)'>[처음]</button>";
+	    
+	    if(n_currentShowPageNo > 1) {
+	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+ (pageNo-1) +")'>[이전]</button>";
+
+	    }
+	    
+	    while(!(loop > blockSize || pageNo > totalPage)) {
+	    	
+	    
+	    	if(pageNo == n_currentShowPageNo) {
+	            pageBar += "<button type='button'  class='btn' style='color:#2985DB;'>"+pageNo+"</button>";
+	        }
+	    	else {
+	    		pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+pageNo+")'>"+pageNo+"</button>"; 
+	    	}    
+	    	
+	    	loop++;
+	    	pageNo++;
+	           
+	    }// end of while --------------------------------
+
+	    
+	    if(pageNo <= totalPage) {
+	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+pageNo+")'>[다음]</button>"; 
+	    }
+
+	    pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+totalPage+")'>[마지막]</button>"; 
+		    
+	    pageBar += "</div>";
+
+	    
+	    jsonMap.put("pageBar", pageBar);
+	  	jsonMap.put("paraMap", paraMap);
+	  	jsonMap.put("mapList", mapList);
+
+		return jsonMap;
+	}
 	
 	
 	

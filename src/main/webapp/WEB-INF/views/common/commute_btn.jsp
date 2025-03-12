@@ -387,6 +387,13 @@
 			location.href="<%= ctxPath%>/commute/myAnnual";
 			
 	    });
+	    
+		// 내 급여내역
+		$("#mySalaryInfo").click(e=>{
+	    	
+			location.href="<%= ctxPath%>/commute/mySalary";
+			
+	    });
  		
 		
 		// 부서 근태현황
@@ -631,6 +638,7 @@
 	            <div id="btn_myCommute_list" style="list-style: none; display: none;">
             		<div id="myCommuteTable" class="hhover" style="margin-top:3px;">&nbsp;&nbsp;&nbsp;내 근태현황</div>
             		<div id="myAnnualInfo" class="hhover" style="margin-top:3px;">&nbsp;&nbsp;&nbsp;내 연차내역</div>
+            		<div id="mySalaryInfo" class="hhover" style="margin-top:3px;">&nbsp;&nbsp;&nbsp;내 급여내역</div>
             	</div>
             </div>
             

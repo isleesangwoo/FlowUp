@@ -14,19 +14,17 @@
 $(document).ready(function() {
 	
 	$("span.error").hide();
-	
 	$("div.addFrmModal").hide();
 	
-	$("button.openModal").click(function(){
+	$("button#openModal").click(function(){
 		
 		$("div.addFrmModal").show();
-		
 		$("input:text[name='firstName']").focus();
 		
 		// 이름 유효성
 		$("input:text[name='firstName']").blur(function(e){
 			
-			const regExp= /^[가-힣a-zA-Z]{1,6}$/ // 한글&영어 1~6자리
+			const regExp= /^[가-힣a-zA-Z]{1,15}$/ // 한글&영어 1~6자리
 	 		const bool = regExp.test($(e.target).val());
 	 		
 	 		if(!bool){
@@ -45,7 +43,7 @@ $(document).ready(function() {
 		// 가운데 이름 유효성
 		$("input:text[name='middleName']").blur(function(e){
 			
-			const regExp= /^[가-힣a-zA-Z]{1,6}$/ // 한글&영어 1~6자리
+			const regExp= /^[가-힣a-zA-Z]{1,15}$/ // 한글&영어 1~6자리
 	 		const bool = regExp.test($(e.target).val());
 	 		
 	 		if(!bool){
@@ -64,14 +62,12 @@ $(document).ready(function() {
 		//  이름 유효성
 		$("input:text[name='lastName']").blur(function(e){
 			
-			const regExp= /^[가-힣a-zA-Z]{1,6}$/ // 한글&영어 1~6자리
+			const regExp= /^[가-힣a-zA-Z]{1,15}$/ // 한글&영어 1~6자리
 	 		const bool = regExp.test($(e.target).val());
 	 		
 	 		if(!bool){
-				 
 				 $(e.target).next().show();
 				 $(e.target).focus();
-				 
 			}
 	 		
 	 		else{
@@ -125,8 +121,7 @@ $(document).ready(function() {
 	 		if(!bool){
 				 
 				 $(e.target).next().show();
-				 $(e.target).focus();
-				 
+				 $(e.target).focus();	 
 			}
 	 		
 	 		else{
@@ -216,27 +211,42 @@ $(document).ready(function() {
 	
 	<%--alert($("input:text[name='fk_employeeNo']").val());--%>
 
-	const fk_employeeNo = $("input:hidden[name='fk_employeeNo']").val()
+	const fk_employeeNo = $("input:hidden[name='fk_employeeNo']").val();
 	
 	// 주소록 전체 목록
+	view_address(fk_employeeNo);
+	
+}); //$(document).ready(function(){});-------------------
+
+
+function view_address(fk_employeeNo) {
+
 	$.ajax({
 		url:"<%= ctxPath%>/employee/all_address_data",
 		data:{"fk_employeeNo":fk_employeeNo},
 		dataType:"json",
 		type: "get",
-  	  	success:function(json){
-  	  		//console.log(JSON.stringify(json));
-  	  		//alert(JSON.stringify(json));
-  	  		<%--
-	  	  		[{"DIRECTCALL":"0209091212","PHONENO":"01023238989","name":"김춘배","DEPARTMENT":"영업부","RANK":"부장","EMAIL":"kimchunbae@naver.com","COMPANY":"flow up"}
-	  	  		,{"DIRECTCALL":"010121212121","PHONENO":"01023238989","name":"이지지혜","DEPARTMENT":"영업부","RANK":"부장","EMAIL":"bamu6651@gmail.com","COMPANY":"주식회사"}
-	  	  		,{"DIRECTCALL":"04178129878","PHONENO":"01020706651","name":"곽두팔","DEPARTMENT":"영업부","RANK":"사원","EMAIL":"banana5092@naver.com","COMPANY":"주식회사"}
-	  	  		,{"DIRECTCALL":"04178129878","PHONENO":"01020706651","name":"김 봉춘","DEPARTMENT":"영업부","RANK":"부장","EMAIL":"bamu6651@gmail.com","COMPANY":"주식회사"}]
-  	  		--%>
-  	  		let v_html="";
-  	  		
-  	  		
-  	  		v_html += "<table class='addressbooktable'>"
+		async: false, // 동기방식 
+		  	success:function(json){
+		  		
+		  		console.log(JSON.stringify(json))
+		  		<%--
+	  	  		[{"DIRECTCALL":"03109092323","PHONENO":"01023238989","ADRSBNO":"100019","name":"전동석","DEPARTMENT":"영업부","RANK":"사원","EMAIL":"jds@naver.com","COMPANY":"지나인제약"},
+	  	  		{"DIRECTCALL":"0293489432","PHONENO":"01039249854","ADRSBNO":"100018","name":"김고은","DEPARTMENT":"부설연구소","RANK":"사원","EMAIL":"kimge@naver.com","COMPANY":"휴온스메디"},
+	  	  		{"DIRECTCALL":"0291418743","PHONENO":"01095438912","ADRSBNO":"100017","name":"옥주현","DEPARTMENT":"총무부","RANK":"대리","EMAIL":"okju@naver.com","COMPANY":"인텔리테크"},
+	  	  		{"DIRECTCALL":"0298128912","PHONENO":"0103482912","ADRSBNO":"100016","name":"박은태","DEPARTMENT":"계획관리본부","RANK":"전무","EMAIL":"parkeuntae@naver.com","COMPANY":"엔터원"},
+	  	  		{"DIRECTCALL":"0298128452","PHONENO":"01098341297","ADRSBNO":"100015","name":"신성록","DEPARTMENT":"개발부","RANK":"과장","EMAIL":"sinsr@naver.com","COMPANY":"와이원"},
+	  	  		{"DIRECTCALL":"0212567623","PHONENO":"01023238989","ADRSBNO":"100014","name":"엄정화","DEPARTMENT":"영업부","RANK":"차장","EMAIL":"eomjh@naver.com","COMPANY":"삼성"},
+	  	  		{"DIRECTCALL":"0243181993","PHONENO":"01091994753","ADRSBNO":"100013","name":"김성훈","DEPARTMENT":"총무부","RANK":"전무","EMAIL":"power8993@naver.com","COMPANY":"flow up"},
+	  	  		{"DIRECTCALL":"0287847311","PHONENO":"01087847311","ADRSBNO":"100012","name":"이동훈","DEPARTMENT":"물류부","RANK":"전무","EMAIL":"ehdgns6402@naver.com","COMPANY":"flow up"},
+	  	  		{"DIRECTCALL":"0298423234","PHONENO":"01043189993","ADRSBNO":"100011","name":"이상우","DEPARTMENT":"영업부","RANK":"상무","EMAIL":"giyf1208@naver.com","COMPANY":"flow up"},
+	  	  		{"DIRECTCALL":"0290291654","PHONENO":"01090291654","ADRSBNO":"100010","name":"강이훈","DEPARTMENT":"관리부","RANK":"전무","EMAIL":"dlgns1110@naver.com","COMPANY":"flow up"},
+	  	  		{"DIRECTCALL":"0282487243","PHONENO":"01082487243","ADRSBNO":"100009","name":"윤영주","DEPARTMENT":"경영관리부","RANK":"사장","EMAIL":"mechanicon@naver.com","COMPANY":"flow up"},
+	  	  		{"DIRECTCALL":"0289891212","PHONENO":"01020706651","ADRSBNO":"100008","name":"이지혜","DEPARTMENT":"물류부","RANK":"차장","EMAIL":"banana5092@naver.com","COMPANY":"flow up"}]
+		  		--%>
+		  		let v_html="";
+		  		
+		  		v_html += "<table class='addressbooktable'>"
 				    +	 "<thead>" 
 					+		 "<tr>"
 					+			"<th class='thcss thcheck'><input type='checkbox'></th>"
@@ -250,38 +260,89 @@ $(document).ready(function() {
 					+		  "</tr>"
 					+		"</thead>"		
 					+	"<tbody>";
-  	  		
-  	  		for(let i=0;i<json.length;i++){
-  	  			
-  	  			v_html+="<tr>"
-		  	  		  +		"<td class='tdcss thcheck'><input type='checkbox'></td>"
-		  			  +		"<td class='tdcss'><span class='tabletitle'>"+json[i].name+"</span></td>"
-		  			  +		"<td class='tdcss'><span class='tabletitle'>"+json[i].RANK+"</span></td>"
-		  			  +		"<td class='tdcss'><span class='tabletitle'>"+json[i].EMAIL+"</span></td>"
-		  			  +		"<td class='tdcss'><span class='tabletitle'>"+json[i].PHONENO+"</span></td>"
-		  			  +		"<td class='tdcss'><span class='tabletitle'>"+json[i].DEPARTMENT+"</td>"
-		  			  +		"<td class='tdcss'><span class='tabletitle'>"+json[i].COMPANY+"</span></td>"
-		  			  +		"<td class='tdcss'><span class='tabletitle'>"+json[i].DIRECTCALL+"</span></td>"
-		  			  + "</tr>";
-			  			
-  	  			
-  	  		}// end of for(let i = 0; i<json.length; i++){}
-  	  		v_html+="</tbody>"+
-  	  				"</table>";
-  	  				
-  	  				$("div.addressbookcontent").html(v_html);
-  	  				
-  	  				
-  	  	},
-  	 	 error: function(request, status, error){
-		 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		  		
+		  		for(let i=0;i<json.length;i++){	
+		  			
+		  			v_html+="<tr>"
+		  				  +		"<td class='tdcss thcheck'><input type='checkbox' name='checkSelect' class='checkSelect' value="+json[i].ADRSBNO+"></td>"
+		  			  +		"<td class='tdcss'><span class='tabletitle hoverEvent' name='data_name' onclick='detail_update_profile()'>"+json[i].name+"</span></td>"
+		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_rank'>"+json[i].RANK+"</span></td>"
+		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_email' id='email'>"+json[i].EMAIL+"</span></td>"
+		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_phone'>"+json[i].PHONENO+"</span></td>"
+		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_department'>"+json[i].DEPARTMENT+"</td>"
+		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_company'>"+json[i].COMPANY+"</span></td>"
+		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_directcall'>"+json[i].DIRECTCALL+"</span></td>"
+		  			  + "</tr>";  	  			
+		  		}// end of for(let i = 0; i<json.length; i++){}
+		  	
+		  		v_html+="</tbody>"+
+		  				"</table>";
+		  				
+		  				$("div.addressbookcontent").html(v_html);
+		  			 
+		  	},
+		 	 error: function(request, status, error){
+		 	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 	     }
 		
 	});// end of $.ajax({});----------------------------------------------------------------
 	
-}); //$(document).ready(function(){});-------------------
+}// end of function view_address(fk_employeeNo)-------------------------------
+
+
+function delete_address(){
+	
+	if($("input.checkSelect:checked").length == 0) {
+		alert("주소록을 선택해주세요");
+	}
+	
+	else{
+		
+		const addressno = $("input:checkbox[name='checkSelect']:checked").val()
+		
+		 if (confirm("정말로 삭제하시겠습니까?")) {
+			// console.log(addressno);	// 체크박스로 선택한 값을 알아옴.	
+			
+			$.ajax({
+				url:"<%= ctxpath%>/employee/delete_address_book",
+				type: "post",
+				dataType: "json",
+				data : {"addressno":addressno},
+				success:function(json){
+				 //	console.log(JSON.stringify(json));
+				 // {"n":1}
+					if(json.n == 1) {
+						alert("삭제가 성공적으로 완료되었습니다.");
+						view_address($("input:hidden[name='fk_employeeNo']").val());		
+					}
+				},
+		  	 	 error: function(request, status, error){
+		 		 	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		 	     }
+			}); // end of $.ajax({});
+			
+		 }
+		else{
+			alert("삭제가 취소되었습니다");
+		}
+	}
+	
+};// end of function delete_address(){};--------------------
+
+
+function detail_update_profile(){
+	  const options = 'width=700, height=600, top=50, left=500, scrollbars=yes';
+	  window.open("http://naver.com",'_blank',options);
+	  <%-- 네이버는 임시 클릭한 사원의 정보를 띄어줄 것 --%>
+}// end of function detail_update_profile(){}---------------------------------------------
+
 
 </script>
+
+
+<!-- --------------------------------------- -->
+
+
 
 <div id="right-bar">
 	<div id="right_title_box">
@@ -291,8 +352,8 @@ $(document).ready(function() {
 
 <div id="toolbar">
 	 <div>
-		<button class="openModal toolbtn">빠른 등록</button>
-		<button class="toolbtn">삭제</button>
+	 	<button class=" toolbtn" id="openModal">빠른 등록</button>
+		<button class="toolbtn" onclick="delete_address()">삭제</button>
 		<button class="toolbtn">메일발송</button>
 	 </div>
 </div>
@@ -315,11 +376,15 @@ $(document).ready(function() {
 	<button class="spelling list" id="o">ㅎ</button>
 	<button class="spelling list" id="alphabet">A~Z</button>
 	<button class="spelling list" id="number">1~9</button>
-	
 </div>
 
+<!-- ajax로 주소록 넣음 -->
 <div class="addressbookcontent">
+	<span class="ADRSBNO"></span>
+</div>
 
+
+<!-- 주소록 추가 모달창 -->
 <div class="addFrmModal">
 		<div class="maodal_background"></div><%-- 모달창 백그라운드 --%>
 		<div class="modal_content"><%-- 모달창 메인 내용 --%>
@@ -395,7 +460,7 @@ $(document).ready(function() {
 		</div>
 		
 	</div>
-
-	</div>
+	<!--  페이징 처리 하는 곳 -->
+	<div class="pagediv"></div>
 </div>
 

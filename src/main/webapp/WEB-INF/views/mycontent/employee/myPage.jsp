@@ -36,7 +36,7 @@
 				</tr>
 				<tr>
 					<th><span class="title">이름</span></th>
-					<td>이지혜</td>
+					<td>${sessionScope.loginuser.name}</td>
 				</tr>
 				<tr>
 					<th><span class="title">회사</span></th>
@@ -44,39 +44,66 @@
 				</tr>
 				<tr>
 					<th><span class="title">부서</span></th>
-					<td>영업부</td>
+					<td>${sessionScope.loginuser.departmentName}</td>
 				</tr>
 				<tr>
 					<th><span class="title">직위</span></th>
-					<td>관리자</td>
+					<td>
+			           <c:choose>
+			              <c:when test="${sessionScope.loginuser.FK_positionNo == 100001}">
+			                  사원
+			              </c:when>
+			              <c:when test="${sessionScope.loginuser.FK_positionNo == 100002}">
+			                  대리
+			              </c:when>
+			              <c:when test="${sessionScope.loginuser.FK_positionNo == 100003}">
+			                  과장
+			              </c:when>
+			              <c:when test="${sessionScope.loginuser.FK_positionNo == 100004}">
+			                  차장
+			              </c:when>
+			              <c:when test="${sessionScope.loginuser.FK_positionNo == 100005}">
+			                  부장
+			              </c:when>
+			              <c:when test="${sessionScope.loginuser.FK_positionNo == 100006}">
+			                  상무
+			              </c:when>
+			              <c:when test="${sessionScope.loginuser.FK_positionNo == 100007}">
+			                  전무
+			              </c:when>
+			              <c:when test="${sessionScope.loginuser.FK_positionNo == 100008}">
+			                  사장
+			              </c:when>
+			           </c:choose>		
+					</td>
 				</tr>
 				<tr>
 					<th><span class="title">이메일</span></th>
-					<td>banana5092@naver.com</td>
+					<td>${sessionScope.loginuser.email}</td>
 				</tr>
 				<tr>
 					<th><span class="title">전화번호</span></th>
-					<td>01020706651</td>
+					<td>${sessionScope.loginuser.mobile}</td>
 				</tr>
 				<tr>
 					<th><span class="title">내선번호</span></th>
-					<td>02109099090</td>
+					<td>${sessionScope.loginuser.directCall}</td>
 				</tr>
 				<tr>
 					<th><span class="title">생일</span></th>
-					<td>20020807</td>
+					<td>${sessionScope.loginuser.birth}</td>
 				</tr>
 				<tr>
 					<th><span class="title">입사일</span></th>
-					<td>20200909</td>
+					<td>${sessionScope.loginuser.registerDate}</td>
 				</tr>
 				<tr>
 					<th><span class="title">집주소</span></th>
-					<td>충청남도 천안시 서북구 와촌 3길 5</td>
+					<td>${sessionScope.loginuser.address}</td>
 				</tr>
 				<tr>
 					<th><span class="title">동기</span></th>
-					<td>월급루팡하기</td>
+					<td>${sessionScope.loginuser.motive}</td>
 				</tr>
 			</tbody>
 			

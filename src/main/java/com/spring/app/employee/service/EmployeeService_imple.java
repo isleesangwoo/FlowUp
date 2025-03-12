@@ -6,23 +6,21 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.spring.app.common.AES256;
 import com.spring.app.common.Sha256;
 import com.spring.app.employee.domain.AddressBookVO;
 import com.spring.app.employee.domain.EmployeeVO;
 import com.spring.app.employee.model.EmployeeDAO;
 
-import jakarta.servlet.ServletException;
+
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -251,5 +249,34 @@ public class EmployeeService_imple implements EmployeeService {
 		return mapList;
 	}
 
+
+	// 우리 회사 주소록 부서별로 알아오기
+	@Override
+	public List<Map<String, String>> addressBook_select_department_list() {
+		List<Map<String, String>>mapList = dao.addressBook_select_department_list();
+		return mapList;
+	}
+
+	// 전체주소록 중 선택한 주소 삭제하기
+	@Override
+	public int  delete_address_book(String addressno) {
+
+		int n  = dao.delete_address_book(addressno);
+		
+		return n;
+	}
+
+
+	// view 단에 줄 사원들의 정보 갖고오기
+	@Override
+	public List<Map<String, String>> all_employee_info_list(HttpServletRequest request) {
+		
+		List<Map<String, String>> all_employee_info_list = dao.all_employee_info_list();
+		
+		HttpSession session = request.getSession();
+		session.setAttribute("all_employee_info_list", all_employee_info_list);
+		
+		return null;
+	}
 	
 }
