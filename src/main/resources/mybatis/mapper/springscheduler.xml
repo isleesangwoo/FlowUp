@@ -38,13 +38,13 @@
 
 	<resultMap type="HashMap" id="getEmpInfoMap">
    		<result property="employeeNo" 		column="employeeNo" 		javaType="String" />
-   		<result property="regYear" 			column="registerDate" 		javaType="String" />
+   		<result property="regYear" 			column="regYear" 			javaType="String" />
    		<result property="totalAnnual" 		column="totalannual" 		javaType="String" />
    		<result property="usedAnnual" 		column="usedannual" 		javaType="String" />
    		<result property="remainingAnnual" 	column="remainingannual" 	javaType="String" />
    		<result property="name" 			column="name" 				javaType="String" />
    	</resultMap>
-	<select id="getEmpInfo" resultMap="getEmpInfoMap" parameterType="String"> 
+	<select id="getEmpInfo" resultMap="getEmpInfoMap" > 
 		select employeeNo
 		     , regYear
 		     , nvl(occurAnnual, 0) + nvl(overAnnual, 0) + nvl(addAnnual, 0) as totalannual
@@ -61,7 +61,7 @@
 		(
 			select occurAnnual, overAnnual, addAnnual, fk_employeeNo
 			from tbl_annual
-			where year = #{str_current_Year}
+			where year = to_char(sysdate, 'yyyy')
 		)A
 		on E.employeeNo = A.fk_employeeNo 
 		left join
@@ -69,7 +69,7 @@
 		    select D.fk_employeeNo , sum(useamount) as usedannual
 		    from tbl_document D join tbl_draft_annual T
 		    on D.DOCUMENTNO = T.DOCUMENTNO
-		    where to_char(draftdate, 'yyyy') = #{str_current_Year} and D.status = 1
+		    where to_char(draftdate, 'yyyy') = to_char(sysdate, 'yyyy') and D.status = 1
 		    group by D.fk_employeeNo
 		)B
 		on E.employeeNo = B.fk_employeeNo
@@ -77,7 +77,7 @@
 	
 	<insert id="insertAnnual" parameterType="HashMap">
 		insert into tbl_annual(annualNo, fk_employeeNo, year, occurAnnual, overAnnual, addAnnual)
-		values(annualseq.nextval, #{employeeNo}, #{nextYear}, #{occurAnnual}, #{overAnnual}, 0)
+		values(annualseq.nextval, #{employeeNo}, to_char(to_number(to_char(sysdate, 'yyyy'))+1), #{occurAnnual}, #{overAnnual}, 0)
 	</insert>
 	
 	<select id="scheduler_yesterday_workYN" parameterType="String" resultType="int">
@@ -98,8 +98,61 @@
 		values(commuteSeq.nextval, #{employeeNo}, 6, 4, 0, to_char(sysdate-1, 'yyyy-mm-dd') )
 	</insert>
 	
+	<resultMap type="HashMap" id="getEmpAnnualInfoMap">
+   		<result property="employeeNo" 				column="EMPLOYEENO" 			javaType="String" />
+   		<result property="name" 					column="NAME" 					javaType="String" />
+   		<result property="year_month" 				column="YEAR_MONTH" 			javaType="String" />
+   		<result property="departmentName" 			column="DEPARTMENTNAME" 		javaType="String" />
+   		<result property="total_overtime_hours" 	column="TOTAL_OVERTIME_HOURS" 	javaType="String" />
+   		<result property="total_overtime_seconds" 	column="TOTAL_OVERTIME_SECONDS" javaType="String" />
+   		<result property="salary" 					column="SALARY" 				javaType="String" />
+   		<result property="positionName" 			column="POSITIONNAME" 			javaType="String" />
+   		<result property="bank" 					column="BANK" 					javaType="String" />
+   		<result property="account" 					column="ACCOUNT" 				javaType="String" />
+   	</resultMap>
+	<select id="getEmpAnnualInfo" resultMap="getEmpAnnualInfoMap">
+		WITH WEEKLY_OVERTIME AS (
+		    SELECT 
+		        FK_EMPLOYEENO AS EMPLOYEENO,
+		        TRUNC(TO_DATE(WORKDATE, 'YYYY-MM-DD'), 'D') AS YEAR_MONTH,
+		        CASE 
+		            WHEN SUM((ENDTIME - STARTTIME) * 24) > 40 
+		            THEN SUM((ENDTIME - STARTTIME) * 24) - 40 
+		            ELSE 0 
+		        END AS OVERTIME_HOURS
+		    FROM TBL_COMMUTE
+		    WHERE TO_CHAR(TO_DATE(WORKDATE, 'YYYY-MM-DD'), 'YYYY-MM') = TO_CHAR(ADD_MONTHS(SYSDATE, -1), 'YYYY-MM')
+		    GROUP BY FK_EMPLOYEENO, TRUNC(TO_DATE(WORKDATE, 'YYYY-MM-DD'), 'D')
+		)
+		SELECT 
+		    E.EMPLOYEENO,
+		    E.NAME,
+		    TO_CHAR(ADD_MONTHS(SYSDATE, -1), 'YYYY-MM') AS YEAR_MONTH,
+		    D.DEPARTMENTNAME,
+		    P.POSITIONNAME,  
+		    P.SALARY,   
+		    E.BANK,
+		    E.ACCOUNT,     
+		    LPAD(FLOOR(SUM(NVL(OVERTIME_HOURS, 0))), 2, '0') || ':' || 
+		    LPAD(FLOOR((SUM(NVL(OVERTIME_HOURS, 0)) - FLOOR(SUM(NVL(OVERTIME_HOURS, 0)))) * 60), 2, '0') || ':' || 
+		    LPAD(FLOOR((((SUM(NVL(OVERTIME_HOURS, 0)) - FLOOR(SUM(NVL(OVERTIME_HOURS, 0)))) * 60) - FLOOR((SUM(NVL(OVERTIME_HOURS, 0)) - FLOOR(SUM(NVL(OVERTIME_HOURS, 0)))) * 60)) * 60), 2, '0') AS TOTAL_OVERTIME_HOURS,
+		    SUM(NVL(OVERTIME_HOURS, 0)) * 3600 AS TOTAL_OVERTIME_SECONDS
+		FROM WEEKLY_OVERTIME W
+		RIGHT JOIN TBL_EMPLOYEE E 
+		    ON E.EMPLOYEENO = W.EMPLOYEENO
+		LEFT JOIN TBL_DEPARTMENT D
+		    ON D.DEPARTMENTNO = E.FK_DEPARTMENTNO
+		LEFT JOIN TBL_POSITION P
+		    ON P.POSITIONNO = E.FK_POSITIONNO 
+		WHERE E.STATUS = 1
+		GROUP BY E.EMPLOYEENO, E.NAME, D.DEPARTMENTNAME, P.POSITIONNAME, P.SALARY, E.BANK, E.ACCOUNT
+		ORDER BY E.EMPLOYEENO
+	</select>
 		
-	
+	<insert id="scheduler_monthly_payment_insert" parameterType="HashMap">
+		insert into tbl_salary(SALARYNO, FK_EMPLOYEENO, MONTHSALARY, OVERTIMEPAY, INCENTIVE, INCENTIVEREASON, PAYMENTDATE, BANK, ACCOUNT)
+		values(SALARYSEQ.nextval, #{employeeNo}, #{monthSalary} , #{overtimePay}, 0, ' ', SYSDATE, #{bank}, #{account})
+	</insert>
 	
 	
 
