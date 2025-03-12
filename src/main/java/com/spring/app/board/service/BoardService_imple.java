@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.spring.app.board.domain.BoardVO;
 import com.spring.app.board.domain.LikeVO;
+import com.spring.app.board.domain.NotificationVO;
 import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.board.domain.PostVO;
 import com.spring.app.board.model.BoardDAO;
@@ -433,11 +434,14 @@ public class BoardService_imple implements BoardService {
 				n = dao.updatePostLikeCnt(postNo); // 게시글테이블의 좋아요 수 누적
 				map.put("likeStatus", 1);
 				
-				System.out.println("notificationtype : " + notificationtype );
-				
 				String replyContent= null;
 				String fk_commentNo= null;
-				dao.insertNotificationInfo(postNo,login_userid,replyContent,fk_employeeNo,fk_commentNo,notificationtype); // 알림 테이블에 데이터 삽입
+				
+				if(!login_userid.equals(fk_employeeNo)) { // 로그인된 사원번호와 글 작성자가 같지 않을 시 실행 (본인이 작성한 것에 본인이 댓글 또는 좋아요 달 경우 실행 안됨)
+				
+					dao.insertNotificationInfo(postNo,login_userid,replyContent,fk_employeeNo,fk_commentNo,notificationtype); // 알림 테이블에 데이터 삽입
+				
+				}
 			}
 		}
 		
@@ -469,7 +473,12 @@ public class BoardService_imple implements BoardService {
 		if(insertCount>0) {
 			dao.addCommentCount(postNo); // 해당 게시글의 댓글 개수 증감하기
 			
-			dao.insertNotificationInfo(postNo,login_userid,commentContent,fk_employeeNo,fk_commentNo,notificationtype); // 알림 테이블에 데이터 삽입
+			if(!login_userid.equals(fk_employeeNo)) { // 로그인된 사원번호와 글 작성자가 같지 않을 시 실행 (본인이 작성한 것에 본인이 댓글 또는 좋아요 달 경우 실행 안됨)
+				
+				dao.insertNotificationInfo(postNo,login_userid,commentContent,fk_employeeNo,fk_commentNo,notificationtype); // 알림 테이블에 데이터 삽입
+				
+			}
+			
 		}
 		return insertCount;
 	}
@@ -525,7 +534,11 @@ public class BoardService_imple implements BoardService {
 			
 			String fk_employeeNo = dao.getNotificationReceiverEmployeeNo(fk_commentNo); // 알림을 받을 사원 번호를 추출
 			
-			dao.insertNotificationInfo(postNo,login_userid,replyContent,fk_employeeNo,fk_commentNo,notificationtype); // 알림 테이블에 데이터 삽입
+			if(!login_userid.equals(fk_employeeNo)) { // 로그인된 사원번호와 댓글 작성자가 같지 않을 시 실행 (본인이 작성한 것에 본인이 댓글 또는 좋아요 달 경우 실행 안됨)
+				
+				dao.insertNotificationInfo(postNo,login_userid,replyContent,fk_employeeNo,fk_commentNo,notificationtype); // 알림 테이블에 데이터 삽입
+				
+			}
 		}
 		
 		return insertCount;
@@ -581,6 +594,13 @@ public class BoardService_imple implements BoardService {
 	public List<Map<String, String>> getTopReadPosts() {
 		List<Map<String, String>> topReadList = dao.getTopReadPosts();
 		return topReadList;
+	}
+
+	// 로그인된 사원번호로 읽지않은 해당 알림 조회
+	@Override
+	public List<NotificationVO> loadNotification(String login_userid) {
+		List<NotificationVO> ListNotificationVO= dao.loadNotification(login_userid); 
+		return ListNotificationVO;
 	}
 
 	

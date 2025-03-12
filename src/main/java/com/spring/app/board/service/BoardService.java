@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.spring.app.board.domain.BoardVO;
+import com.spring.app.board.domain.NotificationVO;
 import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.board.domain.PostVO;
 
@@ -131,6 +132,9 @@ public interface BoardService {
 
 	// 조회수 상위 5개 글
 	List<Map<String, String>> getTopReadPosts();
+
+	// 로그인된 사원번호로 읽지않은 해당 알림 조회
+	List<NotificationVO> loadNotification(String login_userid);
 
 
 

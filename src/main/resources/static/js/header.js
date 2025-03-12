@@ -1,5 +1,5 @@
 $(document).ready(()=>{
-    
+	getLoadNotification();
     $('#header_ikon_box li').eq(0).css({
         'background-color': '#2985DB',
     }); 
@@ -215,8 +215,61 @@ $(document).ready(()=>{
     });
 
     // ========== 해더 들어갔다 나왔다 기능 ========== //
-
-
-
-
 });
+
+
+//////////////////////////////////////////////////////
+//////////////// Function Declaration //////////////// 
+//////////////////////////////////////////////////////
+
+
+function getLoadNotification(){ // 읽지 않은 알림 조회하기 ( 최신화에 사용됨 )
+	
+	$.ajax({
+		     type: "get",
+		     url: ctxPath + "/board/getNotification", 
+		     data: { }, // 로그인된 사원의 정보를 서버로 넘겨줌, '알림 받는 사람' 컬럼에 조건으로 설정하여 조회함.
+		     dataType: "json",
+		     success: function(json) {
+				if (json.login_userid == null) {
+		             alert("로그인된 사용자가 없습니다.")
+		        }
+				else{ // 알림 조회 완료 시
+					alert("로그인된 사용자가 있습니다.")
+					
+					json.listNotification.forEach(function(item) {
+						console.log("item.notificationNo : " + item.notificationNo);
+//	                    $('#login_userid').append(
+//							item.notificationNo
+//						);
+	                });
+					
+					$("#login_userid").html(json.login_userid); // 헤더에 로그인 사원번호를 뿌려줌 
+				}
+		     },
+		     error: function(request, status, error) {
+		         alert("댓글을 불러오는 데 실패했습니다.");
+		     }
+		 });
+	
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

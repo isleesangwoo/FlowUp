@@ -27,6 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.spring.app.board.domain.BoardVO;
+import com.spring.app.board.domain.NotificationVO;
 import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.board.domain.PostVO;
 import com.spring.app.board.service.BoardService;
@@ -1121,7 +1122,6 @@ public class BoardController {
 		  								@RequestParam  String login_name, @RequestParam String commentContent,
 		  								@RequestParam String fk_employeeNo,@RequestParam(required = false) String fk_commentNo,
 		  								@RequestParam String notificationtype) {
-	  System.out.println("흠 : " + fk_employeeNo);
 	  
 	  Map<String, Object> map = new HashMap<>();
 	  int insertCount = service.insertComment(postNo, login_userid, login_name,commentContent,fk_employeeNo,fk_commentNo,notificationtype); // 댓글 등록
@@ -1213,6 +1213,40 @@ public class BoardController {
 	  map.put("success", insertCount > 0); // true 또는 false
 	  return map;
  }
+ 
+ // 읽지 않은 알림 조회하기 (최신화에 사용됨)
+ @GetMapping("getNotification")
+ @ResponseBody
+ public Map<String, Object> getNotification(HttpServletRequest request) {
+	 
+	 HttpSession session = request.getSession();
+		
+	 EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+	 
+     String login_userid = null;
+     
+     Map<String, Object> map = new HashMap<>();
+  
+     if(loginuser != null) { // 로그인이 되었을 경우
+	   login_userid = loginuser.getEmployeeNo();
+	   map.put("login_userid", login_userid);
+	   
+	   // 로그인된 사원번호로 읽지않은 해당 알림 조회
+	   List<NotificationVO> listNotification= service.loadNotification(login_userid); 
+	   
+	   System.out.println("listNotification : "+ listNotification);
+	   map.put("listNotification", listNotification);
+     }
+     
+     // 로그인된 사원번호로 알림을 읽지 않은 것만 조회 그리고 맵에 담아서 클라이언트로 전달 후 로그인 됐을 시 알림 새로고침
+     
+     
+	 
+	 
+	 
+     return map;
+ }
+ 
   
   
   

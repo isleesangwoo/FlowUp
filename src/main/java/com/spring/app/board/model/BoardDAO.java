@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.spring.app.board.domain.BoardVO;
 import com.spring.app.board.domain.LikeVO;
+import com.spring.app.board.domain.NotificationVO;
 import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.board.domain.PostVO;
 
@@ -188,6 +189,9 @@ public interface BoardDAO {
 
 	// 알림을 받을 사원 번호를 추출
 	String getNotificationReceiverEmployeeNo(String fk_commentNo);
+
+	// 로그인된 사원번호로 읽지않은 해당 알림 조회
+	List<NotificationVO> loadNotification(String login_userid);
 	
 
 	

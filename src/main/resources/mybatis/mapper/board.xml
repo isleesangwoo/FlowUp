@@ -679,6 +679,12 @@
 		    </otherwise>
 		</choose>
 	</insert>
+	
+	<select id="loadNotification" parameterType="String" resultType="NotificationVO">
+	select * from tbl_notification
+	where fk_employeeNo = #{login_userid}
+	order by notificationNo desc
+	</select>
 
 
 </mapper>

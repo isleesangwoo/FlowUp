@@ -41,6 +41,9 @@
 
    <!-- js -->
    <!--<script src="<%=ctxPath%>/js/util.js"></script>-->
+   <script>
+		var ctxPath = "<%= request.getContextPath() %>";
+	</script>
    <script src="<%=ctxPath%>/js/header.js"></script>
    <script src="<%=ctxPath%>/js/dark_mode/dark.js"></script>
 
@@ -52,6 +55,7 @@
 <body>
     <div id="container">
         <div id="header_container">
+        로그인 사원번호 : <span id="login_userid"><%-- 로그인된 사원번호가 ajax로 들어옴. --%></span>
             <header>
                 <div class="side_btn">
 					<i class="fa-solid fa-angle-right"></i>
