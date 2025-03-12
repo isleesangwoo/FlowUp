@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import com.spring.app.employee.service.EmployeeService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+
 
 //=== 컨트롤러 선언 === //
 @Controller
@@ -192,9 +194,9 @@ public class EmployeeController {
 
 	// ===== 주소록 페이지 요청 ===== //
 	@GetMapping("addressBook")
-	public ModelAndView addressBook(ModelAndView mav) {
+	public ModelAndView addressBook(ModelAndView mav, HttpServletRequest request) {
 		mav.setViewName("mycontent/employee/addressbook");	
-		
+	
 		return mav;
 	}
 	
@@ -231,6 +233,7 @@ public class EmployeeController {
 		List<Map<String, String>> mapList = new ArrayList<>();
 		mapList=service.all_address_data(fk_employeeNo);
 		
+		
 		//System.out.println(mapList);
 		
 		return mapList;
@@ -239,8 +242,15 @@ public class EmployeeController {
 	
 	// 부서 주소록 페이지 요청
 	@GetMapping("departmentAddressBook")
-	public ModelAndView departmentAddressBook(ModelAndView mav) {
+	public ModelAndView departmentAddressBook(ModelAndView mav, @RequestParam Map<String, String> paraMap) {
 		mav.setViewName("mycontent/employee/department_addressbook");	
+		
+		// 우리 회사 주소록 부서별로 알아오기
+		List<Map<String,String>>addressBook_select_department_list = service.addressBook_select_department_list();
+
+		//System.out.println(addressBook_select_department_list);
+		//[{department=경영관리부}, {department=관리부}, {department=물류부}, {department=영업부}, {department=총무부}]
+		mav.addObject("addressBook_select_department_list",addressBook_select_department_list);
 		
 		return mav;
 	}
@@ -281,10 +291,36 @@ public class EmployeeController {
 	}
 	
 	
+	// 전체주소록 중 선택한 주소 삭제하기
+	@PostMapping("delete_address_book")
+	@ResponseBody
+	public String delete_address_book(@RequestParam String addressno){
+		
+		JSONObject jsonObj = new JSONObject(); 
+		
+		int n = service.delete_address_book(addressno);
+		
+		if(n==1) {
+		//	System.out.println("주소록 삭제 완료");
+			jsonObj.put("n", 1);
+		}
+		
+		else {
+			jsonObj.put("n", 0);
+		}
+		
+		return jsonObj.toString();
+	}
+	
 	// ==== 관리자의 사원 정보 수정 페이지 요청 ==== //
 	@GetMapping("updateEmployee")
-	public ModelAndView updateEmployee(ModelAndView mav) {
+	public ModelAndView updateEmployee(ModelAndView mav, HttpServletRequest request) {
 		mav.setViewName("mycontent/employee/updateEmployee");
+		
+		// view 단에 줄 사원들의 정보 갖고오기
+		List<Map<String,String>>all_employee_info_list = service.all_employee_info_list(request);
+		mav.addObject("all_e mployee_info_list",all_employee_info_list);
+		
 		return mav;
 	}
 	

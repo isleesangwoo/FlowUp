@@ -155,6 +155,9 @@
                           <li>
                               <a href="<%= ctxPath%>/organization/"><i class="fa-regular fa-folder"></i><span>조직도</span></a>
                           </li>
+                          <li>
+                              <a href="<%= ctxPath%>/employee/addressBook"><i class="fas fa-address-book"></i><span>주소록</span></a>
+                          </li>
                           
                       </ul>
                 </div>
@@ -167,7 +170,6 @@
             <div id="top_header_container">
                 <div class="top_header_l top_header">
                     <div class="top_ikon">
-                        
                     </div>
                 </div>
                 <div class="top_header_c top_header">
@@ -177,13 +179,13 @@
                 </div>
                 <div class="top_header_r top_header">
                     <div class="top_ikon">
-                        
+                       
                     </div>
                     <div class="top_ikon">
                         
                     </div>
                     <div class="top_ikon">
-                        
+                        <a class="right-ikon" href="<%= ctxPath%>/employee/mypage"><i class="fa-solid fa-user"></i></a>
                     </div>
                 </div>
             </div>

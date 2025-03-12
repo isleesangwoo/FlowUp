@@ -37,13 +37,13 @@ create table tbl_employee(
      FK_positionNo      number(2)                not null,   -- 직급번호
      FK_teamSeq         number(4)                not null,   -- 팀번호
      passwd             varchar2(16)             not null,   -- 비밀번호
-     name               nvarchar2(6)             not null,   -- 이름
+     name               Nvarchar2(6)             not null,   -- 이름
      securityLevlel     number(2) default 1      not null,   -- 보안등급
      email              varchar2(30)             not null,   -- 이메일
-     mobile             number(15)               not null,   -- 전화번호
-     directCal          number(15)               not null,   -- 내선번호
-     bank               nvarchar2(20)            not null,   -- 은행  
-     account            number(20)               not null,   -- 계좌번호
+     mobile             varchar2(20)             not null,   -- 전화번호
+     directCall         varchar2(20)             not null,   -- 내선번호
+     bank               Nvarchar2(20)            not null,   -- 은행  
+     account            varchar2(25)               not null,   -- 계좌번호
      maritalStatus      number(1) default 1          null,   -- 결혼유무(0: 결혼, 1: 미혼)
      disability         number(1) default 1          null,   -- 장애여부(0: y, 1: n)
      employmentType     number(1) default 0      not null,   -- 채용구분(0: 신입, 1: 경력)
@@ -62,6 +62,7 @@ create table tbl_employee(
      constraint CK_tbl_employee_status check (status in (0,1))
  );
  
+ 
 create sequence employeeNo 
 start with 100001
 increment by 1
@@ -70,7 +71,13 @@ nominvalue
 nocycle
 nocache;
 
-commit;
+select *
+from tbl_employee
+order by employeeNo desc;
+
+select *
+from tbl_position;
+
 ----------------------------------------
 -- 직급 테이블
 create table tbl_position(
@@ -258,6 +265,7 @@ select *
 from tbl_employee;
 
 
+
 desc tbl_department;
 
 
@@ -300,16 +308,265 @@ rollback;
 
 
 
-
--- 내정보 수정 쿼리
-
-update tbl_employee set 
-
 --  샘 시작 ---
 select departmentno, departmentname
 from tbl_department
 order by departmentno asc;
 --  샘 끝 ---
+
+
+select *
+from tbl_employee;
+
+-- 직급
+select * 
+from tbl_position;
+
+desc tbl_position;
+
+insert into tbl_position(posiotionno, positionname, salary) values(100001, '사원', 30000000);
+insert into tbl_position(posiotionno, positionname, salary) values(100002, '대리', 40000000);
+insert into tbl_position(posiotionno, positionname, salary) values(100003, '과장', 50000000);
+insert into tbl_position(posiotionno, positionname, salary) values(100004, '차장', 70000000);
+insert into tbl_position(posiotionno, positionname, salary) values(100005, '부장', 80000000);
+insert into tbl_position(posiotionno, positionname, salary) values(100006, '상무', 100000000);
+insert into tbl_position(posiotionno, positionname, salary) values(100007, '전무', 150000000);
+insert into tbl_position(posiotionno, positionname, salary) values(100008, '사장', 200000000);
+
+commit;
+
+select positionno, positionname
+from tbl_position
+order by positionno asc;
+
+select departmentno, departmentname
+from tbl_department
+order by departmentno asc;
+
+update tbl_team set teamname='국내영업팀'
+where teamno = 100003;
+
+select *
+from tbl_team ;
+
+
+insert into tbl_team(teamno,fk_departmentno, teamname) values(100001,100003,'총무팀');
+
+insert into tbl_team(teamno,fk_departmentno, teamname) values(100002,100002,'해외영업팀');
+insert into tbl_team(teamno,fk_departmentno, teamname) values(100003,100002,'국내영업팀');
+insert into tbl_team(teamno,fk_departmentno, teamname) values(100004,100002,'고객관리팀');
+
+insert into tbl_team(teamno,fk_departmentno, teamname) values(100005,100004,'운송파트');
+insert into tbl_team(teamno,fk_departmentno, teamname) values(100006,100004,'자재파트');
+
+insert into tbl_team(teamno,fk_departmentno, teamname) values(100007,100005,'인사팀');
+insert into tbl_team(teamno,fk_departmentno, teamname) values(100008,100005,'경리팀');
+
+delete from tbl_team where teamname = '생산2팀';
+
+commit;
+
+select teamno, teamname, fk_departmentno
+from tbl_team ;
+ 
+
+    
+
+
+select teamno, teamname
+from tbl_team
+order by teamno asc;
+
+
+
+select *
+from tbl_employee
+order by employeeno desc;
+
+update tbl_employee set address = '충청남도 천안시 서북구 와촌 3길 5', mobile='010-2070-6651'
+where employeeNo = 100011;
+
+
+update tbl_employee set email='banana5092@naver.com', mobile='01020706651', directCall='0289891212', birth = to_date(20020807,'yyyy-mm-dd') ,
+ 							address = '충청남도 천안시 서북구', motive='월급루팡'
+	where employeeNo = 100011;
+
+rollback;
+
+
+
+
+
+
+----- 팀번호 알아오기 1
+select T.teamNo, T.teamName
+from tbl_department D LEFT JOIN tbl_team T
+ON D.departmentNo = T.fk_departmentNo
+where D.departmentNo = 100002;
+
+
+
+----- 팀번호 알아오기 2
+-- 영업부
+select teamNo, teamName
+from tbl_team
+where fk_departmentNo = to_number('100004')
+order by teamNo asc;
+
+desc tbl_employee;
+
+-- employeeNo,passwd,name,FK_departmentNo,FK_positionNo,FK_teamNo,directcall,securityLevel,email,mobile,bank,account,registerdate,address,birth
+
+
+select * from tbl_employee order by employeeNo desc;
+select * from tbl_department order by departmentNo desc;
+select * from tbl_addressbook order  by ADRSBNO desc;
+select * from tbl_position order  by positionNO desc;
+
+
+desc tbl_employee ;
+
+select * from tbl_addressbook;
+
+insert into tbl_addressbook(ADRSBNO,FK_EMPLOYEENO,FIRSTNAME,LASTNAME,COMPANY,EMAIL,DIRECTCAL)
+                     values(100000,100011,'김','봉춘','주식회사','kim@gmail.com','0432120909');
+                     
+commit;
+rollback;
+
+ALTER table tbl_addressbook modify DIRECTCAL VARCHAR2(20);
+
+
+insert into tbl_addressbook(ADRSBNO,FK_EMPLOYEENO,FIRSTNAME ,MIDDLENAME,LASTNAME,COMPANY,DEPARTMENT,RANK,EMAIL,PHONENO,DIRECTCAL,COMPANYADRS,PROFILEIMG)
+values(ADRSBNO.nextval,100011,'김',' ','봉춘','주식회사','영업부','부장','bamu6651@gmail.com','01020706651','04178129878','충청남도 천안',' ');
+
+insert into tbl_addressbook(ADRSBNO,fk_employeeNo,firstName ,middleName,lastName,company,department,rank,email,phoneNo,directCal,COMPANYADRS)
+	               values(ADRSBNO.nextval,100011,'김','봉','춘', '주식회사','영업부','부장','bamu6651@gmail.com','01020706651','04178129878','충청남도 천안');
+
+
+
+insert into tbl_addressbook(ADRSBNO,fk_employeeNo,firstName ,middleName,lastName,company,department,rank,email,phoneNo,directCal,COMPANYADRS)
+                     values(ADRSBNO.nextval,100011,'곽','두','팔','주식회사','영업부','사원','banana5092@naver.com','01020706651','04178129878','충청남도 천안');
+
+
+desc tbl_addressbook ;
+
+
+--상세 보기 일 때 
+select FIRSTNAME||MIDDLENAME||LASTNAME AS name,
+       COMPANY,DEPARTMENT,RANK,EMAIL,PHONENO,DIRECTCAL,COMPANYADRS
+from tbl_addressbook
+where fk_employeeNo=100011 and ADRSBNO = 100005
+order by ADRSBNO desc;
+
+
+-- 전체 주소록
+select ADRSBNO,FIRSTNAME||MIDDLENAME||LASTNAME AS name,
+       COMPANY,DEPARTMENT,RANK,EMAIL,PHONENO,DIRECTCALL
+from tbl_addressbook
+where fk_employeeNo=111111 
+order by ADRSBNO desc;
+
+
+-- 부서 주소록
+select FIRSTNAME||MIDDLENAME||LASTNAME AS name,
+       COMPANY,DEPARTMENT,RANK,EMAIL,PHONENO,DIRECTCALL
+from tbl_addressbook
+where fk_employeeNo=100011 and DEPARTMENT='영업부' 
+order by DEPARTMENT, ADRSBNO desc;
+
+
+	select FIRSTNAME||MIDDLENAME||LASTNAME AS name,
+		       COMPANY,DEPARTMENT,RANK,EMAIL,PHONENO,DIRECTCALL
+		from tbl_addressbook
+		where fk_employeeNo=111111 and COMPANY='flow up'
+		order by DEPARTMENT, ADRSBNO desc;
+
+
+select FIRSTNAME||MIDDLENAME||LASTNAME AS name,
+       COMPANY,DEPARTMENT,RANK,EMAIL,PHONENO,DIRECTCALL
+from tbl_addressbook
+where fk_employeeNo=111111 and COMPANY !='flow up'
+order by DEPARTMENT, ADRSBNO desc;
+
+
+--- 부서주소록
+select department
+from tbl_addressBook
+group by department
+order by DEPARTMENT;
+--
+select department
+from tbl_addressBook
+where COMPANY ='flow up'
+group by department
+order by DEPARTMENT asc;
+
+select * 
+from tbl_addressBook
+where fk_employeeno = 111111;
+
+select directcall
+from tbl_employee
+where employeeno=100011;
+
+
+update tbl_addressBook set directcall = '0289891212'
+where adrsbno=100008;
+commit;
+
+-- 삭제 쿼리
+delete from tbl_addressBook where adrsbno=100008;
+
+rollback;
+
+
+--
+
+WITH A AS (
+    SELECT E.name, E.employeeno, P.positionname
+    FROM tbl_employee E 
+    JOIN tbl_position P ON E.FK_positionno = P.positionno
+    ORDER BY E.employeeno DESC
+),
+B AS (
+    SELECT E.employeeno, D.departmentno, D.departmentname
+    FROM tbl_department D 
+    JOIN tbl_employee E ON E.FK_departmentno = D.departmentno
+),
+C AS (
+    SELECT T.Teamname, D.departmentno
+    FROM tbl_team T 
+    JOIN tbl_department D ON T.Fk_departmentno = D.departmentno
+)
+SELECT A.name, A.employeeno, A.positionname, 
+       B.departmentname, 
+       C.Teamname
+FROM A
+JOIN B ON A.employeeno = B.employeeno 
+JOIN C ON B.departmentno = C.departmentno;  
+
+
+
+
+---- 주소록 삭제 쿼리 
+delete from tbl_addressbook where fk_employeeno =111111 and adrsbno=100019;
+rollback;
+commit;
+
+
+select * 
+from tbl_addressbook;
+
+-- 주소록 상세보기
+select FIRSTNAME||MIDDLENAME||LASTNAME AS name,
+       COMPANY,DEPARTMENT,RANK,EMAIL,PHONENO,DIRECTCALL, CompanyAdrs
+from tbl_addressbook
+where fk_employeeno = 111111
+order by adrsbno desc;
+
+
+
 
 
 

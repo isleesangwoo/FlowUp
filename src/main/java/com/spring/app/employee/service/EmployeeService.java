@@ -51,6 +51,14 @@ public interface EmployeeService {
 
 	// ==== 외부 주소록 목록 가져오기 ====
 	List<Map<String, String>> external_address_data(String fk_employeeNo);
+
+	// 우리 회사 주소록 부서별로 알아오기
+	List<Map<String, String>> addressBook_select_department_list();
+
+	// 전체주소록 중 선택한 주소 삭제하기
+	int delete_address_book(String addressno);
 	
+	// view 단에 줄 사원들의 정보 갖고오기
+	List<Map<String, String>> all_employee_info_list(HttpServletRequest request);
 
 }
