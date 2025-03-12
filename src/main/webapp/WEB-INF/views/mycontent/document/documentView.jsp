@@ -115,11 +115,6 @@ String ctxPath = request.getContextPath();
 		});
 	}
 	
-	<%-- 임시 저장 문서 수정하는 함수 --%>
-	function editTemp() {
-		
-	}
-	
 	<%-- 임시 저장 문서 삭제하는 함수 --%>
 	function deleteTemp() {
 		
@@ -210,9 +205,9 @@ String ctxPath = request.getContextPath();
 			
 				<!-- 임시저장 문서 수정하기 버튼 -->
 				<span class="edit_temp">
-	                <a href="" onclick="editTemp()">
+	                <a onclick="location.href='<%=ctxPath%>/document/documentView/editTemp?documentNo=${document.documentNo}&documentType=${document.documentType}';">
 	                    <span>수정</span>
-	                    <i class="fa-regular fa-trash-can"></i>
+	                    <i class="fa-solid fa-pencil"></i>
 	                </a>
 	            </span>
 	            

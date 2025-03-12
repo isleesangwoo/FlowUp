@@ -339,24 +339,6 @@ public class DocumentController {
 	}
 	
 	
-	
-	// 문서함에서 문서 1개 보기
-	@GetMapping("documentView")
-	public ModelAndView documentView(ModelAndView mav, @RequestParam Map<String, String> paraMap) {
-		
-		Map<String, String> document = service.documentView(paraMap);
-		// 문서함에서 문서 1개 보여주기
-		List<ApprovalVO> approvalList = service.getApprovalList(paraMap.get("documentNo"));
-		// 문서함에서 보여줄 결재자 리스트 가져오기
-		
-		mav.addObject("document", document);
-		mav.addObject("approvalList", approvalList);
-		mav.setViewName("mycontent/document/documentView");
-		
-		return mav;
-	}
-	
-	
 	// 휴가신청서 페이지
 	@GetMapping("annual")
 	public ModelAndView annual(ModelAndView mav) {
@@ -522,6 +504,23 @@ public class DocumentController {
 	}
 	
 	
+	// 문서함에서 문서 1개 보기
+	@GetMapping("documentView")
+	public ModelAndView documentView(ModelAndView mav, @RequestParam Map<String, String> paraMap) {
+		
+		Map<String, String> document = service.documentView(paraMap);
+		// 문서함에서 문서 1개 보여주기
+		List<ApprovalVO> approvalList = service.getApprovalList(paraMap.get("documentNo"));
+		// 문서함에서 보여줄 결재자 리스트 가져오기
+		
+		mav.addObject("document", document);
+		mav.addObject("approvalList", approvalList);
+		mav.setViewName("mycontent/document/documentView");
+		
+		return mav;
+	}
+	
+	
 	// 결재 승인하기
 	@GetMapping("documentView/approve")
 	@ResponseBody
@@ -580,6 +579,28 @@ public class DocumentController {
 	}
 	
 	
+	// 임시저장 문서 수정하기
+	@GetMapping("documentView/editTemp")
+	public ModelAndView editTemp(HttpServletRequest request, ModelAndView mav, @RequestParam String documentNo, @RequestParam String documentType) {
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("documentNo", documentNo);
+		paraMap.put("documentType", documentType);
+		
+		Map<String, String> document = service.documentView(paraMap);
+		// 문서함에서 문서 1개 보여주기
+		List<ApprovalVO> approvalList = service.getApprovalList(paraMap.get("documentNo"));
+		// 문서함에서 보여줄 결재자 리스트 가져오기
+		
+		mav.addObject("document", document);
+		mav.addObject("approvalList", approvalList);
+		
+		mav.setViewName("mycontent/document/annual");
+		
+		return mav;
+	}
+	
+	
 	// 임시저장 문서 삭제하기
 	@GetMapping("documentView/deleteTemp")
 	@ResponseBody
@@ -606,5 +627,7 @@ public class DocumentController {
 		
 		return json.toString();
 	}
+	
+	
 	
 }

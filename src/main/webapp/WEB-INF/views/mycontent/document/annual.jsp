@@ -525,19 +525,44 @@
 						<tbody>
 							<tr>
 								<th>기안자</th>
-								<td>${sessionScope.loginuser.name}</td>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										${sessionScope.loginuser.name}
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										${requestScope.document.name}
+									</c:if>
+								</td>
 							</tr>
 							<tr>
 								<th>소속</th>
-								<td>${sessionScope.loginuser.departmentName}</td>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										${sessionScope.loginuser.departmentName}
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										${requestScope.document.teamName}
+									</c:if>
+								</td>
 							</tr>
 							<tr>
 								<th>기안일</th>
-								<td><%= today%></td>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										<%= today%>
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										${requestScope.document.draftDate}
+									</c:if>
+								</td>
 							</tr>
 							<tr>
 								<th>문서번호</th>
-								<td></td>
+								<td>
+									<c:if test="${not empty requestScope.document}">
+										${requestScope.document.documentNo}
+									</c:if>
+								</td>
 							</tr>
 							
 						</tbody>
@@ -557,21 +582,48 @@
 					<tbody>
 						<tr>
 							<th>제목</th>
-							<td><input type="text" name="subject" value=" " style="width: 100%;"/></td>
+							<td>
+								<c:if test="${empty requestScope.document}">
+									<input type="text" name="subject" value=" " style="width: 100%;"/>
+								</c:if>
+								<c:if test="${not empty requestScope.document}">
+									<input type="text" name="subject" value="${requestScope.document.subject}" style="width: 100%;"/>
+								</c:if>
+							</td>
 						</tr>
 						<tr>
 							<th>휴가 종류</th>
 							<td>
 								<select name="annualType" onchange="calAnnualAmount()">
-									<option value="1">연차</option>
-									<option value="2">오전반차</option>
-									<option value="3">오후반차</option>
+									<c:if test="${empty requestScope.document}">
+										<option value="1">연차</option>
+										<option value="2">오전반차</option>
+										<option value="3">오후반차</option>
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										<c:if test="${requestScope.document.annualType == 1}">
+											<option value="1" selected>연차</option>
+										</c:if>
+										<c:if test="${requestScope.document.annualType == 2}">
+											<option value="2" selected>오전반차</option>
+										</c:if>
+										<c:if test="${requestScope.document.annualType == 3}">
+											<option value="3" selected>오후반차</option>
+										</c:if>
+									</c:if>
 								</select>
 							</td>
 						</tr>
 						<tr>
 							<th>사유</th>
-							<td><input type="text" name="reason" value=" " style="width: 100%;"/></td>
+							<td>
+								<c:if test="${empty requestScope.document}">
+									<input type="text" name="reason" value=" " style="width: 100%;"/>
+								</c:if>
+								<c:if test="${not empty requestScope.document}">
+									<input type="text" name="reason" value="${requestScope.document.reason}" style="width: 100%;"/>
+								</c:if>
+							</td>
 						</tr>
 						<tr>
 							<th>기간 및 일시</th>
