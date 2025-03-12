@@ -17,12 +17,7 @@ $(document).ready(function() {
 	
 	$("div.addFrmModal").hide();
 	
-	
-	
-	
-	
-	
-	$("button.openModal").click(function(){
+	$("button#openModal").click(function(){
 		
 		$("div.addFrmModal").show();
 		
@@ -286,13 +281,13 @@ $(document).ready(function() {
 
 <div id="right-bar">
 	<div id="right_title_box">
-		<span id="right_title">주소록</span><span class="sidetitle">in 공용주소록(<span class="addresscount">10</span>건)</span>
+		<span id="right_title">외부주소록</span><span class="sidetitle">in 공용주소록(<span class="addresscount">10</span>건)</span>
 	</div>
 
 
 <div id="toolbar">
 	 <div>
-		<button class="toolbtn">빠른 등록</button>
+		<button class="toolbtn" id="openModal">빠른 등록</button>
 		<button class="toolbtn">삭제</button>
 		<button class="toolbtn">메일발송</button>
 	 </div>
@@ -300,17 +295,12 @@ $(document).ready(function() {
 
 <div class="navtab_spelling">
 	<select class="search_department">
-		
+	
 	</select>
 </div>
 
-<div class="addressbookcontent">
-
-	<div class = "addBtn">
-		<button class="openModal"> + 주소록 추가하기</button>
-	</div>
-	
-	<div class="addFrmModal">
+<div class="addressbookcontent"></div>
+<div class="addFrmModal">
 		<div class="maodal_background"></div><%-- 모달창 백그라운드 --%>
 		<div class="modal_content"><%-- 모달창 메인 내용 --%>
 			<form name="addAdrsFrm" class="addAdrsFrm">
@@ -373,7 +363,7 @@ $(document).ready(function() {
 						<input type="text" name="companyAddress" class="modal_input"/>
 					</li>
 					<li class="input_li">
-						<input type="text" name="fk_employeeNo" class="modal_input" value="${sessionScope.loginuser.employeeNo}"/>
+						<input type="hidden" name="fk_employeeNo" class="modal_input" value="${sessionScope.loginuser.employeeNo}"/>
 					</li>
 					
 					<li class="input_li">
@@ -386,11 +376,6 @@ $(document).ready(function() {
 		</div>
 		
 	</div>
-	
-	
-
-</div>
-
 </div>
 
 

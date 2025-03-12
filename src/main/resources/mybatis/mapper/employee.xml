@@ -104,6 +104,7 @@
  
  
  <resultMap type="HashMap" id="all_address_data_list_Map">
+ 	<result property="ADRSBNO"        column="ADRSBNO" 		javaType="String"/>
  	<result property="name"        column="name" 		javaType="String"/>
  	<result property="COMPANY"     column="COMPANY" 	javaType="String"/>
  	<result property="DEPARTMENT"  column="DEPARTMENT" 	javaType="String"/>
@@ -115,12 +116,22 @@
  
  <select id="all_address_data_list" parameterType="String" resultMap="all_address_data_list_Map">
  
-	select FIRSTNAME||MIDDLENAME||LASTNAME AS name,
+	select ADRSBNO, FIRSTNAME||MIDDLENAME||LASTNAME AS name,
 	     COMPANY,DEPARTMENT,RANK,EMAIL,PHONENO,DIRECTCALL
 	from tbl_addressbook
 	where fk_employeeNo = to_number(#{fk_employeeNo})
 	order by ADRSBNO desc
  	
+ </select>
+ 
+ 
+ 
+ <select id="all_select_address"   resultMap="all_address_data_list_Map">
+ 	select ADRSBNO, FIRSTNAME||MIDDLENAME||LASTNAME AS name,
+	     COMPANY,DEPARTMENT,RANK,EMAIL,PHONENO,DIRECTCALL
+	from tbl_addressbook
+	where fk_employeeNo = to_number(#{fk_employeeNo})
+	order by ADRSBNO desc
  </select>
  
  <select id="department_address_data" parameterType="String" resultMap="all_address_data_list_Map">
@@ -132,13 +143,66 @@
  </select>
  
  
- <select id="external_address_data" parameterType="String" resultMap="all_address_data_list_Map">
+ <select id="external_address_data"  resultMap="all_address_data_list_Map">
 		select FIRSTNAME||MIDDLENAME||LASTNAME AS name,
 		      COMPANY,DEPARTMENT,RANK,EMAIL,PHONENO,DIRECTCALL
 		from tbl_addressbook
 		where fk_employeeNo=to_number(#{fk_employeeNo}) and COMPANY !='flow up'
 		order by DEPARTMENT, ADRSBNO desc
  </select>
+ 
+ 
+ <resultMap type="HashMap" id="addressBook_select_department_list_Map">
+ 	<result property="department" column="department"  javaType="String"/>
+ </resultMap>
+<!-- 우리 회사 부서 주소록 -->
+ <select id="addressBook_select_department_list" resultMap="addressBook_select_department_list_Map">
+ 
+	select department
+	from tbl_addressBook
+	where COMPANY ='flow up'
+	group by department
+	order by DEPARTMENT asc
+ 
+ </select>
+  
+ <resultMap type="HashMap" id="all_employee_info_list_map">
+ 	<result property="name"			column="name" 		  javaType="String"/>
+ 	<result property="employeeno" 	column="employeeno" 	  javaType="String"/>
+ 	<result property="positionname" 	column="positionname"   javaType="String"/>
+ 	<result property="departmentname" column="departmentname" javaType="String"/>
+ 	<result property="Teamname" 		column="Teamname" 	  javaType="String"/>
+ </resultMap>
+ 
+ <select id="all_employee_info_list" resultMap="all_employee_info_list_map">
+	WITH A AS (
+	    SELECT E.name, E.employeeno, P.positionnam+e
+	    FROM tbl_employee E 
+	    JOIN tbl_position P ON E.FK_positionno = P.positionno
+	),
+	B AS (
+	    SELECT E.employeeno, D.departmentno, D.departmentname
+	    FROM tbl_department D 
+	    JOIN tbl_employee E ON E.FK_departmentno = D.departmentno
+	),
+	C AS (
+	    SELECT T.Teamname, D.departmentno
+	    FROM tbl_team T 
+	    JOIN tbl_department D ON T.Fk_departmentno = D.departmentno
+	)
+	SELECT A.name, A.employeeno, A.positionname, 
+	       B.departmentname, 
+	       C.Teamname
+	FROM A
+	JOIN B ON A.employeeno = B.employeeno 
+	JOIN C ON B.departmentno = C.departmentno
+	ORDER BY A.employeeno desc
+ </select>
+
+ 
+ <delete id="delete_address_book">
+	 delete from tbl_addressbook where adrsbno=to_number(#{addressno})
+ </delete>
 
 </mapper>
 

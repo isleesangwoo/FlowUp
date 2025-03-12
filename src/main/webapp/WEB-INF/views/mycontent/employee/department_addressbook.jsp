@@ -4,6 +4,7 @@
    String ctxPath = request.getContextPath();
    //     /flowUp
 %> 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <jsp:include page="../../header/header.jsp" />
 <%@include file="./addressbookbar.jsp" %>
 
@@ -14,18 +15,11 @@
 $(document).ready(function() {
 	
 	$("span.error").hide();
-	
 	$("div.addFrmModal").hide();
 	
-	
-	
-	
-	
-	
-	$("button.openModal").click(function(){
+	$("button#openModal").click(function(){
 		
 		$("div.addFrmModal").show();
-		
 		$("input:text[name='firstName']").focus();
 		
 		// 이름 유효성
@@ -217,9 +211,6 @@ $(document).ready(function() {
 	    frm.submit();
 		
 	});// end of $("button.add").click(function(){});
-	
-	
-	<%--alert($("input:text[name='fk_employeeNo']").val());--%>
 
 	const fk_employeeNo = $("input:hidden[name='fk_employeeNo']").val()
 	// 주소록 전체 목록
@@ -229,6 +220,8 @@ $(document).ready(function() {
 		dataType:"json",
 		type: "get",
   	  	success:function(json){
+  	  		
+  	 
   	  		//console.log(JSON.stringify(json));
   	  		//alert(JSON.stringify(json));
   	  		<%--
@@ -242,7 +235,7 @@ $(document).ready(function() {
   	  		v_html += "<table class='addressbooktable'>"
 				    +	 "<thead>" 
 					+		 "<tr>"
-					+			"<th class='thcss thcheck'><input type='checkbox'></th>"
+					+			"<th class='thcss thcheck'><input type='checkbox'name='checkAll'></th>"
 					+			"<th class='thcss'><span class='tabletitle'>이름(표시명)</span></th>"
 					+			"<th class='thcss'><span class='tabletitle'>직위</span></th>"
 					+			"<th class='thcss'><span class='tabletitle'>이메일</span></th>"
@@ -255,11 +248,9 @@ $(document).ready(function() {
 					+	"<tbody>";
   	  		
   	  		for(let i=0;i<json.length;i++){
-  	  			
-  	  			
-  	  			
+  
   	  			v_html+="<tr>"
-		  	  		  +		"<td class='tdcss thcheck'><input type='checkbox'></td>"
+		  	  		  +		"<td class='tdcss thcheck'><input type='checkbox' name='check'></td>"
 		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_name'>"+json[i].name+"</span></td>"
 		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_rank'>"+json[i].RANK+"</span></td>"
 		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_email'>"+json[i].EMAIL+"</span></td>"
@@ -269,10 +260,14 @@ $(document).ready(function() {
 		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_directcall'>"+json[i].DIRECTCALL+"</span></td>"
 		  			  + "</tr>";
   	  		}// end of for(let i = 0; i<json.length; i++){}
+  	  		
+  	  		
+  	  		
   	  		v_html+="</tbody>"+
   	  				"</table>";
   	  				
-  	  				$("div.addressbookcontent").html(v_html);  	  				
+  	  				$("div.addressbookcontent").html(v_html); 
+  	  				
   	  	},
   	 	 error: function(request, status, error){
 		 alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -280,19 +275,24 @@ $(document).ready(function() {
 		
 	});// end of $.ajax({});----------------------------------------------------------------
 	
+	
+	
+	
+	
+	
 }); //$(document).ready(function(){});-------------------
 
 </script>
 
 <div id="right-bar">
 	<div id="right_title_box">
-		<span id="right_title">주소록</span><span class="sidetitle">in 공용주소록(<span class="addresscount">10</span>건)</span>
+		<span id="right_title">부서주소록</span><span class="sidetitle">in 공용주소록(<span class="addresscount">10</span>건)</span>
 	</div>
 
 
 <div id="toolbar">
 	 <div>
-		<button class="toolbtn">빠른 등록</button>
+		<button class="toolbtn" id="openModal">빠른 등록</button>
 		<button class="toolbtn">삭제</button>
 		<button class="toolbtn">메일발송</button>
 	 </div>
@@ -300,17 +300,20 @@ $(document).ready(function() {
 
 <div class="navtab_spelling">
 	<select class="search_department">
-		
+		<c:if test="${not empty requestScope.addressBook_select_department_list}">
+			<c:forEach var="map" items="${requestScope.addressBook_select_department_list}">
+				<option value="${map.department}">${map.department}</option>
+			</c:forEach>
+		</c:if>
 	</select>
 </div>
 
 <div class="addressbookcontent">
-
-	<div class = "addBtn">
-		<button class="openModal"> + 주소록 추가하기</button>
-	</div>
 	
-	<div class="addFrmModal">
+</div>
+
+
+<div class="addFrmModal">
 		<div class="maodal_background"></div><%-- 모달창 백그라운드 --%>
 		<div class="modal_content"><%-- 모달창 메인 내용 --%>
 			<form name="addAdrsFrm" class="addAdrsFrm">
@@ -372,7 +375,7 @@ $(document).ready(function() {
 						<input type="text" name="companyAddress" class="modal_input"/>
 					</li>
 					<li class="input_li">
-						<input type="text" name="fk_employeeNo" class="modal_input" value="${sessionScope.loginuser.employeeNo}"/>
+						<input type="hidden" name="fk_employeeNo" class="modal_input" value="${sessionScope.loginuser.employeeNo}"/>
 					</li>
 					
 					<li class="input_li">
@@ -385,10 +388,6 @@ $(document).ready(function() {
 		</div>
 		
 	</div>
-	
-	
-
-</div>
 
 </div>
 
