@@ -249,7 +249,9 @@ header:nth-child(1) {
     width: var(--size40);
     height: var(--size40);
     border-radius: 50%;
-    background-color: #dbdbdb;
+    background-color: #f9fafb;
+    text-align: center;
+    line-height: var(--size40);
 }
 
 .alarm-contants {

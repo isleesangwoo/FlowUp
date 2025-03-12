@@ -13,6 +13,16 @@ public class NotificationVO {
 	private String createdAt;				// 생성일(알림 발생일이 됨)
 	
 	
+	private String senderPostionNo;   		// 직급번호
+	private String senderName;				// 알림 보내는 사람 프로필
+	private String senderPositionName; 		// 직급명
+	private String timeAgo;					// 알림이 발생한 시간 계산 
+	private String profileimg;				// 알림 보내는 사원의 프로필
+	
+	
+	private String boardNo; 				// 알림의 해당 글의 게시판 번호
+	
+	
 	public String getNotificationNo() {
 		return notificationNo;
 	}
@@ -67,6 +77,47 @@ public class NotificationVO {
 	public void setCreatedAt(String createdAt) {
 		this.createdAt = createdAt;
 	}
+	public String getSenderPostionNo() {
+		return senderPostionNo;
+	}
+	public void setSenderPostionNo(String senderPostionNo) {
+		this.senderPostionNo = senderPostionNo;
+	}
+	public String getSenderName() {
+		return senderName;
+	}
+	public void setSenderName(String senderName) {
+		this.senderName = senderName;
+	}
+	public String getSenderPositionName() {
+		return senderPositionName;
+	}
+	public void setSenderPositionName(String senderPositionName) {
+		this.senderPositionName = senderPositionName;
+	}
+	public String getTimeAgo() {
+		return timeAgo;
+	}
+	public void setTimeAgo(String timeAgo) {
+		this.timeAgo = timeAgo;
+	}
+	public String getProfileimg() {
+		return profileimg;
+	}
+	public void setProfileimg(String profileimg) {
+		this.profileimg = profileimg;
+	}
+	public String getBoardNo() {
+		return boardNo;
+	}
+	public void setBoardNo(String boardNo) {
+		this.boardNo = boardNo;
+	}
+	
+	
+	
+	
+	
 	
 }
   

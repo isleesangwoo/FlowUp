@@ -55,7 +55,6 @@
 <body>
     <div id="container">
         <div id="header_container">
-        로그인 사원번호 : <span id="login_userid"><%-- 로그인된 사원번호가 ajax로 들어옴. --%></span>
             <header>
                 <div class="side_btn">
 					<i class="fa-solid fa-angle-right"></i>
@@ -70,61 +69,7 @@
                         <div class="alarm">
                             <div class="alarm-title">최근 알림</div>
                             <ul>
-                                <!-- DB에서 각 알림 별 시간순 정렬 뒤 유니온을 이용해 for문을 돌려주세요 -->
-                                <li>
-                                    <a href="#">
-                                        <div>
-                                            <div class="profile"></div> <!-- 알림을 보낸사람의 프로필 사진이 들어갈 자리입니다. -->
-                                            <div class="alarm-contants">
-                                                <span><b>[알림]</b></span> <!-- 알림의 정보가 뜰 자리입니다. ex) 커뮤니티, 알림, 공지,,, -->
-                                                알람1 의 내용이 들어가는 자리 입니다. 3줄 이상이 되면 자동적으로 점 처리가 되게 css 처리를 해뒀습니다. 
-                                                그러니 DB로 따로 처리할 필요는 없습니다.
-                                            </div> <!-- 알림의 내용이 들어갈 자리입니다. -->
-                                        </div>
-                                        <div class="alarm-info">
-                                            <span class="hour-before">7시간 전</span> <!-- 알림이 고지된 후의 시간을 나타낸 정보입니다. -->
-                                            <span class="alarm-member">이상우 대표이사</span> <!-- 알림을 보낸 사람의 정보입니다. -->
-                                        </div> 
-                                    </a>
-                                </li>
-                                <!-- DB에서 각 알림 별 시간순 정렬 뒤 유니온을 이용해 for문을 돌려주세요 -->
-
-
-                                <li>
-                                    <a href="#">
-                                        <div>
-                                            <div class="profile"></div> <!-- 알림을 보낸사람의 프로필 사진이 들어갈 자리입니다. -->
-                                            <div class="alarm-contants">
-                                                <span><b>[알림]</b></span> <!-- 알림의 정보가 뜰 자리입니다. ex) 커뮤니티, 알림, 공지,,, -->
-                                                알람2 의 내용이 들어가는 자리 입니다. 3줄 이상이 되면 자동적으로 점 처리가 되게 css 처리를 해뒀습니다. 
-                                                그러니 DB로 따로 처리할 필요는 없습니다.
-                                            </div> <!-- 알림의 내용이 들어갈 자리입니다. -->
-                                        </div>
-                                        <div class="alarm-info">
-                                            <span class="hour-before">7시간 전</span> <!-- 알림이 고지된 후의 시간을 나타낸 정보입니다. -->
-                                            <span class="alarm-member">이상우 대표이사</span> <!-- 알림을 보낸 사람의 정보입니다. -->
-                                        </div> 
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="#">
-                                        <div>
-                                            <div class="profile"></div> <!-- 알림을 보낸사람의 프로필 사진이 들어갈 자리입니다. -->
-                                            <div class="alarm-contants">
-                                                <span><b>[알림]</b></span> <!-- 알림의 정보가 뜰 자리입니다. ex) 커뮤니티, 알림, 공지,,, -->
-                                                알람3 의 내용이 들어가는 자리 입니다. 3줄 이상이 되면 자동적으로 점 처리가 되게 css 처리를 해뒀습니다. 
-                                                그러니 DB로 따로 처리할 필요는 없습니다.
-                                            </div> <!-- 알림의 내용이 들어갈 자리입니다. -->
-                                        </div>
-                                        <div class="alarm-info">
-                                            <span class="hour-before">7시간 전</span> <!-- 알림이 고지된 후의 시간을 나타낸 정보입니다. -->
-                                            <span class="alarm-member">이상우 대표이사</span> <!-- 알림을 보낸 사람의 정보입니다. -->
-                                        </div> 
-                                    </a>
-                                </li>
-
-
+                               <%-- 알림 List가 ajax를 통해 추가됨 --%>
                             </ul>
                         </div>
                     </span>
@@ -198,4 +143,10 @@
             <section id="main_section">
                 
 
-    
+<!-- <form name="goPostViewFrm"> -->
+<!--    <input type="text" name="postNo" /> -->
+<!--    <input type="text" name="goBackURL" /> -->
+<!--    <input type="text" name="checkAll_or_boardGroup" /> -->
+<!--    <input type="text" name="fk_boardNo" />   -->
+<!--    <!-- 이전/다음 글 할 때 전체 게시판은 조건이 필요없지만 게시판 별 게시글의 이전/다음글은 boardNo가 필요함 -->
+<!-- </form> -->

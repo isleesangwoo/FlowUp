@@ -680,10 +680,37 @@
 		</choose>
 	</insert>
 	
+<!-- 	로그인된 사원번호로 읽지않은 해당 알림 조회 -->
 	<select id="loadNotification" parameterType="String" resultType="NotificationVO">
-	select * from tbl_notification
-	where fk_employeeNo = #{login_userid}
-	order by notificationNo desc
+	select E.name, 
+			N.notificationNo, N.fk_employeeNo, N.fk_postNo, N.fk_commentNo, N.senderEmployeeNo, 
+			P.fk_boardNo AS boardNo,
+		    sender_emp.fk_positionno AS senderPostionNo,  
+		    sender_emp.name as senderName,      
+		    sender_emp.profileimg, 
+    		P.positionname AS senderPositionName,          
+		    N.message, 
+		    N.notificationType, 
+		    N.isRead, 
+		    N.createdAt,
+		    case 
+		        when (sysdate - N.createdat) * 24 &lt; 1 then floor((sysdate - N.createdat) * 24 * 60) || '분 전'
+		        when (sysdate - N.createdat) * 24 &lt; 24 then floor((sysdate - N.createdat) * 24) || '시간 전'
+		        else floor((sysdate - N.createdat)) || '일 전'
+		    end as timeAgo
+	from tbl_notification N
+	join tbl_employee E 
+	    on N.fk_employeeno = E.employeeno
+	join tbl_employee sender_emp  <!-- senderemployeeNo를 통해 tbl_employee에 다시 조인-->
+	    on N.senderemployeeno = sender_emp.employeeNo
+	join tbl_position P  
+    on sender_emp.fk_positionNo = P.positionNo
+    join tbl_post P 
+    on N.fk_postNo = P.postNo
+	join tbl_board B
+    on P.fk_boardNo = B.boardNo
+	where N.fk_employeeNo = #{login_userid}
+	order by N.notificationNo DESC
 	</select>
 
 

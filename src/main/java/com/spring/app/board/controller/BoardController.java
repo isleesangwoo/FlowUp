@@ -205,22 +205,6 @@ public class BoardController {
 	@ResponseBody
 	public Map<String, Object> selectBoardList(HttpServletRequest request) {
 		
-		/*
-		HttpSession session = request.getSession();
-	    EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
-	
-	    String login_departNo = null;
-	  
-	    if(loginuser != null) {
-	    	login_departNo = loginuser.getFK_departmentNo();
-	    }
-		
-		
-		
-	    List<BoardVO> boardList = service.selectBoardList(login_departNo);  // 게시판 목록 조회
-	    return boardList; // JSON 데이터로 반환됨
-	    */
-		
 	    HttpSession session = request.getSession();
 	    EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 	
@@ -1234,14 +1218,12 @@ public class BoardController {
 	   // 로그인된 사원번호로 읽지않은 해당 알림 조회
 	   List<NotificationVO> listNotification= service.loadNotification(login_userid); 
 	   
-	   System.out.println("listNotification : "+ listNotification);
 	   map.put("listNotification", listNotification);
      }
      
-     // 로그인된 사원번호로 알림을 읽지 않은 것만 조회 그리고 맵에 담아서 클라이언트로 전달 후 로그인 됐을 시 알림 새로고침
      
-     
-	 
+     String currentURL = "/flowUp/board/selectPostBoardGroupView?boardNo=";
+     map.put("goBackURL", currentURL); // 돌아갈 페이지
 	 
 	 
      return map;
