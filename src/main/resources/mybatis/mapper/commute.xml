@@ -332,6 +332,7 @@
 	    WHERE rno between to_number(#{startRno}) and to_number(#{endRno})
    	</select>
    	
+   	
    	<select id="totalCnt_annaul" parameterType="HashMap" resultType="int">
    		select count(*)
 		from tbl_employee E join tbl_annual A
@@ -343,7 +344,46 @@
 		</if>
    	</select>
    	
+   	<resultMap type="HashMap" id="getMyinfoMap">
+   		<result property="employeeName" 	column="employeeName" 	javaType="String" />
+   		<result property="salary" 			column="salary" 		javaType="String" />
+   		<result property="departmentName" 	column="departmentName" javaType="String" />
+   	</resultMap>
+   	<select id="getMyinfo" parameterType="String" resultMap="getMyinfoMap">
+   		select employeeName, salary, departmentName
+   		from tbl_employee E join tbl_department D
+   		on E.fk_departmentNo = D.departmentNo
+   		where employeeNo = #{employeeNo}
+   	</select>
    	
+   	<select id="totalCnt_mySalary" parameterType="HashMap">
+   		select count(*) as cnt
+   		from tbl_salary
+   		where fk_employeeno = #{employeeNo}
+   	</select>
+   	
+   	<resultMap type="HashMap" id="getMySalaryInfoMap">
+   		<result property="employeeName" 	column="employeeName" 	javaType="String" />
+   		<result property="salary" 			column="salary" 		javaType="String" />
+   		<result property="departmentName" 	column="departmentName" javaType="String" />
+   	</resultMap>
+   	<select id="getMySalaryInfo" parameterType="HashMap" resultMap="getMySalaryInfoMap">
+   		select case when    then (select to_char()  from tbl_employee where employeeNo = # )   end 
+   		
+   		
+   		
+   		
+   		
+   		|| - ||   
+   		
+   		
+   		
+   		as workrange
+   		
+   		
+   		
+   		from 
+   	</select>
    	
    	
    	

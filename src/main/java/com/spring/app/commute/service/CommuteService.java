@@ -72,6 +72,15 @@ public interface CommuteService {
 	// 사원수 조회 (연차 테이블에 데이터가 있는...? 연도별)
 	int totalCnt_annaul(Map<String, String> paraMap);
 
+	// 급여내역에 필요한 내정보를 불러온다.
+	Map<String, String> getMyinfo(String employeeNo);
+
+	// 지급내역 총갯수 
+	int totalCnt_mySalary(Map<String, String> paraMap);
+
+	// 지급내역 리스트
+	List<Map<String, String>> getMySalaryInfo(Map<String, String> paraMap);
+
 
 
 	
