@@ -273,8 +273,7 @@
 	    			
 	    		});
 	    		
-	    		v_html += `<input name='added_approval_count' type='hidden' value='\${$("tbody#added_approval_line").children().length}'/>`;
-	    		
+	    		$("input[name='added_approval_count']").val($("tbody#added_approval_line").children().length);
 	    		
 	    		$("div#approval_line").html(v_html);
 	    		
@@ -550,6 +549,7 @@
 						<!-- 결재 라인이 들어올 곳 -->
 						
 					</div>
+					<input name='added_approval_count' type='hidden' value='0'/>
 				</div>
 			</div>
 			<div class="document_info">

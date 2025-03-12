@@ -266,8 +266,11 @@
 		where fk_documentNo = #{documentNo} and fk_approver = #{employeeNo}
 	</update>
 	
-	
-	
+	<!-- 임시저장 문서 삭제하기 -->
+	<delete id="deleteTemp" parameterType="String">
+		delete tbl_document
+		where documentNo = #{documentNo}
+	</delete>
 	
 	
 </mapper>

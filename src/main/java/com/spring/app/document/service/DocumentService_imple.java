@@ -252,6 +252,15 @@ public class DocumentService_imple implements DocumentService {
 	}
 
 
+	// 임시저장 문서 삭제하기
+	@Override
+	public int deleteTemp(String documentNo) {
+		
+		int n = mapper_dao.deleteTemp(documentNo);
+		return n;
+	}
+
+
 	
 
 	

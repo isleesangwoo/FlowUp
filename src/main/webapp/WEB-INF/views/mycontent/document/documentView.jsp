@@ -12,12 +12,12 @@ String ctxPath = request.getContextPath();
 
 	$(document).ready(function(){
 		
-		// 모달 바깥 부분을 클릭했을 때 모달이 사라지게 하기
+		<%-- 모달 바깥 부분을 클릭했을 때 모달이 사라지게 하는 이벤트 --%>
 	    $('.modal_bg:not(.modal_container_document)').click(e=>{
 	    	close_modal();
 	    });
 		
-	 	// 결재 버튼 클릭 시
+	    <%-- 결재 버튼 클릭 시 결재 모달이 나타나게 하는 이벤트 --%>
 		$("button#approve_btn").click(e=>{
 			$("h3#approve_title").text("결재하기");
 			$("th.reason").text("결재의견");
@@ -27,7 +27,7 @@ String ctxPath = request.getContextPath();
 			open_modal();
 		});
 		
-		// 반려 버튼 클릭 시
+		<%-- 결재 버튼 클릭 시 반려 모달이 나타나게 하는 이벤트 --%>
 		$("button#reject_btn").click(e=>{
 			$("h3#approve_title").text("반려하기");
 			$("th.reason").text("반려의견");
@@ -37,13 +37,15 @@ String ctxPath = request.getContextPath();
 			open_modal();
 		});
 		
-		// 모달 창에서 승인/반려 버튼 클릭시
+		<%-- 모달 창에서 승인 또는 반려 버튼 클릭 시 --%>
 		$("button#execute_btn").click(e=>{
-			// 결재 모달 창에서 승인 버튼 클릭시
+			
+			<%-- 결재 모달 창에서 승인 버튼 클릭 시 --%>
 			if($(e.target).hasClass("approve_btn")) {
 				approve();
 			}
-			// 결재 모달 창에서 반려 버튼 클릭시
+			
+			<%-- 결재 모달 창에서 반려 버튼 클릭 시 --%>
 			else if($(e.target).hasClass("reject_btn")) {
 				reject();
 			}
@@ -53,7 +55,7 @@ String ctxPath = request.getContextPath();
 		
 	}); // end of $(document).ready(function(){})---------------------
 
-	// 모달창 보이게 하기
+	<%-- 모달을 띄우는 함수 --%>
 	function open_modal() {
 		$('#approve_modal_bg').fadeIn();
 		$('.box_modal_container').css({
@@ -61,7 +63,7 @@ String ctxPath = request.getContextPath();
 		});
 	}
 	
-	// 모달창 사라지게 하기
+	<%-- 모달을 사라지게 하는 함수 --%>
 	function close_modal() {
 		$('#approve_modal_bg').fadeOut();
         $('.box_modal_container').css({
@@ -69,7 +71,7 @@ String ctxPath = request.getContextPath();
 		});
 	}
 	
-	// 결재 승인 처리
+	<%-- 결재 승인 처리 함수 --%>
 	function approve() {
 		
 		$.ajax({
@@ -91,7 +93,7 @@ String ctxPath = request.getContextPath();
 		});
 	}
 	
-	// 결재 반려 처리
+	<%-- 결재 반려 처리 함수 --%>
 	function reject() {
 		
 		$.ajax({
@@ -113,12 +115,39 @@ String ctxPath = request.getContextPath();
 		});
 	}
 	
+	<%-- 임시 저장 문서 수정하는 함수 --%>
+	function editTemp() {
+		
+	}
+	
+	<%-- 임시 저장 문서 삭제하는 함수 --%>
+	function deleteTemp() {
+		
+		$.ajax({
+			url:"<%=ctxPath%>/document/documentView/deleteTemp",
+			dataType:"json",
+			data:{"documentNo":"${document.documentNo}"},
+			success:function(json){
+				if(json.n == 1) {
+					alert("삭제 성공");
+					location.href='<%=ctxPath%>/document/tempList';
+				}
+				else {
+					alert("삭제 실패");
+				}
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
+	}
+	
 </script>
 
 
-	<!-- 결재처리 모달 -->
+	<%-- 결재처리 모달 --%>
 	<div id="approve_modal_bg" class="modal_bg">
-		<!-- 모달창을 띄웠을때의 뒷 배경 -->
+		<%-- 모달창을 띄웠을때의 뒷 배경 --%>
 	</div>
 	<div id="approve_modal_container" class="box_modal_container">
 	
@@ -142,7 +171,7 @@ String ctxPath = request.getContextPath();
 			</div>
 		</div>
 	</div>
-	<!-- 결재처리 모달 -->
+	<%-- 결재처리 모달 --%>
 	
 	
 
@@ -150,21 +179,21 @@ String ctxPath = request.getContextPath();
 		<div id="right_title_box">
 			<h1 class="mb-3">${document.documentType}</h1>
 			
-			<!-- 결재해야할 문서 (결재 순서가 자기 차례인 문서)를 보는 경우 결재/반려 버튼이 보이도록 -->
+			<%-- 결재해야할 문서 (결재 순서가 자기 차례인 문서)를 보는 경우 결재/반려 버튼이 보이도록 --%>
 			<c:if test="${not empty requestScope.approvalList}">
 			
-				<!-- 결재자 리스트는 결재순서의 역순으로 가져온다 -->
-				<c:set var="isOrder" value="true" /> <!-- 나보다 결재 순서가 빠른 결재자가 있는지 확인하는 변수 -->
+				<%-- 결재자 리스트는 결재순서의 역순으로 가져온다 --%>
+				<c:set var="isOrder" value="true" /> <%-- 나보다 결재 순서가 빠른 결재자가 있는지 확인하는 변수 --%>
 				
 				<c:forEach var="approval" items="${requestScope.approvalList}">
 				
 					<c:if test="${isOrder}">
 						<c:if test="${approval.approvalStatus eq 0 && sessionScope.loginuser.employeeNo ne approval.fk_approver}">
-						<!-- 나보다 결재 순서가 빠른데 아직 결재 처리를 하지 않은 사람이 있는 경우 -->
+						<%-- 나보다 결재 순서가 빠른데 아직 결재 처리를 하지 않은 사람이 있는 경우 --%>
 							<c:set var="isOrder" value="false" />
 						</c:if>
 						<c:if test="${approval.approvalStatus eq 0 && sessionScope.loginuser.employeeNo eq approval.fk_approver && document.status ne 2}">
-						<!-- 내 결재 차례인데 반려 처리 되지 않은 경우 -->
+						<%-- 내 결재 차례인데 반려 처리 되지 않은 경우 --%>
 							<button id="approve_btn" class="doc_btn">결재</button>
 							<button id="reject_btn" class="doc_btn">반려</button>
 						</c:if>
@@ -173,7 +202,32 @@ String ctxPath = request.getContextPath();
 				</c:forEach>
 				
 			</c:if>
-			<!-- 결재해야할 문서 (결재 순서가 자기 차례인 문서)를 보는 경우 결재/반려 버튼이 보이도록 -->
+			<%-- 결재해야할 문서 (결재 순서가 자기 차례인 문서)를 보는 경우 결재/반려 버튼이 보이도록 --%>
+			
+			
+			<!-- 임시 저장 문서라면 수정하기 및 삭제하기 버튼이 보이도록 -->
+			<c:if test="${document.temp eq 1}">
+			
+				<!-- 임시저장 문서 수정하기 버튼 -->
+				<span class="edit_temp">
+	                <a href="" onclick="editTemp()">
+	                    <span>수정</span>
+	                    <i class="fa-regular fa-trash-can"></i>
+	                </a>
+	            </span>
+	            
+	            <!-- 임시저장 문서 삭제하기 버튼 -->
+				<span class="delete_temp">
+	                <a href="" onclick="deleteTemp()">
+	                    <span>삭제</span>
+	                    <i class="fa-regular fa-trash-can"></i>
+	                </a>
+	            </span>
+	            
+			</c:if>
+			
+			<!-- 임시 저장 문서라면 수정하기 및 삭제하기 버튼이 보이도록 -->
+			
 			
 		</div>
 		<div class="m-3 draftForm">

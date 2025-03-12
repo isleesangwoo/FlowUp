@@ -489,6 +489,8 @@ public class DocumentController {
 		
 		paraMap.put("temp", "1");
 		
+		System.out.println(paraMap.get("added_approval_count"));
+		
 		int n = 0;
 		
 		if("휴가신청서".equals(paraMap.get("documentType"))) {
@@ -569,6 +571,34 @@ public class DocumentController {
 		map.put("employeeNo", employeeNo);
 		
 		int n = service.reject(map);
+		
+		JSONObject json = new JSONObject();
+		
+		json.put("n", n);
+		
+		return json.toString();
+	}
+	
+	
+	// 임시저장 문서 삭제하기
+	@GetMapping("documentView/deleteTemp")
+	@ResponseBody
+	public String deleteTemp(HttpServletRequest request, @RequestParam String documentNo) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		
+		Map<String, String> map = new HashMap<>();
+		
+		map.put("documentNo", documentNo);
+		
+		int n = service.deleteTemp(documentNo);
 		
 		JSONObject json = new JSONObject();
 		

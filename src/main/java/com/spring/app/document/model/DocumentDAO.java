@@ -80,6 +80,9 @@ public interface DocumentDAO {
 	// 결재 라인에 추가하기 위한 사원 1명 가져오기
 	EmployeeVO getEmployeeOne(String employeeNo);
 
+	// 임시저장 문서 삭제하기
+	int deleteTemp(String documentNo);
+
 	
 
 	
