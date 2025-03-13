@@ -305,9 +305,9 @@ public class MailController {
 	    // mailNoStr가 null(파라미터 아예 없음)일 수도 있고, ""(빈문자)일 수도 있음
 	    int mailNo = 0;
 	    
-	    if(mailNoStr != null && !mailNoStr.trim().isEmpty()) {
+	    if(mailNoStr != null && !mailNoStr.trim().isEmpty()) { 
 	        try {
-	            mailNo = Integer.parseInt(mailNoStr.trim());
+	            mailNo = Integer.parseInt(mailNoStr.trim());  // 비어 있지 않으면 int로 변환
 	        } catch(NumberFormatException e) {
 	            // 파싱 실패 => mailNo=0 유지
 	        }

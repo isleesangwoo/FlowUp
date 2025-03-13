@@ -18,9 +18,15 @@
 
 <script type="text/javascript">
 
-const ctxPath = '<%=request.getContextPath() %>';
+let ctxPath = "<%= ctxPath %>";
 let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 
+// 전역 상태 변수 추가
+let currentState = {
+    mailbox: "default",
+    page: 1,
+    size: 20
+};
 
   $(document).ready(function(){  
 	// 최초 접속 시 AJAX로 데이터 로드
@@ -144,7 +150,94 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 	    });
 
 		<%-- === jQuery 를 사용하여 드래그앤드롭(DragAndDrop)을 통한 파일 업로드 끝 === --%>
+
 		
+	  <%-- ==== 메일함 통합 ajax 시작 ==== --%>
+	  function loadMailList(mailbox = 'default', currentShowPageNo = 1, sizePerPage = 20) {
+		  
+		    const url = `${ctxPath}/mail/mailList?mailbox=${mailbox}&currentShowPageNo=${currentPage}&sizePerPage=${sizePerPage}`;
+		    console.log("URL: " + url); // 콘솔 확인
+		    
+		    $.ajax({
+		        url: "<%=ctxPath%>/mail/mailList", // 공통 메서드 매핑
+		        type: "GET",
+		        data: {
+		            mailbox: mailbox,
+		            currentShowPageNo: currentShowPageNo,
+		            sizePerPage: sizePerPage
+		        },
+		        dataType: "json",
+		        success: function(response) {
+		            const data = response.mailList; // 메일 목록
+		            const totalPage = response.totalPage; // 전체 페이지 수
+
+		            // 테이블 내용 새로 채움
+		            let html = "";
+		            $.each(data, function(index, mail){
+		                // 별 아이콘
+		                let starIcon = (mail.importantStatus == 1)
+		                    ? `<i class="fa-solid fa-star toggle_star" style="color:yellow;cursor:pointer;" data-mailno="${mail.mailNo}"></i>`
+		                    : `<i class="fa-regular fa-star toggle_star" style="cursor:pointer;" data-mailno="${mail.mailNo}"></i>`;
+
+		                // 메일 아이콘
+		                let mailIcon = (mail.readStatus == 1)
+		                    ? `<i class="fa-regular fa-envelope-open toggle_mail" style="cursor:pointer;" data-mailno="${mail.mailNo}"></i>`
+		                    : `<i class="fa-regular fa-envelope toggle_mail" style="cursor:pointer;color:black;" data-mailno="${mail.mailNo}"></i>`;
+
+		                let name = mail.employeevo ? mail.employeevo.name : '발신자 없음';
+		                let size = mail.fileSize ? mail.fileSize + "KB" : "";
+		                const ctxPath = "<%= ctxPath %>";
+		                
+		                html += `
+		                <tr class="mailReadTitle">
+		                    <td>
+		                        <input type="checkbox" class="mailOneCheck" style="padding:4px"/>
+		                    </td>
+		                    <td>
+		                        \${starIcon}
+		                        \${mailIcon}
+		                        <i class="fa-solid fa-paperclip"></i>
+		                    </td>
+		                    <td id="mailName">\${name}</td>
+		                    <td id="mailTitle">
+		                        <a href="\${ctxPath}/mail/viewMail?mailNo=\${mail.mailNo}">
+		                            \${mail.subject}
+		                        </a>
+		                    </td>
+		                    <td id="right-content">
+		                        <span id="sendDate">\${mail.sendDate}</span>
+		                        <span id="fileSize">\${size}</span>
+		                    </td>
+		                </tr>
+		                `;
+		            });
+		            
+		            // 테이블에 HTML 삽입
+		            $("#mailTable tbody").html(html);
+
+		            // 페이지바 생성
+		            let pageBar = "<ul style='list-style:none;'>";
+		            for (let i = 1; i <= totalPage; i++) {
+		                pageBar += `
+		                    <li style='display:inline-block; width:30px; font-size:12pt;'>
+		                        <a href="javascript:loadMailList('${mailbox}', ${i}, ${sizePerPage})">${i}</a>
+		                    </li>
+		                `;
+		            }
+		            pageBar += "</ul>";
+		            // 페이지바 삽입
+		            $("#pageBar").html(pageBar);
+
+		            // 새 목록에 별/메일 아이콘 이벤트 재바인딩
+		            bindStarToggle();
+		            bindMailToggle();
+		        },
+		        error: function(err){
+		            console.log(err);
+		            alert("메일 조회 중 오류 발생");
+		        }
+		    });
+		}
 		//받은메일함 조회
 		$("#receivedMail").on("click", function(e){
 		    e.preventDefault(); // a 태그 이동 막기
@@ -178,137 +271,8 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 		    e.preventDefault(); // a 태그 이동 막기
 		    loadMailList("save"); // 임시보관함 조회
 		});
-		
-	    // 메일함 클릭 이벤트에 URL 업데이트 추가
-	    $("#receivedMail, #sendMail, #importantMail, #deleteMail, #saveMail").on("click", function(e) {
-	        e.preventDefault();
-	        const id = $(this).attr("id");
-	        let mailbox;
-	        
-	        // ID를 서버의 mailbox 값으로 매핑
-	        switch(id) {
-	            case "receivedMail": mailbox = "default"; break;
-	            case "sendMail": mailbox = "send"; break;
-	            case "importantMail": mailbox = "important"; break;
-	            case "deleteMail": mailbox = "trash"; break;
-	            case "saveMail": mailbox = "save"; break;
-	            default: mailbox = "default";
-	        }    
-	        
-	        // 페이지 전환 없이 AJAX로 데이터 로드
-	        loadMailList(mailbox, 1, 20);
-	        
-	        // URL만 변경 (히스토리 관리)
-	        const newUrl = `${ctxPath}/mail?mailbox=${mailbox}&currentShowPageNo=1&sizePerPage=20`;
-	        window.history.pushState({ mailbox }, '', newUrl);
-	    });
-	    
-	 	// 히스토리 상태 변경 이벤트 처리
-		window.onpopstate = function(event) {
-		    const urlParams = new URLSearchParams(window.location.search);
-		    const mailbox = urlParams.get('mailbox') || 'default';
-		    const currentShowPageNo = parseInt(urlParams.get('currentShowPageNo') || 1);
-		    const sizePerPage = parseInt(urlParams.get('sizePerPage') || 20);
-		    loadMailList(mailbox, currentShowPageNo, sizePerPage);
-		};
-		
-		// 전역 상태 변수 추가
-		let currentState = {
-		    mailbox: "default",
-		    page: 1,
-		    size: 20
-		};
-	    
-	  <%-- ==== 메일함 통합 ajax 시작 ==== --%>
-	  function loadMailList(mailbox = currentState.mailbox, page = currentState.page, size = currentState.size) {
-		    currentState = { mailbox, page, size };
-				  
-		    $.ajax({
-		        url: "<%=ctxPath%>/mail/mailList", // 공통 메서드 매핑
-		        type: "GET",
-		        data: {
-		        	/*
-		            mailbox: mailbox, // 현재 조회중인 메일함 정보 전달
-		            currentShowPageNo: currentShowPageNo, // 현재 페이지 번호
-		            sizePerPage: sizePerPage // 페이지 크기
-		            */
-		            mailbox,
-		            currentShowPageNo: page,
-		            sizePerPage: size
-		        },
-		        dataType: "json",
-		        success: function(response) {
-		            const data = response.mailList;
-		            const totalPage = response.totalPage;
-
-		            // 테이블 내용 새로 채움
-		            let html = "";
-		            $.each(data, function(index, mail){
-		                // 발신자 이름 처리 (Optional Chaining 대체)
-		                const senderName = mail.employeevo ? mail.employeevo.name : '발신자 없음';
-		                
-		                // 첨부파일 아이콘 조건부 표시
-		                const attachmentIcon = mail.fileSize > 0 
-		                    ? '<i class="fa-solid fa-paperclip"></i>' 
-		                    : '';
-
-		                // 파일 크기 텍스트
-		                const fileSizeText = mail.fileSize > 0 
-		                    ? `<span>${mail.fileSize}KB</span>` 
-		                    : '';
-
-		                html += `
-		                <tr class="mailReadTitle" data-mailno="${mail.mailNo}">
-		                    <td>
-		                        <input type="checkbox" class="mailOneCheck" style="padding:4px">
-		                    </td>
-		                    <td>
-		                        ${mail.importantStatus == 1 
-		                            ? '<i class="fa-solid fa-star toggle_star" style="color:yellow;cursor:pointer;"></i>' 
-		                            : '<i class="fa-regular fa-star toggle_star" style="cursor:pointer;"></i>'}
-		                        ${mail.readStatus == 1 
-		                            ? '<i class="fa-regular fa-envelope-open toggle_mail" style="cursor:pointer;"></i>' 
-		                            : '<i class="fa-regular fa-envelope toggle_mail" style="cursor:pointer;color:black;"></i>'}
-		                        ${attachmentIcon}
-		                    </td>
-		                    <td>${senderName}</td>
-		                    <td>
-		                        <a href="${ctxPath}/mail/viewMail?mailNo=${mail.mailNo}">
-		                            ${mail.subject}
-		                        </a>
-		                    </td>
-		                    <td>
-		                        <span>${mail.sendDate}</span>
-		                        ${fileSizeText}
-		                    </td>
-		                </tr>`;
-		            });
-
-		            // 기존 목록 지우고 새 목록 삽입
-		            $("#mailTable tbody").html(html);
-
-		            // 페이지바 생성 (수정 필요 부분)
-		            let pageBar = "<ul style='list-style:none;'>";
-		            for(let i = 1; i <= totalPage; i++) {
-		                pageBar += `
-		                <li style='display:inline-block; width:30px; font-size:12pt;'>
-		                    <a href="javascript:loadMailList('${currentState.mailbox}', ${i}, ${currentState.size})">${i}</a>
-		                </li>`;
-		            }
-		            pageBar += "</ul>";
-
-		            // 페이지바 삽입
-		            $("#pageBar").html(pageBar);
-
-		            // 이벤트 재바인딩
-		            bindStarToggle();
-		            bindMailToggle();
-		        }
-		        error: function(){
-		            alert("메일 조회 중 오류 발생");
-		        }
-		    });
-		}
+	  
+	 
 		<%-- ==== 메일함 통합 ajax 끝 ==== --%>
 	  
 
@@ -324,6 +288,7 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 	                type: "POST",
 	                data: { mailNo: mailNo },
 	                success: function(importantStatus) {
+	                	console.log("Important Status 확인 : ", importantStatus); // 확인
 						// 서버가 반환한 새로운 상태("0" 또는 "1")
 	                    if(importantStatus === "1") {
 							// 중요 상태가 됨 => CSS 색 변경, 아이콘 변경 등
@@ -350,7 +315,7 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 	          // const current = $star.data("important"); // 현재 상태
 	
 	          $.ajax({
-	              url: "<%=ctxPath%>/mail/toggleReadMail",
+	              url: ctxPath + "/mail/toggleReadMail",
 	              type: "POST",
 	              data: { mailNo: mailNo },
 	              success: function(readStatus) {
@@ -794,12 +759,12 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
         <div class="mail_menu_container">
             <ul>
                 <li id="receivedMail">
-                    <a href="#" onclick="loadMailList('default', 1, 20); return false;">받은메일함</a>
+                    <a href="#">받은메일함</a>
                     <span class="mail_cnt">${totalCount}</span> <!-- 콤마처리 해주세요 -->
                 </li>
                 <li id="sendMail"><a href="#">보낸메일함</a></li>
                 <li id="saveMail"><a href="#">임시보관함</a></li>
-                <li id="tagMail"><a href="#">태그메일함</a></li>
+                <!-- <li id="tagMail"><a href="#">태그메일함</a></li> -->
                 <li id="importantMail">
                 	<a href="#" id="importantMailLink">중요메일함</a>
                 </li>
@@ -874,10 +839,10 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
                                 <li class="sortOption" data-sortkey="sendDate">받은날짜</li>
                                 <li class="sortOption" data-sortkey="fileSize">크기</li>
 
-                                <li class="list_title">빠른검색</li>
+<!--                                 <li class="list_title">빠른검색</li>
                                 <li>중요메일</li>
                                 <li>안읽은 메일</li>
-                                <li>읽은 메일</li>
+                                <li>읽은 메일</li> -->
                                 <!-- 각 li 태그 마다 ajax 보내주세요 -->
                             </ul>
                         </span>
@@ -899,20 +864,64 @@ let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
             <!-- 오른쪽 바 메뉴버튼들입니다! -->
         </div>
         
-	   <table id="mailTable" class="table table-hover">
-		    <thead>
-		        <tr>
-		            <th><input type="checkbox" id="checkAll"></th>
-		            <th>중요/읽음</th>
-		            <th>보낸사람</th>
-		            <th>제목</th>
-		            <th>날짜</th>
-		        </tr>
-		    </thead>
-		    <tbody>
-		        <%-- AJAX로 동적으로 채워질 영역 --%>
-		    </tbody>
-			       		
+<table id="mailTable">
+	       <tbody>
+	           <c:forEach var="mail" items="${ReceivedMailList}">
+	               <tr class="mailReadTitle">
+	                   	<td>
+                      		<input type="checkbox" class="mailOneCheck" data-mailno="${mail.mailNo}" style="padding: 4px"/>
+	                   	</td>
+	                   	<td>
+	                      	<!-- importantStatus가 1이면 채워진 별 아니면 빈 별 -->
+	                    	<c:choose>
+		                        <c:when test="${mail.importantStatus == 1}">
+		                            <!-- 채워진 별 + 노란색 -->
+		                            <i class="fa-solid fa-star toggle_star" style="color: yellow; cursor: pointer;"
+		                               data-mailno="${mail.mailNo}">
+		                            </i>
+		                        </c:when>
+		                        <c:otherwise>
+		                            <!-- 빈 별 (기본) -->
+		                            <i class="fa-regular fa-star toggle_star" style="cursor: pointer;"
+		                               data-mailno="${mail.mailNo}">
+		                            </i>
+		                        </c:otherwise>
+	                    	</c:choose>
+	                    	
+	                    	<!-- readStatus가 1 이면 열린 메일 아니면 닫힌 메일 -->
+	                    	<c:choose>
+		                        <c:when test="${mail.readStatus == 1}">
+		                            <!-- 열린 메일 (검은색) -->
+		                            <i class="fa-regular fa-envelope-open toggle_mail" style="cursor: pointer;"
+		                               data-mailno="${mail.mailNo}">
+		                            </i>
+		                        </c:when>
+		                        <c:otherwise>
+		                            <!-- 닫힌 메일 (기본) -->
+		                            <i class="fa-regular fa-envelope toggle_mail" style="cursor: pointer; color: black;"
+		                               data-mailno="${mail.mailNo}">
+		                            </i>
+		                        </c:otherwise>
+	                    	</c:choose>
+	                    	
+	                    	<i class="fa-solid fa-paperclip"></i>
+	                 	</td>
+                   		<td id="mailName">${mail.employeevo.name}</td>
+                   		<td id="mailTitle" >
+                   			<%-- <span onclick="goView('${mail.mailNo}')">${mail.subject}</span> --%>
+                   			
+                   			<a href="<%= ctxPath %>/mail/viewMail?mailNo=${mail.mailNo}">
+							    ${mail.subject}
+							</a>
+                   		</td>
+					    <td id="right-content">
+					        <span id="sendDate">${mail.sendDate}</span>
+					        <span id="fileSize">${MailFileVO.fileSize}</span>
+					    </td>
+	               		</tr>
+	           </c:forEach>
+	       </tbody>
+	       		
 	   </table>
         
         <%-- === 페이지바 === --%>
