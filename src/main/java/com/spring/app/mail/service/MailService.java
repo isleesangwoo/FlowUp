@@ -59,9 +59,29 @@ public interface MailService {
 	// 체크박스 체크된 메일 readStatus 1로 업데이트 하고 아이콘 변경
 	List<MailVO> getUpdatedMailStatus(List<Integer> mailNoList);
 
+    // 메일 작성 기능
+    void sendMail(MailVO mail, List<Map<String, Object>> referencedList, List<Map<String, Object>> fileList);
 
+    // 메일 정보 저장 후 mailNo 반환
+	void insertMail(MailVO mail);
+
+	// 참조자 정보 저장
+	void insertReferenced(Map<String, Object> ccMap);
+	
+	// 첨부 파일 정보 저장
+	void insertMailFile(Map<String, Object> mailFileMap);
+
+	// 이름으로 employeeNo 조회
+    String findEmployeeNoByName(String name);
+
+    // 보낸 메일 조회
+	List<MailVO> selectSentMail(Map<String, String> paraMap);
+
+	// 보낸 메일 개수 조회
+	int getSentMailCount(String senderNo);
 
 	
+
 	
 
 }
