@@ -48,6 +48,9 @@ public class DocumentController {
 	@GetMapping("todoList")
 	public ModelAndView todoList(ModelAndView mav, HttpServletRequest request) {
 		
+		//String referer = request.getHeader("referer");
+		
+		
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
@@ -470,8 +473,6 @@ public class DocumentController {
 		}
 		
 		paraMap.put("temp", "1");
-		
-		System.out.println(paraMap.get("added_approval_count"));
 		
 		int n = 0;
 		

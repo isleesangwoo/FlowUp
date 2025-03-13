@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
     
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Date" %>
 
@@ -292,7 +293,7 @@
 	    $('.modal_bg:not(.modal_container_document)').click(e=>{
 	    	close_modal();
 	    });
-	    
+
 	    
 	}); // end of $(document).ready(funtion(){})-----------------------------------
 
@@ -386,6 +387,28 @@
 			success:function(json){
 				console.log(JSON.stringify(json));
 				if(json.n == "1"){
+					
+					if(<%= request.getMethod() %>) {
+						// 임시저장 문서를 수정해서 결재 요청하는 경우
+						$.ajax({
+							url:"<%=ctxPath%>/document/documentView/deleteTemp",
+							dataType:"json",
+							async:false,
+							data:{"documentNo":"${document.documentNo}"},
+							success:function(json){
+								if(json.n == 1) {
+									alert("삭제 성공");
+								}
+								else {
+									alert("삭제 실패");
+								}
+							},
+							error: function(request, status, error){
+								alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+							}
+						});
+					}
+					
 					alert("결재 요청이 완료되었습니다.");
 					location.href="<%= ctxPath%>/document/myDocumentList";
 				}
@@ -569,12 +592,37 @@
 					</table>
 				</div>
 				<div style="margin-left: auto;">
+				
+					<%-- 결재 라인이 들어올 곳 --%>
 					<div class="approval_info" id="approval_line" style="text-align: right; display: inline-block; width: 100%">
-					
-						<!-- 결재 라인이 들어올 곳 -->
+						
+						<c:if test="${not empty requestScope.approvalList}">
+							<c:forEach var="approval" items="${requestScope.approvalList}" varStatus="status">
+								<table class="ml-2" style="display: inline-block;">
+									<tbody>
+										<tr>
+											<th rowspan="4" style="width: 50px;">승인</th>
+											<td>${approval.positionName}</td>
+										</tr>
+										<tr>
+											<td>${approval.name}</td>
+										</tr>
+										<tr>
+											<td> </td>
+										</tr>
+									</tbody>
+								</table>
+		    					<input name='added_employee_no${status.index}' type='hidden' value='${approval.fk_approver}'>
+							</c:forEach>
+						</c:if>
 						
 					</div>
-					<input name='added_approval_count' type='hidden' value='0'/>
+					<c:if test="${empty requestScope.approvalList}">
+						<input name='added_approval_count' type='hidden' value='0'/>
+					</c:if>
+					<c:if test="${not empty requestScope.approvalList}">
+						<input name='added_approval_count' type='hidden' value='${fn:length(requestScope.approvalList)}'/>
+					</c:if>
 				</div>
 			</div>
 			<div class="document_info">
@@ -603,11 +651,17 @@
 									<c:if test="${not empty requestScope.document}">
 										<c:if test="${requestScope.document.annualType == 1}">
 											<option value="1" selected>연차</option>
+											<option value="2">오전반차</option>
+											<option value="3">오후반차</option>
 										</c:if>
 										<c:if test="${requestScope.document.annualType == 2}">
+											<option value="1">연차</option>
 											<option value="2" selected>오전반차</option>
+											<option value="3">오후반차</option>
 										</c:if>
 										<c:if test="${requestScope.document.annualType == 3}">
+											<option value="1">연차</option>
+											<option value="2">오전반차</option>
 											<option value="3" selected>오후반차</option>
 										</c:if>
 									</c:if>
@@ -628,16 +682,47 @@
 						<tr>
 							<th>기간 및 일시</th>
 							<td>
-								<input type="date" name="startDate" onchange="calAnnualAmount()" onkeydown="return false" />
-								<input type="date" name="endDate"   onchange="calAnnualAmount()" onkeydown="return false" />
+								<c:if test="${empty requestScope.document}">
+									<input type="date" name="startDate" onchange="calAnnualAmount()" onkeydown="return false" />
+									<input type="date" name="endDate"   onchange="calAnnualAmount()" onkeydown="return false" />
+								</c:if>
+								<c:if test="${not empty requestScope.document}">
+									<c:if test="${requestScope.document.startDate eq '-'}">
+										<input type="date" name="startDate" onchange="calAnnualAmount()" onkeydown="return false" />
+									</c:if>
+									<c:if test="${requestScope.document.startDate ne '-'}">
+										<input type="date" name="startDate" onchange="calAnnualAmount()" value="${requestScope.document.startDate}" onkeydown="return false" />
+									</c:if>
+									<c:if test="${requestScope.document.annualType eq 1}">
+										<c:if test="${requestScope.document.endDate eq '-'}">
+											<input type="date" name="endDate" onchange="calAnnualAmount()" onkeydown="return false" />
+										</c:if>
+										<c:if test="${requestScope.document.endDate ne '-'}">
+											<input type="date" name="endDate" onchange="calAnnualAmount()" value="${requestScope.document.endDate}" onkeydown="return false" />
+										</c:if>
+									</c:if>
+									<c:if test="${requestScope.document.annualType eq 2 || requestScope.document.annualType eq 3}">
+										<c:if test="${requestScope.document.endDate eq '-'}">
+											<input type="date" name="endDate" onchange="calAnnualAmount()" onkeydown="return false" style="display: none;" />
+										</c:if>
+										<c:if test="${requestScope.document.endDate ne '-'}">
+											<input type="date" name="endDate" onchange="calAnnualAmount()" value="${requestScope.document.endDate}" onkeydown="return false" style="display: none;" />
+										</c:if>
+									</c:if>
+								</c:if>
 							</td>
 						</tr>
 						<tr>
 							<th>연차 일수</th>
 							<td>
 								잔여 연차 : <input type="text" name="totalAmount" value="10" readonly />
-								신청 연차 : <input type="text" name="useAmount" value="0" readonly />
-							</td>
+								<c:if test="${empty requestScope.document}">
+									신청 연차 : <input type="text" name="useAmount" value="0" readonly />
+								</c:if>
+								<c:if test="${not empty requestScope.document}">
+									신청 연차 : <input type="text" name="useAmount" value="${requestScope.document.useAmount}" readonly />
+								</c:if>
+								</td>
 						</tr>
 						<tr>
 							<th class="pl-4" colspan="2" style="text-align: left;">

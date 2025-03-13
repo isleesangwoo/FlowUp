@@ -147,7 +147,9 @@
 		select d.documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, d.status
 			 , d.securityLevel, temp, documentType, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate, name, teamName
 		<if test="documentType == '휴가신청서'">
-		     , useAmount, reason, to_char(startDate, 'yyyy-mm-dd') as startDate, to_char(endDate, 'yyyy-mm-dd') as endDate, annualType
+		     , useAmount, reason, annualType
+		     , case to_char(startDate, 'yyyy-mm-dd') when '1111-11-11' then '-' else to_char(startDate, 'yyyy-mm-dd') end as startDate
+		     , case to_char(endDate, 'yyyy-mm-dd') when '1111-11-11' then '-' else to_char(endDate, 'yyyy-mm-dd') end as endDate
 		from tbl_document D JOIN tbl_draft_annual A
 		</if>
 		<if test="documentType == '연장근무신청서'">
