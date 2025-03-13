@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
     
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page import="java.text.SimpleDateFormat" %>
 <%@ page import="java.util.Date" %>
 
@@ -14,8 +15,18 @@
 	
 %>
 
-
 <jsp:include page="document_main.jsp" />
+
+<!-- ikon -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" />
+
+<!-- jsTree -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css" />
+
+<!-- jsTree boot jQ cdn -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/1.12.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
 <style type="text/css">
 	
@@ -27,10 +38,6 @@
 		background: yellow;
 	}
 	
-	button#add_approval_btn {
-		pointer-events : none;
-	}
-	
 	
 </style>
 
@@ -38,79 +45,133 @@
 	
 	$(document).ready(function(){
 	
-		// 결재 정보 버튼을 눌렀을 때
-		$('#approval_line_btn').click(e=>{
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		<%-- jsTree 에 들어갈 객체 배열 --%>
+		let jsonData = [];
+		
+		<%-- jsTree 조직도에 들어갈 부서 목록 가져오기 --%>
+		$.ajax({
+			url:"<%= ctxPath%>/document/getDepartmentList",
+			dataType:"json",
+			async:false,
+			success: function(json){
+				$.each(json, function(index, item){
+					let data = { "id" : "D-" + item.departmentNo, "parent" : "#", "text" : item.departmentName, "icon" : "fa-solid fa-building" }
+					jsonData.push(data);
+				}); // end of $.each--------------
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+			
+		}); // end of $.ajax-------------------
+  
+		<%-- jsTree 조직도에 들어갈 팀 목록 가져오기 --%>
+		$.ajax({
+			url:"<%= ctxPath%>/document/getTeamList",
+			dataType:"json",
+			async:false,
+			success: function(json){
+				$.each(json, function(index, item){
+					let data = { "id" : "T-" + item.teamNo, "parent" : "D-" + item.fk_departmentNo , "text" : item.teamName, "icon" : "fa-solid fa-users-between-lines" }
+					jsonData.push(data);
+				}); // end of $.each--------------
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+			
+		}); // end of $.ajax-------------------
+		
+		<%-- jsTree 조직도에 들어갈 사원 목록 가져오기 --%>
+		$.ajax({
+			url:"<%= ctxPath%>/document/getEmployeeList",
+			dataType:"json",
+			async:false,
+			success: function(json){
+				$.each(json, function(index, item){
+					let data = { "id" : item.employeeNo, "parent" : "T-" + item.fk_teamNo , "text" : item.name, "icon" : "fa-solid fa-user" }
+					jsonData.push(data);
+				}); // end of $.each--------------
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+			
+		}); // end of $.ajax-------------------
+		
+		<%-- jsTree 띄우는 이벤트 --%>
+		$('#jstree').jstree({
+			'plugins': ["search", "html"], // 플러그인 배열 합침
+			'core' : {
+				"check_callback": true,
+				'data' : jsonData,
+ 				'state': {
+ 					'opened': true
+ 				},
+			},
+			"search": {
+		        "case_sensitive": false,	// 대소문자 구분하지 않음
+		        "show_only_matches": true,  // 일치하는 노드만 검색
+		        "search_leaves_only": true  // 리프노드만 검색
+		    }
+		});
+		
+		<%-- 사원명 검색시 해당 노드만 펼쳐지는 이벤트 --%>
+		$("input:text[name='member_name']").on("keyup", function(e){
+			
+			const member_name = $(e.target).val();
+			$('#jstree').jstree(true).search(member_name);
+			
+		});
+		
+		<%-- show 버튼을 누르면 모든 노드를 펼치는 이벤트 --%>
+		$("button#btnShow").click(function() {
+			$('#jstree').jstree("open_all");
+		});
 
+		<%-- hide 버튼을 누르면 모든 노드를 접는 이벤트 --%>
+		$("button#btnHide").click(function() {
+			$('#jstree').jstree("close_all");
+		});
+		
+		//////////////////////////////////////////////////////////////////////////////////////////////////
+		
+		<%-- 결재 정보 버튼을 눌렀을 때 모달이 보이게 하는 이벤트 --%>
+		$('#approval_line_btn').click(e=>{
+			
 	        $('#approval_line_bg').fadeIn();
 			$('.box_modal_container').css({
 				'display':'block'
-			})
-			
-			// 모달 조직도에 뿌려주기 위한 사원 목록 가져오기
-			$.ajax({
-				url:"<%= ctxPath%>/document/getEmployeeList",
-				dataType:"json",
-				success: function(json){
-					let departmentName = json[0].departmentName;
-					let v_html = `<ul>
-									<li class='departmentName'>\${departmentName}</li>
-									<ul class='closed ml-1'>`;
-					
-					$.each(json, function(index, item){
-						if(departmentName == item.departmentName) {
-							v_html += `<li class='employee_name'>\${item.name}</li>
-										<li class='employee_no' style='display:none'>\${item.employeeNo}</li>
-										<li class='security_level' style='display:none'>\${item.securityLevel}</li>`;
-						}
-						else {
-							departmentName = item.departmentName
-							v_html += `</ul>
-											<li class='departmentName'>\${departmentName}</li>
-											<ul class='closed ml-1'>
-												<li class='employee_name'>\${item.name}</li>
-												<li class='employee_no' style='display:none'>\${item.employeeNo}</li>
-												<li class='security_level' style='display:none'>\${item.securityLevel}</li>`;
-						}
-					});
-					
-					v_html += `</ul>
-								</ul>`;
-					
-					$("div#organization_chart").html(v_html);
-					
-					 
-					
-				},
-				error: function(request, status, error){
-					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-				}
 			});
-	  
-	    }) // end of $('#goMail').click(e=>{})-----------
-	    
-	    
-	    // 모달에서 조직도에서 사원을 클릭했을 때
-		$("div#organization_chart").on('click', "li.employee_name", function(e) {
-			$("li.employee_name").removeClass("selected");
-			$(e.target).addClass("selected");
-			$("button#add_approval_btn").css({"pointer-events":"auto"});
-			$("input#selected_employee_name").val($(e.target).html());
-			$("input#selected_employee_departmentName").val($(e.target).parent().prev().html());
-			$("input#selected_employee_no").val($(e.target).next().html());
-			$("input#selected_security_level").val($(e.target).next().next().html());
+	    });
+		
+		<%-- 조직도에서 사원을 선택하지 않으면 	사원추가를 할 수 없게 하는 이벤트 --%>
+		$("#add_approval_btn").css({"pointer-events":"none"}); // 추가 버튼 비활성화
+		
+		$("div#jstree").on("click", "a.jstree-anchor", function(e){
 			
+			let id = $(e.target).attr("id"); // 선택한 태그의 id 값
+			
+			if(!isNaN(id.substr(0,1))) {
+				// id 의 첫글자가 숫자라면 (사원이라면)
+				
+				$("#add_approval_btn").css({"pointer-events":""}); // 추가 버튼 활성화
+			}
+			else {
+				// id 의 첫글자가 숫자가아니라면 (부서 또는 팀이라면)
+				
+				$("#add_approval_btn").css({"pointer-events":"none"}); // 추가 버튼 비활성화
+			}
 		});
 		
-		
-		// 모달에서 조직도에서 부서를 클릭했을 때
-		$("div#organization_chart").on('click', "li.departmentName", function(e) {
-	    	console.log($(e.target).html());
-	    	$(e.target).next().toggle('closed');
-		});
-		
-		
-		// 모달에서 사원을 결재 라인으로 추가 하는 버튼
+	    
+		<%-- 조직도에서 >> 버튼을 눌러 사원을 결재 라인으로 추가하는 이벤트 --%>
 		$("button#add_approval_btn").on('click', function(e) {
+			
+			// jstree 에서 선택한 사원의 사원번호
+			let employeeNo = $('#jstree').jstree('get_selected',true)[0].id;
 			
 			if($("tbody#added_approval_line").children().length > 2) {
 				alert("더 이상 추가할 수 없습니다.");
@@ -121,7 +182,7 @@
 				
 				// 이미 추가된 사원인지 확인하는 for 문
 				$("tbody#added_approval_line").find("td.selected_employee_no").each(function(){
-					if($('input#selected_employee_no').val() == $(this).html()) {
+					if(employeeNo == $(this).html()) {
 						// for 문 안에서 선택된 사원번호와 추가된 사원번호가 같은지 확인
 						
 						alert("이미 추가된 사원입니다.");
@@ -133,28 +194,34 @@
 				// 추가되지 않은 사원이라면
 				if(!isExist) {
 					
-					let v_html=`<tr>
-									<td>결재</td>
-									<td class='selected_employee_no' style='display: none'>\${$('input#selected_employee_no').val()}</td>
-									<td class='selected_security_level' style='display: none'>\${$('input#selected_security_level').val()}</td>
-									<td class='selected_employee_name'>\${$('input#selected_employee_name').val()}</td>
-									<td class='selected_employee_departmentName'>\${$('input#selected_employee_departmentName').val()}</td>
-									<td>예정</td>
-									<td class='delete_approver'>삭제</td>
-								</tr>`;
-					
-					$("tbody#added_approval_line").append(v_html);
+					$.ajax({
+						url:"<%= ctxPath%>/document/getEmployeeOne",
+						dataType:"json",
+						data:{"employeeNo":employeeNo},
+						success:function(json){
+							let v_html=`<tr>
+											<td>결재</td>
+											<td class='selected_employee_no' style='display: none'>\${json.employeeNo}</td>
+											<td class='selected_security_level' style='display: none'>\${json.securityLevel}</td>
+											<td class='selected_employee_name'>\${json.name}</td>
+											<td class='selected_employee_departmentName'>\${json.departmentName}</td>
+											<td>예정</td>
+											<td class='delete_approver'>삭제</td>
+										</tr>`;
+										
+							$("tbody#added_approval_line").append(v_html);
+							
+							$('#jstree').jstree("deselect_all"); // jstree 노드 전체 선택 해제
+							$("button#add_approval_btn").css({"pointer-events":"none"});	// 결재 라인 추가 버튼 비활성화
+						},
+						error: function(request, status, error){
+							alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+						}
+						
+					})
 				}
 			}
 			
-			$("input#selected_employee_name").val("");
-			$("input#selected_employee_departmentName").val("");
-			$("input#selected_employee_no").val("");
-			$("input#selected_security_level").val("");
-			// 선택되서 임시 저장된 데이터 초기화
-			
-			$("li.employee_name").removeClass("selected");	// 선택해제
-			$("button#add_approval_btn").css({"pointer-events":""});	// 결재 라인 추가 버튼 비활성화
 		}); 
 		
 		
@@ -207,8 +274,7 @@
 	    			
 	    		});
 	    		
-	    		v_html += `<input name='added_approval_count' type='hidden' value='\${$("tbody#added_approval_line").children().length}'/>`;
-	    		
+	    		$("input[name='added_approval_count']").val($("tbody#added_approval_line").children().length);
 	    		
 	    		$("div#approval_line").html(v_html);
 	    		
@@ -227,7 +293,7 @@
 	    $('.modal_bg:not(.modal_container_document)').click(e=>{
 	    	close_modal();
 	    });
-	    
+
 	    
 	}); // end of $(document).ready(funtion(){})-----------------------------------
 
@@ -321,6 +387,28 @@
 			success:function(json){
 				console.log(JSON.stringify(json));
 				if(json.n == "1"){
+					
+					if(<%= request.getMethod() %>) {
+						// 임시저장 문서를 수정해서 결재 요청하는 경우
+						$.ajax({
+							url:"<%=ctxPath%>/document/documentView/deleteTemp",
+							dataType:"json",
+							async:false,
+							data:{"documentNo":"${document.documentNo}"},
+							success:function(json){
+								if(json.n == 1) {
+									alert("삭제 성공");
+								}
+								else {
+									alert("삭제 실패");
+								}
+							},
+							error: function(request, status, error){
+								alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+							}
+						});
+					}
+					
 					alert("결재 요청이 완료되었습니다.");
 					location.href="<%= ctxPath%>/document/myDocumentList";
 				}
@@ -375,6 +463,8 @@
 		
 	} // end of function annualTemp(){}-----------------------------------------------
 	
+	
+	
 	</script>
 	
 	
@@ -383,62 +473,56 @@
 	<div id="approval_line_bg" class="modal_bg">
 		<!-- 모달창을 띄웠을때의 뒷 배경 -->
 	</div>
-	<div id="approval_line_container" class="box_modal_container">
-		<div>
-			<h1>결재 정보</h1>
+	<div id="approval_line_container" class="box_modal_container p-3">
+		<div class="mt-3 mb-3">
+			<h3>결재 정보</h3>
 		</div>
-		<div style="border: solid 1px gray; width: 40%; display: inline-block;" >
-			<span>결재선</span>
-			<div id="approval_line_content" class="approval_line_modal_content" style="border: solid 1px gray;" >
-				<div style="border: solid 1px gray">
-					<span>조직도</span>
+		<div style="display: flex;">
+			<div style="width: 40%;" >
+				<div id="approval_line_content" class="approval_line_modal_content">
+					<div>
+						<button type="button" id="btnShow" class="doc_btn">Show</button>
+						<button type="button" id="btnHide" class="doc_btn">Hide</button>
+						<input type="text" name='member_name' placeholder="사원 검색" class="my-1"/>
+						<div id="jstree" style="overflow: scroll; max-height: 250px; border: solid 1px #333;"></div>
+					</div>
 				</div>
+			</div>
+			<div style="border: solid 1px gray; width: 55%; margin-left: auto;">
 				<div>
-					<input type="text" />
-				</div>
-				<div id="organization_chart" class="organization_chart">
-				</div>
-			</div>
-		</div>
-		<div style="border: solid 1px gray; display: inline-block; width: 40%">
-			<div>
-				<table class="table">
-					<thead>
-						<tr>
-							<th></th>
-							<th>타입</th>
-							<th>이름</th>
-							<th>부서</th>
-							<th>상태</th>
-							<th>삭제</th>
-						</tr>
-					</thead>
-				</table>
-			</div>
-			<div>
-				승인
-			</div>
-			<div>
-				<div style="display: inline-block;">
-					<button id="add_approval_btn">>></button>
-				</div>
-				<div style="display: inline-block;">
 					<table class="table">
-						<tbody style="border: solid 1px gray" id="added_approval_line">
-							
-						</tbody>
+						<thead>
+							<tr>
+								<th></th>
+								<th>타입</th>
+								<th>이름</th>
+								<th>부서</th>
+								<th>삭제</th>
+							</tr>
+						</thead>
 					</table>
 				</div>
+				<div>
+					승인
+				</div>
+				<div>
+					<div style="display: inline-block;">
+						<button id="add_approval_btn" class="doc_btn">>></button>
+					</div>
+					<div style="display: inline-block;">
+						<table class="table">
+							<tbody style="border: solid 1px gray" id="added_approval_line">
+								
+							</tbody>
+						</table>
+					</div>
+				</div>
 			</div>
 		</div>
-		<div>
-			<button id="submit_approval_line">확인</button>
-			<button id="cancel_approval_line">취소</button>
+		<div class="mt-1">
+			<button id="submit_approval_line" class="doc_btn">확인</button>
+			<button id="cancel_approval_line" class="doc_btn">취소</button>
 		</div>
-		<input id="selected_employee_name"/>
-		<input id="selected_employee_departmentName"/>
-		<input id="selected_employee_no"/>
-		<input id="selected_security_level"/>
 	</div>
 		
 
@@ -458,35 +542,87 @@
 			<input type="hidden" name="temp" value="0" />
 			
 			<h3 style="text-align: center">연차신청서</h3>
-			
-			<div class="drafter_info" style="display: inline-block;">
-				<table>
-					<tbody>
-						<tr>
-							<th>기안자</th>
-							<td>${sessionScope.loginuser.name}</td>
-						</tr>
-						<tr>
-							<th>소속</th>
-							<td>${sessionScope.loginuser.departmentName}</td>
-						</tr>
-						<tr>
-							<th>기안일</th>
-							<td><%= today%></td>
-						</tr>
-						<tr>
-							<th>문서번호</th>
-							<td></td>
-						</tr>
-						
-					</tbody>
-				</table>
-			</div>
-			<div class="m-3 p-3" style="display: inline-block;">
-				<div class="approval_info" id="approval_line" style="text-align: right; display: inline-block; width: 100%">
+			<div style="display: flex">
+				<div class="drafter_info" style="display: inline-block;">
+					<table>
+						<tbody>
+							<tr>
+								<th>기안자</th>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										${sessionScope.loginuser.name}
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										${requestScope.document.name}
+									</c:if>
+								</td>
+							</tr>
+							<tr>
+								<th>소속</th>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										${sessionScope.loginuser.departmentName}
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										${requestScope.document.teamName}
+									</c:if>
+								</td>
+							</tr>
+							<tr>
+								<th>기안일</th>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										<%= today%>
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										${requestScope.document.draftDate}
+									</c:if>
+								</td>
+							</tr>
+							<tr>
+								<th>문서번호</th>
+								<td>
+									<c:if test="${not empty requestScope.document}">
+										${requestScope.document.documentNo}
+									</c:if>
+								</td>
+							</tr>
+							
+						</tbody>
+					</table>
+				</div>
+				<div style="margin-left: auto;">
 				
-					<!-- 결재 라인이 들어올 곳 -->
-					
+					<%-- 결재 라인이 들어올 곳 --%>
+					<div class="approval_info" id="approval_line" style="text-align: right; display: inline-block; width: 100%">
+						
+						<c:if test="${not empty requestScope.approvalList}">
+							<c:forEach var="approval" items="${requestScope.approvalList}" varStatus="status">
+								<table class="ml-2" style="display: inline-block;">
+									<tbody>
+										<tr>
+											<th rowspan="4" style="width: 50px;">승인</th>
+											<td>${approval.positionName}</td>
+										</tr>
+										<tr>
+											<td>${approval.name}</td>
+										</tr>
+										<tr>
+											<td> </td>
+										</tr>
+									</tbody>
+								</table>
+		    					<input name='added_employee_no${status.index}' type='hidden' value='${approval.fk_approver}'>
+							</c:forEach>
+						</c:if>
+						
+					</div>
+					<c:if test="${empty requestScope.approvalList}">
+						<input name='added_approval_count' type='hidden' value='0'/>
+					</c:if>
+					<c:if test="${not empty requestScope.approvalList}">
+						<input name='added_approval_count' type='hidden' value='${fn:length(requestScope.approvalList)}'/>
+					</c:if>
 				</div>
 			</div>
 			<div class="document_info">
@@ -494,35 +630,99 @@
 					<tbody>
 						<tr>
 							<th>제목</th>
-							<td><input type="text" name="subject" value=" " style="width: 100%;"/></td>
+							<td>
+								<c:if test="${empty requestScope.document}">
+									<input type="text" name="subject" value=" " style="width: 100%;"/>
+								</c:if>
+								<c:if test="${not empty requestScope.document}">
+									<input type="text" name="subject" value="${requestScope.document.subject}" style="width: 100%;"/>
+								</c:if>
+							</td>
 						</tr>
 						<tr>
 							<th>휴가 종류</th>
 							<td>
 								<select name="annualType" onchange="calAnnualAmount()">
-									<option value="1">연차</option>
-									<option value="2">오전반차</option>
-									<option value="3">오후반차</option>
+									<c:if test="${empty requestScope.document}">
+										<option value="1">연차</option>
+										<option value="2">오전반차</option>
+										<option value="3">오후반차</option>
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										<c:if test="${requestScope.document.annualType == 1}">
+											<option value="1" selected>연차</option>
+											<option value="2">오전반차</option>
+											<option value="3">오후반차</option>
+										</c:if>
+										<c:if test="${requestScope.document.annualType == 2}">
+											<option value="1">연차</option>
+											<option value="2" selected>오전반차</option>
+											<option value="3">오후반차</option>
+										</c:if>
+										<c:if test="${requestScope.document.annualType == 3}">
+											<option value="1">연차</option>
+											<option value="2">오전반차</option>
+											<option value="3" selected>오후반차</option>
+										</c:if>
+									</c:if>
 								</select>
 							</td>
 						</tr>
 						<tr>
 							<th>사유</th>
-							<td><input type="text" name="reason" value=" " style="width: 100%;"/></td>
+							<td>
+								<c:if test="${empty requestScope.document}">
+									<input type="text" name="reason" value=" " style="width: 100%;"/>
+								</c:if>
+								<c:if test="${not empty requestScope.document}">
+									<input type="text" name="reason" value="${requestScope.document.reason}" style="width: 100%;"/>
+								</c:if>
+							</td>
 						</tr>
 						<tr>
 							<th>기간 및 일시</th>
 							<td>
-								<input type="date" name="startDate" onchange="calAnnualAmount()" onkeydown="return false" />
-								<input type="date" name="endDate"   onchange="calAnnualAmount()" onkeydown="return false" />
+								<c:if test="${empty requestScope.document}">
+									<input type="date" name="startDate" onchange="calAnnualAmount()" onkeydown="return false" />
+									<input type="date" name="endDate"   onchange="calAnnualAmount()" onkeydown="return false" />
+								</c:if>
+								<c:if test="${not empty requestScope.document}">
+									<c:if test="${requestScope.document.startDate eq '-'}">
+										<input type="date" name="startDate" onchange="calAnnualAmount()" onkeydown="return false" />
+									</c:if>
+									<c:if test="${requestScope.document.startDate ne '-'}">
+										<input type="date" name="startDate" onchange="calAnnualAmount()" value="${requestScope.document.startDate}" onkeydown="return false" />
+									</c:if>
+									<c:if test="${requestScope.document.annualType eq 1}">
+										<c:if test="${requestScope.document.endDate eq '-'}">
+											<input type="date" name="endDate" onchange="calAnnualAmount()" onkeydown="return false" />
+										</c:if>
+										<c:if test="${requestScope.document.endDate ne '-'}">
+											<input type="date" name="endDate" onchange="calAnnualAmount()" value="${requestScope.document.endDate}" onkeydown="return false" />
+										</c:if>
+									</c:if>
+									<c:if test="${requestScope.document.annualType eq 2 || requestScope.document.annualType eq 3}">
+										<c:if test="${requestScope.document.endDate eq '-'}">
+											<input type="date" name="endDate" onchange="calAnnualAmount()" onkeydown="return false" style="display: none;" />
+										</c:if>
+										<c:if test="${requestScope.document.endDate ne '-'}">
+											<input type="date" name="endDate" onchange="calAnnualAmount()" value="${requestScope.document.endDate}" onkeydown="return false" style="display: none;" />
+										</c:if>
+									</c:if>
+								</c:if>
 							</td>
 						</tr>
 						<tr>
 							<th>연차 일수</th>
 							<td>
 								잔여 연차 : <input type="text" name="totalAmount" value="10" readonly />
-								신청 연차 : <input type="text" name="useAmount" value="0" readonly />
-							</td>
+								<c:if test="${empty requestScope.document}">
+									신청 연차 : <input type="text" name="useAmount" value="0" readonly />
+								</c:if>
+								<c:if test="${not empty requestScope.document}">
+									신청 연차 : <input type="text" name="useAmount" value="${requestScope.document.useAmount}" readonly />
+								</c:if>
+								</td>
 						</tr>
 						<tr>
 							<th class="pl-4" colspan="2" style="text-align: left;">

@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import com.spring.app.document.domain.ApprovalVO;
 import com.spring.app.document.domain.DocumentVO;
 import com.spring.app.document.model.DocumentDAO;
+import com.spring.app.employee.domain.DepartmentVO;
 import com.spring.app.employee.domain.EmployeeVO;
+import com.spring.app.employee.domain.TeamVO;
 
 
 // === 서비스 선언 === //
@@ -42,14 +44,23 @@ public class DocumentService_imple implements DocumentService {
 	}
 	
 	
-	// 기안 문서 리스트 가져오기
+	// 기안 문서함에서 검색어를 포함한 문서 갯수 가져오기
 	@Override
-	public List<DocumentVO> myDocumentList(String employeeNo) {
+	public int myDocumentListCount_Search(Map<String, String> paraMap) {
 		
-		List<DocumentVO> myDocumentList = mapper_dao.myDocumentList(employeeNo);
-		return myDocumentList;
+		int totalCount = mapper_dao.myDocumentListCount_Search(paraMap);
+		return totalCount;
 	}
 
+	
+	// 기안 문서함에서 검색어를 포함한 페이징 처리한 문서 리스트 가져오기
+	@Override
+	public List<DocumentVO> myDocumentList_Search_Paging(Map<String, String> paraMap) {
+		
+		List<DocumentVO> myDocumentList = mapper_dao.myDocumentList_Search_Paging(paraMap);
+		return myDocumentList;
+	}
+	
 	
 	// 임시저장 문서 리스트 가져오기
 	@Override
@@ -95,7 +106,25 @@ public class DocumentService_imple implements DocumentService {
 		return approvalList;
 	}
 
+	
+	// 조직도에 뿌려주기 위한 부서 목록 가져오기
+	@Override
+	public List<DepartmentVO> getDepartmentList() {
 
+		List<DepartmentVO> departmentList = mapper_dao.getDepartmentList();
+		return departmentList;
+	}
+	
+	
+	// 조직도에 뿌려주기 위한 팀 목록 가져오기
+	@Override
+	public List<TeamVO> getTeamList() {
+
+		List<TeamVO> teamList = mapper_dao.getTeamList();
+		return teamList;
+	}
+
+	
 	// 조직도에 뿌려주기 위한 사원 목록 가져오기
 	@Override
 	public List<EmployeeVO> getEmployeeList() {
@@ -137,6 +166,40 @@ public class DocumentService_imple implements DocumentService {
 		
 		return n*m;
 	}
+	
+	
+	// 연장근무신청서 결재 요청
+	@Override
+	public int overtimeDraft(Map<String, String> paraMap) {
+		
+		// 채번하기
+		String seq_document = mapper_dao.getSeqDocument();
+		
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-");
+		
+		String documentNo = sdf.format(date) + seq_document; // 문서번호
+		
+		paraMap.put("documentNo", documentNo); // 문서번호 넣어주기
+		
+		int n = mapper_dao.insertDocument(paraMap);
+		int m = 0;
+		if(n==1) {
+			m = mapper_dao.insertOvertimeDraft(paraMap);
+		}
+		
+		int approval_count = Integer.parseInt(paraMap.get("added_approval_count"));
+		
+		int a = 1;
+		
+		for(int i=0; i<approval_count; i++) {
+			paraMap.put("fk_approver", paraMap.get("added_employee_no" + i));
+			paraMap.put("approvalorder", String.valueOf(approval_count-i));
+			a *= mapper_dao.insertApprover(paraMap);
+		}
+		
+		return n*m;
+	}
 
 
 	// 결재 승인하기
@@ -151,13 +214,62 @@ public class DocumentService_imple implements DocumentService {
 		
 		int m = 1;
 		
+		// 결재 상태 1(승인)
+		map.put("status", "1");
+		
 		if(approvalOrder == 1) {
 			// 문서의 결재 상태를 업데이트 하기
-			m = mapper_dao.updateDocumentApprovalStatus(map.get("documentNo"));
+			m = mapper_dao.updateDocumentApprovalStatus(map);
 		}
 		
 		return n*m;
 	}
+
+
+	// 결재 반려하기
+	@Override
+	public int reject(Map<String, String> map) {
+		
+		// 결재 반려하기
+		int n = mapper_dao.reject(map);
+		
+		// 결재 상태 2(반려)
+		map.put("status", "2");
+		
+		// 문서의 결재 상태를 업데이트 하기
+		int m = mapper_dao.updateDocumentApprovalStatus(map);
+		
+		return n*m;
+	}
+
+
+	// 결재 라인에 추가하기 위한 사원 1명 가져오기
+	@Override
+	public EmployeeVO getEmployeeOne(String employeeNo) {
+		
+		EmployeeVO employee = mapper_dao.getEmployeeOne(employeeNo);
+		return employee;
+	}
+
+
+	// 임시저장 문서 삭제하기
+	@Override
+	public int deleteTemp(String documentNo) {
+		
+		int n = mapper_dao.deleteTemp(documentNo);
+		return n;
+	}
+
+
+	
+
+	
+
+
+	
+
+
+	
 
 
 	
