@@ -14,6 +14,11 @@
 		<result property="assetRegisterday" column="assetRegisterday" 	javaType="String"/>
 		<result property="assetChangeday"   column="assetChangeday" 	javaType="String"/>
 		<result property="classification"   column="classification" 	javaType="String"/>
+		
+		<result property="assetdetailno"   column="assetdetailno" 	javaType="String"/>
+		<result property="assetname"   column="assetname" 	javaType="String"/>
+		<result property="fk_assetNo"   column="fk_assetNo" 	javaType="String"/>
+		
 	</resultMap>
 	<!-- 자산 대분류를 select 해주는 메소드 -->
 	<select id="tbl_assetSelect" resultMap="assetSelect_Map">
@@ -224,6 +229,26 @@
 	<delete id="deleteAssetNo" parameterType="String">
 		delete from tbl_assetDetail where assetDetailNo = #{assetDetailNo}
 	</delete>
+
+
+
+	<!-- 캘린더에서 예약기능 -->
+	<select id="selectReservationCal" parameterType="HashMap" resultMap="assetSelect_Map">
+		select assetNo, ad.assetdetailno, ad.assetname, fk_assetNo
+		from tbl_assetdetail ad join tbl_asset ass
+		on ad.fk_assetNo = ass.assetNo
+		where not exists (
+		    select 1
+		    from tbl_assetreservation ar
+		    where ar.fk_assetdetailno = ad.assetdetailno
+		    and (
+		        (to_date(#{startdate}, 'YYYYMMDD HH24:MI:SS') between ar.reservationstart and ar.reservationend)
+		        or (to_date('20250313180000', 'YYYYMMDD HH24:MI:SS') between ar.reservationstart and ar.reservationend)
+		        or (ar.reservationstart between to_date(#{startdate}, 'YYYYMMDD HH24:MI:SS') and to_date(#{enddate}, 'YYYYMMDD HH24:MI:SS'))
+		        or (ar.reservationend between to_date(#{startdate}, 'YYYYMMDD HH24:MI:SS') and to_date(#{enddate}, 'YYYYMMDD HH24:MI:SS'))
+		    )
+		)
+	</select>
 
 
 </mapper>

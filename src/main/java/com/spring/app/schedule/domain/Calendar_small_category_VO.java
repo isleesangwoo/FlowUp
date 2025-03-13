@@ -5,7 +5,7 @@ public class Calendar_small_category_VO {
 	private String smcatgono;     // 캘린더 소분류 번호
 	private String fk_lgcatgono;  // 캘린더 대분류 번호
 	private String smcatgoname;   // 캘린더 소분류 명
-	private String fk_userid;     // 캘린더 소분류 작성자 유저아이디
+	private String fk_employeeNo;     // 캘린더 소분류 작성자 유저아이디
 	
 	public String getSmcatgono() {
 		return smcatgono;
@@ -31,12 +31,12 @@ public class Calendar_small_category_VO {
 		this.smcatgoname = smcatgoname;
 	}
 	
-	public String getFk_userid() {
-		return fk_userid;
+	public String getFk_employeeNo() {
+		return fk_employeeNo;
 	}
 	
-	public void setFk_userid(String fk_userid) {
-		this.fk_userid = fk_userid;
+	public void setFk_employeeno(String fk_employeeNo) {
+		this.fk_employeeNo = fk_employeeNo;
 	}
 	
 }
