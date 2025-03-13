@@ -182,7 +182,6 @@
 	</select>
 
 	
-	
 	<!-- 메일함 정렬 선택 시작 -->
 	<select id="mailListSort" resultMap="selectMailList_Map" parameterType="HashMap">
 	    SELECT 
@@ -317,17 +316,15 @@
 	</select>
 
 
-
-
-
 	<!-- 보낸메일함 조회 -->
 	<select id="selectSentMail" parameterType="map" resultType="MailVO">
 	    SELECT m.*
 	    FROM tbl_mail m
 	    JOIN tbl_referenced r ON m.mailNo = r.fk_mailNo
-	    WHERE m.fk_employeeNo = #{senderNo} -- 보낸 사람(나)
-	    AND r.refMail != #{senderNo} -- 받는 사람(나와 다른 사람)
-	    AND r.refStatus = '0' -- 받는 사람만 조회 (참조자는 제외)
+	    WHERE m.fk_employeeNo = #{senderNo}
+	    AND deleteStatus = 0
+	    AND r.refMail != #{senderNo}
+	    AND r.refStatus = '0'
 	    ORDER BY m.sendDate DESC
 	    OFFSET (#{currentShowPageNo} - 1) * #{sizePerPage} ROWS
 	    FETCH NEXT #{sizePerPage} ROWS ONLY

@@ -996,5 +996,12 @@ from tbl_mailFile;
 	    FROM tbl_mailFile
 	    WHERE fk_mailNo = 100154
 	</select>
+    
+SELECT m.*
+FROM tbl_mail m
+JOIN tbl_referenced r ON m.mailNo = r.fk_mailNo
+WHERE m.fk_employeeNo = 100020 -- 보낸 사람(나)
+AND r.refMail != 100014 -- 받는 사람(나와 다른 사람)
+AND r.refStatus = '0' -- 받는 사람만 조회 (참조자는 제외)
 
     
