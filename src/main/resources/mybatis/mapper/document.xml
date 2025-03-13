@@ -20,6 +20,7 @@
 		JOIN tbl_employee
 		ON fk_employeeNo = employeeNo
 		where rn = 1 and fk_approver = #{employeeNo} and temp = 0 and D.status != 2
+		order by documentNo desc
 	</select>
 	
 	
@@ -36,6 +37,7 @@
 		JOIN tbl_employee
 		ON fk_employeeNo = employeeNo
 		where rn != 1 and fk_approver = #{employeeNo} and temp = 0
+		order by documentNo desc
 	</select>
 	
 	
@@ -70,7 +72,7 @@
 					</when>
 					<otherwise></otherwise>
 				</choose>
-				order by draftDate desc
+				order by documentNo desc
 			)
 		)
 		WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
@@ -82,7 +84,7 @@
 		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
 		from tbl_document
 		where fk_employeeNo = #{employeeNo} and temp = 1
-		order by draftDate desc
+		order by documentNo desc
 	</select>
 	
 	
@@ -100,12 +102,14 @@
 		JOIN tbl_employee
 		ON fk_employeeNo = employeeNo
 		where temp = 0
+		order by documentNo desc
 	</select>
 	
 	
 	<!-- 부서 문서 리스트 가져오기 -->
 	<select id="deptDocumentList" parameterType="String" resultType="DocumentVO">
-		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, name, nvl(to_char(approvalDate, 'yyyy-mm-dd'), '-') as approvalDate, name, documentNo
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, name
+			 , nvl(to_char(approvalDate, 'yyyy-mm-dd'), '-') as approvalDate
 		from
 		(
 		    select employeeNo, name
@@ -119,7 +123,7 @@
 		) E JOIN tbl_document D
 		ON E.employeeNO = D.fk_employeeNo
 		where temp = 0
-		order by draftDate desc
+		order by D.documentNo desc
 	</select>
 	
 	
@@ -153,7 +157,8 @@
 		from tbl_document D JOIN tbl_draft_annual A
 		</if>
 		<if test="documentType == '연장근무신청서'">
-			, reason, to_char(overtimeDate, 'yyyy-mm-dd') as overtimeDate
+			, reason
+			, case to_char(overtimeDate, 'yyyy-mm-dd') when '1111-11-11' then '-' else to_char(overtimeDate, 'yyyy-mm-dd') end as overtimeDate
 		from tbl_document D JOIN tbl_draft_overtime A
 		</if>
 		ON d.documentNo = A.documentNo JOIN tbl_employee E

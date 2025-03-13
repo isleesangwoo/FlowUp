@@ -407,8 +407,8 @@ public class DocumentController {
 	}
 	
 	
-	// 휴가신청서 결재 요청
-	@PostMapping("annualDraft")
+	// 결재 요청
+	@PostMapping("draft")
 	@ResponseBody
 	public Map<String, String> annualDraft(@RequestParam Map<String, String> paraMap, HttpServletRequest request) {
 		
@@ -422,38 +422,8 @@ public class DocumentController {
 			paraMap.put("fk_employeeNo", "100014");
 		}
 		
-		// 휴가신청서 결재 요청
-		int n = service.annualDraft(paraMap);
-		
-		Map<String, String> map = new HashMap<>();
-		
-		map.put("n", String.valueOf(n));
-		
-		return map;
-	}
-	
-	
-	// 연장근무신청서 결재 요청
-	@PostMapping("overtimeDraft")
-	@ResponseBody
-	public Map<String, String> overtimeDraft(@RequestParam Map<String, String> paraMap, HttpServletRequest request) {
-		
-		HttpSession session = request.getSession();
-		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
-		
-		if(loginuser != null) {
-			paraMap.put("fk_employeeNo", loginuser.getEmployeeNo());
-		}
-		else {
-			paraMap.put("fk_employeeNo", "100014");
-		}
-		
-		// 연장근무신청서 결재 요청
-		int n = service.overtimeDraft(paraMap);
-		
-		Map<String, String> map = new HashMap<>();
-		
-		map.put("n", String.valueOf(n));
+		Map<String, String> map = service.draft(paraMap); // 결재 요청
+		map.put("documentType", paraMap.get("documentType")); // 문서양식넣어주기
 		
 		return map;
 	}
@@ -474,7 +444,7 @@ public class DocumentController {
 			paraMap.put("fk_employeeNo", "100014");
 		}
 		
-		paraMap.put("temp", "1");
+		paraMap.put("temp", "1"); // 임시 저장 문서임을 나타냄
 		
 		int n = 0;
 		
@@ -487,7 +457,6 @@ public class DocumentController {
 				paraMap.put("endDate", "1111-11-11");
 			}
 			
-			n = service.annualDraft(paraMap);
 		}
 		if("연장근무신청서".equals(paraMap.get("documentType"))) {
 			
@@ -495,13 +464,10 @@ public class DocumentController {
 				paraMap.put("overtimeDate", "1111-11-11");
 			}
 			
-			n = service.overtimeDraft(paraMap);
 		}
 		
-		
-		Map<String, String> map = new HashMap<>();
-		
-		map.put("n", String.valueOf(n));
+		Map<String, String> map = service.draft(paraMap); // 결재요청
+		map.put("documentType", paraMap.get("documentType")); // 문서양식넣어주기
 		
 		return map;
 	}
@@ -595,6 +561,7 @@ public class DocumentController {
 		List<ApprovalVO> approvalList = service.getApprovalList(paraMap.get("documentNo"));
 		// 문서함에서 보여줄 결재자 리스트 가져오기
 		
+		mav.addObject("documentType", document.get("documentType"));
 		mav.addObject("document", document);
 		mav.addObject("approvalList", approvalList);
 		
