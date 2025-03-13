@@ -6,15 +6,15 @@
    String ctxPath = request.getContextPath();
 %>
 
-
 <jsp:include page="document_main.jsp" />
+
+<jsp:include page="document_box.jsp" />
 
 <script type="text/javascript">
 
 	$(document).ready(function(){
 		
 		$("h1#doc_title").text("결재 문서함");
-		$("span.doc_delete").hide();
 		$("a.doc_search_btn").click(e=>{
 			alert("ddd");
 		});
