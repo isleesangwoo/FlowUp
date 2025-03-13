@@ -404,8 +404,8 @@
 				$("#todayStartTime").html(todayStartTime);
 				$("#todayEndTime").html(todayEndTime);
 				
-				$("span#workTime_hour").html(json.workTime_hour);
-				$("span#workTime_min").html(json.workTime_min);
+				$("span#workTime_hour").html((json.workTime_hour).toString().padStart(2, '0'));
+	            $("span#workTime_min").html((json.workTime_min).toString().padStart(2, '0'));
 				
 				if(json.status == "1") {
 					$('#btn_status').html("휴가");

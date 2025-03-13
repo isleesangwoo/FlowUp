@@ -12,8 +12,12 @@
 
 	<%-- 이곳에 각 해당되는 뷰 페이지를 작성해주세요 --%>
 	<%-- ex) --%>
-	<div style="width: 500px; height: 500px; background-color: #252525; text-align: center; line-height: 500px; color: #fff">
-		이것은 예시 html 태그입니다!
+	<div style="width: 250px; height: 500px; background-color: #252525; text-align: center; color: #fff">
+		
+		
+		<jsp:include page="../../common/commute_btn2.jsp" /> 
+	
+
 	</div>
 
 	<%-- 이곳에 각 해당되는 뷰 페이지를 작성해주세요 --%>

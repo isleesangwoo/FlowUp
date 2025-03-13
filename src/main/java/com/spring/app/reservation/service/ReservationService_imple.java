@@ -243,6 +243,15 @@ public class ReservationService_imple implements ReservationService {
 	}
 
 
+
+	// 캘린더에서 예약기능
+	@Override
+	public List<Map<String, String>> selectReservationCal(Map<String, String> map) {
+		List<Map<String, String>> list = dao.selectReservationCal(map);
+		return list;
+	}
+
+
 	
 	
 }

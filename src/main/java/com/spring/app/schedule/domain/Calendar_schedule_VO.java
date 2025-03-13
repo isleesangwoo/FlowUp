@@ -12,7 +12,7 @@ public class Calendar_schedule_VO {
 	private String content;       // 내용	
 	private String fk_smcatgono;  // 캘린더 소분류 번호
 	private String fk_lgcatgono;  // 캘린더 대분류 번호
-	private String fk_userid;     // 캘린더 일정 작성자 유저아이디
+	private String fk_employeeNo; // 캘린더 일정 작성자 유저아이디
 
 	public String getScheduleno() {
 		return scheduleno;
@@ -94,12 +94,12 @@ public class Calendar_schedule_VO {
 		this.fk_lgcatgono = fk_lgcatgono;
 	}
 
-	public String getFk_userid() {
-		return fk_userid;
+	public String getFk_employeeNo() {
+		return fk_employeeNo;
 	}
 
-	public void setFk_userid(String fk_userid) {
-		this.fk_userid = fk_userid;
+	public void setFk_employeeno(String fk_employeeNo) {
+		this.fk_employeeNo = fk_employeeNo;
 	}
 	
 }
