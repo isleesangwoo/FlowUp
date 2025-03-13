@@ -346,7 +346,8 @@ public class DocumentController {
 	@GetMapping("annual")
 	public ModelAndView annual(ModelAndView mav) {
 		
-		mav.setViewName("mycontent/document/annual");
+		mav.addObject("documentType", "휴가신청서");
+		mav.setViewName("mycontent/document/draftForm");
 		
 		return mav;
 	}
@@ -356,7 +357,8 @@ public class DocumentController {
 	@GetMapping("overtime")
 	public ModelAndView overtime(ModelAndView mav) {
 		
-		mav.setViewName("mycontent/document/overtime");
+		mav.addObject("documentType", "연장근무신청서");
+		mav.setViewName("mycontent/document/draftForm");
 		
 		return mav;
 	}
@@ -596,7 +598,7 @@ public class DocumentController {
 		mav.addObject("document", document);
 		mav.addObject("approvalList", approvalList);
 		
-		mav.setViewName("mycontent/document/annual");
+		mav.setViewName("mycontent/document/draftForm");
 		
 		return mav;
 	}

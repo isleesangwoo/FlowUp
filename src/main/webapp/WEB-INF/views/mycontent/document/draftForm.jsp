@@ -28,19 +28,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
 
-<style type="text/css">
-	
-	.closed { 
-		display: none;
-	}
-	
-	.selected {
-		background: yellow;
-	}
-	
-	
-</style>
-
 <script type="text/javascript">
 	
 	$(document).ready(function(){
@@ -463,7 +450,72 @@
 		
 	} // end of function annualTemp(){}-----------------------------------------------
 	
+	// 연장 근무 신청하는 날이 주말인지 확인하기
+	function check_weekend() {
+		
+		// 입력한 날짜의 요일 가져오기
+		let date = new Date($("input[name='overTimeDate']").val()).getDay();
+		
+		// 0이면 일요일, 6이면 토요일
+		if(date == 0 || date == 6) {
+			$("span#check_weekend").text("주말에는 연장 근무 신청이 불가능합니다.");
+		}
+		else {
+			$("span#check_weekend").empty();
+		}
+			
+	} // end of function check_weeken(){}------------------------
 	
+	// 휴가신청서 결재요청하기
+	function overtimeDraft(){
+		
+		if($("input[name='subject']").val().trim() == "") {	// 제목을 입력하지 않았을 경우
+			alert("제목을 입력하세요!")
+			return;
+		}
+		if($("input[name='reason']").val().trim() == "") {	// 연장 근무 사유를 입력하지 않았을 경우
+			alert("연장 근무 사유를 입력하세요!");
+			return;
+		}
+		if($("input[name='overTimeDate']").val() == "") {	// 연장 근무 일자를 입력하지 않았을 경우
+			alert("연장 근무 일자를 입력하세요!");
+			return;
+		}
+		if($("span#check_weekend").text() != "") {			// 연장 근무 일자를 주말로 입력했을 경우
+			alert("주말에는 연장 근무 신청이 불가능합니다!");
+			return;
+		}
+		if($("div#approval_line").children().length == 0) {	// 결재자를 한명도 추가하지 않았을 경우
+			alert("결재 라인을 추가해주세요!");
+			return;
+		}
+		
+		const queryString = $("form[name='overtimeDraftForm']").serialize();
+		console.log(queryString);
+		
+		$.ajax({
+			url:"<%= ctxPath%>/document/overtimeDraft",
+			data:queryString,
+			type:"post",
+			dataType:"json",
+			success:function(json){
+				console.log(JSON.stringify(json));
+				if(json.n == "1"){
+					alert("결재 요청이 완료되었습니다.");
+					location.href="<%= ctxPath%>/document/myDocumentList";
+				}
+				else {
+					alert("결재 요청이 실패되었습니다.");
+				}
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		}); // end of $.ajax({})----------------
+		
+		
+		
+	} // end of function overtimeDraft(){}---------------------------------------------
 	
 	</script>
 	
@@ -529,8 +581,14 @@
     <!-- 휴가신청서 폼 -->
 	
 	<div class="m-3">
-		<h1 class="mb-3">휴가신청서</h1>
-		<button class="doc_btn mr-3" onclick="annualDraft()">결재요청</button>
+		<c:if test="${requestScope.documentType == '휴가신청서'}">
+			<h1 class="mb-3">휴가신청서</h1>
+			<button class="doc_btn mr-3" onclick="annualDraft()">결재요청</button>
+		</c:if>
+		<c:if test="${requestScope.documentType == '연장근무신청서'}">
+			<h1 class="mb-3">연장근무신청서</h1>
+			<button class="doc_btn mr-3" onclick="overtimeDraft()">결재요청</button>
+		</c:if>
 		<button class="doc_btn mr-3" onclick="saveTemp()">임시저장</button>
 		<button class="doc_btn mr-3">미리보기</button>
 		<button class="doc_btn" id="approval_line_btn">결재 정보</button>
@@ -538,10 +596,15 @@
 	<div class="m-3 draftForm">
 		<form name="annualDraftForm">
 		
-			<input type="hidden" name="documentType" value="휴가신청서" />
 			<input type="hidden" name="temp" value="0" />
 			
-			<h3 style="text-align: center">연차신청서</h3>
+			<c:if test="${requestScope.documentType == '휴가신청서'}">
+				<h3 style="text-align: center">연차신청서</h3>
+			</c:if>
+			<c:if test="${requestScope.documentType == '연장근무신청서'}">
+				<h3 style="text-align: center">연장근무신청서</h3>
+			</c:if>
+			
 			<div style="display: flex">
 				<div class="drafter_info" style="display: inline-block;">
 					<table>
@@ -626,114 +689,191 @@
 				</div>
 			</div>
 			<div class="document_info">
-				<table class="mt-5" style="width: 100%">
-					<tbody>
-						<tr>
-							<th>제목</th>
-							<td>
-								<c:if test="${empty requestScope.document}">
-									<input type="text" name="subject" value=" " style="width: 100%;"/>
-								</c:if>
-								<c:if test="${not empty requestScope.document}">
-									<input type="text" name="subject" value="${requestScope.document.subject}" style="width: 100%;"/>
-								</c:if>
-							</td>
-						</tr>
-						<tr>
-							<th>휴가 종류</th>
-							<td>
-								<select name="annualType" onchange="calAnnualAmount()">
+			
+			
+				<c:if test="${requestScope.documentType == '휴가신청서'}">
+					<input type="hidden" name="documentType" value="휴가신청서" />
+					<table class="mt-5" style="width: 100%">
+						<tbody>
+							<tr>
+								<th>제목</th>
+								<td>
 									<c:if test="${empty requestScope.document}">
-										<option value="1">연차</option>
-										<option value="2">오전반차</option>
-										<option value="3">오후반차</option>
+										<input type="text" name="subject" value=" " style="width: 100%;"/>
 									</c:if>
 									<c:if test="${not empty requestScope.document}">
-										<c:if test="${requestScope.document.annualType == 1}">
-											<option value="1" selected>연차</option>
-											<option value="2">오전반차</option>
-											<option value="3">오후반차</option>
-										</c:if>
-										<c:if test="${requestScope.document.annualType == 2}">
-											<option value="1">연차</option>
-											<option value="2" selected>오전반차</option>
-											<option value="3">오후반차</option>
-										</c:if>
-										<c:if test="${requestScope.document.annualType == 3}">
-											<option value="1">연차</option>
-											<option value="2">오전반차</option>
-											<option value="3" selected>오후반차</option>
-										</c:if>
+										<input type="text" name="subject" value="${requestScope.document.subject}" style="width: 100%;"/>
 									</c:if>
-								</select>
-							</td>
-						</tr>
-						<tr>
-							<th>사유</th>
-							<td>
-								<c:if test="${empty requestScope.document}">
-									<input type="text" name="reason" value=" " style="width: 100%;"/>
-								</c:if>
-								<c:if test="${not empty requestScope.document}">
-									<input type="text" name="reason" value="${requestScope.document.reason}" style="width: 100%;"/>
-								</c:if>
-							</td>
-						</tr>
-						<tr>
-							<th>기간 및 일시</th>
-							<td>
-								<c:if test="${empty requestScope.document}">
-									<input type="date" name="startDate" onchange="calAnnualAmount()" onkeydown="return false" />
-									<input type="date" name="endDate"   onchange="calAnnualAmount()" onkeydown="return false" />
-								</c:if>
-								<c:if test="${not empty requestScope.document}">
-									<c:if test="${requestScope.document.startDate eq '-'}">
-										<input type="date" name="startDate" onchange="calAnnualAmount()" onkeydown="return false" />
-									</c:if>
-									<c:if test="${requestScope.document.startDate ne '-'}">
-										<input type="date" name="startDate" onchange="calAnnualAmount()" value="${requestScope.document.startDate}" onkeydown="return false" />
-									</c:if>
-									<c:if test="${requestScope.document.annualType eq 1}">
-										<c:if test="${requestScope.document.endDate eq '-'}">
-											<input type="date" name="endDate" onchange="calAnnualAmount()" onkeydown="return false" />
-										</c:if>
-										<c:if test="${requestScope.document.endDate ne '-'}">
-											<input type="date" name="endDate" onchange="calAnnualAmount()" value="${requestScope.document.endDate}" onkeydown="return false" />
-										</c:if>
-									</c:if>
-									<c:if test="${requestScope.document.annualType eq 2 || requestScope.document.annualType eq 3}">
-										<c:if test="${requestScope.document.endDate eq '-'}">
-											<input type="date" name="endDate" onchange="calAnnualAmount()" onkeydown="return false" style="display: none;" />
-										</c:if>
-										<c:if test="${requestScope.document.endDate ne '-'}">
-											<input type="date" name="endDate" onchange="calAnnualAmount()" value="${requestScope.document.endDate}" onkeydown="return false" style="display: none;" />
-										</c:if>
-									</c:if>
-								</c:if>
-							</td>
-						</tr>
-						<tr>
-							<th>연차 일수</th>
-							<td>
-								잔여 연차 : <input type="text" name="totalAmount" value="10" readonly />
-								<c:if test="${empty requestScope.document}">
-									신청 연차 : <input type="text" name="useAmount" value="0" readonly />
-								</c:if>
-								<c:if test="${not empty requestScope.document}">
-									신청 연차 : <input type="text" name="useAmount" value="${requestScope.document.useAmount}" readonly />
-								</c:if>
 								</td>
-						</tr>
-						<tr>
-							<th class="pl-4" colspan="2" style="text-align: left;">
-								1. 연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 잔여 연차에 한하여 사용함을 원칙으로 한다.
-								<br>단, 최초 입사시에는 근로 기준법에 따라 발생 예정된 연차를 차용하여 월 1회 사용 할 수 있다.
-								<br>2. 경조사 휴가는 행사일을 증명할 수 있는 가족 관계 증명서 또는 등본, 청첩장 등 제출
-								<br>3. 공가(예비군/민방위)는 사전에 통지서를, 사후에 참석증을 반드시 제출
-							</th>
-						</tr>
-					</tbody>
-				</table>
+							</tr>
+							<tr>
+								<th>휴가 종류</th>
+								<td>
+									<select name="annualType" onchange="calAnnualAmount()">
+										<c:if test="${empty requestScope.document}">
+											<option value="1">연차</option>
+											<option value="2">오전반차</option>
+											<option value="3">오후반차</option>
+										</c:if>
+										<c:if test="${not empty requestScope.document}">
+											<c:if test="${requestScope.document.annualType == 1}">
+												<option value="1" selected>연차</option>
+												<option value="2">오전반차</option>
+												<option value="3">오후반차</option>
+											</c:if>
+											<c:if test="${requestScope.document.annualType == 2}">
+												<option value="1">연차</option>
+												<option value="2" selected>오전반차</option>
+												<option value="3">오후반차</option>
+											</c:if>
+											<c:if test="${requestScope.document.annualType == 3}">
+												<option value="1">연차</option>
+												<option value="2">오전반차</option>
+												<option value="3" selected>오후반차</option>
+											</c:if>
+										</c:if>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<th>사유</th>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										<input type="text" name="reason" value=" " style="width: 100%;"/>
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										<input type="text" name="reason" value="${requestScope.document.reason}" style="width: 100%;"/>
+									</c:if>
+								</td>
+							</tr>
+							<tr>
+								<th>기간 및 일시</th>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										<input type="date" name="startDate" onchange="calAnnualAmount()" onkeydown="return false" />
+										<input type="date" name="endDate"   onchange="calAnnualAmount()" onkeydown="return false" />
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										<c:if test="${requestScope.document.startDate eq '-'}">
+											<input type="date" name="startDate" onchange="calAnnualAmount()" onkeydown="return false" />
+										</c:if>
+										<c:if test="${requestScope.document.startDate ne '-'}">
+											<input type="date" name="startDate" onchange="calAnnualAmount()" value="${requestScope.document.startDate}" onkeydown="return false" />
+										</c:if>
+										<c:if test="${requestScope.document.annualType eq 1}">
+											<c:if test="${requestScope.document.endDate eq '-'}">
+												<input type="date" name="endDate" onchange="calAnnualAmount()" onkeydown="return false" />
+											</c:if>
+											<c:if test="${requestScope.document.endDate ne '-'}">
+												<input type="date" name="endDate" onchange="calAnnualAmount()" value="${requestScope.document.endDate}" onkeydown="return false" />
+											</c:if>
+										</c:if>
+										<c:if test="${requestScope.document.annualType eq 2 || requestScope.document.annualType eq 3}">
+											<c:if test="${requestScope.document.endDate eq '-'}">
+												<input type="date" name="endDate" onchange="calAnnualAmount()" onkeydown="return false" style="display: none;" />
+											</c:if>
+											<c:if test="${requestScope.document.endDate ne '-'}">
+												<input type="date" name="endDate" onchange="calAnnualAmount()" value="${requestScope.document.endDate}" onkeydown="return false" style="display: none;" />
+											</c:if>
+										</c:if>
+									</c:if>
+								</td>
+							</tr>
+							<tr>
+								<th>연차 일수</th>
+								<td>
+									잔여 연차 : <input type="text" name="totalAmount" value="10" readonly />
+									<c:if test="${empty requestScope.document}">
+										신청 연차 : <input type="text" name="useAmount" value="0" readonly />
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										신청 연차 : <input type="text" name="useAmount" value="${requestScope.document.useAmount}" readonly />
+									</c:if>
+									</td>
+							</tr>
+							<tr>
+								<th class="pl-4" colspan="2" style="text-align: left;">
+									1. 연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 잔여 연차에 한하여 사용함을 원칙으로 한다.
+									<br>단, 최초 입사시에는 근로 기준법에 따라 발생 예정된 연차를 차용하여 월 1회 사용 할 수 있다.
+									<br>2. 경조사 휴가는 행사일을 증명할 수 있는 가족 관계 증명서 또는 등본, 청첩장 등 제출
+									<br>3. 공가(예비군/민방위)는 사전에 통지서를, 사후에 참석증을 반드시 제출
+								</th>
+							</tr>
+						</tbody>
+					</table>
+				</c:if>
+				
+				
+				<c:if test="${requestScope.documentType == '연장근무신청서'}">
+					<input type="hidden" name="documentType" value="연장근무신청서" />
+					<table class="mt-5" style="width: 100%">
+						<tbody>
+							<tr>
+								<th>제목</th>
+								<td><input type="text" name="subject" value=" " style="width: 100%;"/></td>
+							</tr>
+							<tr>
+								<th>사유</th>
+								<td><input type="text" name="reason" value=" " style="width: 100%;"/></td>
+							</tr>
+							<tr>
+								<th>연장 근무 일자</th>
+								<td>
+									<input type="date" name="overtimeDate" onchange="check_weekend()" onkeydown="return false" />
+									<span id="check_weekend" class="alert"></span>
+								</td>
+							</tr>
+							<tr>
+								<th>연장 근무 시간</th>
+								<td>
+									<input type="text" name="totalAmount" value="3시간" style="width: 100%;" readonly />
+								</td>
+							</tr>
+							<tr>
+								<th class="pl-4" colspan="2" style="text-align: left;">
+									1. 연장 근무는 3시간을 규정으로 한다.
+									<br>2. 연장 근무 신청은 반드시 퇴근 시간 이전에 이루어져야 한다. 
+								</th>
+							</tr>
+						</tbody>
+					</table>
+				</c:if>
+				
+				
+				<c:if test="${requestScope.documentType == '연장근무신청서'}">
+					<input type="hidden" name="documentType" value="연장근무신청서" />
+					<table class="mt-5" style="width: 100%">
+						<tbody>
+							<tr>
+								<th>제목</th>
+								<td><input type="text" name="subject" value=" " style="width: 100%;"/></td>
+							</tr>
+							<tr>
+								<th>사유</th>
+								<td><input type="text" name="reason" value=" " style="width: 100%;"/></td>
+							</tr>
+							<tr>
+								<th>연장 근무 일자</th>
+								<td>
+									<input type="date" name="overtimeDate" onchange="check_weekend()" onkeydown="return false" />
+									<span id="check_weekend" class="alert"></span>
+								</td>
+							</tr>
+							<tr>
+								<th>연장 근무 시간</th>
+								<td>
+									<input type="text" name="totalAmount" value="3시간" style="width: 100%;" readonly />
+								</td>
+							</tr>
+							<tr>
+								<th class="pl-4" colspan="2" style="text-align: left;">
+									1. 연장 근무는 3시간을 규정으로 한다.
+									<br>2. 연장 근무 신청은 반드시 퇴근 시간 이전에 이루어져야 한다. 
+								</th>
+							</tr>
+						</tbody>
+					</table>
+				</c:if>
 			</div>
 		</form>
 	</div>
