@@ -563,8 +563,22 @@ public class ReservationController {
 	}
 	
 	
-	
-	
+	////////////////////////////////////////////////////////////// 캘린더에서 예약기능
+	@GetMapping("selectReservation")
+	@ResponseBody
+	public List<Map<String, String>> selectReservation(@RequestParam String startdate, @RequestParam String enddate){
+		
+		// System.out.println("확인용 startdate : "+startdate);
+		// System.out.println("확인용 enddate : "+enddate);
+		
+		Map<String, String> map = new HashMap<>();
+		map.put("startdate", startdate);
+		map.put("enddate", enddate);
+		
+		List<Map<String, String>> list = service.selectReservationCal(map);
+		
+		return list;
+	}
 	
 	
 	

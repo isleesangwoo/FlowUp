@@ -80,6 +80,9 @@ public interface ReservationDAO {
 	// 예약하기에 앞서 해당 일자에 예약한 건이 있는지 확인
 	int selectReservation(AssetReservationVO assetreservationvo);
 
+	// 캘린더에서 예약기능
+	List<Map<String, String>> selectReservationCal(Map<String, String> map);
+
 	
 
 }

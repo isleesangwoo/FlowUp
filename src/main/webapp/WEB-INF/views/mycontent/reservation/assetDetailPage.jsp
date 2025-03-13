@@ -138,34 +138,34 @@
 	
 	
 	<div id="assetModalBg2" class="modal_bg"></div>
-				<div id="assetModal2" class="modal_containerAssetFix">
-					<div>
-						<label class="assetNameTitle">ID값</label><span class="fixNo"></span>
-					</div>
-					
-					<div>
-						<label class="assetNameTitle">항목명</label><span class="assetName"></span>
-					</div>
-					
-					<table class="baseTable" style="margin-top:12px;">
-						<thead>
-							<tr>
-								<th>비품명</th>
-								<th>유무 상태</th>
-							</tr>
-						</thead>
-						<tbody class="informationTitleAppend">
-							<!-- 여기는 추가된 항목들 목록 -->
-							
-							<!-- 여기는 추가된 항목들 목록 -->
-						</tbody>
-					</table>
-					
-					
-					<div class="bottom_btn_box">
-						<button class="okBtn" id="CloseInfo">확인</button>
-					</div>
-				</div>
+	<div id="assetModal2" class="modal_containerAssetFix">
+		<div>
+			<label class="assetNameTitle">ID값</label><span class="fixNo"></span>
+		</div>
+		
+		<div>
+			<label class="assetNameTitle">항목명</label><span class="assetName"></span>
+		</div>
+		
+		<table class="baseTable" style="margin-top:12px;">
+			<thead>
+				<tr>
+					<th>비품명</th>
+					<th>유무 상태</th>
+				</tr>
+			</thead>
+			<tbody class="informationTitleAppend">
+				<!-- 여기는 추가된 항목들 목록 -->
+				
+				<!-- 여기는 추가된 항목들 목록 -->
+			</tbody>
+		</table>
+		
+		
+		<div class="bottom_btn_box">
+			<button class="okBtn" id="CloseInfo">확인</button>
+		</div>
+	</div>
 	
 	
 	
