@@ -24,6 +24,9 @@ public class ChattingMongoOperations {
 	public void insertMessage(Mongo_messageVO dto) throws Exception {
 		System.out.println("~~~~ 확인용 insertMessage 호출함. ");
 		
+//		System.out.println(dto.get_id());
+//		System.out.println(dto.getMessage());
+//		System.out.println(dto.getName());		
 		try {
 			/* 
 			    System.out.println("_id : " + dto.get_id() +  "\n"
@@ -58,6 +61,7 @@ public class ChattingMongoOperations {
 	         query.with(Sort.by(Sort.Direction.ASC, "_id"));   // "_id" 라는 컬럼을 기준으로 오름차순 정렬
 	         
 	         list = mongo.find(query, Mongo_messageVO.class);
+	         System.out.println("list 사이즈 : " + list.size());
 	      } catch(Exception e) {
 	         e.printStackTrace();
 	      }

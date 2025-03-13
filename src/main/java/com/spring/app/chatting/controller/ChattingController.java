@@ -17,7 +17,7 @@ public class ChattingController {
 		
 		
 		
-		return "mycontent1/chatting/multichat";
+		return "mycontent/chatting/multichat";
 	}
 
 }

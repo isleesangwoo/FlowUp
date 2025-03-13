@@ -19,7 +19,7 @@ public class WebSocketConfiguration implements WebSocketConfigurer {
 	
 	@Override
 	public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-		registry.addHandler(websocketEchoHandler, "/chatting/multichat").setAllowedOrigins("*").addInterceptors(new HttpSessionHandshakeInterceptor());
+		registry.addHandler(websocketEchoHandler, "/chatting/multichatstart").setAllowedOrigins("*").addInterceptors(new HttpSessionHandshakeInterceptor());
 		// WebSocketConfigurer 를 구현한 WebSocketConfiguration 클래스에서 사용할 handler 클래스와 URL 경로를 설정해준다.
 		// .setAllowedOrigins("*")는 ws프로토콜 /chatting/multichatstart 하위의 모든 uri에서 websocketEchoHandler 를 사용한다는 의미이다.
 		// addInterceptors(new HttpSessionHandshakeInterceptor()) 는 WebsocketEchoHandler websocketEchoHandler 에 접근하기 전에 

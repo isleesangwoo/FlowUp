@@ -166,6 +166,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
         if(list != null && list.size() > 0) { // 이전에 나누었던 대화내용이 있더라면
         	for(int i=0; i<list.size(); i++) {
         		
+        		System.out.println("확인용" + list.get(i).getCreated());
         		String str_created = sdfrmt.format(list.get(i).getCreated()); // 대화내용을 나누었던 날짜를 
         		
         		
@@ -271,6 +272,8 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 			클라이언트가 보내준 메시지는 JSON 형태를 뛴 문자열(String) 이므로 이 문자열을 Gson을 사용하여 MessageVO 형태의 객체로 변환시켜서 가져온다.
 		*/
 		
+		System.out.println("messageVO.getMessage(): "+messageVO.getMessage());
+		
 	//	System.out.println("~~~ 확인용 messageVO.getMessage() => " + messageVO.getMessage());
 		// ~~~ 확인용 messageVO.getMessage() => 채팅방에 <span style='color: red;'>입장</span> 했습니다.
 		
@@ -320,7 +323,7 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 		
 		// ==================== 몽고DB 시작 ====================
 		
-		chattingMongo.insertMessage(dto);
+//		chattingMongo.insertMessage(dto);
 		
 		// === 상대방에게 대화한 내용을 위에서 보여준 후, 채팅할 대상이 "전체" 인 공개대화에 대해서만 몽고DB에 저장하도록 한다. 귓속말은 몽고DB에 저장하지 않도록 한다. === // 
         if("all".equals(messageVO.getType())) {

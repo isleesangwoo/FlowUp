@@ -4,7 +4,8 @@
 
 <%-- #웹채팅관련4 --%>
 
-<%-- <jsp:include page = "../../header/header1.jsp" /> --%>
+<jsp:include page="../../header/header.jsp" />
+
 
 <script type="text/javascript">
 
@@ -34,7 +35,7 @@
 */
 $(document).ready(function(){
    
-   $("div#mycontent").css({"background-color" : "#cce0ff"});
+   $("div#mycontent").css({"background-color" : "#eff4fc"});
    // div#"mycontainer" 는 header1.jsp 에 있는 div 의 style 을 수정한 것이다.
    
    const url = window.location.host;   // 웹브라우저의 주소창의 포트까지 가져옴.
@@ -51,6 +52,7 @@ $(document).ready(function(){
    
    const wsUrl = "ws://"+root+"/multichatstart";
    // 웹소켓통신을 하기위해서는 http:// 을 사용하는 것이 아니라 ws:// 을 사용해야 한다. 
+//   alert("wsUrl"+ wsUrl);
    
    const websocket = new WebSocket(wsUrl);
    // 즉, const websocket = new WebSocket("ws://"+root+"/multichatstart") 이다.
@@ -144,6 +146,7 @@ $(document).ready(function(){
          
          let messageVal = $("input#message").val();
          messageVal = messageVal.replace(/<script/gi, "&lt;script"); 
+         
          // 스크립트 공격을 막으려고 한 것임.
             
             <%-- 
@@ -162,7 +165,9 @@ $(document).ready(function(){
             messageObj.type = "one";   // 귓속말
             messageObj.to = to;         // 귓속말(비밀대화)를 나눌 특정 웹소켓
          }
-            
+         
+         alert(JSON.stringify(messageObj));
+         
          websocket.send(JSON.stringify(messageObj));
          // JSON.stringify() 는 값을 그 값을 나타내는 JSON 표기법의 문자열로 변환한다
          
@@ -281,4 +286,4 @@ $(document).ready(function(){
    </div>
 </div> 
 
-<%-- <jsp:include page="../../footer/footer1.jsp" /> --%>
+<jsp:include page="../../footer/footer.jsp" /> 
