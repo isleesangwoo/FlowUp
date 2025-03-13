@@ -91,17 +91,12 @@ $(document).ready(()=>{
 	   });
    });
    
-}) // end of $(document).ready(()=>{})---------
-
-/*
-// Function Declaration
-function goView(mailNo) {
-	
-	const frm = document.goViewFrm;
-    frm.mailNo.value = mailNo;
-    frm.goBackURL.value = goBackURL;
    
-    frm.method = "get";
-    frm.action = ctxPath + "/mail/viewMail";
-    frm.submit();
-}*/
+   // 모든 메일함 링크에 공통 이벤트 적용
+   $(".mail_menu_container a").on("click", function(e) {
+       e.preventDefault();
+       const mailbox = $(this).closest("li").attr("id");
+       loadMailList(mailbox, 1, 20);
+   });
+   
+}) // end of $(document).ready(()=>{})---------

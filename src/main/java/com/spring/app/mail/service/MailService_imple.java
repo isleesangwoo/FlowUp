@@ -7,8 +7,8 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.mail.domain.MailFileVO;
 import com.spring.app.mail.domain.MailVO;
 import com.spring.app.mail.model.MailDAO;
@@ -210,8 +210,71 @@ public class MailService_imple implements MailService {
 	}
 
 
-	
+    // 메일 작성 기능 구현
+	@Override
+	@Transactional
+	public void sendMail(MailVO mail, List<Map<String, Object>> referencedList, List<Map<String, Object>> fileList) {
+	    // 1. 메일 정보 저장
+	    mailDAO.insertMail(mail);
+	    String mailNo = mail.getMailNo(); // 생성된 메일 번호
 
+	    // 2. 참조자 정보 저장 (Map 사용)
+	    for (Map<String, Object> referencedMap : referencedList) {
+	        referencedMap.put("fk_mailNo", mailNo); // 메일 번호 추가
+	        referencedMap.put("fk_adrsBNo", 1); // 주소록 고유번호
+	        mailDAO.insertReferenced(referencedMap);
+	    }
+
+	    // 3. 첨부 파일 정보 저장
+	    for (Map<String, Object> fileMap : fileList) {
+	        fileMap.put("fk_mailNo", mail.getMailNo()); // 메일 번호 설정
+	        mailDAO.insertMailFile(fileMap);
+	    }
+	    
+	}
+
+
+    // 메일 작성
+    @Override
+    @Transactional
+    public void insertMail(MailVO mail) {
+        // 메일 정보를 데이터베이스에 저장
+        mailDAO.insertMail(mail);
+    }
+
+    // 참조자 정보 저장
+    @Override
+    public void insertReferenced(Map<String, Object> referencedMap) {
+    	mailDAO.insertReferenced(referencedMap);
+    }
+
+    // 첨부파이 정보 저장
+    @Override
+    @Transactional
+    public void insertMailFile(Map<String, Object> mailFileMap) {
+        mailDAO.insertMailFile(mailFileMap);
+    }
+
+
+    
+    // 이름으로 employeeNo 조회
+	@Override
+	public String findEmployeeNoByName(String name) {
+		
+        return mailDAO.findEmployeeNoByName(name);
+	}
+
+	// 보낸 메일함 조회
+    @Override
+    public List<MailVO> selectSentMail(Map<String, String> paraMap) {
+        return mailDAO.selectSentMail(paraMap);
+    }
+
+    // 보낸 메일함 개수 조회
+    @Override
+    public int getSentMailCount(String senderNo) {
+        return mailDAO.getSentMailCount(senderNo);
+    }
 
 	
 }
