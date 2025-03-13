@@ -65,6 +65,8 @@ public interface CommuteDAO {
 
 	List<Map<String, String>> getMySalaryInfo(Map<String, String> paraMap);
 
+	int changeAddAnnual(Map<String, String> paraMap);
+
 
 
 }

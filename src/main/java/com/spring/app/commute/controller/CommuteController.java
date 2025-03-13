@@ -42,46 +42,35 @@ public class CommuteController {
 	private CommuteService service;
 
 	@GetMapping("")
-	public ModelAndView commute(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+	public ModelAndView commute(HttpServletRequest request, ModelAndView mav) {
 		
-
-		HttpSession session = request.getSession();
-
-		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		String referer = request.getHeader("referer");
 		
-		if (loginuser == null) {
-
-			mav.setViewName("mycontent/employee/login");
-
-		}
-		else {
-		
-			mav.setViewName("mycontent/commute/commute");
-			
+		if(referer == null) {
+			mav.addObject("message", "비정상적인 접근입니다.");
+			mav.addObject("loc", request.getContextPath()+"/index");
+			mav.setViewName("msg");
+			return mav;
 		}
 		
+		mav.setViewName("mycontent/commute/commute");
+
 		return mav;
 	}
 	
 	@GetMapping("getDeptname")
 	@ResponseBody
 	public List<DepartmentVO> getDeptname() {
-		
+
 		List<DepartmentVO> dvoList = service.getDepInfo(); // 모든 부서 리스트 조회
-		
+
 		return dvoList;
 	}
-	
-	
-	
-	
-	
-	
 	
 	// 오늘자 근태 조회
 	@GetMapping("getTodayWorkInfo")
 	@ResponseBody
-	public Map<String, Object> getTodayWorkInfo(HttpServletRequest request, HttpServletResponse response, @RequestParam String fk_employeeNo) {
+	public Map<String, Object> getTodayWorkInfo(@RequestParam String fk_employeeNo) {
 	
 		Map<String, Object> map = new HashMap<>();
 		
@@ -160,7 +149,7 @@ public class CommuteController {
 	// 출근 클릭시
 	@PostMapping("workStart")
 	@ResponseBody
-	public Map<String, Object> workStart(HttpServletRequest request, HttpServletResponse response, @RequestParam String fk_employeeNo) {
+	public Map<String, Object> workStart(@RequestParam String fk_employeeNo) {
 		
 		int n = 0; // 0:에러, 1:성공
 		
@@ -190,7 +179,7 @@ public class CommuteController {
 	// 퇴근 클릭시
 	@PostMapping("workEnd")
 	@ResponseBody
-	public Map<String, Object> workEnd(HttpServletRequest request, HttpServletResponse response, @RequestParam String fk_employeeNo) {
+	public Map<String, Object> workEnd(@RequestParam String fk_employeeNo) {
 
 		System.out.println("퇴근 클릭 ~ ");
 		
@@ -216,7 +205,7 @@ public class CommuteController {
 	// 근무 상태 변경
 	@PostMapping("statusChange")
 	@ResponseBody
-	public Map<String, Integer> statusChange(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, String> paramap) {
+	public Map<String, Integer> statusChange(@RequestParam Map<String, String> paramap) {
 		
 		int n = 0;
 		
@@ -252,10 +241,11 @@ public class CommuteController {
 	
 	// 엑셀 다운로드
 	@PostMapping("downloadExcel")
-	public String downloadExcelFile(@RequestParam(defaultValue = "") String year_month, @RequestParam(defaultValue = "") String fk_employeeNo, Model model) {
-
-		if(fk_employeeNo != null || year_month != null ) {
-			
+	public String downloadExcelFile(HttpServletRequest request, @RequestParam(defaultValue = "") String year_month, @RequestParam(defaultValue = "") String fk_employeeNo, Model model) {
+	
+		String referer = request.getHeader("referer");
+		
+		if(fk_employeeNo != null || year_month != null || referer != null ) {
 			
 			Map<String,String> map = service.getEmployeeInfo(fk_employeeNo);
 			
@@ -279,35 +269,37 @@ public class CommuteController {
 	@GetMapping("myAnnual")
 	public ModelAndView myAnnual(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
+		String referer = request.getHeader("referer");
+		
+		if(referer == null) {
+			mav.addObject("message", "비정상적인 접근입니다.");
+			mav.addObject("loc", request.getContextPath()+"/index");
+			mav.setViewName("msg");
+			return mav;
+		}
+		
 		HttpSession session = request.getSession();
 
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
-		
-		if (loginuser == null) {
-			mav.setViewName("mycontent/employee/login");
-		}
-		else {
-			LocalDate now = LocalDate.now();
-			int n_year = now.getYear();
-			String year = ""+n_year;
-			
-			String fk_employeeNo = loginuser.getEmployeeNo();
-			
-			
-			Map<String,String> map = service.getEmployeeInfo(fk_employeeNo);
-			
-			Map<String, String> paramap = new HashMap<>();
-			paramap.put("year", year);
-			paramap.put("fk_employeeNo", fk_employeeNo);
-			
-			AnnualVO avo = service.getAnnualInfo(paramap);
-			
-			mav.addObject("map", map);
-			mav.addObject("avo", avo);
-			mav.setViewName("mycontent/commute/myAnnual");
-			
-		}
-		
+
+		LocalDate now = LocalDate.now();
+		int n_year = now.getYear();
+		String year = "" + n_year;
+
+		String fk_employeeNo = loginuser.getEmployeeNo();
+
+		Map<String, String> map = service.getEmployeeInfo(fk_employeeNo);
+
+		Map<String, String> paramap = new HashMap<>();
+		paramap.put("year", year);
+		paramap.put("fk_employeeNo", fk_employeeNo);
+
+		AnnualVO avo = service.getAnnualInfo(paramap);
+
+		mav.addObject("map", map);
+		mav.addObject("avo", avo);
+		mav.setViewName("mycontent/commute/myAnnual");
+
 		return mav;
 	}
 		
@@ -334,9 +326,16 @@ public class CommuteController {
 		
 	
 	@GetMapping("commuteTable")
-	public ModelAndView commuteTable(HttpServletRequest request
-								   , HttpServletResponse response
-								   , ModelAndView mav) {
+	public ModelAndView commuteTable(HttpServletRequest request, ModelAndView mav) {
+		
+		String referer = request.getHeader("referer");
+		
+		if(referer == null) {
+			mav.addObject("message", "비정상적인 접근입니다.");
+			mav.addObject("loc", request.getContextPath()+"/index");
+			mav.setViewName("msg");
+			return mav;
+		}
 		
 		String departmentNo = request.getParameter("departmentNo");
 		
@@ -502,8 +501,16 @@ public class CommuteController {
 	@GetMapping("annualInfo")
 	public ModelAndView annualInfo(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
-		mav.setViewName("mycontent/commute/annualInfo");
+		String referer = request.getHeader("referer");
 		
+		if(referer == null) {
+			mav.addObject("message", "비정상적인 접근입니다.");
+			mav.addObject("loc", request.getContextPath()+"/index");
+			mav.setViewName("msg");
+			return mav;
+		}
+		
+		mav.setViewName("mycontent/commute/annualInfo");
 		mav.addObject("currentShowPageNo", "1");
 		
 		return mav;
@@ -611,24 +618,28 @@ public class CommuteController {
 	
 	// 내 연차 조회 및 페이지 이동
 	@GetMapping("mySalary")
-	public ModelAndView mySalary(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+	public ModelAndView mySalary(HttpServletRequest request, ModelAndView mav) {
 
+		String referer = request.getHeader("referer");
+		
+		if(referer == null) {
+			mav.addObject("message", "비정상적인 접근입니다.");
+			mav.addObject("loc", request.getContextPath()+"/index");
+			mav.setViewName("msg");
+			return mav;
+		}
+		
 		HttpSession session = request.getSession();
 
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 
-		if (loginuser == null) {
-			mav.setViewName("mycontent/employee/login");
-		} else {
-
-			String employeeNo = loginuser.getEmployeeNo();
-
-			Map<String, String> map = service.getMyinfo(employeeNo);
+		String employeeNo = loginuser.getEmployeeNo();
 			
-			mav.addObject("map", map);
-			mav.setViewName("mycontent/commute/mySalary");
-
-		}
+		Map<String, String> map = service.getMyinfo(employeeNo);
+			
+		mav.addObject("currentShowPageNo", "1");
+		mav.addObject("map", map);
+		mav.setViewName("mycontent/commute/mySalary");
 
 		return mav;
 	}
@@ -650,17 +661,6 @@ public class CommuteController {
 			currentShowPageNo = paraMap.get("currentShowPageNo");
 		}
 		
-		if(!"name".equals(paraMap.get("searchType")) ) {
-			paraMap.put("searchType", "");
-		}
-		
-		if(paraMap.get("searchWord").trim() == null) {
-			paraMap.put("searchWord", "");
-		}
-		else {
-			paraMap.put("searchWord", paraMap.get("searchWord").trim());
-		}
-
 		if(paraMap.get("sizePerPage") != null ) {
 			sizePerPage = Integer.parseInt(paraMap.get("sizePerPage"));
 		}
@@ -733,7 +733,17 @@ public class CommuteController {
 		return jsonMap;
 	}
 	
-	
+	@GetMapping("changeAddAnnual")
+	@ResponseBody
+	public Map<String, Integer> changeAddAnnual(@RequestParam Map<String, String> paraMap) {
+		
+		int n = service.changeAddAnnual(paraMap);
+		
+		Map<String, Integer> map = new HashMap<>();
+		map.put("n", n);
+		
+		return map;
+	}
 	
 	
 	

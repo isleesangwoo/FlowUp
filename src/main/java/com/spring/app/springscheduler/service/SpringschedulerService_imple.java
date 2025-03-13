@@ -3,6 +3,7 @@ package com.spring.app.springscheduler.service;
 
 import java.sql.SQLException;
 import java.text.Format;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
@@ -10,8 +11,10 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,34 +63,38 @@ public class SpringschedulerService_imple implements SpringschedulerService {
 		
 	}// end of scheduler_endtime_update()
 	
+//	@Scheduled(cron = "0 * * * * *")// 테스트용
 	@Scheduled(cron = "00 00 01 * * *")
 	@Override
 	public void scheduler_absenceCnt_insert() { // 무단결근 insert
 		
-		Calendar cal = Calendar.getInstance();
-		cal.add(cal.DATE, -1); //날짜를 하루 뺀다.
 		
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-mm-dd");
-		String yesterday = sdf.format(cal.getTime());
-		
-		// 어제 누군가 출근 했다면 평일 이라고 가정
-		int n = dao.scheduler_yesterday_workYN(yesterday);
-		
-		if(n > 0) {
+			// 어제 누군가 출근 했다면 평일 이라고 가정
+			int n = dao.scheduler_yesterday_workYN();
 			
-			// 재직중인 모든 직원 리스트
-			List<String> employeeList = dao.scheduler_getEmployeeList(yesterday);
+			System.out.println("n : " + n);
 			
-			for(String employeeNo : employeeList) {
+			
+			if(n > 0) {
 				
-				try {
-				// 어제자 결근 insert 
-				dao.scheduler_absence_insert(employeeNo); // 어제자 전직원 insert (사번+날짜 복합UQ로 인해 출근한 사람은 insert되지않는다.)
+				// 재직중인 모든 직원 리스트
+				List<String> employeeList = dao.scheduler_getEmployeeList();
+				
+				for(String employeeNo : employeeList) {
+					
+					System.out.println("employeeNo : " + employeeNo );
+					
+					try {
+					// 어제자 결근 insert 
+					dao.scheduler_absence_insert(employeeNo); // 어제자 전직원 insert (사번+날짜 복합UQ로 인해 출근한 사람은 insert되지않는다.)
+					}
+					catch (Exception e) {
+						System.out.println( "insert가 UQ 중복으로 안됌" );
+					}
+					
 				}
-				catch (SQLException e) {}
-				
 			}
-		}
+
 		
 	}// end of scheduler_endtime_update()
 	
@@ -173,6 +180,10 @@ public class SpringschedulerService_imple implements SpringschedulerService {
 			 * System.out.println("monthSalary : "+empAnnaulMap.get("monthSalary"));
 			 * System.out.println("overtimePay : "+overtimePay);
 			 */
+			
+			String workRange = dao.getWorkRange(empAnnaulMap);
+			empAnnaulMap.put("workRange", workRange);
+			
 			
 			dao.scheduler_monthly_payment_insert(empAnnaulMap);
 			
