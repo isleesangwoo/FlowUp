@@ -636,6 +636,12 @@ public class CommuteService_imple implements CommuteService {
 		List<Map<String, String>> mapList = dao.getMySalaryInfo(paraMap);
 		return mapList;
 	}
+
+	@Override
+	public int changeAddAnnual(Map<String, String> paraMap) {
+		int n = dao.changeAddAnnual(paraMap);
+		return n;
+	}
 	
 	
 	

@@ -81,6 +81,9 @@ public interface CommuteService {
 	// 지급내역 리스트
 	List<Map<String, String>> getMySalaryInfo(Map<String, String> paraMap);
 
+	// 연차 조정 uppdate
+	int changeAddAnnual(Map<String, String> paraMap);
+
 
 
 	

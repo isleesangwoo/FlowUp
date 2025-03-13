@@ -9,27 +9,27 @@
    	<select id="getTodayWorkInfo" parameterType="String" resultType="CommuteVO">
    		select commuteNo, FK_employeeNo, nvl(to_char(startTime, 'yyyy-mm-dd hh24:mi:ss'), '-') as startTime, nvl(to_char(endTime, 'yyyy-mm-dd hh24:mi:ss'), '-') as endTime, status, rest, overTimeYN
    		from tbl_commute
-   		where fk_employeeNo = #{fk_employeeNo} and (starttime BETWEEN trunc(sysdate) and trunc(sysdate)+0.9999)
+   		where fk_employeeNo = to_number(#{fk_employeeNo}) and (starttime BETWEEN trunc(sysdate) and trunc(sysdate)+0.9999)
    	</select>
    
    	<insert id="insertWorkStart" parameterType="String">
    		insert into tbl_commute(commuteNo, FK_employeeNo, startTime, status, rest, overTimeYN)
-   		values(commuteSeq.nextval, #{fk_employeeNo}, sysdate, 2, 0, 0)
+   		values(commuteSeq.nextval, to_number(#{fk_employeeNo}), sysdate, 2, 0, 0)
    	</insert>
    	
    	<update id="updateStartTime" parameterType="String">
    		update tbl_commute set startTime = sysdate, status = 2
-   		where fk_employeeNo = #{fk_employeeNo} and (starttime BETWEEN trunc(sysdate) and trunc(sysdate)+0.9999)
+   		where fk_employeeNo = to_number(#{fk_employeeNo}) and (starttime BETWEEN trunc(sysdate) and trunc(sysdate)+0.9999)
    	</update>
    	
    	<update id="updateEndTime" parameterType="String">
    		update tbl_commute set endTime = sysdate, status = 6
-   		where fk_employeeNo = #{fk_employeeNo} and (starttime BETWEEN trunc(sysdate) and trunc(sysdate)+0.9999)
+   		where fk_employeeNo = to_number(#{fk_employeeNo}) and (starttime BETWEEN trunc(sysdate) and trunc(sysdate)+0.9999)
    	</update>
    	
    	<update id="statusChange" parameterType="HashMap">
    		update tbl_commute set status = #{status}
-   		where fk_employeeNo = #{fk_employeeNo} and (starttime BETWEEN trunc(sysdate) and trunc(sysdate)+0.9999)
+   		where fk_employeeNo = to_number(#{fk_employeeNo}) and (starttime BETWEEN trunc(sysdate) and trunc(sysdate)+0.9999)
    	</update>
    	
    	<resultMap type="HashMap" id="ThisWeekWorkTimeMap">
@@ -38,7 +38,7 @@
    	<select id="getThisWeekWorkTime" parameterType="String" resultMap="ThisWeekWorkTimeMap">
 	   		select to_char( nvl( round(endTime - startTime , 8), 0) ) as workTime
 			from tbl_commute
-			where fk_employeeNo = #{fk_employeeNo}
+			where fk_employeeNo = to_number(#{fk_employeeNo})
 			and to_char(starttime,'w') = to_char(SYSDATE,'w')
         	and to_char(starttime,'yyyymm') = to_char(SYSDATE,'yyyymm')
    	</select>
@@ -55,7 +55,7 @@
    	<select id="getMontWorkInfo" parameterType="HashMap" resultMap="getMontWorkInfoMap">
    		select nvl(to_char(startTime, 'yyyy-mm-dd hh24:mi'), '-') as startTime, nvl(to_char(endTime, 'yyyy-mm-dd hh24:mi'), '-') as endTime
    		from tbl_commute
-   		where fk_employeeNo = #{fk_employeeNo} 
+   		where fk_employeeNo = to_number(#{fk_employeeNo})
    		and (starttime BETWEEN to_date(#{selectMonth}, 'yyyy-mm-dd') and add_months(to_date(#{selectMonth}, 'yyyy-mm-dd'), 1)-0.00001)
    	</select>   	
    	
@@ -67,7 +67,7 @@
    		select to_char(trunc(starttime) , 'w') as weekNo
 		     , sum(nvl((endtime - starttime), 0) * 24 * 60 * 60) as worktime_sec
 		from tbl_commute
-		where fk_employeeno = ${fk_employeeNo}
+		where fk_employeeno = to_number(${fk_employeeNo})
 		and to_char(starttime, 'yyyymm') = ${year_month}
 		group by to_char(trunc(starttime) , 'w') 	
 		order by 1
@@ -96,7 +96,7 @@
 		         , endtime
 		         , rest
 		    FROM tbl_commute
-		    WHERE fk_employeeno = #{fk_employeeNo}
+		    WHERE fk_employeeno = to_number(#{fk_employeeNo})
 		          and to_char(starttime, 'yyyy-mm') = #{year_month}
 		)a 
 		right join
@@ -118,20 +118,20 @@
    		select P.positionName as positionName, name
    		from tbl_employee E join tbl_position P
    		on E.FK_positionNo = P.positionNo
-   		where employeeNo = #{fk_employeeNo}
+   		where employeeNo = to_number(#{fk_employeeNo})
    	</select>
    	
    	<select id="getAnnualInfo" parameterType="HashMap" resultType="AnnualVO">
    		select annualNo, year, occurAnnual, overAnnual, addAnnual
    		from tbl_annual
-   		where fk_employeeNo = #{fk_employeeNo} and year = #{year}
+   		where fk_employeeNo = to_number(#{fk_employeeNo}) and year = #{year}
    	</select>
    	
    	<select id="getUsedAnnual" parameterType="HashMap" resultType="String">
    		select sum(useamount) as usedAnnual
 		from tbl_document D join tbl_draft_annual A
 		on D.DOCUMENTNO = A.DOCUMENTNO
-		where fk_employeeno = #{fk_employeeNo}
+		where fk_employeeno = to_number(#{fk_employeeNo})
 		and to_char(startdate, 'yyyy') = #{year}
 		and D.status = 1
 		group by to_char(startdate, 'yyyy')
@@ -146,7 +146,7 @@
    		select to_char(startdate, 'mm/dd')|| ' - ' ||to_char(enddate, 'mm/dd') as userange, useamount, reason
 		from tbl_document D join tbl_draft_annual A
 		on D.DOCUMENTNO = A.DOCUMENTNO
-		where D.fk_employeeno = #{fk_employeeNo}
+		where D.fk_employeeno = to_number(#{fk_employeeNo})
 		and to_char(startdate, 'yyyy') = #{year}
 		and D.status = 1
 		order by startdate asc 
@@ -155,14 +155,14 @@
    	<select id="getWorkYear" parameterType="String" resultType="String">
    		select year
    		from tbl_annual
-   		where fk_employeeNo = #{fk_employeeNo}
+   		where fk_employeeNo = to_number(#{fk_employeeNo})
    		order by year desc
    	</select>
    	
    	<select id="getdeptInfo" parameterType="String" resultType="DepartmentVO">
    		select FK_managerNo, departmentName
    		from tbl_department
-   		where departmentNo = #{departmentNo}
+   		where departmentNo = to_number(#{departmentNo})
    	</select>
    	
    	<resultMap type="HashMap" id="getCommuteTableInfoMap">
@@ -218,7 +218,7 @@
 			) A Join tbl_department D
 			on A.FK_departmentNo = D.departmentNo
 			<if test="departmentNo != 'all'">
-				where departmentNo = #{departmentNo}
+				where departmentNo = to_number(#{departmentNo})
 			</if>
 			order by departmentName asc, name asc
 		)
@@ -231,7 +231,7 @@
 		from tbl_employee
 		where status = 1
 		<if test="departmentNo != 'all' and departmentNo != null">
-		and fk_departmentno = #{departmentNo}
+		and fk_departmentno = to_number(#{departmentNo})
 		</if>
 		<if test='searchType == "name" and searchWord != ""'>
 		and lower(name) like '%'||lower(#{searchWord})||'%' 
@@ -260,7 +260,7 @@
 		on C.fk_employeeNo = E.employeeNo
 		where substr(workdate, 0, 7) = #{year_month}
 		<if test="departmentNo != 'all'">
-			and E.fk_departmentNo = #{departmentNo}
+			and E.fk_departmentNo = to_number(#{departmentNo})
 		</if>
    	</select>
    	
@@ -269,6 +269,7 @@
    	
    	<resultMap type="HashMap" id="getAnnualTableInfoMap">
    		<result property="rno" 				column="rno" 			javaType="String" />
+   		<result property="employeeNo" 		column="employeeNo" 	javaType="String" />
    		<result property="name" 			column="name" 			javaType="String" />
    		<result property="departmentname" 	column="departmentname" javaType="String" />
    		<result property="registerDate" 	column="registerDate" 	javaType="String" />
@@ -281,7 +282,7 @@
    		<result property="remainingannual" 	column="remainingannual" javaType="String" />
    	</resultMap>
    	<select id="getAnnualTableInfo" parameterType="HashMap" resultMap="getAnnualTableInfoMap">
-   		select rno, name, departmentname, registerDate, workYear, occurAnnual, overAnnual, addAnnual, totalannual, usedannual, remainingannual
+   		select rno, name, departmentname, registerDate, workYear, occurAnnual, overAnnual, addAnnual, totalannual, usedannual, remainingannual, employeeNo
 	    from
 	    (
 	        select row_number() over(order by registerDate asc) as rno
@@ -295,6 +296,7 @@
 			     , nvl(occurAnnual, 0) + nvl(overAnnual, 0) + nvl(addAnnual, 0) as totalannual
 			     , nvl(usedannual, 0) as usedannual
 				 , nvl(occurAnnual, 0) + nvl(overAnnual, 0) + nvl(addAnnual, 0) - nvl(usedannual, 0) as remainingannual
+				 , employeeNo
 			from
 			(
 			select employeeNo
@@ -345,49 +347,99 @@
    	</select>
    	
    	<resultMap type="HashMap" id="getMyinfoMap">
-   		<result property="employeeName" 	column="employeeName" 	javaType="String" />
+   		<result property="name" 			column="name" 			javaType="String" />
    		<result property="salary" 			column="salary" 		javaType="String" />
    		<result property="departmentName" 	column="departmentName" javaType="String" />
    	</resultMap>
    	<select id="getMyinfo" parameterType="String" resultMap="getMyinfoMap">
-   		select employeeName, salary, departmentName
+   		select E.name, P.salary, D.departmentName
    		from tbl_employee E join tbl_department D
    		on E.fk_departmentNo = D.departmentNo
-   		where employeeNo = #{employeeNo}
+        join tbl_position P
+        on E.fk_positionNo = P.positionNo
+   		where E.employeeNo = to_number(#{employeeNo})
    	</select>
    	
    	<select id="totalCnt_mySalary" parameterType="HashMap">
    		select count(*) as cnt
    		from tbl_salary
-   		where fk_employeeno = #{employeeNo}
+   		where fk_employeeno = to_number(#{employeeNo})
    	</select>
-   	
-   	<resultMap type="HashMap" id="getMySalaryInfoMap">
-   		<result property="employeeName" 	column="employeeName" 	javaType="String" />
-   		<result property="salary" 			column="salary" 		javaType="String" />
-   		<result property="departmentName" 	column="departmentName" javaType="String" />
+ 
+ 	<resultMap type="HashMap" id="getMySalaryInfoMap">
+   		<result property="employeeNo" 	column="FK_EMPLOYEENO" 	javaType="String" />
+   		<result property="year_month" 		column="MONTH" 			javaType="String" />
+   		<result property="year" 			column="YEAR" 			javaType="String" />
+   		<result property="total_overtime" 	column="TOTAL_OVERTIME" javaType="String" />
+   		<result property="workRange" 		column="WORKRANGE" 		javaType="String" />
+   		<result property="monthSalary" 		column="MONTHSALARY" 	javaType="String" />
+   		<result property="overtimePay" 		column="OVERTIMEPAY" 	javaType="String" />
+   		<result property="incentive" 		column="INCENTIVE" 		javaType="String" />
+   		<result property="incentiveReason" 	column="INCENTIVEREASON" javaType="String" />
+   		<result property="paymentDate" 		column="PAYMENTDATE" 	javaType="String" />
+   		<result property="bank" 			column="BANK" 			javaType="String" />
+   		<result property="account" 			column="ACCOUNT" 		javaType="String" />
    	</resultMap>
    	<select id="getMySalaryInfo" parameterType="HashMap" resultMap="getMySalaryInfoMap">
-   		select case when    then (select to_char()  from tbl_employee where employeeNo = # )   end 
-   		
-   		
-   		
-   		
-   		
-   		|| - ||   
-   		
-   		
-   		
-   		as workrange
-   		
-   		
-   		
-   		from 
+   		select rno
+   		     , FK_EMPLOYEENO
+   		     , MONTH
+   		     , YEAR
+   		     , TOTAL_OVERTIME
+   		     , WORKRANGE
+   		     , MONTHSALARY
+   		     , OVERTIMEPAY
+   		     , INCENTIVE
+   		     , INCENTIVEREASON
+   		     , PAYMENTDATE
+   		     , BANK
+   		     , ACCOUNT
+	    from
+	    (
+	   		select row_number() over(order by MONTH asc) as rno, O.FK_EMPLOYEENO, MONTH, O.YEAR, TOTAL_OVERTIME, WORKRANGE, MONTHSALARY, OVERTIMEPAY, INCENTIVE, INCENTIVEREASON, to_char(PAYMENTDATE, 'yyyy-mm-dd') as PAYMENTDATE, BANK, ACCOUNT
+			from
+			(
+			WITH WEEKLY_WORK AS (
+			    SELECT
+			        FK_EMPLOYEENO,
+			        TO_CHAR(NEXT_DAY(TO_DATE(WORKDATE, 'YYYY-MM-DD') - 7, '일요일'), 'YYYY-IW') AS WEEK, 
+			        TO_CHAR(TO_DATE(WORKDATE, 'YYYY-MM-DD'), 'YYYY/MM') AS MONTH,
+			        TO_CHAR(TO_DATE(WORKDATE, 'YYYY-MM-DD'), 'YYYY') AS YEAR, 
+			        SUM((ENDTIME - STARTTIME) * 24 * 60 * 60) AS WEEKLY_SECONDS
+			    FROM TBL_COMMUTE
+			    WHERE ENDTIME IS NOT NULL AND STARTTIME IS NOT NULL
+			    GROUP BY FK_EMPLOYEENO, TO_CHAR(NEXT_DAY(TO_DATE(WORKDATE, 'YYYY-MM-DD') - 7, '일요일'), 'YYYY-IW'), TO_CHAR(TO_DATE(WORKDATE, 'YYYY-MM-DD'), 'YYYY/MM'), TO_CHAR(TO_DATE(WORKDATE, 'YYYY-MM-DD'), 'YYYY')
+			),
+			OVERTIME_BY_WEEK AS (
+			    SELECT
+			        FK_EMPLOYEENO,
+			        MONTH,
+			        YEAR,
+			        CASE WHEN WEEKLY_SECONDS > 144000 THEN WEEKLY_SECONDS - 144000 ELSE 0 END AS OVERTIME_SECONDS
+			    FROM WEEKLY_WORK
+			)
+			SELECT
+			    FK_EMPLOYEENO,
+			    MONTH,
+			    YEAR,
+			    TO_CHAR(TRUNC(SUM(OVERTIME_SECONDS) / 3600), 'FM00') || ':' ||
+			    TO_CHAR(TRUNC(MOD(SUM(OVERTIME_SECONDS), 3600) / 60), 'FM00') || ':' ||
+			    TO_CHAR(MOD(SUM(OVERTIME_SECONDS), 60), 'FM00') AS TOTAL_OVERTIME
+			FROM OVERTIME_BY_WEEK
+			GROUP BY FK_EMPLOYEENO, MONTH, YEAR
+			ORDER BY MONTH
+			)O
+			right join tbl_salary S
+			on (O.FK_EMPLOYEENO || O.MONTH) = (S.FK_EMPLOYEENO || substr(S.workrange,1,7))
+			WHERE S.FK_EMPLOYEENO = to_number(#{employeeNo}) AND O.YEAR = to_number(#{year})
+		)
+	    WHERE rno between to_number(#{startRno}) and to_number(#{endRno})
    	</select>
    	
-   	
-   	
-   	
+   	<update id="changeAddAnnual" parameterType="HashMap" >
+   		update tbl_annual set addannual = (addannual + (to_number(#{addCnt})))
+   		where fk_employeeno = to_number(#{fk_employeeNo}) and year = to_char(sysdate, 'yyyy')
+   	</update>
    	
    	
 </mapper>

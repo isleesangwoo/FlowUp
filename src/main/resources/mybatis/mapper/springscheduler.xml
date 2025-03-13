@@ -25,7 +25,7 @@
 		where workDate = to_char(sysdate, 'yyyy-mm-dd')
 		and starttime is not null
 		and endtime > to_date( to_char(sysdate, 'yyyy-mm-dd')||' 18:00:00' , 'yyyy-mm-dd hh24:mi:ss')
-		and fk_employeeNo = ${fk_employeeNo}
+		and fk_employeeNo = to_number(${fk_employeeNo})
 	</update>
 	
 	<update id="scheduler_endtime_update_draft" parameterType="String">
@@ -33,7 +33,7 @@
 		where workDate = to_char(sysdate, 'yyyy-mm-dd')
 		and starttime is not null
 		and endtime > to_date( to_char(sysdate, 'yyyy-mm-dd')||' 21:00:00' , 'yyyy-mm-dd hh24:mi:ss')
-		and fk_employeeNo = ${fk_employeeNo}
+		and fk_employeeNo = to_number(${fk_employeeNo})
 	</update>
 
 	<resultMap type="HashMap" id="getEmpInfoMap">
@@ -77,25 +77,25 @@
 	
 	<insert id="insertAnnual" parameterType="HashMap">
 		insert into tbl_annual(annualNo, fk_employeeNo, year, occurAnnual, overAnnual, addAnnual)
-		values(annualseq.nextval, #{employeeNo}, to_char(to_number(to_char(sysdate, 'yyyy'))+1), #{occurAnnual}, #{overAnnual}, 0)
+		values(annualseq.nextval, to_number(#{employeeNo}), to_char(to_number(to_char(sysdate, 'yyyy'))+1), #{occurAnnual}, #{overAnnual}, 0)
 	</insert>
 	
 	<select id="scheduler_yesterday_workYN" parameterType="String" resultType="int">
 		select count(*)
 		from tbl_commute
-		where workdate = #{yesterday} 
+		where workdate = to_char(sysdate-1,'yyyy-mm-dd')
 		and starttime is not null
 	</select>
 	
-	<select id="scheduler_getEmployeeList" parameterType="String" resultType="String">
+	<select id="scheduler_getEmployeeList" resultType="String">
 		select employeeNo
 		from tbl_employee
-		where status = 1;
+		where status = 1
 	</select>
 	
 	<insert id="scheduler_absence_insert" parameterType="String">
-		insert into tbl_commute(commuteNo, FK_employeeNo, status, rest, overTimeYN, workdate)
-		values(commuteSeq.nextval, #{employeeNo}, 6, 4, 0, to_char(sysdate-1, 'yyyy-mm-dd') )
+		insert into tbl_commute(commuteNo, FK_employeeNo, status, rest, overTimeYN, workdate, starttime, endtime)
+		values(commuteSeq.nextval, to_number(#{employeeNo}), 6, 4, 0, to_char(sysdate-1, 'yyyy-mm-dd'), trunc(sysdate-1), trunc(sysdate-1))
 	</insert>
 	
 	<resultMap type="HashMap" id="getEmpAnnualInfoMap">
@@ -149,10 +149,19 @@
 		ORDER BY E.EMPLOYEENO
 	</select>
 		
+	<select id="getWorkRange">
+		select case when to_char(registerdate, 'yyyy-mm') = to_char(sysdate, 'yyyy-mm') 
+                    then to_char(registerdate, 'yyyy/mm/dd')||' - '||to_char(LAST_DAY(SYSDATE), 'yyyy/mm/dd')
+                    else TRUNC(SYSDATE, 'MM') ||'-'|| LAST_DAY(SYSDATE) end as workRange
+		from tbl_employee
+		where employeeno = to_number(#{employeeNo})
+	</select>
+		
 	<insert id="scheduler_monthly_payment_insert" parameterType="HashMap">
-		insert into tbl_salary(SALARYNO, FK_EMPLOYEENO, MONTHSALARY, OVERTIMEPAY, INCENTIVE, INCENTIVEREASON, PAYMENTDATE, BANK, ACCOUNT)
-		values(SALARYSEQ.nextval, #{employeeNo}, #{monthSalary} , #{overtimePay}, 0, ' ', SYSDATE, #{bank}, #{account})
+		insert into tbl_salary(SALARYNO, FK_EMPLOYEENO, MONTHSALARY, OVERTIMEPAY, INCENTIVE, INCENTIVEREASON, PAYMENTDATE, BANK, ACCOUNT, WORKRANGE)
+		values(SALARYSEQ.nextval, to_number(#{employeeNo}), to_number(#{monthSalary}), to_number(#{overtimePay}), 0, ' ', SYSDATE, #{bank}, #{account}, #{workRange})
 	</insert>
+	
 	
 	
 
