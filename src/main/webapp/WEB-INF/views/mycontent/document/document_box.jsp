@@ -7,6 +7,7 @@
    String ctxPath = request.getContextPath();
 %>
 
+
 <div id="right_title_box">
     <h1 id="doc_title"></h1>
 

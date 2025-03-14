@@ -16,14 +16,58 @@
 		
 		$("h1#doc_title").text("임시저장함");
 		$("span.doc_delete").show();
-		$("a.doc_search_btn").click(e=>{
-			alert("ddd");
+		
+		$("span.doc_delete").click(e=>{
+			
+			if($('input.document_check:checked').length == 0) {
+				alert("문서를 선택해주세요.")
+				return;
+			}
+			
+			let checked_arr = []
+			
+			$('input.document_check:checked').each(function(index, item){
+				checked_arr.push(item.value);
+			});
+			
+			
+			$.ajax({
+				url:"<%= ctxPath%>/document/deleteTempList",
+				dataType:"json",
+				traditional: true,
+				data:{"checked_arr":checked_arr},
+				success:function(json){
+					if(json.n > 0 ){
+						alert("삭제가 완료되었습니다.");
+						location.reload();
+					}
+				},
+				error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			});
 		});
+		
+		
+		$("input#check_all").click(e=>{
+			let checked = $(e.target).is(':checked');
+			
+			if(checked) {
+				$('input.document_check').prop('checked', true);
+			}
+			else {
+				$('input.document_check').prop('checked', false);
+			}
+		});
+		
+		$("div#jstreeView").load("<%=ctxPath%>/document/getOrganization");
+			
 		
 	}); // end of $(document).ready(function(){})-------------------------------------------------
 	
 </script>
-
+	
+	<div id="jstreeView"></div>
 	<div>
 		<table class="table">
 			<thead>
@@ -48,12 +92,12 @@
 					</th>
 				</tr>
 			</thead>
-			<tbody>
+			<tbody id="tempList">
 				<c:if test="${not empty requestScope.tempList}">
 					<c:forEach var="temp" items="${requestScope.tempList}">
 						<tr class="document" onclick="location.href='<%= ctxPath%>/document/documentView?documentNo=${temp.documentNo}&documentType=${temp.documentType}';">
 							<td>
-								<input type="checkbox" />
+								<input type="checkbox" class="document_check" value="${temp.documentNo}" onclick='event.cancelBubble=true;'/>
 							</td>
 							<td>
 								<span>${temp.draftDate}</span>

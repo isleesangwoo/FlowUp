@@ -237,6 +237,33 @@ public class DocumentService_imple implements DocumentService {
 	}
 
 
+	// 임시저장 문서 리스트 삭제하기
+	@Override
+	public int deleteTempList(List<String> checked_list) {
+		
+		int n = mapper_dao.deleteTempList(checked_list);
+		return n;
+	}
+
+
+	// 휴가신청서 잔여 연차 가져오기
+	@Override
+	public int getAnnual(String employeeNo) {
+		
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
+		String year = sdf.format(date);
+		
+		Map<String, String> map = new HashMap<>();
+		map.put("employeeNo", employeeNo);
+		map.put("year", year);
+		
+		int totalAmount = mapper_dao.getAnnual(map);
+		
+		return totalAmount;
+	}
+
+
 	
 
 	

@@ -30,12 +30,12 @@
 		
 		// 검색 아이콘을 클릭했을 때
 		$("a.doc_search_btn").click(e=>{
-			getDocumentList()
+			getDocumentList();
 		});
 		
 		// 정렬 갯수를 클릭했을 때
 		$("span#sortCnt_btn ul li").on("click", function() {
-			getDocumentList()
+			getDocumentList();
 		});
 		
 		// 검색창에서 엔터 키를 눌렀을 때
@@ -50,22 +50,44 @@
 			location.href = `<%= ctxPath%>/document/myDocumentList`;
 		});
 		
+		// 결재 상태 탭을 클릭했을 때
+		$("div.documentStatus_tab button").click(e=>{
+			$("div.documentStatus_tab button").removeClass("active");
+			$(e.target).addClass("active");
+			
+			// getDocumentList();
+		});
+		
+		
+		
 	}); // end of $(document).ready(function(){})-------------------------------------------------
 	
 	function getDocumentList() {
 		let pageSize = $("span#sortCnt_btn span").text().trim(); // 한 페이지에 보여줄 문서 갯수
 		let searchWord = $("input#searchWord").val().trim(); // 검색어
+		let status = 0;
+		$("div.documentStatus_tab button").each(function(index, item){
+			if($(this).hasClass("active")){
+				status = $(this).val();	// 결재상태
+			}
+		});
 		location.href = `<%= ctxPath%>/document/myDocumentList?currentShowPageNo=1&sizePerPage=\${pageSize}&searchWord=\${searchWord}`;
 	}
 	
 </script>
 
 	<div>
+		<div class="documentStatus_tab">
+			<button class="tablinks active" value="">전체</button>
+			<button class="tablinks" value="0">진행중</button>
+			<button class="tablinks" value="1">완료</button>
+			<button class="tablinks" value="2">반려</button>
+		</div>
 		<table id="myDocumentList" class="table">
 			<thead>
 				<tr>
 					<th>
-						<input type="checkbox" />
+						<input type="checkbox" id="check_all"/>
 					</th>
 					<th>
 						<span>기안일</span>
@@ -110,11 +132,9 @@
 								<span>${myDocument.documentNo}</span>
 							</td>
 							<td>
-								<span>
-									<c:if test="${myDocument.status == 0}">진행중</c:if>
-									<c:if test="${myDocument.status == 1}">완료</c:if>
-									<c:if test="${myDocument.status == 2}">반려</c:if>
-								</span>
+								<c:if test="${myDocument.status == 0}"><span class="p-1 in_progress">진행중</span></c:if>
+								<c:if test="${myDocument.status == 1}"><span class="p-1 approved">완료</span></c:if>
+								<c:if test="${myDocument.status == 2}"><span class="p-1 rejected">반려</span></c:if>
 							</td>
 						</tr>
 					</c:forEach>

@@ -273,12 +273,30 @@
 		where fk_documentNo = #{documentNo} and fk_approver = #{employeeNo}
 	</update>
 	
+	
 	<!-- 임시저장 문서 삭제하기 -->
 	<delete id="deleteTemp" parameterType="String">
 		delete tbl_document
 		where documentNo = #{documentNo}
 	</delete>
 	
+	
+	<!-- 임시저장 문서 리스트 삭제하기 -->
+	<delete id="deleteTempList" parameterType="list">
+		delete from tbl_document
+		where documentNo in
+		<foreach collection="list" item="documentNo" open="(" separator="," close=")">
+	        #{documentNo}
+	    </foreach>
+	</delete>
+	
+	
+	<!-- 휴가신청서 잔여 연차 가져오기 -->
+	<select id="getAnnual" parameterType="HashMap" resultType="Integer">
+		select occurannual + overannual - addannual as totalAmount
+		from tbl_annual
+		where fk_employeeNo = #{employeeNo} and year = #{year}
+	</select>
 	
 </mapper>
 
