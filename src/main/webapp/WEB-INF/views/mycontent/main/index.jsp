@@ -19,6 +19,9 @@
 
 
 	<%-- <div class="dashboard"> --%>
+	<div id="assetModalBg" class="modal_bg"></div>
+	
+	
 	<div class="dashboard">
 		<div class="leftDiv">
 		
@@ -61,12 +64,35 @@
 					<!-- 주소록 기능 -->
 					<div class="employeeNoCopyBox">
 						<span class="topInnerContentTitle">
-							강이훈
+							강이훈 외 9건+
 						</span>
 						
-						<span class="btnBack">
-							<i class="fa-solid fa-angle-right arrow"></i>
+						
+						<span class="btnBack addrBtn" style="display: flex; position: relative;">
+							<i style="margin:auto;" class="fa-solid fa-angle-right arrow"></i>
+							
+							<div class="addrModal">
+								<div style="padding: 16px;">
+								
+									<div style="margin-bottom: 12px;">
+										강이훈 님의 주소록입니다.
+									</div>
+									
+									<table border="1" class="time_table_back_form">
+										<tr>
+											<th>이름</th>
+											<th>직위</th>
+											<th>이메일</th>
+											<th>전화번호</th>
+											<th>내선번호</th>
+										</tr>
+									</table>
+									
+								</div>
+							</div>
 						</span>
+							
+							
 					</div>
 					<!-- 주소록 기능 -->
 				</div>
@@ -197,6 +223,24 @@
 		    status: "success"
 	    })
 	}
+    
+    
+    
+    $('.addrBtn').click(e=>{
+    	$('.addrModal').css({
+    		'height': '500px'
+    	})
+    	
+    	setTimeout( ()=>{
+    		$('.addrModal').css({
+        		'width': '400px'
+        	})
+    	}, 500);
+    	
+    	$('#assetModalBg').fadeIn();
+    	
+    })
+    
 </script>
 
 <jsp:include page="../../footer/footer.jsp" /> 

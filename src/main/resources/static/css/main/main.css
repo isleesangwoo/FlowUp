@@ -113,6 +113,34 @@
 }
 
 
+.modal_bg{
+    display: none;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100vw;
+    height: 100vh;
+    z-index: 10;
+    background-color: rgba(0,0,0,0.2);
+}
+
+.addrModal {
+	overflow: hidden;
+	width: 2px; 
+	height: 0px;
+	background-color: #fff; 
+	border-radius:10px;
+	border: 1px solid #dbdbdb;
+	box-sizing:border-box;
+	position:absolute; 
+	top:0px; 
+	right:0px; 
+	transition: 0.3s all;
+	filter: drop-shadow(4px 5px 22px rgba(0, 0, 0, 0.2));
+	z-index: 99;
+}
+
+
 
 /*-------------- 두번째 컨테이너 --------------*/
 .secContainer{
