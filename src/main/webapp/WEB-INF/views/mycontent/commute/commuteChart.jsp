@@ -236,6 +236,8 @@ div.hoverDiv:hover {
     
     } //// week_div(today) 
     
+    
+    
    	function getCommuteCnt(today) {
     	
     	const departmentNo = "${requestScope.departmentNo}";

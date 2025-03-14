@@ -39,39 +39,16 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td>이지혜</td>
-					<td>100011</td>
-					<td>차장</td>
-					<td>경영관리부</td>
-					<td>경영기획관리팀</td>
-					<td>
-						<button class="update">수정하기</button>
-						<button class="update">수정취소</button><%-- 수정하기를 클릭 했을 때 나오는 버튼 --%>
-					</td>
-				</tr>
 				
 				<tr>
-					<td>이지혜</td>
-					<td>100011</td>
-					<td>차장</td>
-					<td>경영관리부</td>
-					<td>경영기획관리팀</td>
+					<td class="employee_name">이지혜</td>
+					<td class="employee_no">100011</td>
+					<td class="employee_position">차장</td>
+					<td class="employee_department">경영관리부</td>
+					<td class="employee_team">경영기획관리팀</td>
 					<td>
 						<button class="update">수정하기</button>
-						<button class="update">수정취소</button><%-- 수정하기를 클릭 했을 때 나오는 버튼 --%>
-					</td>
-				</tr>
-				
-				<tr>
-					<td>이지혜</td>
-					<td>100011</td>
-					<td>차장</td>
-					<td>경영관리부</td>
-					<td>경영기획관리팀</td>
-					<td>
-						<button class="update">수정하기</button>
-						<button class="update">수정취소</button><%-- 수정하기를 클릭 했을 때 나오는 버튼 --%>
+						<!-- <button class="update">수정취소</button><%-- 수정하기를 클릭 했을 때 나오는 버튼 --%> -->
 					</td>
 				</tr>
 			</tbody>

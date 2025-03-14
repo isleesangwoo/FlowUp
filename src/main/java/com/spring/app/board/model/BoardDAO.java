@@ -30,13 +30,13 @@ public interface BoardDAO {
 	List<Map<String, String>> addBoardSearchAllDept();
 
 	// 생성된 게시판 LeftBar에 나열하기 (출력)
-	List<BoardVO> selectBoardList();
+	List<BoardVO> selectBoardList(String login_departNo);
 
 	// 수정할 input 요소에 기존값을 뿌려주기 위함.
 	BoardVO getBoardDetailByNo(String boardNo);
 
 	// 글쓰기 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기
-	List<Map<String, String>> getAccessibleBoardList(String employeeNo);
+	List<Map<String, String>> getAccessibleBoardList(String employeeNo,String login_userid) throws Exception;
 
 	// 게시글 등록하기 // 파일첨부가 있는 글쓰기 // 첨부파일이 있다면 첨부파일테이블(tbl_postFile) 테이블에 파일 정보 삽입  
 	int addPost(PostVO postvo);
@@ -132,7 +132,7 @@ public interface BoardDAO {
 	int insertComment(String postNo, String login_userid, String login_name, String commentContent);
 
 	// 해당 게시글의 댓글 조회
-	List<Map<String, Object>> getComment(String postNo);
+	List<Map<String, Object>> getComment(String postNo,int start,int end);
 
 	// 댓글 수정하기
 	int updateComment(String commentNo,String content);
@@ -179,6 +179,9 @@ public interface BoardDAO {
 
 	// 조회수 상위 5개 글
 	List<Map<String, String>> getTopReadPosts();
+
+	//삭제된 행의 개수만큼 해당 게시글의 댓글개수를 차감
+	void updateMinusCommentCount(Map<String, Integer> map);
 	
 
 	

@@ -6,8 +6,9 @@
    String ctxPath = request.getContextPath();
 %>
 
-
 <jsp:include page="document_main.jsp" />
+
+<jsp:include page="document_box.jsp" />
 
 <script type="text/javascript">
 
@@ -28,7 +29,7 @@
 			<thead>
 				<tr>
 					<th>
-						<input type="checkbox" />
+						<input type="checkbox" id="check_all"/>
 					</th>
 					<th>
 						<span>생성일</span>
@@ -50,7 +51,7 @@
 			<tbody>
 				<c:if test="${not empty requestScope.tempList}">
 					<c:forEach var="temp" items="${requestScope.tempList}">
-						<tr class="document">
+						<tr class="document" onclick="location.href='<%= ctxPath%>/document/documentView?documentNo=${temp.documentNo}&documentType=${temp.documentType}';">
 							<td>
 								<input type="checkbox" />
 							</td>

@@ -607,7 +607,41 @@ public class CommuteService_imple implements CommuteService {
 		return map;
 	}
 
-	
+	@Override
+	public List<Map<String, String>> getAnnualTableInfo(Map<String, String> paraMap) {
+		List<Map<String, String>> mapList = dao.getAnnualTableInfo(paraMap);
+		return mapList;
+	}
+
+	@Override
+	public int totalCnt_annaul(Map<String, String> paraMap) {
+		int totalCount = dao.totalCnt_annaul(paraMap);
+		return totalCount;
+	}
+
+	@Override
+	public Map<String, String> getMyinfo(String employeeNo) {
+		Map<String, String> map = dao.getMyinfo(employeeNo);
+		return map;
+	}
+
+	@Override
+	public int totalCnt_mySalary(Map<String, String> paraMap) {
+		int cnt = dao.totalCnt_mySalary(paraMap);
+		return cnt;
+	}
+
+	@Override
+	public List<Map<String, String>> getMySalaryInfo(Map<String, String> paraMap) {
+		List<Map<String, String>> mapList = dao.getMySalaryInfo(paraMap);
+		return mapList;
+	}
+
+	@Override
+	public int changeAddAnnual(Map<String, String> paraMap) {
+		int n = dao.changeAddAnnual(paraMap);
+		return n;
+	}
 	
 	
 	

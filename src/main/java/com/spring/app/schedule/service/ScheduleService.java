@@ -3,7 +3,7 @@ package com.spring.app.schedule.service;
 import java.util.List;
 import java.util.Map;
 
-
+import com.spring.app.employee.domain.EmployeeVO;
 import com.spring.app.schedule.domain.*;
 
 public interface ScheduleService {
@@ -24,7 +24,7 @@ public interface ScheduleService {
 	List<Calendar_small_category_VO> selectSmallCategory(Map<String, String> paraMap);
 
 	// 공유자를 찾기 위한 특정글자가 들어간 회원명단 불러오기 
-	// List<MemberVO> searchJoinUserList(String joinUserName);
+	List<EmployeeVO> searchJoinUserList(String joinUserName);
 
 	// 일정 등록하기
 	int registerSchedule_end(Map<String, String> paraMap) throws Throwable;
@@ -52,5 +52,10 @@ public interface ScheduleService {
 
 	// 페이징 처리한 캘린더 가져오기(검색어가 없다라도 날짜범위 검색은 항시 포함된 것임)
 	List<Map<String,String>> scheduleListSearchWithPaging(Map<String, String> paraMap);
+
+	// 해당날짜의 일정이 곂쳐있는 사람을 조회하는 기능
+	List<Map<String, String>> displayUserListSelect(Map<String, Object> paraMap);
+
+	
 	
 }

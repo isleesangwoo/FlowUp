@@ -6,7 +6,7 @@ import java.util.Map;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
-
+import com.spring.app.employee.domain.EmployeeVO;
 import com.spring.app.schedule.domain.Calendar_schedule_VO;
 import com.spring.app.schedule.domain.Calendar_small_category_VO;
 
@@ -74,13 +74,12 @@ public class ScheduleDAO_imple implements ScheduleDAO {
 
 	
 	// 공유자를 찾기 위한 특정글자가 들어간 회원명단 불러오기
-	/*
 	@Override
-	public List<MemberVO> searchJoinUserList(String joinUserName) {
-		List<MemberVO> joinUserList = sqlsession.selectList("schedule.searchJoinUserList", joinUserName);
+	public List<EmployeeVO> searchJoinUserList(String joinUserName) {
+		List<EmployeeVO> joinUserList = sqlsession.selectList("schedule.searchJoinUserList", joinUserName);
 		return joinUserList;
 	}
-	*/
+	
 	
 	// 일정 등록하기
 	@Override
@@ -159,6 +158,14 @@ public class ScheduleDAO_imple implements ScheduleDAO {
 	public List<Map<String,String>> scheduleListSearchWithPaging(Map<String, String> paraMap) { 
 		List<Map<String,String>> scheduleList = sqlsession.selectList("schedule.scheduleListSearchWithPaging", paraMap);
 		return scheduleList;
+	}
+
+	
+	// 해당날짜의 일정이 곂쳐있는 사람을 조회하는 기능
+	@Override
+	public List<Map<String, String>> displayUserListSelect(Map<String, Object> paraMap) {
+		List<Map<String, String>> list = sqlsession.selectList("schedule.displayUserListSelect", paraMap);
+		return list;
 	}
 	
 	

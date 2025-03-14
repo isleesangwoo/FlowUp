@@ -165,80 +165,326 @@ div.hoverDiv:hover {
 
 
 
+.openModal{
+	background-color:transparent;
+}
+
+.modal_background{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.modal_window{
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%,-50%);
+	z-index: 199;	
+}
+
+.modal_content{
+	width:300px;
+	height: auto;
+	background-color: white; 
+	margin: 0 auto;
+    padding: 20px;
+}
+
+
 
 </style>
 
 <script>
     $(document).ready(() => {
     	
+    	let currentShowPageNo = ${requestScope.currentShowPageNo};
+    	
         // ====================== 날짜 리모컨 기능 생성 ====================== //
         const currentDate = new Date(); 
-        const currentDate_year = currentDate.getFullYear();
-        const currentDate_month = String(currentDate.getMonth()+1).padStart(2, '0');  
+        let year = currentDate.getFullYear();
         
         let today = new Date();
         
         
         // 이전 버튼 클릭 시
         $('#prev').click(() => {
-        	today.setMonth(today.getMonth() - 1);
-            week_div(today);
+        	year = year - 1;
+            week_div(year, currentShowPageNo);
             
         });
 
         // 다음 버튼 클릭 시
         $('#next').click(() => {
-        	today.setMonth(today.getMonth() + 1);
-            week_div(today);
+        	year = year + 1;
+            week_div(year, currentShowPageNo);
         });
 
         // 오늘 버튼 클릭 시
         $('#now').click(() => {
-        	today = new Date(currentDate); // 저장된 currentDate 날짜로 복구
-            week_div(today);
+        	year = currentDate.getFullYear();
+            week_div(year, currentShowPageNo);
         });
 
        
         // 페이지 로드 시 현재 날짜 및 테이표시
-        week_div(today);
+        week_div(year, currentShowPageNo);
         // ====================== 날짜 리모컨 기능 생성 ====================== //
  
         $('div.oneday').hide();
         
+		$("select#sizePerPage").change(e=>{
+			
+			spread_tbody(currentShowPageNo);
+        });
+		
+		$("button#btn_search").click(function(e) {
+			
+			
+			spread_tbody(currentShowPageNo);
+			
+		});
+		
+		$("input#searchWord").keydown(function(e) {
+			
+			if(e.keyCode == 13) {
+				spread_tbody(currentShowPageNo);
+			}
+			
+		});
+        
      	
 
-    	
+		
+		
+		$(document).on("click","table#annualTable tr",e=>{
+			
+			const radio = $(e.target).parent().find("input:radio[name='empSelect']");
+			
+			const employeeNo = radio.val();
+			const name = $(e.target).parent().find("td.name").text();
+			const departmentname = $(e.target).parent().find("td.departmentname").text();
+			const registerdate = $(e.target).parent().find("td.registerDate").text();
+			const occurAnnual = $(e.target).parent().find("td.occurAnnual").text();
+			const overAnnual = $(e.target).parent().find("td.overAnnual").text();
+			const addAnnual = $(e.target).parent().find("td.addAnnual").text();
+			const totalannual = $(e.target).parent().find("td.totalannual").text();
+			const usedannual = $(e.target).parent().find("td.usedannual").text();
+			const remainingannual = $(e.target).parent().find("td.remainingannual").text();
+			
+			radio.prop("checked", true);
+			
+			$("input#employeeNo").val(employeeNo);
+			$("input#name").val(name);
+			$("input#departmentname").val(departmentname);
+			$("input#registerdate").val(registerdate);
+			$("input#occurAnnual").val(occurAnnual);
+			$("input#overAnnual").val(overAnnual);
+			$("input#addAnnual").val(addAnnual);
+			$("input#totalannual").val(totalannual);
+			$("input#usedannual").val(usedannual);
+			$("input#remainingannual").val(remainingannual);
+			
+		});
+		
+		$("button.openModal").click(function(){
+			
+			if( $("input:radio[name='empSelect']:checked").length == 0 ) {
+				alert("사원을 선택해주세요.");
+			}
+			else {
+				$("div.addFrmModal").show();
+			}
+			
+			
+		});//
+		
+		$("button.closeModal").click(function(){
+			
+			$("input#employeeNo").val("");
+			$("input#name").val("");
+			$("input#departmentname").val("");
+			$("input#registerdate").val("");
+			$("input#occurAnnual").val("");
+			$("input#overAnnual").val("");
+			$("input#addAnnual").val("");
+			$("input#totalannual").val("");
+			$("input#usedannual").val("");
+			$("input#remainingannual").val("");
+			
+			$("div.addFrmModal").hide();
+		});//	
+		
+		$("input#addCnt").blur(e=>{
+			
+			if( Number($(e.target).val()) > 100 ) {
+				$(e.target).val(100);
+			}
+			else if( Number($(e.target).val()) < -100 ) {
+				$(e.target).val(-100);
+			}
+			
+		});
+			
+		$("#addAnnualBtn").click(e=>{
+			
+			if( $("input#addCnt").val() == 0) {
+				alert("조정 할 갯수를 선택(입력)하세요!")
+			} // if
+			else {
+				
+				if( confirm("정말로 조정 하시겠습니까?") ) {
+					
+					const fk_employeeNo = $("input#employeeNo").val();
+					const addCnt = $("input#addCnt").val();
+					
+					console.log("fk_employeeNo : " + fk_employeeNo);
+					console.log("addCnt : " + addCnt);
+					
+					const currentShowPageNo = ${requestScope.currentShowPageNo};
+					
+					$.ajax({
+			    		url:"<%=ctxPath%>/commute/changeAddAnnual",
+						type:"get",
+						data:{"fk_employeeNo":fk_employeeNo
+							 ,"addCnt":addCnt
+							 },
+						dataType:"json",
+						success:function(json) {
+							
+							if(json.n == 0) {
+								alert("조정 실패");
+							} else {
+								alert("조정 완료");
+							
+								$("div.addFrmModal").hide();
+								
+								spread_tbody(currentShowPageNo);
+								
+							}
+							
+							
+							
+						},
+						error: function(request, status, error){
+							alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+						}
+					    		
+					});
+					
+					
+				}// 컨펌
+				
+				
+			}// else 
+			
+		});
+		
+		
+		
+		
+		$("div.addFrmModal").hide();
     	
     }); // end of $(document).ready(() => {})-------------
 
    
    
-    function week_div(today) {
-
-    	const year = today.getFullYear();
-    	let month = String(today.getMonth()+1).padStart(2, '0');  		// 오늘(선택일)의 월
+    function week_div(year, currentShowPageNo) {
     	
-    	const day = String(today.getDate()).padStart(2, '0');			// 오늘(선택일)의 일
-    	const daysOfWeek = ["일", "월", "화", "수", "목", "금", "토"];		//
-    	const dayOfWeek = daysOfWeek[today.getDay()]; 					// 오늘(선택일)의 요일
- 
-    	const start = new Date(year, month-1, 1);
-    	const end = new Date(year, month, 0);
+        $('div#today').text(year);
     	
-    	const end_day = Number(String(end.getDate()));
-
-    	const timeString = `\${year}-\${month}`;
-    	
-    	
-        $('#today').text(timeString);
-    	
- 
-    	
+        spread_tbody(currentShowPageNo);
+        
     } //// week_div(today) 
+    
     	
-   
+   	function spread_tbody(currentShowPageNo) {
     	
+   		const year = $("div#today").text();
     	
+   		const sizePerPage = $("select#sizePerPage").val();
+   		const searchType = $("select#searchType").val();
+   		const searchWord = $("input#searchWord").val();
+   		
+   	    const currentDate = new Date(); 
+        const currentDate_year = currentDate.getFullYear();
+   		
+   		console.log("sizePerPage : " + sizePerPage);
+   		console.log("year : " + year);
+   		console.log("searchType : " + searchType);
+   		console.log("searchWord : " + searchWord);
+   		console.log("currentShowPageNo : " + currentShowPageNo);
+    	
+   		$.ajax({
+    		url:"<%=ctxPath%>/commute/getAnnualTableInfo",
+			type:"get",
+			data:{"year":year
+				 ,"searchType":searchType
+				 ,"searchWord":searchWord
+				 ,"sizePerPage":sizePerPage
+				 ,"currentShowPageNo":currentShowPageNo},
+			dataType:"json",
+			success:function(json) {
+				
+				console.log(JSON.stringify(json));
+				
+				$("input#year").val(json.paraMap.year);
+				$("input#currentShowPageNo").val(json.paraMap.currentShowPageNo);
+				
+				let html = ``;
+				
+				if(json.mapList.length > 0 ) {
+					
+					$.each(json.mapList, (index,item)=>{
+
+						console.log(item.employeeNo);
+
+						html += `<tr>
+										<td style="text-align: center; vertical-align:middle"><input type="radio" name="empSelect" value="\${item.employeeNo}" /></td>
+										<td style="text-align: center; vertical-align:middle" class="name">\${item.name}</td>
+										<td style="text-align: center; vertical-align:middle" class="departmentname">\${item.departmentname}</td>
+										<td style="text-align: center; vertical-align:middle" class="registerDate">\${item.registerDate}</td>
+										<td style="text-align: center; vertical-align:middle">\${item.workYear}년차</td>
+										<td style="text-align: center; vertical-align:middle" class="occurAnnual">\${item.occurAnnual}</td>
+										<td style="text-align: center; vertical-align:middle" class="overAnnual">\${item.overAnnual}</td>
+										<td style="text-align: center; vertical-align:middle" class="addAnnual">\${item.addAnnual}</td>
+										<td style="text-align: center; vertical-align:middle" class="totalannual">\${item.totalannual}</td>
+										<td style="text-align: center; vertical-align:middle" class="usedannual">\${item.usedannual}</td>
+										<td style="text-align: center; vertical-align:middle" class="remainingannual">\${item.remainingannual}</td>
+								  </tr>`;
+					
+					});
+					
+					
+					$("div#pageBar").html(json.pageBar);
+					
+				}
+				else {
+					html += `<tr><td colspan="10" style="text-align: center; vertical-align:middle; font-size:12pt;">데이터가 없습니다.</td></tr>`;
+					
+					$("div#pageBar").html("");
+				}
+				
+				$("tbody#tbody").html(html);
+				
+				
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		    		
+		});
+    	
+   		
+    } // end of spread_tbody(year) 
+    	
+    
 	function secToHour(total_sec) {
 
 		const hour = Math.floor( total_sec / 60 / 60 ) ;
@@ -260,10 +506,7 @@ div.hoverDiv:hover {
     	
     	return Number(hour) * 60 * 60 + Number(min) * 60 + Number(sec);
     }
-    
-    
-    
-    
+ 
     
     
 </script>
@@ -290,26 +533,169 @@ div.hoverDiv:hover {
 				<div class="dateTopBtn" style="width: 200px; margin: 0 auto;">
 					<span id="prev" style="cursor: pointer;">&#60;</span>
 					<!-- 이전날짜 버튼 -->
-					<div id="today" style="text-align: center;">today</div>
+					<div id="today" style="text-align: center;">year</div>
 					<!-- 날짜 표기 -->
 					<span id="next" style="cursor: pointer;">&#62;</span>
 					<!-- 다음날짜 버튼 -->
 
-					<span id="now" style="cursor: pointer;">오늘</span>
+					<span id="now" style="cursor: pointer;">올해</span>
 				</div>
 
 			</div>
 
 		</div>
 		
+	
+
+		<div>
 		
+			<div class="mb-1" style="display:flex" >
+				
+				<div style="margin:0 auto 0 0; display:flex; gap:8px;">
+					<select id="searchType" name="searchType" style="width:70px;">
+						<option value="">검색</option>
+						<option value="name">이름</option>
+					</select>
+					<input type="text" id="searchWord" name="searchWord" value="" style=""/>
+					<button type="button" id="btn_search" onclick="" class="btn btn-sm btn-outline-secondary" style="width:70px; height:30px; line-height:15px;">검색</button>
+				</div>
+					
+				<div style="margin:0 0 0 auto;display:flex; gap:8px;">
+				
+					<button type="button" class="openModal btn btn-sm btn-outline-secondary" onclick="" style="width:80px; height:30px; line-height:15px;">연차 조정</button>
+					<select id="sizePerPage" name="sizePerPage" style="width:70px;">
+						<option value="3">3</option>
+						<option value="5">5</option>
+						<option value="10">10</option>	
+					</select>				
+				</div>
+				
+			</div>
+		
+			
+			<table id="annualTable" class="table table-striped table-hover">
+					
+				<thead class="thead text-center" style="font-size:14pt; color:#2985DB; font-weight: bold;">
+				
+					<tr>
+						<th style="width : 30px;"></th>
+						<th>이름</th>
+						<th>부서</th>
+						<th>입사일</th>
+						<th>근속연수</th>
+						<th>발생 연차</th>
+						<th>이월 연차</th>
+						<th>조정 연차</th>
+						<th>총 연차</th>
+						<th>사용 연차</th>
+						<th>잔여 연차</th>
+					</tr>
+				
+				</thead>
+						
+				<tbody id="tbody"></tbody>
+					
+			</table>
+					
+			<div id="pageBar" style="width:100%; text-align:center;"></div>
 
-
-
+		</div>
 
 	</div>
 
 </div>
+<input type="hidden" id="year" value="">
+<input type="hidden" id="currentShowPageNo" value="">
+<input type="hidden" id="employeeNo" value="" />
+
+
+
+
+
+
+
+<div class="addFrmModal">
+
+	<div class="modal_background"></div><%-- 모달창 백그라운드 --%>
+		
+	<div class="modal_window"><%-- 모달창 메인 내용 --%>
+
+		<div class="modal_content">
+		
+			<div style="display:flex; margin: 15px; 30px;" class="modalTitle">
+					
+				<h4 style="margin:0 auto 0 10px;">연차 조정</h4>
+						
+			</div>
+					
+			<div style="margin: 0 30px;" class="modalBody" >
+				
+				<label for="employeeNo" style="width: 90px; margin-top:5px; color:#2985DB;">사번</label>
+				<input type="text" id="employeeNo" value="" style="width: 100px;" disabled /><br>
+				
+				<label for="name" style="width: 90px; margin-top:5px; color:#2985DB;">이름</label>
+				<input type="text" id="name" value="" style="width: 100px;" disabled /><br>
+				
+				<label for="departmentname" style="width: 90px; margin-top:5px; color:#2985DB;">부서</label>
+				<input type="text" id="departmentname" value="" style="width: 100px;"disabled /><br>
+				
+				<label for="registerdate" style="width: 90px; margin-top:5px; color:#2985DB;">입사일</label>
+				<input type="text" id="registerdate" value="" style="width: 100px;" disabled /><br>
+				
+				<label for="occurAnnual" style="width: 90px; margin-top:5px; color:#2985DB;">발생 연차</label>
+				<input type="text" id="occurAnnual" value="" style="width: 100px;" disabled /><br>
+				
+				<label for="overAnnual" style="width: 90px; margin-top:5px; color:#2985DB;">이월 연차</label>
+				<input type="text" id="overAnnual" value="" style="width: 100px;" disabled /><br>
+				
+				<label for="addAnnual" style="width: 90px; margin-top:5px; color:#2985DB;">조정 연차</label>
+				<input type="text" id="addAnnual" value="" style="width: 100px;" disabled /><br>
+				
+				<label for="totalannual" style="width: 90px; margin-top:5px; color:#2985DB;">총 연차</label>
+				<input type="text" id="totalannual" value="" style="width: 100px;" disabled /><br>
+				
+				<label for="usedannual" style="width: 90px; margin-top:5px; color:#2985DB;">사용 연차</label>
+				<input type="text" id="usedannual" value="" style="width: 100px;" disabled /><br>
+				
+				<label for="remainingannual" style="width: 90px; margin-top:5px; color:#2985DB;">잔여 연차</label>
+				<input type="text" id="remainingannual" value="" style="width: 100px;" disabled /><br>
+				
+				<label for="addCnt" style="width: 90px; margin-top:5px; color:#2985DB;">조정 갯수</label>
+				<input type="number" id="addCnt" value="0" style="width: 100px;"/><br>
+			</div>
+			
+			<div style="margin: 15px 30px;" >
+			
+				<button type="button" id="addAnnualBtn" class="btn btn-outline-primary btn-sm" style="margin-left: 100px;">변경</button>
+				<button type="button" class="closeModal btn btn-outline-secondary btn-sm" style="margin: 0 0 0 auto;">취소</button>
+				
+			</div>
+				
+			
+			
+		</div>
+	</div>
+		
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 <jsp:include page="../../footer/footer.jsp" />
+
+

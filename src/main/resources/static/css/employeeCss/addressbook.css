@@ -116,6 +116,12 @@ tbody tr{
 	background-color:transparent;
 }
 
+.headerform{
+	width: 100px;
+	display: inline;
+	border: 0px gray solid;
+}
+
 
 /* --------- 모달창 css -------------- */
 
@@ -145,7 +151,7 @@ tbody tr{
 	height: auto;
 	background-color: white; 
 	margin: 0 auto;
-    padding: 20px;;
+    padding: 5%;
 }
 
 
@@ -207,4 +213,8 @@ tbody tr{
 
 .spelling:hover{
 	color: black;
+}
+
+.hoverEvent:hover{
+	cursor: pointer;
 }

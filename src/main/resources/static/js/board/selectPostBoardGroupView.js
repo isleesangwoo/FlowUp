@@ -38,6 +38,11 @@ $(document).ready(()=>{
 	// ========= 글쓰기버튼 토글 ========= //
 
     $('.writePostBtn').click(e=>{
+		
+		if($("#isExit").text() == ""){
+    		alert("로그인 후 이용하실 수 있습니다.");
+    		return;
+    	}
 
         $('#modal').fadeIn();
         $('.modal_container').css({
@@ -114,7 +119,7 @@ function fetchBoardData(sizePerPage, currentPage = 1) {
 					}
 
 								 
-                   html +=`<td>${post.name}</td>
+                   html +=`<td>${post.name} ${post.positionName}</td>
                              <td>${post.regDate}</td>
                              <td>${post.readCount}</td>
                              <td>${post.likeCount}</td>

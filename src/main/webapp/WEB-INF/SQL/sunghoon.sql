@@ -207,12 +207,6 @@ where d.documentNo = '2025-100002';
 
 
 select *
-from tbl_document JOIN tbl_approval
-ON documentNo = fk_documentNo
-where fk_employeeNo = '100014' and (select 
-order by draftDate desc;
-
-select *
 from tbl_approval
 where fk_approver = '100014';
 
@@ -265,3 +259,18 @@ ON fk_documentNo = documentNo
 JOIN tbl_employee
 ON fk_employeeNo = employeeNo
 where temp = 0;
+
+
+select documentNo, subject, documentType, draftDate, status
+from
+(
+    select rownum AS rno, documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
+    from tbl_document
+    where fk_employeeNo = '100014' and temp = 0
+            and lower(subject) like '%'||lower('휴가')||'%'
+    order by documentNo desc
+)
+WHERE rno BETWEEN 1 AND 10;
+
+select teamNo, teamName, FK_departmentNo
+		from tbl_team;

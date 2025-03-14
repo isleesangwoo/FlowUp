@@ -240,81 +240,52 @@
 		});
 	}
 	
-	// 사용연차 개수 계산하기
-	function calAnnualAmount(){
+	// 연장 근무 신청하는 날이 주말인지 확인하기
+	function check_weekend() {
 		
-		if($("select[name='annualType']").val() != "1") {
-			// 반차일 경우
-			
-			$("input[name='endDate']").val($("input[name='startDate']").val());
-			$("input[name='endDate']").hide(); // 종료일 선택을 숨기기
-			
-			if($("input[name='startDate']").val() != ""){
-				$("input[name='useAmount']").val(0.5);	// 신청 연차에 값 넣어주기
-			}
+		// 입력한 날짜의 요일 가져오기
+		let date = new Date($("input[name='overTimeDate']").val()).getDay();
+		
+		// 0이면 일요일, 6이면 토요일
+		if(date == 0 || date == 6) {
+			$("span#check_weekend").text("주말에는 연장 근무 신청이 불가능합니다.");
 		}
 		else {
-			// 연차일 경우
-			$("input[name='endDate']").show();	// 종료일 선택 다시 보여주기
-			
-			let startDate = $("input[name='startDate']").val();
-			let endDate = $("input[name='endDate']").val();
-			
-			if(startDate != "" && endDate != "") {
-				// 시작일과 종료일 둘 다 선택했을 경우
-				
-				// console.log(startDate);
-				// console.log(endDate);
-				
-				if(startDate <= endDate) {
-					// 종료일이 시작일 이후인 경우
-					startDate = Number(startDate.split("-").join(""));
-					endDate = Number(endDate.split("-").join(""));
-					
-					$("input[name='useAmount']").val(endDate - startDate + 1);	// 신청 연차에 값 넣어주기
-				}
-				else {
-					// 종료일이 시작일 이전인 경우
-					alert("종료일은 시작일보다 이후여야 합니다.");
-					
-					$("input[name='startDate']").val("");	// 값 초기화
-					$("input[name='endDate']").val("");		// 값 초기화
-				}
-			}
+			$("span#check_weekend").empty();
 		}
-		
-	} // end of function calAnnualAmount(){}------------------------
+			
+	} // end of function check_weeken(){}------------------------
 	
 	
 	// 휴가신청서 결재요청하기
-	function annualDraft(){
+	function overtimeDraft(){
 		
 		if($("input[name='subject']").val().trim() == "") {	// 제목을 입력하지 않았을 경우
 			alert("제목을 입력하세요!")
 			return;
 		}
-		if($("input[name='reason']").val().trim() == "") {	// 휴가사유를 입력하지 않았을 경우
-			alert("휴가사유를 입력하세요!");
+		if($("input[name='reason']").val().trim() == "") {	// 연장 근무 사유를 입력하지 않았을 경우
+			alert("연장 근무 사유를 입력하세요!");
 			return;
 		}
-		if($("input[name='startDate']").val() == "" || $("input[name='startDate']").val() == "0000-00-00") {// 연차 시작일을 입력하지 않았을 경우
-			alert("연차 시작일을 입력하세요!");
+		if($("input[name='overTimeDate']").val() == "") {	// 연장 근무 일자를 입력하지 않았을 경우
+			alert("연장 근무 일자를 입력하세요!");
 			return;
 		}
-		if($("input[name='endDate']").val() == "" || $("input[name='endDate']").val() == "0000-00-00") {	// 연차 종료일을 입력하지 않았을 경우
-			alert("연차 종료일을 입력하세요!");
+		if($("span#check_weekend").text() != "") {			// 연장 근무 일자를 주말로 입력했을 경우
+			alert("주말에는 연장 근무 신청이 불가능합니다!");
 			return;
 		}
-		if($("div#approval_line").children().length == 0) {
+		if($("div#approval_line").children().length == 0) {	// 결재자를 한명도 추가하지 않았을 경우
 			alert("결재 라인을 추가해주세요!");
 			return;
 		}
 		
-		const queryString = $("form[name='annualDraftForm']").serialize();
+		const queryString = $("form[name='overtimeDraftForm']").serialize();
 		console.log(queryString);
 		
 		$.ajax({
-			url:"<%= ctxPath%>/document/annualDraft",
+			url:"<%= ctxPath%>/document/overtimeDraft",
 			data:queryString,
 			type:"post",
 			dataType:"json",
@@ -335,7 +306,7 @@
 		
 		
 		
-	} // end of function annualDraft(){}---------------------------------------------
+	} // end of function overtimeDraft(){}---------------------------------------------
 	
 	
 	// 결재정보 수정하기
@@ -350,7 +321,7 @@
 	// 임시저장하기
 	function saveTemp(){
 		
-		const queryString = $("form[name='annualDraftForm']").serialize();
+		const queryString = $("form[name='overtimeDraftForm']").serialize();
 		console.log(queryString);
 			
 		$.ajax({
@@ -373,7 +344,7 @@
 			}
 		}); // end of $.ajax({})----------------
 		
-	} // end of function annualTemp(){}-----------------------------------------------
+	} // end of function saveTemp(){}-----------------------------------------------
 	
 	</script>
 	
@@ -442,51 +413,52 @@
 	</div>
 		
 
-    <!-- 휴가신청서 폼 -->
+    <!-- 연장근무신청서 폼 -->
 	
 	<div class="m-3">
-		<h1 class="mb-3">휴가신청서</h1>
-		<button class="doc_btn mr-3" onclick="annualDraft()">결재요청</button>
+		<h1 class="mb-3">연장근무신청서</h1>
+		<button class="doc_btn mr-3" onclick="overtimeDraft()">결재요청</button>
 		<button class="doc_btn mr-3" onclick="saveTemp()">임시저장</button>
 		<button class="doc_btn mr-3">미리보기</button>
 		<button class="doc_btn" id="approval_line_btn">결재 정보</button>
 	</div>
 	<div class="m-3 draftForm">
-		<form name="annualDraftForm">
+		<form name="overtimeDraftForm">
 		
-			<input type="hidden" name="documentType" value="휴가신청서" />
+			<input type="hidden" name="documentType" value="연장근무신청서" />
 			<input type="hidden" name="temp" value="0" />
 			
-			<h3 style="text-align: center">연차신청서</h3>
-			
-			<div class="drafter_info" style="display: inline-block;">
-				<table>
-					<tbody>
-						<tr>
-							<th>기안자</th>
-							<td>${sessionScope.loginuser.name}</td>
-						</tr>
-						<tr>
-							<th>소속</th>
-							<td>${sessionScope.loginuser.departmentName}</td>
-						</tr>
-						<tr>
-							<th>기안일</th>
-							<td><%= today%></td>
-						</tr>
-						<tr>
-							<th>문서번호</th>
-							<td></td>
-						</tr>
-						
-					</tbody>
-				</table>
-			</div>
-			<div class="m-3 p-3" style="display: inline-block;">
-				<div class="approval_info" id="approval_line" style="text-align: right; display: inline-block; width: 100%">
-				
-					<!-- 결재 라인이 들어올 곳 -->
+			<h3 style="text-align: center">연장근무신청서</h3>
+			<div style="display: flex">
+				<div class="drafter_info" style="display: inline-block;">
+					<table>
+						<tbody>
+							<tr>
+								<th>기안자</th>
+								<td>${sessionScope.loginuser.name}</td>
+							</tr>
+							<tr>
+								<th>소속</th>
+								<td>${sessionScope.loginuser.departmentName}</td>
+							</tr>
+							<tr>
+								<th>기안일</th>
+								<td><%= today%></td>
+							</tr>
+							<tr>
+								<th>문서번호</th>
+								<td></td>
+							</tr>
+							
+						</tbody>
+					</table>
+				</div>
+				<div style="margin-left: auto;">
+					<div class="approval_info" id="approval_line" style="text-align: right; display: inline-block; width: 100%">
 					
+						<!-- 결재 라인이 들어올 곳 -->
+						
+					</div>
 				</div>
 			</div>
 			<div class="document_info">
@@ -497,39 +469,26 @@
 							<td><input type="text" name="subject" value=" " style="width: 100%;"/></td>
 						</tr>
 						<tr>
-							<th>휴가 종류</th>
-							<td>
-								<select name="annualType" onchange="calAnnualAmount()">
-									<option value="1">연차</option>
-									<option value="2">오전반차</option>
-									<option value="3">오후반차</option>
-								</select>
-							</td>
-						</tr>
-						<tr>
 							<th>사유</th>
 							<td><input type="text" name="reason" value=" " style="width: 100%;"/></td>
 						</tr>
 						<tr>
-							<th>기간 및 일시</th>
+							<th>연장 근무 일자</th>
 							<td>
-								<input type="date" name="startDate" onchange="calAnnualAmount()" onkeydown="return false" />
-								<input type="date" name="endDate"   onchange="calAnnualAmount()" onkeydown="return false" />
+								<input type="date" name="overtimeDate" onchange="check_weekend()" onkeydown="return false" />
+								<span id="check_weekend" class="alert"></span>
 							</td>
 						</tr>
 						<tr>
-							<th>연차 일수</th>
+							<th>연장 근무 시간</th>
 							<td>
-								잔여 연차 : <input type="text" name="totalAmount" value="10" readonly />
-								신청 연차 : <input type="text" name="useAmount" value="0" readonly />
+								<input type="text" name="totalAmount" value="3시간" style="width: 100%;" readonly />
 							</td>
 						</tr>
 						<tr>
 							<th class="pl-4" colspan="2" style="text-align: left;">
-								1. 연차의 사용은 근로기준법에 따라 전년도에 발생한 개인별 잔여 연차에 한하여 사용함을 원칙으로 한다.
-								<br>단, 최초 입사시에는 근로 기준법에 따라 발생 예정된 연차를 차용하여 월 1회 사용 할 수 있다.
-								<br>2. 경조사 휴가는 행사일을 증명할 수 있는 가족 관계 증명서 또는 등본, 청첩장 등 제출
-								<br>3. 공가(예비군/민방위)는 사전에 통지서를, 사후에 참석증을 반드시 제출
+								1. 연장 근무는 3시간을 규정으로 한다.
+								<br>2. 연장 근무 신청은 반드시 퇴근 시간 이전에 이루어져야 한다. 
 							</th>
 						</tr>
 					</tbody>

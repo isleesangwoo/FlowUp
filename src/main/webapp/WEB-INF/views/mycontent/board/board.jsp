@@ -39,7 +39,7 @@
         
         <%-- 이곳에 각 해당되는 뷰 페이지를 작성 시작 --%>
 		<div id="postContainer"> <!-- 게시글 보여주는 요소 전체 박스-->
-			<div style="width:80%; border: solid 1px orange;">
+			<div style="width:80%;">
 			 <c:if test="${postAllList[0] != null}"> <%-- 게시글이 있다면 --%>
 			 	<div id="allPostElmt">
 					<c:forEach var="post" items="${postAllList}">
@@ -73,8 +73,8 @@
 									</i>
 								</c:if>
 							</span>
-							<span id="postCreateBy">${post.name} ${post.positionName}</span>
-							<span id="postCreateAt">${post.regDate}</span>
+							<span class="postCreateBy">${post.name} ${post.positionName}</span>
+							<span class="postCreateAt">${post.regDate}</span>
 						</div>
 					</c:forEach>
 				</div>
@@ -94,7 +94,7 @@
 			
 			<%-- 좋아요 상위 Top 5 조회 --%>
 			<div id="postOfBoardGroup">
-				<p id="postOfBoardGroup_name">좋아요 상위 Top 5</p>
+				<p id="postOfBoardGroup_name_1">좋아요 상위 Top 5</p>
 				<ul>
 					<c:forEach var="topLikepost" items="${topLikeList}">
 						<li>
@@ -105,7 +105,7 @@
 					</c:forEach>
 	            </ul>
 	            
-	            <p id="postOfBoardGroup_name">조회수 상위 Top 5</p>
+	            <p id="postOfBoardGroup_name_2">조회수 상위 Top 5</p>
 				<ul>
 					<c:forEach var="topReadpost" items="${topReadList}">
 						<li>

@@ -40,8 +40,8 @@ public class SpringschedulerDAO_imple implements SpringschedulerDAO {
 	}
 
 	@Override
-	public List<Map<String, String>> getEmpInfo(String str_current_Year) {
-		List<Map<String, String>> empList = sqlsession.selectList("springscheduler.getEmpInfo", str_current_Year);
+	public List<Map<String, String>> getEmpInfo() {
+		List<Map<String, String>> empList = sqlsession.selectList("springscheduler.getEmpInfo");
 		return empList;
 	}
 
@@ -52,20 +52,37 @@ public class SpringschedulerDAO_imple implements SpringschedulerDAO {
 	}
 
 	@Override
-	public int scheduler_yesterday_workYN(String str_now) {
-		int n = sqlsession.selectOne("springscheduler.scheduler_yesterday_workYN", str_now);
+	public int scheduler_yesterday_workYN() {
+		int n = sqlsession.selectOne("springscheduler.scheduler_yesterday_workYN");
 		return n;
 	}
 
 	@Override
-	public List<String> scheduler_getEmployeeList(String yesterday) {
-		List<String> employeeNo = sqlsession.selectList("springscheduler.scheduler_getEmployeeList", yesterday);
+	public List<String> scheduler_getEmployeeList() {
+		List<String> employeeNo = sqlsession.selectList("springscheduler.scheduler_getEmployeeList");
 		return employeeNo;
 	}
 
 	@Override
-	public void scheduler_absence_insert(String employeeNo) throws SQLException {
+	public void scheduler_absence_insert(String employeeNo) throws Exception {
 		sqlsession.insert("springscheduler.scheduler_absence_insert", employeeNo);
+	}
+
+	@Override
+	public List<Map<String, String>> getEmpAnnualInfo() {
+		List<Map<String, String>> empAnnualList = sqlsession.selectList("springscheduler.getEmpAnnualInfo");
+		return empAnnualList;
+	}
+
+	@Override
+	public void scheduler_monthly_payment_insert(Map<String, String> empAnnaulMap) {
+		sqlsession.insert("springscheduler.scheduler_monthly_payment_insert",empAnnaulMap);
+	}
+
+	@Override
+	public String getWorkRange(Map<String, String> empAnnaulMap) {
+		String workRange = sqlsession.selectOne("springscheduler.getWorkRange",empAnnaulMap);
+		return workRange;
 	}
 
 	

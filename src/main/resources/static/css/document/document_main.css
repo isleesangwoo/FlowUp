@@ -144,6 +144,15 @@
     color: #333;
 }
 
+#right_title_box span a {
+    text-decoration: none;
+    color: #333;
+}
+
+#right_title_box span a:hover {
+	cursor: pointer;
+}
+
 #mailListAllCheck {
     appearance: none; /* 기본(네이티브) 모양을 제거 */
     box-sizing: border-box;

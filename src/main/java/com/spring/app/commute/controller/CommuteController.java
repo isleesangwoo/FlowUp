@@ -42,46 +42,35 @@ public class CommuteController {
 	private CommuteService service;
 
 	@GetMapping("")
-	public ModelAndView commute(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
+	public ModelAndView commute(HttpServletRequest request, ModelAndView mav) {
 		
-
-		HttpSession session = request.getSession();
-
-		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		String referer = request.getHeader("referer");
 		
-		if (loginuser == null) {
-
-			mav.setViewName("mycontent/employee/login");
-
-		}
-		else {
-		
-			mav.setViewName("mycontent/commute/commute");
-			
+		if(referer == null) {
+			mav.addObject("message", "비정상적인 접근입니다.");
+			mav.addObject("loc", request.getContextPath()+"/index");
+			mav.setViewName("msg");
+			return mav;
 		}
 		
+		mav.setViewName("mycontent/commute/commute");
+
 		return mav;
 	}
 	
 	@GetMapping("getDeptname")
 	@ResponseBody
 	public List<DepartmentVO> getDeptname() {
-		
+
 		List<DepartmentVO> dvoList = service.getDepInfo(); // 모든 부서 리스트 조회
-		
+
 		return dvoList;
 	}
-	
-	
-	
-	
-	
-	
 	
 	// 오늘자 근태 조회
 	@GetMapping("getTodayWorkInfo")
 	@ResponseBody
-	public Map<String, Object> getTodayWorkInfo(HttpServletRequest request, HttpServletResponse response, @RequestParam String fk_employeeNo) {
+	public Map<String, Object> getTodayWorkInfo(@RequestParam String fk_employeeNo) {
 	
 		Map<String, Object> map = new HashMap<>();
 		
@@ -160,7 +149,7 @@ public class CommuteController {
 	// 출근 클릭시
 	@PostMapping("workStart")
 	@ResponseBody
-	public Map<String, Object> workStart(HttpServletRequest request, HttpServletResponse response, @RequestParam String fk_employeeNo) {
+	public Map<String, Object> workStart(@RequestParam String fk_employeeNo) {
 		
 		int n = 0; // 0:에러, 1:성공
 		
@@ -190,7 +179,7 @@ public class CommuteController {
 	// 퇴근 클릭시
 	@PostMapping("workEnd")
 	@ResponseBody
-	public Map<String, Object> workEnd(HttpServletRequest request, HttpServletResponse response, @RequestParam String fk_employeeNo) {
+	public Map<String, Object> workEnd(@RequestParam String fk_employeeNo) {
 
 		System.out.println("퇴근 클릭 ~ ");
 		
@@ -216,7 +205,7 @@ public class CommuteController {
 	// 근무 상태 변경
 	@PostMapping("statusChange")
 	@ResponseBody
-	public Map<String, Integer> statusChange(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, String> paramap) {
+	public Map<String, Integer> statusChange(@RequestParam Map<String, String> paramap) {
 		
 		int n = 0;
 		
@@ -252,10 +241,11 @@ public class CommuteController {
 	
 	// 엑셀 다운로드
 	@PostMapping("downloadExcel")
-	public String downloadExcelFile(@RequestParam(defaultValue = "") String year_month, @RequestParam(defaultValue = "") String fk_employeeNo, Model model) {
-
-		if(fk_employeeNo != null || year_month != null ) {
-			
+	public String downloadExcelFile(HttpServletRequest request, @RequestParam(defaultValue = "") String year_month, @RequestParam(defaultValue = "") String fk_employeeNo, Model model) {
+	
+		String referer = request.getHeader("referer");
+		
+		if(fk_employeeNo != null || year_month != null || referer != null ) {
 			
 			Map<String,String> map = service.getEmployeeInfo(fk_employeeNo);
 			
@@ -279,35 +269,37 @@ public class CommuteController {
 	@GetMapping("myAnnual")
 	public ModelAndView myAnnual(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
+		String referer = request.getHeader("referer");
+		
+		if(referer == null) {
+			mav.addObject("message", "비정상적인 접근입니다.");
+			mav.addObject("loc", request.getContextPath()+"/index");
+			mav.setViewName("msg");
+			return mav;
+		}
+		
 		HttpSession session = request.getSession();
 
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
-		
-		if (loginuser == null) {
-			mav.setViewName("mycontent/employee/login");
-		}
-		else {
-			LocalDate now = LocalDate.now();
-			int n_year = now.getYear();
-			String year = ""+n_year;
-			
-			String fk_employeeNo = loginuser.getEmployeeNo();
-			
-			
-			Map<String,String> map = service.getEmployeeInfo(fk_employeeNo);
-			
-			Map<String, String> paramap = new HashMap<>();
-			paramap.put("year", year);
-			paramap.put("fk_employeeNo", fk_employeeNo);
-			
-			AnnualVO avo = service.getAnnualInfo(paramap);
-			
-			mav.addObject("map", map);
-			mav.addObject("avo", avo);
-			mav.setViewName("mycontent/commute/myAnnual");
-			
-		}
-		
+
+		LocalDate now = LocalDate.now();
+		int n_year = now.getYear();
+		String year = "" + n_year;
+
+		String fk_employeeNo = loginuser.getEmployeeNo();
+
+		Map<String, String> map = service.getEmployeeInfo(fk_employeeNo);
+
+		Map<String, String> paramap = new HashMap<>();
+		paramap.put("year", year);
+		paramap.put("fk_employeeNo", fk_employeeNo);
+
+		AnnualVO avo = service.getAnnualInfo(paramap);
+
+		mav.addObject("map", map);
+		mav.addObject("avo", avo);
+		mav.setViewName("mycontent/commute/myAnnual");
+
 		return mav;
 	}
 		
@@ -334,9 +326,16 @@ public class CommuteController {
 		
 	
 	@GetMapping("commuteTable")
-	public ModelAndView commuteTable(HttpServletRequest request
-								   , HttpServletResponse response
-								   , ModelAndView mav) {
+	public ModelAndView commuteTable(HttpServletRequest request, ModelAndView mav) {
+		
+		String referer = request.getHeader("referer");
+		
+		if(referer == null) {
+			mav.addObject("message", "비정상적인 접근입니다.");
+			mav.addObject("loc", request.getContextPath()+"/index");
+			mav.setViewName("msg");
+			return mav;
+		}
 		
 		String departmentNo = request.getParameter("departmentNo");
 		
@@ -473,7 +472,6 @@ public class CommuteController {
 		
 	}
 	
-	
 	@GetMapping("commuteChart")
 	public ModelAndView commuteChart(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
@@ -500,31 +498,252 @@ public class CommuteController {
 		
 	}
 	
-	
-	
-	
-	
-	
-	
 	@GetMapping("annualInfo")
 	public ModelAndView annualInfo(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) {
 		
+		String referer = request.getHeader("referer");
 		
+		if(referer == null) {
+			mav.addObject("message", "비정상적인 접근입니다.");
+			mav.addObject("loc", request.getContextPath()+"/index");
+			mav.setViewName("msg");
+			return mav;
+		}
 		
 		mav.setViewName("mycontent/commute/annualInfo");
-			
-
+		mav.addObject("currentShowPageNo", "1");
 		
 		return mav;
 	}
 	
+	@GetMapping("getAnnualTableInfo")
+	@ResponseBody
+	public Map<String, Object> getAnnualTableInfo(@RequestParam Map<String, String> paraMap) {
+		
+		Map<String, Object> jsonMap = new HashMap<>();
+		
+		String currentShowPageNo = "1";
+		int totalCount = 0; 	// 총 게시물 수
+		int sizePerPage = 0; 	// 페이지당 게시물 수
+		int totalPage = 0; 		// 총 페이지 수
+		int n_currentShowPageNo = 1;
+		
+		
+		if(paraMap.get("currentShowPageNo") != null) {
+			currentShowPageNo = paraMap.get("currentShowPageNo");
+		}
+		
+		if(!"name".equals(paraMap.get("searchType")) ) {
+			paraMap.put("searchType", "");
+		}
+		
+		if(paraMap.get("searchWord").trim() == null) {
+			paraMap.put("searchWord", "");
+		}
+		else {
+			paraMap.put("searchWord", paraMap.get("searchWord").trim());
+		}
+
+		if(paraMap.get("sizePerPage") != null ) {
+			sizePerPage = Integer.parseInt(paraMap.get("sizePerPage"));
+		}
+		
+		totalCount = service.totalCnt_annaul(paraMap);
+
+		totalPage = (int)( Math.ceil((double)totalCount/sizePerPage) );
+		
+		try {
+			n_currentShowPageNo = Integer.parseInt(currentShowPageNo);
+			
+			if(n_currentShowPageNo < 1 || n_currentShowPageNo > totalPage) {
+	            n_currentShowPageNo = 1;
+	        }
+			
+		} catch (NumberFormatException e) {
+			n_currentShowPageNo = 1;
+		}
+		
+		int startRno = ((n_currentShowPageNo - 1) * sizePerPage ) + 1;
+		int endRno = startRno + sizePerPage -1;
+		
+		paraMap.put("startRno", String.valueOf(startRno));
+		paraMap.put("endRno", String.valueOf(endRno));
+		
+		List<Map<String, String>> mapList = service.getAnnualTableInfo(paraMap);
+		
+		int blockSize = 5; 
+		int loop = 1;
+		int pageNo = ((n_currentShowPageNo - 1)/blockSize) * blockSize + 1;
+		
+		String pageBar = "<div style='width:100%; margin:0 auto;'>";
+		
+	    pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody(1)'>[처음]</button>";
+	    
+	    if(n_currentShowPageNo > 1) {
+	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+ (pageNo-1) +")'>[이전]</button>";
+
+	    }
+	    
+	    while(!(loop > blockSize || pageNo > totalPage)) {
+	    	
+	    
+	    	if(pageNo == n_currentShowPageNo) {
+	            pageBar += "<button type='button'  class='btn' style='color:#2985DB;'>"+pageNo+"</button>";
+	        }
+	    	else {
+	    		pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+pageNo+")'>"+pageNo+"</button>"; 
+	    	}    
+	    	
+	    	loop++;
+	    	pageNo++;
+	           
+	    }// end of while --------------------------------
+
+	    
+	    if(pageNo <= totalPage) {
+	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+pageNo+")'>[다음]</button>"; 
+	    }
+
+	    pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+totalPage+")'>[마지막]</button>"; 
+		    
+	    pageBar += "</div>";
+
+	    
+	    jsonMap.put("pageBar", pageBar);
+	  	jsonMap.put("paraMap", paraMap);
+	  	jsonMap.put("mapList", mapList);
+
+		return jsonMap;
+	}
 	
+	// 내 연차 조회 및 페이지 이동
+	@GetMapping("mySalary")
+	public ModelAndView mySalary(HttpServletRequest request, ModelAndView mav) {
+
+		String referer = request.getHeader("referer");
+		
+		if(referer == null) {
+			mav.addObject("message", "비정상적인 접근입니다.");
+			mav.addObject("loc", request.getContextPath()+"/index");
+			mav.setViewName("msg");
+			return mav;
+		}
+		
+		HttpSession session = request.getSession();
+
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+
+		String employeeNo = loginuser.getEmployeeNo();
+			
+		Map<String, String> map = service.getMyinfo(employeeNo);
+			
+		mav.addObject("currentShowPageNo", "1");
+		mav.addObject("map", map);
+		mav.setViewName("mycontent/commute/mySalary");
+
+		return mav;
+	}
 	
+	@GetMapping("getMySalaryInfo")
+	@ResponseBody
+	public Map<String, Object> getMySalaryInfo (@RequestParam Map<String, String> paraMap) {
+		
+		Map<String, Object> jsonMap = new HashMap<>();
+		
+		String currentShowPageNo = "1";
+		int totalCount = 0; 	// 총 게시물 수
+		int sizePerPage = 0; 	// 페이지당 게시물 수
+		int totalPage = 0; 		// 총 페이지 수
+		int n_currentShowPageNo = 1;
+		
+		
+		if(paraMap.get("currentShowPageNo") != null) {
+			currentShowPageNo = paraMap.get("currentShowPageNo");
+		}
+		
+		if(paraMap.get("sizePerPage") != null ) {
+			sizePerPage = Integer.parseInt(paraMap.get("sizePerPage"));
+		}
+		
+		totalCount = service.totalCnt_mySalary(paraMap);
+
+		totalPage = (int)( Math.ceil((double)totalCount/sizePerPage) );
+		
+		try {
+			n_currentShowPageNo = Integer.parseInt(currentShowPageNo);
+			
+			if(n_currentShowPageNo < 1 || n_currentShowPageNo > totalPage) {
+	            n_currentShowPageNo = 1;
+	        }
+			
+		} catch (NumberFormatException e) {
+			n_currentShowPageNo = 1;
+		}
+		
+		int startRno = ((n_currentShowPageNo - 1) * sizePerPage ) + 1;
+		int endRno = startRno + sizePerPage -1;
+		
+		paraMap.put("startRno", String.valueOf(startRno));
+		paraMap.put("endRno", String.valueOf(endRno));
+		
+		List<Map<String, String>> mapList = service.getMySalaryInfo(paraMap);
+		
+		int blockSize = 5; 
+		int loop = 1;
+		int pageNo = ((n_currentShowPageNo - 1)/blockSize) * blockSize + 1;
+		
+		String pageBar = "<div style='width:100%; margin:0 auto;'>";
+		
+	    pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody(1)'>[처음]</button>";
+	    
+	    if(n_currentShowPageNo > 1) {
+	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+ (pageNo-1) +")'>[이전]</button>";
+
+	    }
+	    
+	    while(!(loop > blockSize || pageNo > totalPage)) {
+	    	
+	    
+	    	if(pageNo == n_currentShowPageNo) {
+	            pageBar += "<button type='button'  class='btn' style='color:#2985DB;'>"+pageNo+"</button>";
+	        }
+	    	else {
+	    		pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+pageNo+")'>"+pageNo+"</button>"; 
+	    	}    
+	    	
+	    	loop++;
+	    	pageNo++;
+	           
+	    }// end of while --------------------------------
+
+	    
+	    if(pageNo <= totalPage) {
+	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+pageNo+")'>[다음]</button>"; 
+	    }
+
+	    pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+totalPage+")'>[마지막]</button>"; 
+		    
+	    pageBar += "</div>";
+
+	    
+	    jsonMap.put("pageBar", pageBar);
+	  	jsonMap.put("paraMap", paraMap);
+	  	jsonMap.put("mapList", mapList);
+
+		return jsonMap;
+	}
 	
-	
-	
-	
-	
+	@GetMapping("changeAddAnnual")
+	@ResponseBody
+	public Map<String, Integer> changeAddAnnual(@RequestParam Map<String, String> paraMap) {
+		
+		int n = service.changeAddAnnual(paraMap);
+		
+		Map<String, Integer> map = new HashMap<>();
+		map.put("n", n);
+		
+		return map;
+	}
 	
 	
 	

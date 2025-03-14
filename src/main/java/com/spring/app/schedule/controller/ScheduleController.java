@@ -16,6 +16,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 
 import com.spring.app.common.MyUtil;
+import com.spring.app.employee.domain.EmployeeVO;
+import com.spring.app.reservation.domain.AssetReservationVO;
+import com.spring.app.reservation.service.ReservationService;
 import com.spring.app.schedule.domain.Calendar_schedule_VO;
 import com.spring.app.schedule.domain.Calendar_small_category_VO;
 import com.spring.app.schedule.service.ScheduleService;
@@ -23,21 +26,26 @@ import com.spring.app.schedule.service.ScheduleService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @Controller
-@RequestMapping(value="/schedule/*")
+@RequestMapping(value="/calendar/*")
 public class ScheduleController {
 
 	@Autowired
 	private ScheduleService service;
 	
+	@Autowired
+	private ReservationService serviceRe;
+	
 	
 	// === 일정관리 시작 페이지 ===
-	@GetMapping("scheduleManagement")
+	@GetMapping("")
 	public ModelAndView requiredLogin_showSchedule(HttpServletRequest request, HttpServletResponse response, ModelAndView mav) { 
+		// System.out.println("와 이거 왜이래");
+		mav.setViewName("mycontent/calendar/calendar");
 		
-		mav.setViewName("mycontent1/schedule/scheduleManagement");
-
 		return mav;
 	}
 	
@@ -46,13 +54,13 @@ public class ScheduleController {
 	@ResponseBody
 	@PostMapping("addComCalendar")
 	public String addComCalendar(HttpServletRequest request) throws Throwable {
-		
+		// System.out.println("와 이거 왜이래");
 		String com_smcatgoname = request.getParameter("com_smcatgoname");
-		String fk_userid = request.getParameter("fk_userid");
+		String fk_employeeNo = request.getParameter("fk_employeeNo");
 		
 		Map<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("com_smcatgoname",com_smcatgoname);
-		paraMap.put("fk_userid",fk_userid);
+		paraMap.put("fk_employeeNo",fk_employeeNo);
 		
 		int n = service.addComCalendar(paraMap);
 				
@@ -69,11 +77,11 @@ public class ScheduleController {
 	public String addMyCalendar(HttpServletRequest request) throws Throwable {
 		
 		String my_smcatgoname = request.getParameter("my_smcatgoname");
-		String fk_userid = request.getParameter("fk_userid");
+		String fk_employeeNo = request.getParameter("fk_employeeNo");
 		
 		Map<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("my_smcatgoname",my_smcatgoname);
-		paraMap.put("fk_userid",fk_userid);
+		paraMap.put("fk_employeeNo",fk_employeeNo);
 		
 		int n = service.addMyCalendar(paraMap);
 				
@@ -111,9 +119,9 @@ public class ScheduleController {
 	@GetMapping(value="showMyCalendar") 
 	public String showMyCalendar(HttpServletRequest request) {
 		
-		String fk_userid = request.getParameter("fk_userid");
+		String fk_employeeNo = request.getParameter("fk_employeeNo");
 		
-		List<Calendar_small_category_VO> calendar_small_category_VO_CompanyList = service.showMyCalendar(fk_userid);
+		List<Calendar_small_category_VO> calendar_small_category_VO_CompanyList = service.showMyCalendar(fk_employeeNo);
 		
 		JSONArray jsonArr = new JSONArray();
 		
@@ -138,7 +146,7 @@ public class ScheduleController {
 		String chooseDate = request.getParameter("chooseDate");
 		
 		mav.addObject("chooseDate", chooseDate);
-		mav.setViewName("mycontent1/schedule/insertSchedule");
+		mav.setViewName("mycontent/calendar/insertSchedule");
 		
 		return mav;
 	}
@@ -150,14 +158,14 @@ public class ScheduleController {
 	public String selectSmallCategory(HttpServletRequest request) {
 		
 		String fk_lgcatgono = request.getParameter("fk_lgcatgono"); // 캘린더 대분류 번호
-		String fk_userid = request.getParameter("fk_userid");       // 사용자아이디
+		String fk_employeeNo = request.getParameter("fk_employeeNo");       // 사용자아이디
 		
 		Map<String,String> paraMap = new HashMap<>();
 		paraMap.put("fk_lgcatgono", fk_lgcatgono);
-		paraMap.put("fk_userid", fk_userid);
+		paraMap.put("fk_employeeNo", fk_employeeNo);
 		
 		List<Calendar_small_category_VO> small_category_VOList = service.selectSmallCategory(paraMap);
-			
+		
 		JSONArray jsArr = new JSONArray();
 		if(small_category_VOList != null) {
 			for(Calendar_small_category_VO scvo : small_category_VOList) {
@@ -173,22 +181,22 @@ public class ScheduleController {
 	}
 	
 	
-	/*
+	
 	// === 공유자를 찾기 위한 특정글자가 들어간 회원명단 불러오기 ===
 	@ResponseBody
-	@GetMapping(value="insertSchedule/searchJoinUserList")
+	@GetMapping(value="insertcalendar/searchJoinUserList")
 	public String searchJoinUserList(HttpServletRequest request) {
 		
 		String joinUserName = request.getParameter("joinUserName");
-		
+		// System.out.println("공유자 이름 : " + joinUserName);
 		// 사원 명단 불러오기
-		List<MemberVO> joinUserList = service.searchJoinUserList(joinUserName);
-
+		List<EmployeeVO> joinUserList = service.searchJoinUserList(joinUserName);
+		// System.out.println("공유자 이름 리스트 : " + joinUserList.size());
 		JSONArray jsonArr = new JSONArray();
 		if(joinUserList != null && joinUserList.size() > 0) {
-			for(MemberVO mvo : joinUserList) {
+			for(EmployeeVO mvo : joinUserList) {
 				JSONObject jsObj = new JSONObject();
-				jsObj.put("userid", mvo.getUserid());
+				jsObj.put("employeeNo", mvo.getEmployeeNo());
 				jsObj.put("name", mvo.getName());
 				
 				jsonArr.put(jsObj);
@@ -198,14 +206,14 @@ public class ScheduleController {
 		return jsonArr.toString();
 		
 	}
-	*/
+	
 	
 	// === 일정 등록하기 ===
 	@PostMapping("registerSchedule_end")
 	public ModelAndView registerSchedule_end(ModelAndView mav, HttpServletRequest request) throws Throwable {
-		
+		System.out.println("확인용 dsadsadsadsadsa ");
 		String startdate= request.getParameter("startdate");
-   	//  System.out.println("확인용 startdate => " + startdate);
+	//  System.out.println("확인용 startdate =>dsadsadsadsadsa " + startdate);
 	//  확인용 startdate => 20231129140000
    	    
 		String enddate = request.getParameter("enddate");
@@ -222,8 +230,23 @@ public class ScheduleController {
 	 // 확인용 joinUser_es => 이순신(leess),아이유1(iyou1),설현(seolh) 	
 		
 		String content = request.getParameter("content");
-		String fk_userid = request.getParameter("fk_userid");
+		String fk_employeeNo = request.getParameter("fk_employeeNo");
 		
+		String reservationContents = request.getParameter("reservationContents");
+		String Fk_assetDetailNo = request.getParameter("Fk_assetDetailNo");
+		
+		
+		AssetReservationVO assetreservationvo = new AssetReservationVO();
+
+		assetreservationvo.setFk_assetDetailNo(Fk_assetDetailNo);
+		assetreservationvo.setFk_employeeNo(fk_employeeNo);
+		assetreservationvo.setReservationStart(startdate);
+		assetreservationvo.setReservationEnd(enddate);
+		assetreservationvo.setReservationContents(reservationContents);
+		System.out.println("확인 Fk_assetDetailNo : " +Fk_assetDetailNo);
+	//	System.out.println("확인 reservationContents : " + reservationContents);
+		
+	//	System.out.println("확인용 fk_employeeNo => " + fk_employeeNo);
 		Map<String,String> paraMap = new HashMap<String, String>();
 		paraMap.put("startdate", startdate);
 		paraMap.put("enddate", enddate);
@@ -236,18 +259,45 @@ public class ScheduleController {
 		paraMap.put("joinuser", joinuser);
 		
 		paraMap.put("content", content);
-		paraMap.put("fk_userid", fk_userid);
+		paraMap.put("fk_employeeNo", fk_employeeNo);
 		
-		int n = service.registerSchedule_end(paraMap);
+		int result = 0;
+		
+		if(!"".equals(Fk_assetDetailNo)) {
+			// System.out.println("공백!!!!!!!!!!!!!!");
+			result = serviceRe.addReservation(assetreservationvo); // 예약추가를 해주는 메소드
 
-		if(n == 0) {
-			mav.addObject("message", "일정 등록에 실패하였습니다.");
+			if(result != 1) {
+				mav.addObject("message", "해당 시간내에 다른 예약건이 존재합니다.");
+			}
+			else {
+				
+				int n = service.registerSchedule_end(paraMap);
+				
+				if(n == 0) {
+					mav.addObject("message", "일정 등록에 실패하였습니다.");
+				}
+				else {
+					mav.addObject("message", "일정 등록에 성공하였습니다.");
+				}
+				
+			}
+			
 		}
 		else {
-			mav.addObject("message", "일정 등록에 성공하였습니다.");
+			
+			int n = service.registerSchedule_end(paraMap);
+	
+			if(n == 0) {
+				mav.addObject("message", "일정 등록에 실패하였습니다.");
+			}
+			else {
+				mav.addObject("message", "일정 등록에 성공하였습니다.");
+			}
+			
 		}
 		
-		mav.addObject("loc", request.getContextPath()+"/schedule/scheduleManagement");
+		mav.addObject("loc", request.getContextPath()+"/calendar/scheduleManagement");
 		
 		mav.setViewName("msg");
 		
@@ -264,9 +314,11 @@ public class ScheduleController {
 		
 		// 등록된 일정 가져오기
 		
-		String fk_userid = request.getParameter("fk_userid");
+		String fk_employeeNo = request.getParameter("fk_employeeNo");
+		
+		// System.out.println("fk_employeeNo 확인 : " + fk_employeeNo);
 				
-		List<Calendar_schedule_VO> scheduleList = service.selectSchedule(fk_userid);
+		List<Calendar_schedule_VO> scheduleList = service.selectSchedule(fk_employeeNo);
 		
 		JSONArray jsArr = new JSONArray();
 		
@@ -281,7 +333,7 @@ public class ScheduleController {
 				jsObj.put("scheduleno", svo.getScheduleno());
 				jsObj.put("fk_lgcatgono", svo.getFk_lgcatgono());
 				jsObj.put("fk_smcatgono", svo.getFk_smcatgono());
-				jsObj.put("fk_userid", svo.getFk_userid());
+				jsObj.put("fk_employeeNo", svo.getFk_employeeNo());
 				jsObj.put("joinuser", svo.getJoinuser());
 				
 				jsArr.put(jsObj);
@@ -298,8 +350,8 @@ public class ScheduleController {
 	@GetMapping(value="detailSchedule")
 	public ModelAndView detailSchedule(ModelAndView mav, HttpServletRequest request) {
 		
-		String scheduleno = request.getParameter("scheduleno");
-		
+		String scheduleno = request.getParameter("scheduleno"); 
+		// System.out.println("확인 scheduleno : " + scheduleno); // 확인 scheduleno : 2
 		// 검색하고 나서 취소 버튼 클릭했을 때 필요함
 		String listgobackURL_schedule = request.getParameter("listgobackURL_schedule");
 		mav.addObject("listgobackURL_schedule",listgobackURL_schedule);
@@ -313,9 +365,9 @@ public class ScheduleController {
 			Integer.parseInt(scheduleno);
 			Map<String,String> map = service.detailSchedule(scheduleno);
 			mav.addObject("map", map);
-			mav.setViewName("mycontent1/schedule/detailSchedule");
+			mav.setViewName("mycontent/calendar/detailSchedule");
 		} catch (NumberFormatException e) {
-			mav.setViewName("redirect:/schedule/scheduleManagement");
+			mav.setViewName("redirect:/calendar/");
 		}
 		
 		return mav;
@@ -340,7 +392,7 @@ public class ScheduleController {
 	
 	
 	
-	/*
+	
 	// === 일정 수정하기 ===
 	@PostMapping("editSchedule")
 	public ModelAndView editSchedule(ModelAndView mav, HttpServletRequest request) {
@@ -353,11 +405,11 @@ public class ScheduleController {
 			String gobackURL_detailSchedule = request.getParameter("gobackURL_detailSchedule");
 			
 			HttpSession session = request.getSession();
-			MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
+			EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 			
 			Map<String,String> map = service.detailSchedule(scheduleno);
 			
-			if( !loginuser.getUserid().equals( map.get("FK_USERID") ) ) {
+			if( !loginuser.getEmployeeNo().equals( map.get("fk_employeeNo") ) ) {
 				String message = "다른 사용자가 작성한 일정은 수정이 불가합니다.";
 				String loc = "javascript:history.back()";
 				
@@ -369,16 +421,16 @@ public class ScheduleController {
 				mav.addObject("map", map);
 				mav.addObject("gobackURL_detailSchedule", gobackURL_detailSchedule);
 				
-				mav.setViewName("mycontent1/schedule/editSchedule");
+				mav.setViewName("mycontent/calendar/editSchedule");
 			}
 		} catch (NumberFormatException e) {
-			mav.setViewName("redirect:/schedule/scheduleManagement");
+			mav.setViewName("redirect:/schedule/calendar");
 		}
 		
 		return mav;
 		
 	}
-	*/
+	
 	
 	
 	// === 일정 수정 완료하기 ===
@@ -390,7 +442,7 @@ public class ScheduleController {
 			 
 			 if(n==1) {
 				 mav.addObject("message", "일정을 수정하였습니다.");
-				 mav.addObject("loc", request.getContextPath()+"/schedule/scheduleManagement");
+				 mav.addObject("loc", request.getContextPath()+"/calendar/calendar");
 			 }
 			 else {
 				 mav.addObject("message", "일정 수정에 실패하였습니다.");
@@ -400,7 +452,7 @@ public class ScheduleController {
 			 mav.setViewName("msg");
 		} catch (Throwable e) {	
 			e.printStackTrace();
-			mav.setViewName("redirect:/schedule/scheduleManagement");
+			mav.setViewName("redirect:/calendar/calendar");
 		}
 			
 		return mav;
@@ -429,16 +481,21 @@ public class ScheduleController {
 	@ResponseBody
 	@PostMapping("editCalendar")
 	public String editComCalendar(HttpServletRequest request) throws Throwable {
-		
+		System.out.println("왜이럼");
 		String smcatgono = request.getParameter("smcatgono");
 		String smcatgoname = request.getParameter("smcatgoname");
-		String userid = request.getParameter("userid");
+		String fk_employeeNo = request.getParameter("fk_employeeNo");
 		String caltype = request.getParameter("caltype");
+		
+		System.out.println("확인 smcatgono " + smcatgono);
+		System.out.println("확인 smcatgoname " + smcatgoname);
+		System.out.println("확인 fk_employeeNo " + fk_employeeNo);
+		System.out.println("확인 caltype " + caltype);
 		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("smcatgono", smcatgono);
 		paraMap.put("smcatgoname", smcatgoname);
-		paraMap.put("userid", userid);
+		paraMap.put("fk_employeeNo", fk_employeeNo);
 		paraMap.put("caltype", caltype);
 		
 		int n = service.editCalendar(paraMap);
@@ -460,7 +517,7 @@ public class ScheduleController {
 		String enddate = request.getParameter("enddate");
 		String searchType = request.getParameter("searchType");
 		String searchWord = request.getParameter("searchWord");
-		String fk_userid = request.getParameter("fk_userid");  // 로그인한 사용자id
+		String fk_employeeNo = request.getParameter("fk_employeeNo");  // 로그인한 사용자id
 		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
 		String str_sizePerPage = request.getParameter("sizePerPage");
 	
@@ -496,7 +553,7 @@ public class ScheduleController {
 		paraMap.put("enddate", enddate);
 		paraMap.put("searchType", searchType);
 		paraMap.put("searchWord", searchWord);
-		paraMap.put("fk_userid", fk_userid);
+		paraMap.put("fk_employeeNo", fk_employeeNo);
 		paraMap.put("str_sizePerPage", str_sizePerPage);
 
 		paraMap.put("fk_lgcatgono", fk_lgcatgono);
@@ -553,8 +610,8 @@ public class ScheduleController {
 		
 		// === [맨처음][이전] 만들기 ===
 		if(pageNo!=1) {
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?startdate="+startdate+"&enddate="+enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_userid="+fk_userid+"&fk_lgcatgono="+fk_lgcatgono+"&sizePerPage="+sizePerPage+"&currentShowPageNo=1'>[맨처음]</a></li>";
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?startdate="+startdate+"&enddate="+enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_userid="+fk_userid+"&fk_lgcatgono="+fk_lgcatgono+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?startdate="+startdate+"&enddate="+enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_employeeNo="+fk_employeeNo+"&fk_lgcatgono="+fk_lgcatgono+"&sizePerPage="+sizePerPage+"&currentShowPageNo=1'>[맨처음]</a></li>";
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?startdate="+startdate+"&enddate="+enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_employeeNo="+fk_employeeNo+"&fk_lgcatgono="+fk_lgcatgono+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>";
 		}
 		while(!(loop>blockSize || pageNo>totalPage)) {
 			
@@ -562,7 +619,7 @@ public class ScheduleController {
 				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</li>";
 			}
 			else {
-				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?startdate="+startdate+"&enddate="+enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_userid="+fk_userid+"&fk_lgcatgono="+fk_lgcatgono+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>";
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?startdate="+startdate+"&enddate="+enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_employeeNo="+fk_employeeNo+"&fk_lgcatgono="+fk_lgcatgono+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>";
 			}
 			
 			loop++;
@@ -571,8 +628,8 @@ public class ScheduleController {
 		
 		// === [다음][마지막] 만들기 === //
 		if(pageNo <= totalPage) {
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?startdate="+startdate+"&enddate="+enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_userid="+fk_userid+"&fk_lgcatgono="+fk_lgcatgono+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+pageNo+"'>[다음]</a></li>";
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?startdate="+startdate+"&enddate="+enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_userid="+fk_userid+"&fk_lgcatgono="+fk_lgcatgono+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?startdate="+startdate+"&enddate="+enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_employeeNo="+fk_employeeNo+"&fk_lgcatgono="+fk_lgcatgono+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+pageNo+"'>[다음]</a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?startdate="+startdate+"&enddate="+enddate+"&searchType="+searchType+"&searchWord="+searchWord+"&fk_employeeNo="+fk_employeeNo+"&fk_lgcatgono="+fk_lgcatgono+"&sizePerPage="+sizePerPage+"&currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
 		}
 		pageBar += "</ul>";
 		
@@ -583,10 +640,42 @@ public class ScheduleController {
 		
 		mav.addObject("listgobackURL_schedule",listgobackURL_schedule);
 		mav.addObject("scheduleList", scheduleList);
-		mav.setViewName("mycontent1/schedule/searchSchedule");
+		mav.setViewName("mycontent/calendar/searchSchedule");
 
 		return mav;
 	}
+	
+	
+	// 해당날짜의 일정이 곂쳐있는 사람을 조회하는 기능
+	@GetMapping("displayUserListSelect")
+	@ResponseBody
+	public List<Map<String, String>> displayUserListSelect(@RequestParam String fk_employeeno,
+														   @RequestParam String selectDay) {
+		
+		// System.out.println("plusUserArr 확인~~ : " + plusUserArr);
+		// System.out.println("selectDay 확인~~ : " + selectDay);
+		// plusUserArr 확인~~ : 100020
+		// selectDay 확인~~ : 20250312
+		
+		Map<String, Object> paraMap = new HashMap<>();
+		 
+		// paraMap.put("plusUserArr", plusUserArr.split(","));
+		paraMap.put("fk_employeeno", fk_employeeno);
+		paraMap.put("startdate", selectDay+" 000000");
+		paraMap.put("enddate", selectDay+" 235959");
+		
+		// System.out.println(paraMap.get("plusUserArr") +" 그리고 "+ paraMap.get("startdate") +" 그리고 "+ paraMap.get("enddate"));
+		// 100012,100013 그리고 20250313 000000 그리고 20250313 235959
+		
+		List<Map<String, String>> list = service.displayUserListSelect(paraMap); // 해당날짜의 일정이 곂쳐있는 사람을 조회하는 기능
+		
+		return list;
+	}
+	
+	
+	
+	
+	
 
 	
 }
