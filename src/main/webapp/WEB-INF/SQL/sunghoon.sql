@@ -283,3 +283,7 @@ delete from tbl_document
 where documentNo IN ('2025-100091', '2025-100090');
 
 commit;
+
+select occurannual, overannual, addannual, occurannual + overannual - addannual as total
+from tbl_annual
+where fk_employeeNo = '100014' and year = 2025;
