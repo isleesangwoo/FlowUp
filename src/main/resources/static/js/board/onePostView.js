@@ -131,7 +131,6 @@ $(document).ready(()=>{
     }); // end of $('#sort_btn').click(e=>{})-------------
 
     $('#sortCnt_btn > ul li').click(e=>{
-        
         const listIndex = $(e.target).index();
         const liInfo = $('#sortCnt_btn > ul li').eq(listIndex).text();
         $('#sortCnt_btn > span:nth-child(1)').html(liInfo);
@@ -284,7 +283,6 @@ $(document).ready(()=>{
 		  //내용 유효성 검사(스마트 에디터 사용 할 경우) 끝
 		    
 	      var formData = new FormData($("form[name='updatePostFrm']").get(0)); // $("form[name='updatePostFrm']").get(0) 폼 에 작성된 모든 데이터 보내기 
-	     	console.log("file_arr: " + file_arr.length);
 	      if(file_arr.length > 0) { // 파일첨부가 있을 경우 
 	          
 	    	  // 첨부한 파일의 총합의 크기가 10MB 이상 이라면 메일 전송을 하지 못하게 막는다.
@@ -533,8 +531,8 @@ $(document).ready(()=>{
 					  if(comment.profileImg == null){ // 프로필 이미지가 없을 경우
 						html +=`<i class="fa-solid fa-user"></i> `;
 					  }
-					  else{
-						html +=`프로필이미지 존재(경로설정 필요) `;
+					  else{ // 프로필이미지 존재(경로설정 필요)
+						html +=`<img src='/flowUp/resources/files/${comment.fileName}' width='32' height='32'/>`;
 					  }
 					   
 				html +=`</span>
@@ -563,11 +561,14 @@ $(document).ready(()=>{
 								<div id="reCommentCreate">
 						        	<span id="profile">`;
 									
-									if(json.login_profileImg == null || json.login_profileImg ==""){ // 로그인한 사원의 프로필이미지가 없는 경우
+									///////////////////////// 대댓글 /////////////////////////
+									let login_fileName = $("#login_fileName").text(); // 로그인된 사용자의 프로필이미지
+									if(login_fileName == null || login_fileName ==""){ // 로그인한 사원의 프로필이미지가 없는 경우
 										html+=`<i class="fa-solid fa-user"></i>`;
 									}
 									else if(json.login_profileImg != null || json.login_profileImg != ""){	// 프로필이미지가 있는 경우 프로필이미지 존재(경로설정 필요)
-										html +=`p`;
+										
+										html +=`<img src='/flowUp/resources/files/${login_fileName}' width='32' height='32'/>`;
 									}
 									else{
 										html+=`<i class="fa-solid fa-user"></i>`;

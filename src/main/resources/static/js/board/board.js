@@ -19,7 +19,6 @@ $(document).ready(()=>{
     }); // end of $('#sort_btn').click(e=>{})-------------
 
     $('#sortCnt_btn > ul li').click(e=>{
-        
         const listIndex = $(e.target).index();
         const liInfo = $('#sortCnt_btn > ul li').eq(listIndex).text();
         $('#sortCnt_btn > span:nth-child(1)').html(liInfo);

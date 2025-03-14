@@ -200,10 +200,10 @@
 		<c:if test="${postvo.allowComments == 1}"> <%-- 댓글이 허용이라면 댓글입력 요소를 보여줌. --%>
 	        <div id="commentCreate" class="padding">
 	        	<span id="profile"> <%-- 이 곳은 로그인된 사원의 프로필이 들어올 자리 --%>
-	        	<c:if test="${login_profileImg != null}">
-	        		프로필이미지 존재의 경우(경로설정 필요)
+	        	<c:if test="${login_fileName != null}">
+	        		<img src='/flowUp/resources/files/${login_fileName}' width='32' height='32'/>
 	        	</c:if>
-	        	<c:if test="${login_profileImg == null}">
+	        	<c:if test="${login_fileName == null}">
 	        		<i class="fa-solid fa-user"></i>
 	        	</c:if> 
 	        	 </span>
@@ -285,6 +285,7 @@
 	댓글 허용 여부 : <span id="allowComments">${postvo.allowComments}</span> <%-- loadComment()에서 사용 --%><br>
 	로그인 사원번호 : <span id="login_userid">${login_userid}</span><%-- addReply()에서 사용 --%><br>
 	로그인 사원이름 : <span id="login_name">${login_name}</span><%-- addReply()에서 사용 --%><br>
+	로그인 사원 프로필 이미지 : <span id="login_fileName">${login_fileName}</span><br> <%-- loadComment(postNo, page = 1,reload)에서 사용 --%>
 	좋아요 여부 : ${likeCnt}<br>
 
 </div>
