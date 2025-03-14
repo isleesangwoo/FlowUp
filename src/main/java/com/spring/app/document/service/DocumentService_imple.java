@@ -3,6 +3,7 @@ package com.spring.app.document.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -134,9 +135,9 @@ public class DocumentService_imple implements DocumentService {
 	}
 
 
-	// 휴가신청서 결재 요청
+	// 결재 요청
 	@Override
-	public int annualDraft(Map<String, String> paraMap) {
+	public Map<String, String> draft(Map<String, String> paraMap) {
 		
 		// 채번하기
 		String seq_document = mapper_dao.getSeqDocument();
@@ -151,7 +152,12 @@ public class DocumentService_imple implements DocumentService {
 		int n = mapper_dao.insertDocument(paraMap);
 		int m = 0;
 		if(n==1) {
-			m = mapper_dao.insertAnnualDraft(paraMap);
+			if("휴가신청서".equals(paraMap.get("documentType"))) {
+				m = mapper_dao.insertAnnualDraft(paraMap);
+			}
+			else if("연장근무신청서".equals(paraMap.get("documentType"))) {
+				m = mapper_dao.insertOvertimeDraft(paraMap);
+			}
 		}
 		
 		int approval_count = Integer.parseInt(paraMap.get("added_approval_count"));
@@ -164,43 +170,13 @@ public class DocumentService_imple implements DocumentService {
 			a *= mapper_dao.insertApprover(paraMap);
 		}
 		
-		return n*m;
+		Map<String, String> map = new HashMap<>();
+		map.put("n", String.valueOf(n*m*a));	// 결과 넣어주기
+		map.put("documentNo", documentNo);		// 문서번호 넣어주기
+		
+		return map;
 	}
 	
-	
-	// 연장근무신청서 결재 요청
-	@Override
-	public int overtimeDraft(Map<String, String> paraMap) {
-		
-		// 채번하기
-		String seq_document = mapper_dao.getSeqDocument();
-		
-		Date date = new Date();
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-");
-		
-		String documentNo = sdf.format(date) + seq_document; // 문서번호
-		
-		paraMap.put("documentNo", documentNo); // 문서번호 넣어주기
-		
-		int n = mapper_dao.insertDocument(paraMap);
-		int m = 0;
-		if(n==1) {
-			m = mapper_dao.insertOvertimeDraft(paraMap);
-		}
-		
-		int approval_count = Integer.parseInt(paraMap.get("added_approval_count"));
-		
-		int a = 1;
-		
-		for(int i=0; i<approval_count; i++) {
-			paraMap.put("fk_approver", paraMap.get("added_employee_no" + i));
-			paraMap.put("approvalorder", String.valueOf(approval_count-i));
-			a *= mapper_dao.insertApprover(paraMap);
-		}
-		
-		return n*m;
-	}
-
 
 	// 결재 승인하기
 	@Override
