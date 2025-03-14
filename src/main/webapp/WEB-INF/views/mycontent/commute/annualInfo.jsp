@@ -187,6 +187,7 @@ div.hoverDiv:hover {
 	left: 50%;
 	transform: translate(-50%,-50%);
 	z-index: 199;	
+	
 }
 
 .modal_content{
@@ -195,6 +196,8 @@ div.hoverDiv:hover {
 	background-color: white; 
 	margin: 0 auto;
     padding: 20px;
+    filter: drop-shadow(4px 5px 22px rgba(0, 0, 0, 0.2));
+    border-radius: 20px;
 }
 
 
@@ -306,18 +309,7 @@ div.hoverDiv:hover {
 		});//
 		
 		$("button.closeModal").click(function(){
-			
-			$("input#employeeNo").val("");
-			$("input#name").val("");
-			$("input#departmentname").val("");
-			$("input#registerdate").val("");
-			$("input#occurAnnual").val("");
-			$("input#overAnnual").val("");
-			$("input#addAnnual").val("");
-			$("input#totalannual").val("");
-			$("input#usedannual").val("");
-			$("input#remainingannual").val("");
-			
+			 
 			$("div.addFrmModal").hide();
 		});//	
 		

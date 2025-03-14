@@ -44,6 +44,12 @@ public class CommuteController {
 	@GetMapping("")
 	public ModelAndView commute(HttpServletRequest request, ModelAndView mav) {
 		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO)session.getAttribute("loginuser");
+		
+		System.out.println("getDepartmentName : " + loginuser.getDepartmentName());
+		
+		
 		String referer = request.getHeader("referer");
 		
 		if(referer == null) {

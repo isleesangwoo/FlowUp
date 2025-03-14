@@ -1,9 +1,13 @@
+<%@page import="com.spring.app.employee.domain.EmployeeVO"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
 <%
-   String ctxPath = request.getContextPath();
-   //     /myspring 
+   	String ctxPath = request.getContextPath();
+	HttpSession session2 = request.getSession();
+	EmployeeVO loginuser = (EmployeeVO) session2.getAttribute("loginuser");
+	String departmentName = loginuser.getDepartmentName();
+	String FK_departmentNo = loginuser.getFK_departmentNo();
 %>      
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
@@ -209,9 +213,11 @@
 
 
 <script type="text/javascript">
-	$(document).ready(()=>{
 	
-		
+    const securityLevel = "${sessionScope.loginuser.securityLevel}";
+    const departmentName = "${sessionScope.loginuser.departmentName}";
+    
+	$(document).ready(()=>{
 		
 	    // ========== 시간을 알려주는 메소드 ========== //
 	    function updateClock() {
@@ -300,8 +306,6 @@
 					, "status":n_status},
 				dataType:"json",
 				success:function(json) {
-					
-					
 					
 				},
 				error: function(request, status, error){
@@ -528,9 +532,8 @@
 	}// function getTodayWorkInfo()
 	
 	function getDeptname() {
-		
-		
-		let html = ``;
+	
+	    let html = "";
 		
 		if(${sessionScope.loginuser.securityLevel == "10"}) {
 			
@@ -538,7 +541,6 @@
 				url:"<%= ctxPath%>/commute/getDeptname",
 				type:"get",
 				async:false,
-				data:{"fk_employeeNo":"${sessionScope.loginuser.employeeNo}"},
 				dataType:"json",
 				success:function(json) {
 					
@@ -559,16 +561,15 @@
 		}
 		else {
 			
-			html += `<div>
-			        	<div class="deptCommuteTable hhover">&nbsp;&nbsp;&nbsp;\${sessionScope.loginuser.departmentName} 근태현황</div>
-			        	<input type="hidden" value="" />
+			html += `<div style="margin-top:3px;">
+			        	<div class="deptCommuteTable hhover">&nbsp;&nbsp;&nbsp;<%= departmentName%> 근태현황</div>
+			        	<input type="hidden" value="<%= FK_departmentNo%>" />
 					</div>`;
 		}
 		
-		
-		
 		$("div#btn_depCommute_list").html(html);
 		
+	
 		
 	}
 
@@ -646,7 +647,8 @@
             
             		<div id="btn_depCommute" class="hhover" style="font-size:14pt; font-weight: bold;">부서 근태관리</div>
 		         	
-		            <div id="btn_depCommute_list" style="list-style: none; display: none;"></div>
+		            <div id="btn_depCommute_list" style="list-style: none; display: none;">
+		            </div>
 		            
 		    </div>
             
