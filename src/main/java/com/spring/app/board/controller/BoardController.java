@@ -27,6 +27,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.spring.app.board.domain.BoardVO;
+import com.spring.app.board.domain.NotificationVO;
 import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.board.domain.PostVO;
 import com.spring.app.board.service.BoardService;
@@ -74,8 +75,6 @@ public class BoardController {
 		session.setAttribute("readCountPermission", "yes");
 		/*
 		session 에  "readCountPermission" 키값으로 저장된 value값은 "yes" 이다.
-		session 에  "readCountPermission" 키값에 해당하는 value값 "yes"를 얻으려면 
-		반드시 웹브라우저에서 주소창에 "/board/list" 이라고 입력해야만 얻어올 수 있음. 
 		*/
 		
 		
@@ -203,22 +202,6 @@ public class BoardController {
 	@GetMapping("selectBoardList")
 	@ResponseBody
 	public Map<String, Object> selectBoardList(HttpServletRequest request) {
-		
-		/*
-		HttpSession session = request.getSession();
-	    EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
-	
-	    String login_departNo = null;
-	  
-	    if(loginuser != null) {
-	    	login_departNo = loginuser.getFK_departmentNo();
-	    }
-		
-		
-		
-	    List<BoardVO> boardList = service.selectBoardList(login_departNo);  // 게시판 목록 조회
-	    return boardList; // JSON 데이터로 반환됨
-	    */
 		
 	    HttpSession session = request.getSession();
 	    EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
@@ -958,8 +941,6 @@ public class BoardController {
 		session.setAttribute("readCountPermission", "yes");
 		/*
 		session 에  "readCountPermission" 키값으로 저장된 value값은 "yes" 이다.
-		session 에  "readCountPermission" 키값에 해당하는 value값 "yes"를 얻으려면 
-		반드시 웹브라우저에서 주소창에 "/board/list" 이라고 입력해야만 얻어올 수 있음. 
 		*/
 		
 		// 총 게시물 건수(totalCount)를 구하기
@@ -1052,9 +1033,14 @@ public class BoardController {
   // 좋아요 추가 또는 취소 ( post 테이블의 likeCount 컬럼 누적 또는 차감 포함)
   @PostMapping("like")
   @ResponseBody
-  public Map<String,Object> like(@RequestParam String postNo, @RequestParam String login_userid){
+  public Map<String,Object> like(@RequestParam String postNo, @RequestParam String login_userid,
+								 @RequestParam String notificationtype, @RequestParam String fk_employeeNo){
+	  System.out.println(postNo);
+	  System.out.println(login_userid);
+	  System.out.println(notificationtype);
+	  System.out.println(fk_employeeNo);
 	  
-	  Map<String,Object> map = service.toggleLike(postNo,login_userid); // 좋아요를 추가(추가시 게시글의 좋아요 게수 누적) 또는 삭제함
+	  Map<String,Object> map = service.toggleLike(postNo,login_userid,notificationtype,fk_employeeNo); // 좋아요를 추가(추가시 게시글의 좋아요 게수 누적) 또는 삭제함
 	  
 	  return map;
   }
@@ -1117,10 +1103,19 @@ public class BoardController {
   @PostMapping("insertComment")
   @ResponseBody
   public Map<String, Object> insertComment (@RequestParam String postNo, @RequestParam  String login_userid,
-		  								@RequestParam  String login_name, @RequestParam String commentContent) {
+		  								@RequestParam  String login_name, @RequestParam String commentContent,
+		  								@RequestParam String fk_employeeNo,@RequestParam(required = false) String fk_commentNo,
+		  								@RequestParam String notificationtype) {
+	  
+	  System.out.println("----"+postNo);
+		System.out.println(login_userid);
+		System.out.println(commentContent);
+		System.out.println(fk_employeeNo);
+		System.out.println(fk_commentNo);
+		System.out.println("----"+notificationtype);
 	  
 	  Map<String, Object> map = new HashMap<>();
-	  int insertCount = service.insertComment(postNo, login_userid, login_name,commentContent); // 댓글 등록
+	  int insertCount = service.insertComment(postNo, login_userid, login_name,commentContent,fk_employeeNo,fk_commentNo,notificationtype); // 댓글 등록
 	
 	  map.put("success", insertCount > 0); // true 또는 false
 	  return map;
@@ -1134,8 +1129,6 @@ public class BoardController {
 										        @RequestParam(value = "pageSize", defaultValue = "10") int pageSize,
 										        @RequestParam(required = false, defaultValue = "0") Integer reload,
 										        HttpServletRequest request) {
-		  
-		 System.out.println("page : " + page);
 		 int start = 0 ;
 		 if(reload == 1) { // 댓글 수정 삭제 일 시 
 			 start = (1 - 1) * pageSize + 1; // 시작 ROWNUM
@@ -1202,15 +1195,80 @@ public class BoardController {
  @PostMapping("insertReComment")
  @ResponseBody
  public Map<String, Object> insertReComment (@RequestParam String postNo, @RequestParam  String login_userid, @RequestParam  String login_name,
-		 									@RequestParam String replyContent, @RequestParam String fk_commentNo, @RequestParam String depthNo) {
+		 									@RequestParam String replyContent, @RequestParam String fk_commentNo, @RequestParam String depthNo,
+		 									@RequestParam String notificationtype,String postCreateBy) {
 	 
 	  Map<String, Object> map = new HashMap<>();
-	  int insertCount = service.insertReComment(postNo, login_userid, login_name,replyContent,fk_commentNo,depthNo); // 대댓글 등록
+	  int insertCount = service.insertReComment(postNo, login_userid, login_name,replyContent,fk_commentNo,depthNo,notificationtype,postCreateBy); // 대댓글 등록
 	
 	  map.put("success", insertCount > 0); // true 또는 false
 	  return map;
  }
+ 
+ // 읽지 않은 알림 조회하기 (최신화에 사용됨)
+ @GetMapping("getNotification")
+ @ResponseBody
+ public Map<String, Object> getNotification(HttpServletRequest request) {
+	 
+	 HttpSession session = request.getSession();
+		
+	 EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+	 
+     String login_userid = null;
+     
+     Map<String, Object> map = new HashMap<>();
   
+     if(loginuser != null) { // 로그인이 되었을 경우
+	   login_userid = loginuser.getEmployeeNo();
+	   map.put("login_userid", login_userid);
+	   
+	   // 로그인된 사원번호로 읽지않은 해당 알림 조회
+	   List<NotificationVO> listNotification= service.loadNotification(login_userid); 
+	   
+	   map.put("listNotification", listNotification);
+     }
+     
+     
+     String currentURL = "/flowUp/board/selectPostBoardGroupView?boardNo=";
+     map.put("goBackURL", currentURL); // 돌아갈 페이지
+	 
+	 
+     return map;
+ }
+ 
+ // 알림 클릭 시
+ @PostMapping("notificationIsRead")
+ @ResponseBody
+ public Map<String, Object> notificationIsRead(String notificationNo,HttpServletRequest request,String postNo, String fk_employeeNo,String boardNo){
+	 
+	 HttpSession session = request.getSession();
+	 session.setAttribute("readCountPermission", "yes");
+	
+	 EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+	 
+     String login_userid = null;
+  
+     if(loginuser != null) {
+	   login_userid = loginuser.getEmployeeNo();
+     }
+     
+     Map<String, Object> map = new HashMap<>();
+     
+	 if(login_userid != null && !login_userid.equals(fk_employeeNo)) { // 로그인한 사원과 알림을 받는 사원번호가 같지 않은 경우
+		 service.increase_readCount(postNo); // 알림의 해당글 클릭 시 글조회수 1증가 하기 
+	 }
+	 
+	 int n = service.notificationIsRead(notificationNo); // 클릭 된 알림을 0(안읽음)에서 1(읽음)으로 상태 변경
+	 
+	 
+	 
+	 String goBackURL = "/board/selectPostBoardGroupView?boardNo=" + boardNo; // 목록보기 클릭 시 해당 게시글의 게시판그룹 게시글 목록으로 이동
+	 
+	 map.put("n", n);
+	 map.put("goBackURL", goBackURL);
+	 
+	 return map;
+ }
   
   
   

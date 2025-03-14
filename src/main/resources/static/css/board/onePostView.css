@@ -49,6 +49,7 @@
     margin: 10% auto;
     width: 20%;
     border-radius: 10px;
+    filter: drop-shadow(4px 5px 22px rgba(0, 0, 0, 0.2));
 }
 #likeUserList{
 	margin: var(--size18) 0 ;
@@ -161,7 +162,7 @@
 	font-size: var(--size24)
 }
 #heartIcon{
-	font-size: 35px;
+	font-size: 20px;
 	color:red;
 }
 #heartIcon:hover{
@@ -176,6 +177,8 @@
 }
 #likeCount{
 	text-align: center;
+	margin-top: -5px;
+	font-size: 13px;
 }
 #onePostContent {
 	width: 100%;
@@ -290,7 +293,7 @@ td {
 	line-height: 30px;
 	min-width: 32px;
 	height: 32px;
-	background-color: gray;
+	background-color: #eff4fc;
 	border-radius: 50%;
 }
 
