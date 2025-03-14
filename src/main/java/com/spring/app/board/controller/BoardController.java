@@ -78,9 +78,10 @@ public class BoardController {
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
 	    String login_userid = null;
-	  
+	    String login_fileName = null;
 	    if(loginuser != null) {
 		  login_userid = loginuser.getEmployeeNo();
+		  login_fileName = loginuser.getFileName();
 	    }
 	    
 		// 총 게시물 건수(totalCount)를 구하기
@@ -180,6 +181,7 @@ public class BoardController {
 		String currentURL = MyUtil.getCurrentURL(request);
 		mav.addObject("goBackURL", currentURL);
 		mav.addObject("login_userid",login_userid);
+		mav.addObject("login_fileName",login_fileName);
 		////////////////////////////////////////
         mav.setViewName("mycontent/board/board");
         
@@ -651,13 +653,13 @@ public class BoardController {
 	
 	  String login_userid = null;
 	  String login_name = null;
-	  String login_profileImg = null;
+	  String login_fileName = null;
 	  int likeCnt = 0;
 	  
 	  if(loginuser != null) {
 		login_userid = loginuser.getEmployeeNo();
 		login_name = loginuser.getName();
-		login_profileImg = loginuser.getProfileImg();
+		login_fileName = loginuser.getFileName();
 		// login_userid 는 로그인 되어진 사용자의 EmployeeNo 이다. 
 		
 		likeCnt = service.checkLike(login_userid,postNo); // 로그인 된 사원이 해당 게시글 하나 클릭 시 좋아요 여부를 검사.(1:좋아요 완료, 0:좋아요 x)
@@ -697,7 +699,7 @@ public class BoardController {
 	  	  postfilevo = service.getFileOfOnePost(paraMap); // 글 하나의 첨부파일 테이블의 고유번호,기존파일명,새로운 파일명 추출
 	  	  
 	  	  
-	  	  mav.addObject("login_profileImg", login_profileImg);
+	  	  mav.addObject("login_fileName", login_fileName);
 	  	  mav.addObject("login_name", login_name);
 	  	  mav.addObject("login_userid", login_userid);
 	  	  mav.addObject("postfilevo", postfilevo);

@@ -40,6 +40,7 @@ public class PostVO {
 	
 	private String login_userid; 	
 	private String login_userName; 	
+	private String fileName; 
 
 	private BoardVO boardvo; // 조인을 위해
 	private PostFileVO postfilevo; // 조인을 위해
@@ -259,6 +260,12 @@ public class PostVO {
 	}
 	public void setLogin_userName(String login_userName) {
 		this.login_userName = login_userName;
+	}
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
     
     

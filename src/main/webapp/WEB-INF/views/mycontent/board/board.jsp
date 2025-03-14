@@ -64,13 +64,11 @@
 							
 							
 							<span id="profileImg"> <!-- 프로필 사진 -->
-								<c:if test="${post.profileImg == null}">
-									<i class="fa-regular fa-user"></i>
+								<c:if test="${post.fileName == null}">
+									<i class="fa-solid fa-user"></i>
 								</c:if>
-								<c:if test="${post.profileImg != null}">
-									<i class="fa-regular fa-user">
-										<span>프로필사진 존재 경우(경로설정필요)</span>
-									</i>
+								<c:if test="${post.fileName != null}">
+									<span><img src='/flowUp/resources/files/${post.fileName}' width='32' height='32'/></span>
 								</c:if>
 							</span>
 							<span class="postCreateBy">${post.name} ${post.positionName}</span>
