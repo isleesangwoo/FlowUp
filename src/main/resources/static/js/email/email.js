@@ -83,6 +83,7 @@ $(document).ready(()=>{
      }
    });
 
+   // 정렬 버튼
    $(document).ready(function() {
 	   $("#sortCnt_btn ul li").on("click", function() {
 	       let pageSize = $(this).text().trim();
