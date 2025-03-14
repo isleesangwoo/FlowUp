@@ -19,6 +19,7 @@ public class CommonService_imple implements CommonService {
 	@Autowired
 	private CommonDAO dao;
 
+
 	
 
 	

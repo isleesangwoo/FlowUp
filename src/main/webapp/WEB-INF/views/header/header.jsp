@@ -132,7 +132,7 @@
                               <a href="<%= ctxPath%>/calendar/"><i class="fa-regular fa-calendar-days"></i><span>캘린더</span></a>
                           </li>
                           <li>
-                              <a href="<%= ctxPath%>/organization/"><i class="fa-regular fa-folder"></i><span>조직도</span></a>
+                              <a href="<%= ctxPath%>/commute/organization"><i class="fa-regular fa-folder"></i><span>조직도</span></a>
                           </li>
                           <li>
                               <a href="<%= ctxPath%>/employee/addressBook"><i class="fas fa-address-book"></i><span>주소록</span></a>

@@ -642,6 +642,24 @@ public class CommuteService_imple implements CommuteService {
 		int n = dao.changeAddAnnual(paraMap);
 		return n;
 	}
+
+	@Override
+	public List<Map<String, String>> getCEO() {
+		List<Map<String, String>> CEOList = dao.getCEO();
+		return CEOList;
+	}
+
+	@Override
+	public List<Map<String, String>> getDept() {
+		List<Map<String, String>> deptList = dao.getDept();
+		return deptList;
+	}
+
+	@Override
+	public List<Map<String, String>> getTeam() {
+		List<Map<String, String>> teamList = dao.getTeam();
+		return teamList;
+	}
 	
 	
 	

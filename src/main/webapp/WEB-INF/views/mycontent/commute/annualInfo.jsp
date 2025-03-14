@@ -263,9 +263,6 @@ div.hoverDiv:hover {
 		});
         
      	
-
-		
-		
 		$(document).on("click","table#annualTable tr",e=>{
 			
 			const radio = $(e.target).parent().find("input:radio[name='empSelect']");
@@ -379,14 +376,8 @@ div.hoverDiv:hover {
 		});
 		
 		
-		
-		
-		$("div.addFrmModal").hide();
-    	
     }); // end of $(document).ready(() => {})-------------
 
-   
-   
     function week_div(year, currentShowPageNo) {
     	
         $('div#today').text(year);
@@ -601,12 +592,7 @@ div.hoverDiv:hover {
 <input type="hidden" id="employeeNo" value="" />
 
 
-
-
-
-
-
-<div class="addFrmModal">
+<div class="addFrmModal" style="display:none;">
 
 	<div class="modal_background"></div><%-- 모달창 백그라운드 --%>
 		
@@ -669,23 +655,6 @@ div.hoverDiv:hover {
 	</div>
 		
 </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 <jsp:include page="../../footer/footer.jsp" />
