@@ -37,7 +37,7 @@ String ctxPath = request.getContextPath();
 			open_modal();
 		});
 		
-		<%-- 모달 창에서 승인 또는 반려 버튼 클릭 시 --%>
+		<%-- 모달 창에서 승인 또는 반려 버튼 클릭 시 이벤트 --%>
 		$("button#execute_btn").click(e=>{
 			
 			<%-- 결재 모달 창에서 승인 버튼 클릭 시 --%>
@@ -49,8 +49,26 @@ String ctxPath = request.getContextPath();
 			else if($(e.target).hasClass("reject_btn")) {
 				reject();
 			}
-		})
+		});
 		
+		<%-- 다운로드 버튼 클릭 시 이벤트 이벤트 --%>
+		$("button#download_btn").click(e=>{
+			
+			let url = `http://localhost:9090/flowUp/document/documentView?documentNo=\${document.documentNo}&documentType=\${document.documentType}`;
+			
+			$.ajax({
+				url:"<%= ctxPath%>/document/documentView/download",
+				dataType:"json",
+				data:{"url":url},
+				success:function(json){
+					alert("good");
+				},
+				error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			})
+			
+		});
 		
 		
 	}); // end of $(document).ready(function(){})---------------------
@@ -199,6 +217,15 @@ String ctxPath = request.getContextPath();
 			</c:if>
 			<%-- 결재해야할 문서 (결재 순서가 자기 차례인 문서)를 보는 경우 결재/반려 버튼이 보이도록 --%>
 			
+			
+			<%-- 결재완료된 문서라면 다운로드 버튼이 보이도록 --%>
+			<c:if test="${requestScope.document.status == 1}">
+				<button id="download_btn" class="doc_btn">다운로드</button>
+			</c:if>
+
+			
+			<%-- 결재완료된 문서라면 다운로드 버튼이 보이도록 --%>
+
 			
 			<!-- 임시 저장 문서라면 수정하기 및 삭제하기 버튼이 보이도록 -->
 			<c:if test="${document.temp eq 1}">

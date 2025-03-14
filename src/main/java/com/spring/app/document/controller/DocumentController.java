@@ -1,5 +1,9 @@
 package com.spring.app.document.controller;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -108,6 +112,7 @@ public class DocumentController {
 									 , @RequestParam(defaultValue = "") String searchWord
 									 , @RequestParam(defaultValue = "1") String currentShowPageNo) {
 		
+		
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
@@ -132,6 +137,8 @@ public class DocumentController {
 		
 		// === 페이지를 이동하거나 sizePerPage 를 변경하더라도 검색어가 남아있도록 === //
 		paraMap.put("searchWord", searchWord);
+		
+		// paraMap.put("approvalStatus", approvalStatus);
 		
 		// 기안 문서함에서 검색어를 포함한 문서 갯수 가져오기
 		int totalCount = service.myDocumentListCount_Search(paraMap);
@@ -214,6 +221,7 @@ public class DocumentController {
 		
 		mav.addObject("searchWord", searchWord);				// 페이지를 이동하거나 sizePerPage 를 변경하더라도 검색어가 남아있도록 하기 위한 것
 		mav.addObject("totalCount", totalCount);				// 페이징 처리시 총 문서 갯수
+	//	mav.addObject("approvalStatus", approvalStatus);		// 페이징 처리시 결재 상태
 		mav.addObject("currentShowPageNo", currentShowPageNo);	// 페이징 처리시 현재 페이지 번호
 		mav.addObject("sizePerPage", sizePerPage);				// 페이징 처리시 한 페이지에 보여줄 문서 갯수
 		
@@ -320,14 +328,10 @@ public class DocumentController {
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
-		// 테스트 중 로그인 안하고 처리하기 위해 임시로 사원번호 입력
 		String employeeNo = null;
 		
 		if(loginuser != null) {
 			employeeNo = loginuser.getEmployeeNo();
-		}
-		else {
-			employeeNo = "100014";
 		}
 		
 		Map<String, Integer> countList = new HashMap<>();
@@ -350,6 +354,29 @@ public class DocumentController {
 		mav.setViewName("mycontent/document/draftForm");
 		
 		return mav;
+	}
+	
+	
+	// 휴가신청서 잔여 연차 가져오기
+	@GetMapping("annual/getAnnual")
+	@ResponseBody
+	public String getAnnual(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		
+		int totalAmount = service.getAnnual(employeeNo);
+		
+		JSONObject json = new JSONObject();
+		json.put("totalAmount", totalAmount);
+		
+		return json.toString();
 	}
 	
 	
@@ -599,5 +626,61 @@ public class DocumentController {
 	}
 	
 	
+	// 임시저장 문서 리스트 삭제하기
+	@GetMapping("deleteTempList")
+	@ResponseBody
+	public String deleteTempList(@RequestParam("checked_arr") List<String> checked_list) {
+		
+		int n = service.deleteTempList(checked_list);
+		
+		JSONObject json = new JSONObject();
+		json.put("n", n);
+		
+		return json.toString();
+	}
 	
+	
+	// html 파일 다운로드하기
+	@GetMapping("documentView/download")
+	@ResponseBody
+	public String download(@RequestParam String para_url) {
+		
+		ArrayList<String> lines = new ArrayList<String>();
+		
+		URL url = null;
+		BufferedReader input = null;
+		String address = para_url;
+		String line = "";
+		
+		try {
+			url = new URL(address);
+			input = new BufferedReader(new InputStreamReader(url.openStream()));
+			
+			while((line=input.readLine()) != null) {
+				System.out.println(line);
+				if(line.trim().length() > 0) {
+					lines.add(line);
+				}
+			}
+			input.close();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+		JSONObject json = new JSONObject();
+		
+		return json.toString();
+	}
+	
+	
+	@GetMapping("getOrganization")
+	public ModelAndView getOrganization(ModelAndView mav) {
+		
+		mav.setViewName("mycontent/document/organization");
+		
+		return mav;
+	}
 }

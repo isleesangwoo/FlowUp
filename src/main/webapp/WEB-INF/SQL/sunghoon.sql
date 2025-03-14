@@ -274,3 +274,12 @@ WHERE rno BETWEEN 1 AND 10;
 
 select teamNo, teamName, FK_departmentNo
 		from tbl_team;
+        
+        
+select * from tbl_document order by documentNo desc;
+select * from tbl_draft_annual order by documentNo desc;
+
+delete from tbl_document
+where documentNo IN ('2025-100091', '2025-100090');
+
+commit;

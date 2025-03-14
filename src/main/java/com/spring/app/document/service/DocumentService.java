@@ -62,6 +62,12 @@ public interface DocumentService {
 	// 임시저장 문서 삭제하기
 	int deleteTemp(String documentNo);
 
+	// 임시저장 문서 리스트 삭제하기
+	int deleteTempList(List<String> checked_list);
+
+	// 휴가신청서 잔여 연차 가져오기
+	int getAnnual(String employeeNo);
+
 	
 
 	

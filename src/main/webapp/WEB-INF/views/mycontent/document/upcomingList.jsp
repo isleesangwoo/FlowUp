@@ -28,7 +28,7 @@
 			<thead>
 				<tr>
 					<th>
-						<input type="checkbox" />
+						<input type="checkbox" id="check_all"/>
 					</th>
 					<th>
 						<span>기안일</span>

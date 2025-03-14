@@ -32,94 +32,7 @@
 	
 	$(document).ready(function(){
 	
-		//////////////////////////////////////////////////////////////////////////////////////////////////
-		
-		<%-- jsTree 에 들어갈 객체 배열 --%>
-		let jsonData = [];
-		
-		<%-- jsTree 조직도에 들어갈 부서 목록 가져오기 --%>
-		$.ajax({
-			url:"<%= ctxPath%>/document/getDepartmentList",
-			dataType:"json",
-			async:false,
-			success: function(json){
-				$.each(json, function(index, item){
-					// id 구분을 위해 부서에는 D 를 붙여준다.
-					let data = { "id" : "D-" + item.departmentNo, "parent" : "#", "text" : item.departmentName, "icon" : "fa-solid fa-building" }
-					jsonData.push(data);
-				}); // end of $.each--------------
-			},
-			error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			}
-		}); // end of $.ajax-------------------
-  
-		<%-- jsTree 조직도에 들어갈 팀 목록 가져오기 --%>
-		$.ajax({
-			url:"<%= ctxPath%>/document/getTeamList",
-			dataType:"json",
-			async:false,
-			success: function(json){
-				$.each(json, function(index, item){
-					// id 구분을 위해 팀에는 T 를 붙여준다.
-					let data = { "id" : "T-" + item.teamNo, "parent" : "D-" + item.fk_departmentNo , "text" : item.teamName, "icon" : "fa-solid fa-users-between-lines" }
-					jsonData.push(data);
-				}); // end of $.each--------------
-			},
-			error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			}
-		}); // end of $.ajax-------------------
-		
-		<%-- jsTree 조직도에 들어갈 사원 목록 가져오기 --%>
-		$.ajax({
-			url:"<%= ctxPath%>/document/getEmployeeList",
-			dataType:"json",
-			async:false,
-			success: function(json){
-				$.each(json, function(index, item){
-					let data = { "id" : item.employeeNo, "parent" : "T-" + item.fk_teamNo , "text" : item.name, "icon" : "fa-solid fa-user" }
-					jsonData.push(data);
-				}); // end of $.each--------------
-			},
-			error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			}
-		}); // end of $.ajax-------------------
-		
-		<%-- jsTree 띄우는 이벤트 --%>
-		$('#jstree').jstree({
-			'plugins': ["search", "html"], // 플러그인 배열 합침
-			'core' : {
-				"check_callback": true,
-				'data' : jsonData,
- 				'state': {
- 					'opened': true
- 				},
-			},
-			"search": {
-		        "case_sensitive": false,	// 대소문자 구분하지 않음
-		        "show_only_matches": true,  // 일치하는 노드만 검색
-		        "search_leaves_only": true  // 리프노드만 검색
-		    }
-		});
-		
-		<%-- 사원명 검색시 해당 노드만 펼쳐지는 이벤트 --%>
-		$("input:text[name='member_name']").on("keyup", function(e){
-			
-			const member_name = $(e.target).val();
-			$('#jstree').jstree(true).search(member_name);
-		});
-		
-		<%-- show 버튼을 누르면 모든 노드를 펼치는 이벤트 --%>
-		$("button#btnShow").click(function() {
-			$('#jstree').jstree("open_all");
-		});
-
-		<%-- hide 버튼을 누르면 모든 노드를 접는 이벤트 --%>
-		$("button#btnHide").click(function() {
-			$('#jstree').jstree("close_all");
-		});
+		$("div#jstree").load("<%=ctxPath%>/document/getOrganization");
 		
 		//////////////////////////////////////////////////////////////////////////////////////////////////
 		
@@ -279,7 +192,22 @@
 	    	}
 	    });
 	    
+	    
+	    <%-- 휴가 신청서 잔여 연차를 가져오는 이벤트 --%>
+	    $.ajax({
+	    	url:"<%= ctxPath%>/document/annual/getAnnual",
+	    	dataType:"json",
+	    	success:function(json){
+	    		$("input[name='totalAmount']").val(json.totalAmount);
+			},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+	    })
+	    
+	    
 		//////////////////////////////////////////////////////////////////////////////////////////////////
+		
 		
 		let file_arr = []; // 첨부되어진 파일 정보를 담아둘 배열 
  		
@@ -496,6 +424,38 @@
 	<%-- 사용연차 개수 계산하는 함수 --%>
 	function calAnnualAmount(){
 		
+		// 오늘 날짜를 'yyyy-mm-dd' 까지 자르기
+		let today = new Date().toISOString().substring(0,10);
+
+		// 휴가 신청 날짜
+		let startDate = $("input[name='startDate']").val();
+		let endDate = $("input[name='endDate']").val();
+		
+		// 입력한 날짜의 요일 가져오기
+		let startDay = new Date(startDate).getDay();
+		let endDay = new Date(endDate).getDay();
+		
+		if(startDate < today) {
+			// 오늘 날짜보다 이전 날짜를 선택하면
+			alert("오늘보다 이전 날짜에는 휴가 신청이 불가능합니다.");
+			$("input[name='startDate']").val("");
+			return;
+		}
+		
+		// 0이면 일요일, 6이면 토요일
+		if(startDay == 0 || startDay == 6) {
+			alert("주말에는 휴가 신청이 불가능합니다.");
+			$("input[name='startDate']").val("");
+			return;
+		}
+		
+		// 0이면 일요일, 6이면 토요일
+		if(endDay == 0 || endDay == 6) {
+			alert("주말에는 휴가 신청이 불가능합니다.");
+			$("input[name='endDate']").val("");
+			return;
+		}
+		
 		if($("select[name='annualType']").val() != "1") {
 			// 반차일 경우
 			
@@ -510,27 +470,37 @@
 			// 연차일 경우
 			$("input[name='endDate']").show();	// 종료일 선택 다시 보여주기
 			
-			let startDate = $("input[name='startDate']").val();
-			let endDate = $("input[name='endDate']").val();
-			
 			if(startDate != "" && endDate != "") {
 				// 시작일과 종료일 둘 다 선택했을 경우
 				
-				// console.log(startDate);
-				// console.log(endDate);
-				
 				if(startDate <= endDate) {
 					// 종료일이 시작일 이후인 경우
-					startDate = Number(startDate.split("-").join(""));
-					endDate = Number(endDate.split("-").join(""));
+					let diffDays = Math.ceil( ( (new Date(endDate)).getTime() - (new Date(startDate)).getTime() ) / (1000 * 3600 * 24) );
 					
-					$("input[name='useAmount']").val(endDate - startDate + 1);	// 신청 연차에 값 넣어주기
+					let weekends = 0; // 주말 수
+					
+					for (let i = 0; i <= diffDays; i++) {
+						let currentDate = new Date((new Date(startDate)).getTime() + i * (1000 * 3600 * 24));
+						if (currentDate.getDay() === 0 || currentDate.getDay() === 6) {
+							weekends++;
+						}
+					}
+					
+					let useAmount = diffDays - weekends + 1;
+
+					if($("input[name='totalAmount']").val() < useAmount) {
+						alert("잔여 연차보다 초과해서 사용할 수 없습니다!");
+						$("input[name='endDate']").val("");
+						$("input[name='useAmount']").val("0");
+					}
+					else {
+						$("input[name='useAmount']").val(useAmount);
+					}
 				}
 				else {
 					// 종료일이 시작일 이전인 경우
 					alert("종료일은 시작일보다 이후여야 합니다.");
 					
-					$("input[name='startDate']").val("");	// 값 초기화
 					$("input[name='endDate']").val("");		// 값 초기화
 				}
 			}
@@ -574,17 +544,34 @@
 	<%-- 연장근무 신청하는 날이 주말인지 확인하는 함수 --%>
 	function check_weekend() {
 		
-		// 입력한 날짜의 요일 가져오기
-		let date = new Date($("input[name='overtimeDate']").val()).getDay();
+		// 오늘 날짜를 'yyyy-mm-dd' 까지 자르기
+		let today = new Date().toISOString().substring(0,10);
+
+		// 연장근무 신청 날짜
+		let overtimeDate = $("input[name='overtimeDate']").val();
 		
-		// 0이면 일요일, 6이면 토요일
-		if(date == 0 || date == 6) {
-			$("span#check_weekend").text("주말에는 연장 근무 신청이 불가능합니다.");
+		if(overtimeDate < today) {
+			// 오늘 날짜보다 이전 날짜를 선택하면
+			$("span#check_weekend").text("오늘보다 이전 날짜에는 연장 근무 신청이 불가능합니다.");
+			return;
 		}
 		else {
 			$("span#check_weekend").empty();
 		}
-			
+		
+		// 입력한 날짜의 요일 가져오기
+		let overtimeDay = new Date(overtimeDate).getDay();
+		
+		// 0이면 일요일, 6이면 토요일
+		if(overtimeDay == 0 || overtimeDay == 6) {
+			$("span#check_weekend").text("주말에는 연장 근무 신청이 불가능합니다.");
+			return;
+		}
+		else {
+			$("span#check_weekend").empty();
+		}
+		
+		
 	} // end of function check_weeken(){}------------------------
 	
 	
@@ -604,7 +591,7 @@
 			return;
 		}
 		if($("span#check_weekend").text() != "") {			// 연장 근무 일자를 주말로 입력했을 경우
-			alert("주말에는 연장 근무 신청이 불가능합니다!");
+			alert("올바르지 않은 날짜입니다!");
 			return;
 		}
 		if($("div#approval_line").children().length == 0) {	// 결재자를 한명도 추가하지 않았을 경우
@@ -634,11 +621,7 @@
 		<div style="display: flex;">
 			<div style="width: 40%;" >
 				<div id="approval_line_content" class="approval_line_modal_content">
-					<div>
-						<button type="button" id="btnShow" class="doc_btn">Show</button>
-						<button type="button" id="btnHide" class="doc_btn">Hide</button>
-						<input type="text" name='member_name' placeholder="사원 검색" class="my-1"/>
-						<div id="jstree" style="overflow: scroll; max-height: 250px; border: solid 1px #333;"></div>
+					<div id="jstree">
 					</div>
 				</div>
 			</div>
@@ -883,12 +866,13 @@
 											</c:if>
 										</c:if>
 									</c:if>
+									<span id="check_weekend" class="alert"></span>
 								</td>
 							</tr>
 							<tr>
 								<th>연차 일수</th>
 								<td>
-									잔여 연차 : <input type="text" name="totalAmount" value="10" readonly />
+									잔여 연차 : <input type="text" name="totalAmount" readonly />
 									<c:if test="${empty requestScope.document}">
 										신청 연차 : <input type="text" name="useAmount" value="0" readonly />
 									</c:if>
