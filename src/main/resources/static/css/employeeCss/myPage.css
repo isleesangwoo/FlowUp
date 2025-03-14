@@ -95,6 +95,8 @@ td{
 	padding: 1% 4%;
 	border-radius:3px; 
 	font-size: 12px;
+	color: black;
+	text-decoration: none;
 }
 
 .successInfoUpdate:hover{
@@ -105,4 +107,9 @@ td{
 .cancelInfoUpdate:hover{
 	background-color:#ff0b0b;
 	color:white;
+	text-decoration: none;
+}
+
+.imgcss{
+	border-radius: 3px;
 }

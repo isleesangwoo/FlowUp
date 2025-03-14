@@ -213,7 +213,6 @@ div.hoverDiv:hover {
      		if($(e.target).next().css('display') == 'none') {
      			$(e.target).parent().parent().find("div.weekbro").css({"display":"none"});
      			$(e.target).next().css({"display":""});
-     			$(e.target).parent().parent().find("div.daybro").css({"display":"none"});
 	 		}
 	 		else {
 	 			$(e.target).parent().parent().find("div.weekbro").css({"display":"none"});
@@ -333,9 +332,9 @@ div.hoverDiv:hover {
     		}
     		
     		
-    		html += `<div class="dayBig hoverDiv day\${i_date}" style="width:200px;">&nbsp;&nbsp;&nbsp;\${i_month}월 \${i_date}일 (\${i_dayOfWeek})</div>		
+    		html += `<div class="dayBig hoverDiv day\${day}" style="width:200px;">&nbsp;&nbsp;&nbsp;\${i_month}월 \${i_date}일 (\${i_dayOfWeek})</div>		
  
-    				<div class="daybro" style="display:none; padding:0 10px;">													
+    				<div class="daybro" style="padding:0 10px;">													
     		    		<table class="\${i_date}" style="box-sizing: border-box; border-collapse:collapse;">			
     		    			<thead>`;															
     					
@@ -539,7 +538,6 @@ div.hoverDiv:hover {
     }
     
     Date.prototype.getWeek = function (dowOffset) {
-    	  /*getWeek() was developed by Nick Baicoianu at MeanFreePath: http://www.meanfreepath.com */
 
     	  dowOffset = typeof(dowOffset) == 'number' ? dowOffset : 0; // dowOffset이 숫자면 넣고 아니면 0
     	  var newYear = new Date(this.getFullYear(),0,1);
@@ -613,23 +611,6 @@ div.hoverDiv:hover {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
 </script>
 
 <div style="display: flex;">
@@ -673,7 +654,7 @@ div.hoverDiv:hover {
 					<span class="h5 ml-1">월간/주간 요약</span>
 				</div>
 				<div style="margin:0 0 0 auto;">
-					<button type="button" class="btn btn-outline-secondary btn-sm mr-1" id="overtime" name="overtime" onclick="">연장근무신청</button>
+					<button type="button" class="btn btn-outline-secondary btn-sm mr-1" id="overtime" name="overtime" onclick="location.href='<%= ctxPath%>/document/overtime'">연장근무신청</button>
 					<button type="button" class="btn btn-outline-secondary btn-sm " id="download" name="download" onclick="downloadExcel()">엑셀다운로드</button>
 				</div>
 			</div>

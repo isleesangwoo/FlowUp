@@ -475,13 +475,20 @@ header:nth-child(1) {
 
 
 /* 이지혜 오른쪽 아이콘 css 추가 */
-.right-ikon{
-	margin-left: 30%;
-	color: black;
-	line-height: 35.99px;
-	size: 35px;
+
+
+.top_header_r > .top_ikon:last-child {
+	text-align: center;
+	border-radius: 50%;
+	line-height: 36px;
 }
 
-.top_ikon:last-child {
+.right-ikon{
+	color: black;
+}
+
+.ikon-img {
+	width: 36px;
+	height: 40px;
 	border-radius: 50%;
 }

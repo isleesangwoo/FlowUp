@@ -1,0 +1,136 @@
+
+.writePostBtn {
+    width: 10%;
+    height: var(--size44);
+    font-size: var(--size18);
+    transition-duration: 150ms;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: calc(var(--size2) + var(--size2));
+    align-items: center;
+    text-wrap: nowrap;
+    background-color: #2985db;
+    border-color: #056ac9;
+    color: #fff;
+    margin-bottom: var(--size10);
+}
+#right_bar{
+    width: 100%;
+    height: auto;
+}
+
+#right_menu_container {
+    display: flex;
+    align-items: center;
+    margin-top: var(--size24)
+}
+
+#right_menu_container > span {
+    margin-right: var(--size14);
+}
+
+#right_menu_container > span:last-child{
+    margin-right: 0px;
+}
+
+#right_menu_container span a {
+    text-decoration: none;
+    color: #333;
+}
+
+#mailListAllCheck:checked {
+    border-color: #2985db;
+    background-color: #2985db;
+}
+
+
+/* 게시글 보여주는 요소 시작 */
+#postContainer{
+	width: 100%;
+	min-width:1050px;
+	display:flex;
+}
+#allPostElmt{
+	min-height: 590px;
+}
+.onePostElmt{
+	padding: var(--size12) var(--size22);;
+	border-bottom: solid 1px #c8c8c8;
+	border-right: solid 1px #c8c8c8;
+}
+.article_wrap{
+	width:85%;
+}
+.postBoard{
+	display: block;
+	font-size: 10pt;
+}
+.postSubject{
+	font-size: 14pt;
+}
+.postSubject:hover{
+	color:#808080;
+}
+.postCommentCount{
+	margin-left: 20px;
+	font-size: 10pt;
+}
+.postContent{
+	display: block;
+	font-size: 11pt;
+	margin-bottom: var(--size14);
+}
+.postContent:hover{
+	color:#808080;
+}
+.profileImg{
+	margin-right: 15px;
+}
+.postCreateBy{
+	margin-right: var(--size8);
+	font-size:var(--size14);
+}
+.postCreateAt{
+	font-size:var(--size14);
+}
+.postLikeBtn{
+/* 	display:inline-block; */
+	width: 30px;
+	height: 30px;
+	text-align:center;
+	border: solid 1px red;
+}
+.likeCount{
+	text-align: center;
+}
+.likeBtn{
+	color:red;
+}
+.likeBtn:hover{
+	color:pink;
+}
+
+
+
+.topLikepost{
+	padding: 3px 18px;
+	display: flex; 
+	justify-content:space-between;
+	cursor: pointer;
+}
+.topLikeSubject:hover{
+	color: #c8c8c8;
+}
+
+
+
+
+
+
+
+
+/* 게시글 보여주는 요소 끜 */
+
+
+
+

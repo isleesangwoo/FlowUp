@@ -1,6 +1,9 @@
 package com.spring.app.employee.controller;
 
+import java.io.File;
+import java.net.http.HttpRequest;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,8 +15,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.app.common.FileManager;
 import com.spring.app.employee.domain.AddressBookVO;
 import com.spring.app.employee.domain.EmployeeVO;
 import com.spring.app.employee.service.EmployeeService;
@@ -30,6 +36,10 @@ public class EmployeeController {
 	@Autowired // Type 에 따라 알아서 Bean 을 주입해준다.
 	private EmployeeService service;
 
+	@Autowired
+	private FileManager fileManager;
+	
+	
 	// === #ljh1. 로그인 폼 페이지 요청 === //
 	@GetMapping("login")
 	public ModelAndView login(ModelAndView mav) {
@@ -161,17 +171,90 @@ public class EmployeeController {
 	}
 	
 	
+	
+	
 	// === 내정보 수정하기 === //
 	@PostMapping("updateInfoEnd")
-	 public ModelAndView updateInfoEnd(ModelAndView mav, EmployeeVO empvo, HttpServletRequest request) {
+	 public ModelAndView updateInfoEnd(ModelAndView mav, EmployeeVO empvo, MultipartHttpServletRequest mrequest) {
 		
+		MultipartFile attach = empvo.getAttach();
+		
+		
+		String newFileName = ""; // 톰캣에 담겨질 파일 이름
+		
+		//파일 첨부가 있는 경우
+		if( attach != null) {
+			HttpSession session = mrequest.getSession();
+			String root = session.getServletContext().getRealPath("/");
+			
+			String path = root+"resources"+File.separator+"files";
+			// 루트 => C:\NCS\workspace_spring_boot_17\myspring\src\main\webapp\resources\file
+			
+			
+			byte[] bytes = null; // 첨부 파일 내용물 담을 곳
+			long fileSize = 0; // 업로드할 파일의 크기
+			
+			
+			try {
+				
+				bytes = attach.getBytes(); // 첨부파일의 내용물을 읽어온다.
+				
+				String originalFileName = attach.getOriginalFilename(); // 업로드한 파일의 파일명 (ex: 강아지jpg)
+				newFileName = fileManager.doFileUpload(bytes, originalFileName, path);// 첨부 되어진 파일의 업로드
+				
+				empvo.setProfileImg(originalFileName);// profileImg 컬럼의 파일의 원래 이름 넣기
+				
+				
+				empvo.setFileName(newFileName); // fileName 에 톰캣에 올라가는 파일명 넣기
+				
+				fileSize = attach.getSize();
+				empvo.setFileSize(String.valueOf(fileSize));
+				
+		
+			}catch(Exception e) {
+				e.printStackTrace();
+			}
+			
+		}
+		/*
 		int n = service.updateInfoEnd(empvo);
-		
 		if(n == 1) {
 			System.out.println("회원수정 성공");
 			mav.setViewName("redirect:/employee/mypage");
 		}
+		*/
 		
+		int n =0;
+		
+		if(attach.isEmpty()) {// 파일의 업로드가 없을 때 
+			n = service.updateInfoEnd(empvo);
+		}
+		
+		else {
+			n = service.upadateInfoEnd_withFile(empvo);
+		}
+		
+		if(n==1) {
+			
+			HttpSession session = mrequest.getSession();
+			
+			EmployeeVO loginuser = (EmployeeVO)session.getAttribute("loginuser");
+			
+			loginuser.setEmail(empvo.getEmail());
+			loginuser.setMobile(empvo.getMobile());
+			loginuser.setDirectCall(empvo.getDirectCall());
+			loginuser.setAddress(empvo.getAddress());
+			loginuser.setMotive(empvo.getMotive());
+			
+			if( attach != null) {
+				loginuser.setFileName(newFileName);
+			}
+			
+			mav.setViewName("redirect:/employee/mypage");
+		}
+		else {
+			  mav.setViewName("mycontent/employee/uploadFailse");
+		}
 		return mav;
 	}
 		
@@ -316,14 +399,50 @@ public class EmployeeController {
 	@GetMapping("updateEmployee")
 	public ModelAndView updateEmployee(ModelAndView mav, HttpServletRequest request) {
 		mav.setViewName("mycontent/employee/updateEmployee");
-		
-		// view 단에 줄 사원들의 정보 갖고오기
-		List<Map<String,String>>all_employee_info_list = service.all_employee_info_list(request);
-		mav.addObject("all_e mployee_info_list",all_employee_info_list);
-		
 		return mav;
 	}
 	
+	// 관리자의 사원정보 수정의 사원정보 리스트
+	@GetMapping("all_employee_info_list")
+	@ResponseBody
+	public List<Map<String,String>>all_employee_info_list(){
+		List<Map<String,String>> mapList = new ArrayList<>();
+		mapList = service.all_employee_info_list();
+		return mapList;
+	}
 	
-
+	// 관리자의 사원정보 수정 
+	@PostMapping("updateEmployee_byAdminEnd")
+	@ResponseBody
+	public String updateEmployee_byAdminEnd(@RequestParam String name, 
+			                                @RequestParam String employeeNo,
+			                                @RequestParam String positionName,
+			                                @RequestParam String departmentName,
+			                                @RequestParam String teamName) {
+		
+		// 변경할 직급명에 대한 직급번호 알아오기
+	    String positionNo = service.getPositionName(positionName);
+	    
+		// 변경할 부서명에 대한 부서번호 알아오기
+		String departmentNo = service.getDepartmentName(departmentName);
+		
+		// 변경할 팀명에 대한 팀번호 알아오기
+		String teamNo = service.getTeamName(teamName);
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("name", name);
+		paraMap.put("employeeNo", employeeNo);
+		paraMap.put("positionNo", positionNo);
+		paraMap.put("departmentNo", departmentNo);
+		paraMap.put("teamNo", teamNo);
+		
+		// 사원정보 수정하기
+		int n = service.updateEmployee_byAdminEnd(paraMap);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("n", n);
+		
+		return jsonObj.toString(); 
+	}
+	
 }

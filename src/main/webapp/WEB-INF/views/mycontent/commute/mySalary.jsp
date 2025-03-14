@@ -373,7 +373,7 @@ div.hoverDiv:hover {
 					
 				<div style="margin:0 0 0 auto;display:flex; gap:8px;">
 				
-					<button type="button" id="btn_search" onclick="" class="btn btn-sm btn-outline-secondary" style="width:100px; height:30px; line-height:15px;">엑셀 다운로드</button>
+					<%-- <button type="button" id="btn_search" onclick="" class="btn btn-sm btn-outline-secondary" style="width:100px; height:30px; line-height:15px;">엑셀 다운로드</button> --%>
 					<select id="sizePerPage" name="sizePerPage" style="width:70px;">
 						<option value="3">3</option>
 						<option value="5">5</option>

@@ -23,13 +23,14 @@
    <!-- #ljh5. 로그인 처리 하기 -->
 	<select id="getLoginEmployee" resultType="EmployeeVO" parameterType="HashMap" >
 	    SELECT E.EMPLOYEENO, E.passwd, E.FK_POSITIONNO, E.FK_TEAMNO, E.Name, 
-	           E.SECURITYLEVEL, E.Email, E.Bank, substr(E.Mobile, 1, 3) || '-' || substr(E.Mobile, 4, 3) || '-' || substr(E.Mobile, 8) AS Mobile, 
+	           E.SECURITYLEVEL, E.Email, E.Bank, substr(E.Mobile, 1, 3) || '-' || substr(E.Mobile, 4, 4) || '-' || substr(E.Mobile, 8) AS Mobile, 
 	           substr(E.directcall, 1, 2) || ')' || substr(E.directcall, 3, 4) || '-' || substr(E.directcall, 7) AS directcall, 
 	           E.account, to_char(E.registerdate, 'yyyy-mm-dd') AS registerdate, E.Status, E.REASONFORLEAVING, 
-	           E.lastDate, E.MOTIVE, E.PROFILEIMG, E.Address, to_char(E.birth, 'yyyy-mm-dd') AS birth, 
-	           E.FK_DEPARTMENTNO , D.departmentname
+	           E.lastDate, E.MOTIVE, E.FILENAME, E.Address, to_char(E.birth, 'yyyy-mm-dd') AS birth,
+	           E.FK_DEPARTMENTNO , D.departmentname, T.teamName
 	    FROM tbl_employee E LEFT JOIN tbl_department D 
-	    ON E.FK_DEPARTMENTNO = D.DEPARTMENTNO
+	    ON E.FK_DEPARTMENTNO = D.DEPARTMENTNO JOIN tbl_team T 
+	    ON T.teamNo = E.fk_teamNo
 	    WHERE E.employeeNo = to_number(#{id})
 	    AND E.passwd = #{passwd}
 	    AND E.status = 1
@@ -93,6 +94,17 @@
 	where employeeNo = to_number(#{employeeNo})
 	
  </update>
+ 
+ 
+ <!-- 내 정보 수정하기 첨부파일 존재 -->
+ <update id="upadateInfoEnd_withFile" parameterType="EmployeeVO">
+ 	update tbl_employee set email=#{email}, mobile=#{mobile}, directCall=#{directCall}, birth = to_date(#{birth},'yyyy-mm-dd'),
+ 							address = #{address}, motive=#{motive}, profileimg=#{profileImg}, fileSize=#{fileSize},fileName=#{fileName}
+	where employeeNo = to_number(#{employeeNo})
+ 
+ </update>
+ 
+ 
  
  
  <!-- 주소록 추가 -->
@@ -165,7 +177,7 @@
 	order by DEPARTMENT asc
  
  </select>
-  
+
  <resultMap type="HashMap" id="all_employee_info_list_map">
  	<result property="name"			column="name" 		  javaType="String"/>
  	<result property="employeeno" 	column="employeeno" 	  javaType="String"/>
@@ -175,35 +187,68 @@
  </resultMap>
  
  <select id="all_employee_info_list" resultMap="all_employee_info_list_map">
-	WITH A AS (
-	    SELECT E.name, E.employeeno, P.positionnam+e
-	    FROM tbl_employee E 
-	    JOIN tbl_position P ON E.FK_positionno = P.positionno
-	),
-	B AS (
-	    SELECT E.employeeno, D.departmentno, D.departmentname
-	    FROM tbl_department D 
-	    JOIN tbl_employee E ON E.FK_departmentno = D.departmentno
-	),
-	C AS (
-	    SELECT T.Teamname, D.departmentno
-	    FROM tbl_team T 
-	    JOIN tbl_department D ON T.Fk_departmentno = D.departmentno
-	)
-	SELECT A.name, A.employeeno, A.positionname, 
-	       B.departmentname, 
-	       C.Teamname
-	FROM A
-	JOIN B ON A.employeeno = B.employeeno 
-	JOIN C ON B.departmentno = C.departmentno
-	ORDER BY A.employeeno desc
+		With A AS (
+			select E.name, D.departmentname, E.employeeno
+			from tbl_employee E join tbl_department D
+			on E.fk_departmentno = D.departmentno
+		),
+		B AS(
+			select P.positionname, E.employeeno
+			from tbl_employee E join tbl_position P
+			on E.fk_positionno = P.positionno
+		
+		),
+		C AS(
+			select T.teamname, E.employeeno
+			from tbl_employee E join tbl_team T
+			on E.fk_teamno = T.teamno
+		)
+		select A.name as name, A.employeeno as employeeno, A.departmentname as departmentname,
+		       B.positionname as positionname, C.teamname as teamname
+		From A JOIN 
+		    B ON A.employeeno = B.employeeno JOIN
+		    C ON B.employeeno = C.employeeno
+		ORDER BY A.employeeno desc
  </select>
 
- 
+ <!-- 주소록 삭제 -->
  <delete id="delete_address_book">
 	 delete from tbl_addressbook where adrsbno=to_number(#{addressno})
  </delete>
 
+
+ <!-- 변경할 직급명에 대한 직급번호 알아오기 -->
+ <select id="getPositionName" parameterType="String" resultType="String">
+     select to_char(positionno) AS positionno 
+     from tbl_position
+     where positionname = #{positionName}  
+ </select>
+  
+ <!-- 변경할 부서명에 대한 부서번호 알아오기 -->
+ <select id="getDepartmentName" parameterType="String" resultType="String">
+      select to_char(departmentno) AS departmentno 
+      from tbl_department
+      where departmentname = #{departmentName}
+ </select>	
+	
+	
+ <!-- 변경할 팀명에 대한 팀번호 알아오기 --> 
+ <select id="getTeamName" parameterType="String" resultType="String">
+      select to_char(teamno) AS teamno 
+      from tbl_team
+      where teamname = #{teamName}
+ </select>	
+	
+	
+ <!-- 관리자의 사원정보 수정 -->
+ <update id="updateEmployee_byAdminEnd" parameterType="HashMap">
+      update tbl_employee set name = #{name}
+                            , fk_positionNo = #{positionNo}  
+                            , fk_departmentNo = #{departmentNo}
+                            , fk_teamNo = #{teamNo}
+      where employeeno = #{employeeNo}
+ </update>
+	
 </mapper>
 
 
