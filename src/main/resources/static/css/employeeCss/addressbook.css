@@ -218,3 +218,8 @@ tbody tr{
 .hoverEvent:hover{
 	cursor: pointer;
 }
+
+
+.trcss{
+	border:none;
+}

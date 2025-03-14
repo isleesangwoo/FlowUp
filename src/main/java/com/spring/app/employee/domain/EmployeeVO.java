@@ -1,6 +1,6 @@
 package com.spring.app.employee.domain;
 
-
+import org.springframework.web.multipart.MultipartFile;
 
 public class EmployeeVO {
 
@@ -29,13 +29,19 @@ public class EmployeeVO {
      
      //테이블 추가 x
      private String departmentName;     // 부서 이름
+     private String teamName;			// 팀이름
 	
      private boolean requireLastChangePwd = false; 
      
+     private MultipartFile attach;   // 프로필 사진 업로드용
+     private String fileSize;        // 업로드할 파일의 사이즈
+     private String fileName; 		 // 톰캣에 올라갈 파일 이름
     /////////////////////////////////////////
     
      
-    public String getEmployeeNo() {
+ 
+
+	public String getEmployeeNo() {
 		return employeeNo;
 	}
 
@@ -218,8 +224,40 @@ public class EmployeeVO {
 		this.departmentName = departmentName;
 	}
 	
+
+   public MultipartFile getAttach() {
+		return attach;
+   }
+
+   public void setAttach(MultipartFile attach) {
+		this.attach = attach;
+   }
+
+	public String getFileSize() {
+		return fileSize;
+	}
 	
+	public void setFileSize(String fileSize) {
+		this.fileSize = fileSize;
+	}
 	
+	public String getFileName() {
+		return fileName;
+	}
+	
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+
+	public String getTeamName() {
+		return teamName;
+	}
+
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
+	}
+   
+   
 	
      
      

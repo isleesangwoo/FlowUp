@@ -21,6 +21,12 @@
 .table_content{
 	border : 0px gray solid;
 	margin : 3.5% 0;
+	text-align: center;
+}
+
+table{
+		width: 100%;
+		min-width: 300px;
 }
 
 thead{
@@ -81,9 +87,50 @@ tr:nth-child(even){
     text-decoration: none;
 }
 
+.inputemployee{
+	border:none;
+	background-color:transparent;
+	width:130px;
+	overflow: visible;
+}
+.inputemployee::placeholder{
+	color:black;
+	text-align: center;
+	font-style: normal;
+}
+
+button, input, optgroup, select, textarea{
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    text-align: center;
+}
 
 
+input:-internal-autofill-selected {
+	background-color: transparent;
+}
 
 
+input:autofill,
+input:autofill:hover,
+input:autofill:focus,
+input:autofill:active {
+	-webkit-text-fill-color: #000;
+    -webkit-box-shadow: 0 0 0px 1000px #fff inset;
+    box-shadow: 0 0 0px 1000px transparent inset;
+    transition: background-color 5000s ease-in-out 0s;
+}
 
+
+.inputemployee{
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+.update{
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
 

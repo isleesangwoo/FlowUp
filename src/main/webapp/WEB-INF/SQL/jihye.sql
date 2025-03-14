@@ -544,7 +544,8 @@ SELECT A.name, A.employeeno, A.positionname,
        C.Teamname
 FROM A
 JOIN B ON A.employeeno = B.employeeno 
-JOIN C ON B.departmentno = C.departmentno;  
+JOIN C ON B.departmentno = C.departmentno
+ORDER BY A.employeeno DESC;  
 
 
 
@@ -554,9 +555,15 @@ delete from tbl_addressbook where fk_employeeno =111111 and adrsbno=100019;
 rollback;
 commit;
 
+select *
+from tbl_employee
+order by employeeno desc;
 
 select * 
 from tbl_addressbook;
+
+select*
+from tbl_team;
 
 -- 주소록 상세보기
 select FIRSTNAME||MIDDLENAME||LASTNAME AS name,
@@ -568,6 +575,78 @@ order by adrsbno desc;
 
 
 
+select * from tbl_department;
+
+With A AS (
+select E.name, D.departmentname, E.employeeno,D.departmentno
+from tbl_employee E join tbl_department D
+on E.fk_departmentno = D.departmentno
+),
+B AS(
+select P.positionname, E.employeeno
+from tbl_employee E join tbl_position P
+on E.fk_positionno = P.positionno
+
+),
+C AS(
+select T.teamname, E.employeeno, T.teamno
+from tbl_employee E join tbl_team T
+on E.fk_teamno = T.teamno
+)
+select A.name as name, A.employeeno as employeeno, A.departmentname as departmentname,
+       B.positionname as positionname, C.teamname as teamname, A.departmentno as departmentno, C.teamno as teamno
+From A JOIN 
+    B ON A.employeeno = B.employeeno JOIN
+    C ON B.employeeno = C.employeeno
+ORDER BY A.employeeno desc;
+
+
+
+
+
+
+select to_char(positionno)
+from tbl_position
+where positionname = '부장';
+
+select to_char(departmentno)
+from tbl_department
+where departmentname = '총무부';
+
+select to_char(teamno)
+from tbl_team
+where teamname = '총무팀';
+
+select *
+from tbl_employee;
+
+select *
+from tbl_team;
+
+select teamno
+from tbl_team
+where teamname = '해외영업팀';
+
+
+alter table tbl_employee add fileSize varchar2(255);
+commit;
+alter table tbl_employee add fileName varchar2(255);
+commit;
+
+
+
+
+SELECT E.EMPLOYEENO, E.passwd, E.FK_POSITIONNO, E.FK_TEAMNO, E.Name, 
+	           E.SECURITYLEVEL, E.Email, E.Bank, substr(E.Mobile, 1, 3) || '-' || substr(E.Mobile, 4, 4) || '-' || substr(E.Mobile, 8) AS Mobile, 
+	           substr(E.directcall, 1, 2) || ')' || substr(E.directcall, 3, 4) || '-' || substr(E.directcall, 7) AS directcall, 
+	           E.account, to_char(E.registerdate, 'yyyy-mm-dd') AS registerdate, E.Status, E.REASONFORLEAVING, 
+	           E.lastDate, E.MOTIVE, E.FILENAME, E.Address, to_char(E.birth, 'yyyy-mm-dd') AS birth,
+	           E.FK_DEPARTMENTNO , D.departmentname
+	    FROM tbl_employee E LEFT JOIN tbl_department D 
+	    ON E.FK_DEPARTMENTNO = D.DEPARTMENTNO
+	    WHERE E.employeeNo = 111111
+	    AND E.passwd = #{passwd}
+	    AND E.status = 1
 
 
 

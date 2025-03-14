@@ -102,11 +102,13 @@
     <div class="container">
         <!-- 로고 -->
         <div class="logo">
-            <h2>LOGO</h2>
+            <h2>  <img id="logo_img" src="<%=ctxPath%>/images/logo/logo1.png" /> </h2>
         </div>
+       
 
         <!-- 로그인 폼 -->
         <form name="loginFrm">
+         <h2 class="title">FLOW UP</h2>
             <!-- 아이디 -->
             <div class="inputDiv">
                 <input type="text" class="loginId loginInput" name="id" id="userid" placeholder="사원번호">
