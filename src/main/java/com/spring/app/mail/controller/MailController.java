@@ -175,23 +175,19 @@ public class MailController {
 	    System.out.println("mailbox : " + mailbox);
 	    
 	    // currentShowPageNo 파라미터 추가 (초기값 1)
-	    String url = request.getContextPath() + "/mail?mailbox=" + mailbox + "&sizePerPage=" + n_sizePerPage + "&currentShowPageNo=";
+	    String url = request.getContextPath() + "/mail?mailbox=" + mailbox + "&sizePerPage=" + n_sizePerPage + "&currentShowPageNo=" + currentShowPageNo;
 	    // URL 확인
 	    System.out.println("URL: " + url);
 	    
 	    String pageBar = "<ul style='list-style:none;'>";
 	    
-	    // [맨처음]
-	    pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'>" 
-	            + "<a href='" + url + "1'>" // URL에 페이지 번호 직접 추가
-	            + "<i style='transform: scaleX(-1)' class='fa-solid fa-forward-step'></i></a></li>";
-
-	    // [이전]
-	    if (pageNo != 1) {
-	        pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'>"
-	                 + "<a href='" + url + (pageNo - 1) + "'>" // 페이지 번호 직접 추가
-	                 + "<i style='transform: scaleX(-1)' class='fa-solid fa-chevron-right'></i></a></li>";
-	    }
+	    // === [맨처음] === //
+ 		pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo=1'><i style='transform: scaleX(-1)' class=\'fa-solid fa-forward-step\'></i></a></li>";
+	 		
+ 		// === [이전] === //
+ 		if(pageNo != 1) {
+ 			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+(pageNo-1)+"'><i class=\"fa-solid fa-chevron-left\"></i></a></li>"; 
+ 		}
 
 	    // 페이지 번호
 	    while (!(loop > blockSize || pageNo > totalPage)) {
@@ -205,19 +201,15 @@ public class MailController {
 	        pageNo++;
 	    }
 
-	    // [다음]
-	    if (pageNo <= totalPage) {
-	        pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'>"
-	                 + "<a href='" + url + pageNo + "'>" // 페이지 번호 직접 추가
-	                 + "<i class='fa-solid fa-chevron-right'></i></a></li>";
-	    }
-	    
-	    // [마지막] 
-	    pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'>"
-	            + "<a href='" + url + totalPage + "'>" // 페이지 번호 직접 추가
-	            + "<i class='fa-solid fa-forward-step'></i></a></li>";
+		// === [다음] === //
+		if(pageNo <= totalPage) {
+			pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"'><i class=\"fa-solid fa-chevron-right\"></i></a></li>"; 	
+		}
 
-	   pageBar += "</ul>";
+		// === [마지막] ===
+		pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+totalPage+"'><i class=\"fa-solid fa-forward-step\"></i></a></li>";
+					
+		pageBar += "</ul>";	
 
 	    // ======================
 	    // 7) JSP에 값 전달

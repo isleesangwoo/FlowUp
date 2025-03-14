@@ -18,7 +18,6 @@
 
 <script type="text/javascript">
 
-let ctxPath = "<%= ctxPath %>";
 let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
 
 // 전역 상태 변수 추가
@@ -155,7 +154,9 @@ let currentState = {
 	  <%-- ==== 메일함 통합 ajax 시작 ==== --%>
 	  function loadMailList(mailbox = 'default', currentShowPageNo = 1, sizePerPage = 20) {
 		  
-		    const url = `${ctxPath}/mail/mailList?mailbox=${mailbox}&currentShowPageNo=${currentPage}&sizePerPage=${sizePerPage}`;
+		  console.log("currentShowPageNo: ", currentShowPageNo);  // 디버깅용
+		  
+		    const url = `${ctxPath}/mail/mailList?mailbox=${mailbox}&currentShowPageNo=${currentShowPageNo}&sizePerPage=${sizePerPage}`;
 		    console.log("URL: " + url); // 콘솔 확인
 		    
 		    $.ajax({
@@ -278,13 +279,13 @@ let currentState = {
 
 	  <%-- 별(중요표시) 클릭시 변경 ajax 함수 시작 --%>
 	    function bindStarToggle() {
-            $(document).off("click", ".toggle_star") // 기존 이벤트 제거
-              			.on("click", ".toggle_star", function(){ // 새 이벤트 등록
+	    	// 혹시 기존 이벤트가 있을 수 있으니 off() 후 on()
+	        $(".toggle_star").off("click").on("click", function(){
 	            const $star = $(this);
 	            const mailNo = $star.data("mailno"); // data-mailno 값
 	           // const current = $star.data("important"); // 현재 상태
 	            $.ajax({
-	                url: ctxPath + "/mail/toggleImportant",
+	                url: "<%=ctxPath%>/mail/toggleImportant",
 	                type: "POST",
 	                data: { mailNo: mailNo },
 	                success: function(importantStatus) {
@@ -297,6 +298,10 @@ let currentState = {
 							// 중요 상태 해제 => 기본 아이콘/색상
 	                        $star.removeClass("fa-solid").addClass("fa-regular").css("color","");
 	                    }
+	                	
+			            // 새 목록에 별/메일 아이콘 이벤트 재바인딩
+			            bindStarToggle();
+			            bindMailToggle();
 	                },
 	                error: function() {
 	                    alert("서버와 통신 중 오류가 발생했습니다.(important)");
@@ -313,9 +318,14 @@ let currentState = {
 	          const $mail = $(this);
 	          const mailNo = $mail.data("mailno");    // data_mailno 값
 	          // const current = $star.data("important"); // 현재 상태
-	
+	          
+	              if (!mailNo) {
+			        alert("메일 번호가 비어 있습니다.");
+			        return;
+			    }
+	          
 	          $.ajax({
-	              url: ctxPath + "/mail/toggleReadMail",
+	              url: "<%=ctxPath%>/mail/toggleReadMail",
 	              type: "POST",
 	              data: { mailNo: mailNo },
 	              success: function(readStatus) {
@@ -332,7 +342,7 @@ let currentState = {
 	                  }
 	              },
 	              error: function() {
-	                  alert("서버와 통신 중 오류가 발생했습니다.");
+	                  alert("서버와 통신 중 오류가 발생했습니다.(readStatus)");
 	              }
 	          });
 	       });
