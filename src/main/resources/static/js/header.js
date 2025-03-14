@@ -65,10 +65,12 @@ $(document).ready(()=>{
     $('#header_container').css({
         'width': 'var(--size60)',
         'padding': 'var(--size24) 4px',
+		'transition': 'all 0s'
     });
 
     $('.side_btn').css({
-        'left': 'calc(var(--size60) - 4px)'
+        'left': 'calc(var(--size60) - 4px)',
+		'transition': 'all 0s'
     })
 
     $('#logo_box').css({
@@ -98,6 +100,15 @@ $(document).ready(()=>{
         'overflow-y': 'none'
     });
     
+	setTimeout( ()=>{
+		$('#header_container').css({
+			'transition': ''
+	    });
+		$('.side_btn').css({
+			'transition': ''
+	    });
+	}, 100);
+	
     let header_cnt = 0;
     
     $('.side_btn').click(e=>{
@@ -107,10 +118,12 @@ $(document).ready(()=>{
             $('#header_container').css({
                 'width': 'var(--size60)',
                 'padding': 'var(--size24) 4px',
+				'transition': ''
             });
 
             $('.side_btn').css({
-                'left': 'calc(var(--size60) - 4px)'
+                'left': 'calc(var(--size60) - 4px)',
+				'transition': ''
             })
 
             $('#logo_box').css({
