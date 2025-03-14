@@ -53,9 +53,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 @Controller
 @RequestMapping(value="/board/*")
 public class BoardController {
-	
-	
-	
 	@Autowired
 	private BoardService service;
 	
@@ -65,23 +62,22 @@ public class BoardController {
 	@GetMapping("") //게시판 메인 페이지로 이동 (게시판그룹의 글 전체 조회요청)
 	public ModelAndView board(ModelAndView mav,HttpServletRequest request,
             @RequestParam(defaultValue = "1") String currentShowPageNo) {
-	    
-		/*
-		 * 글조회수(readCount)증가
-		  목록보기에서 해당 글을 클릭했을 경우 증가,
-		  웹브라우저에서 새로고침(F5)을 했을 경우증가 x
-	    */     
+		
+		String referer = request.getHeader("referer");
+		
+		if(referer == null) {
+			mav.addObject("message", "비정상적인 접근입니다.");
+			mav.addObject("loc", request.getContextPath()+"/index");
+			mav.setViewName("msg");
+			return mav;
+		}
+
 		HttpSession session = request.getSession();
 		session.setAttribute("readCountPermission", "yes");
-		/*
-		session 에  "readCountPermission" 키값으로 저장된 value값은 "yes" 이다.
-		*/
-		
 		
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
 	    String login_userid = null;
-	    //int likeCnt = 0;
 	  
 	    if(loginuser != null) {
 		  login_userid = loginuser.getEmployeeNo();
@@ -98,14 +94,11 @@ public class BoardController {
 		totalCount = service.getTotalCount();
 		
 		totalPage = (int) Math.ceil((double)totalCount/sizePerPage);
-		// 총 게시물 건수(totalCount)가 124 개 이라면 총 페이지수(totalPage)는 13 페이지가 되어야 함.
-		// (double)124/10 ==> 12.4 ==> Math.ceil(12.4) ==> 13.0 ==> 13 
 		
 		try {
 			  n_currentShowPageNo = Integer.parseInt(currentShowPageNo);
 		
-			  if(n_currentShowPageNo < 1 || n_currentShowPageNo > totalPage) {
-				// get 방식이므로 사용자가 currentShowPageNo 에 입력한 값이 0 또는 음수 또는 입력한 값이 실제 데이터베이스에 존재하는 페이지수 보다 더 큰값을 입력하여 장난친 경우 
+			  if(n_currentShowPageNo < 1 || n_currentShowPageNo > totalPage) { 
 				 n_currentShowPageNo = 1;
 			  }
 			  
@@ -114,8 +107,8 @@ public class BoardController {
 			n_currentShowPageNo = 1;
 		}
 		 
-		 int startRno = ((n_currentShowPageNo - 1) * sizePerPage) + 1; // 시작 행번호
-		 int endRno = startRno + sizePerPage - 1; // 끝 행번호 
+		 int startRno = ((n_currentShowPageNo - 1) * sizePerPage) + 1; 
+		 int endRno = startRno + sizePerPage - 1;  
 		 
 		 Map<String, String> paraMap = new HashMap<>();
 		 
@@ -128,8 +121,126 @@ public class BoardController {
 		 
 		 // === 페이지바 만들기 === //
 		 int blockSize = 10;
-		 // blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수
-		 //1  2  3  4  5  6  7  8  9 10 [다음][마지막]  -- 1개블럭
+		 
+		 int loop = 1; //loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수까지만 증가하는 용도
+	     
+		 int pageNo = ((n_currentShowPageNo - 1)/blockSize) * blockSize + 1;
+		 
+		String pageBar = "<ul style='list-style:none;'>";
+		String url = "list";
+		
+		// === [맨처음][이전] 만들기 === //
+		pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo=1'><i style='transform: scaleX(-1)' class=\'fa-solid fa-forward-step\'></i></a></li>";
+		
+		if(pageNo != 1) {
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+(pageNo-1)+"'><i class=\"fa-solid fa-chevron-left\"></i></a></li>"; 
+		}
+		
+		while( !(loop > blockSize || pageNo > totalPage) ) {
+			
+			if(pageNo == Integer.parseInt(currentShowPageNo)) {
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; padding:2px 4px;'>"+pageNo+"</li>"; 
+			}
+			else {
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>"; 
+			}
+			
+			loop++;
+			pageNo++;
+		}// end of while-------------------------------
+		
+		// === [다음][마지막] 만들기 === //
+		if(pageNo <= totalPage) {
+			pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"'><i class=\"fa-solid fa-chevron-right\"></i></a></li>"; 	
+		}
+		
+		pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+totalPage+"'><i class=\"fa-solid fa-forward-step\"></i></a></li>";
+					
+		pageBar += "</ul>";	
+		
+		
+		// 좋아요 상위 5개 글
+		List<Map<String, String>> topLikeList = service.getTopLikedPosts();
+		
+		// 조회수 상위 5개 글
+		List<Map<String, String>> topReadList = service.getTopReadPosts();
+		
+		
+		mav.addObject("pageBar", pageBar);
+		 
+		mav.addObject("totalCount", totalCount);   // 페이징 처리시 보여주는 순번을 나타내기 위한 것
+		mav.addObject("currentShowPageNo", currentShowPageNo); // 페이징 처리시 보여주는 순번을 나타내기 위한 것
+		mav.addObject("sizePerPage", sizePerPage); // 페이징 처리시 보여주는 순번을 나타내기 위한 것
+		mav.addObject("topLikeList", topLikeList); // 좋아요 상위 5개 글 리스트
+		mav.addObject("topReadList", topReadList); // 조회수 상위 5개 글 리스트
+		
+		
+		
+		// 페이징 처리된 후 특정 글을 클릭하여 글을 본 후 사용자가 목록보기 버튼을 클릭했을 때 돌아갈페이지를 알려주기위해 넘김 
+		String currentURL = MyUtil.getCurrentURL(request);
+		mav.addObject("goBackURL", currentURL);
+		mav.addObject("login_userid",login_userid);
+		////////////////////////////////////////
+        mav.setViewName("mycontent/board/board");
+        
+		return mav;
+	}
+	
+	// FlowUp 메인페이지에 띄워주기 위한 게시판메인
+	@GetMapping("/board/boardOfMain") //게시판 메인 페이지로 이동 (게시판그룹의 글 전체 조회요청)
+	public ModelAndView boardOfMain(ModelAndView mav,HttpServletRequest request,
+            @RequestParam(defaultValue = "1") String currentShowPageNo) {
+		
+		HttpSession session = request.getSession();
+		session.setAttribute("readCountPermission", "yes");
+		
+		
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+	    String login_userid = null;
+	  
+	    if(loginuser != null) {
+		  login_userid = loginuser.getEmployeeNo();
+	    }
+	    
+		// 총 게시물 건수(totalCount)를 구하기
+		int totalCount = 0;   // 총 게시물 건수
+		int sizePerPage = 5;  // 한 페이지당 보여줄 게시물 건수
+		int totalPage = 0;    // 총 페이지수(웹브라우저상에서 보여줄 총 페이지 개수, 페이지바)
+		
+		int n_currentShowPageNo = 0; 
+		
+		// 총 게시물 건수 (totalCount)
+		totalCount = service.getTotalCount();
+		
+		totalPage = (int) Math.ceil((double)totalCount/sizePerPage);
+		
+		try {
+			  n_currentShowPageNo = Integer.parseInt(currentShowPageNo);
+		
+			  if(n_currentShowPageNo < 1 || n_currentShowPageNo > totalPage) {
+				 
+				 n_currentShowPageNo = 1;
+			  }
+			  
+		} catch(NumberFormatException e) {
+			n_currentShowPageNo = 1;
+		}
+		 
+		 int startRno = ((n_currentShowPageNo - 1) * sizePerPage) + 1; 
+		 int endRno = startRno + sizePerPage - 1; 
+		 
+		 Map<String, String> paraMap = new HashMap<>();
+		 
+		 paraMap.put("startRno", String.valueOf(startRno));
+		 paraMap.put("endRno", String.valueOf(endRno)); 
+		 
+		// === 게시판 메인 페이지에 뿌려줄 모든 게시글 조회 === //
+		 List<PostVO> postAllList = service.selectAllPost(paraMap,login_userid); 
+		 mav.addObject("postAllList",postAllList);
+		 
+		 // === 페이지바 만들기 === //
+		 int blockSize = 10;
 		 
 		 int loop = 1; //loop는 1부터 증가하여 1개 블럭을 이루는 페이지번호의 개수까지만 증가하는 용도
 	     
@@ -193,7 +304,7 @@ public class BoardController {
 		mav.addObject("goBackURL", currentURL);
 		mav.addObject("login_userid",login_userid);
 		////////////////////////////////////////
-        mav.setViewName("mycontent/board/board");
+        mav.setViewName("mycontent/board/board2");
         
 		return mav;
 	}

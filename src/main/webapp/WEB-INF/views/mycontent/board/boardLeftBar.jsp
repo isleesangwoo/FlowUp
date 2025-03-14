@@ -557,8 +557,6 @@ $(document).ready(function() {
 	            $("select[name='fk_boardNo']").html(options);
 	        },
 	        error: function(xhr, status, error) {
-	            console.error("게시판 목록 불러오기 실패:", error);
-	            alert("게시판 목록을 불러오는 중 오류가 발생했습니다.");
 	        }
 	    });
 		
