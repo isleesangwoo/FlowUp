@@ -212,6 +212,15 @@ public class EmployeeService_imple implements EmployeeService {
 		int n = dao.updateInfoEnd(empvo);
 		return n;
 	}
+	
+	//첨부파일이 있는 내 정보 수정일 때 
+	@Override
+	public int upadateInfoEnd_withFile(EmployeeVO empvo) {
+
+		int n = dao.upadateInfoEnd_withFile(empvo);
+		
+		return n;
+	}
 
 
 	// ==== 주소록 추가
@@ -267,16 +276,48 @@ public class EmployeeService_imple implements EmployeeService {
 	}
 
 
-	// view 단에 줄 사원들의 정보 갖고오기
+	// 관리자의 사원정보 수정 view 단에 줄 사원들의 정보 갖고오기
 	@Override
-	public List<Map<String, String>> all_employee_info_list(HttpServletRequest request) {
-		
-		List<Map<String, String>> all_employee_info_list = dao.all_employee_info_list();
-		
-		HttpSession session = request.getSession();
-		session.setAttribute("all_employee_info_list", all_employee_info_list);
-		
-		return null;
+	public List<Map<String, String>> all_employee_info_list() {
+		List<Map<String, String>> mapList = dao.all_employee_info_list();
+		return mapList;
 	}
+
+
+	// 변경할 직급명에 대한 직급번호 알아오기
+	@Override
+	public String getPositionName(String positionName) {
+		String posiotionNo = dao.getPositionName(positionName);
+		return posiotionNo;
+	}
+
+
+
+	// 변경할 부서명에 대한 부서번호 알아오기
+	@Override
+	public String getDepartmentName(String departmentName) {
+		String departmentNo = dao.getDepartmentName(departmentName);
+		return departmentNo;
+	}
+
+
+	// 변경할 팀명에 대한 팀번호 알아오기
+	@Override
+	public String getTeamName(String teamName) {
+		String teamNo = dao.getTeamName(teamName);
+		return teamNo;
+	}
+
+
+	// 관리자의 사원정보 수정
+	@Override
+	public int updateEmployee_byAdminEnd(Map<String, String> paraMap) {
+		int n = dao.updateEmployee_byAdminEnd(paraMap);
+		return n;
+	}
+
+
 	
+
+
 }

@@ -95,7 +95,7 @@
           		  <a href="#">비밀번호 변경</a>
           	  </li>
 			  <li>
-           		  <a href="#">로그아웃</a>
+           		  <a href="<%= ctxpath%>/employee/logout">로그아웃</a>
            	  </li>
           </ul>
       </div>

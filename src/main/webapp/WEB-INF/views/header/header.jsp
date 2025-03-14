@@ -5,7 +5,7 @@
    String ctxPath = request.getContextPath();
    //     /myspring 
 %>      
-    
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
 <!DOCTYPE html>
 <html>
 <head>
@@ -134,7 +134,14 @@
                         
                     </div>
                     <div class="top_ikon">
-                        <a class="right-ikon" href="<%= ctxPath%>/employee/mypage"><i class="fa-solid fa-user"></i></a>
+	                     <c:if test="${empty sessionScope.loginuser.fileName}">
+	                        <a class="right-ikon" href="<%= ctxPath%>/employee/mypage"><i class="fa-solid fa-user"></i></a>
+	                      </c:if>
+	                      <c:if test="${not empty sessionScope.loginuser.fileName}">
+	                      <a class="right-ikon" href="<%= ctxPath%>/employee/mypage">
+							<img class="ikon-img" src="<%= ctxPath%>/resources/files/${sessionScope.loginuser.fileName}" />
+						   </a>
+	                      </c:if>
                     </div>
                 </div>
             </div>

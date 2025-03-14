@@ -38,6 +38,9 @@ public interface EmployeeDAO {
 	// === 내 정보 수정하기 === //
 	int updateInfoEnd(EmployeeVO empvo);
 
+	// 첨부파일이 있는 내 정보 수정
+	int upadateInfoEnd_withFile(EmployeeVO empvo);
+	
 	
 	// === 주소록 추가 === //
 	int insert_addressBook(AddressBookVO adrsVO);
@@ -60,5 +63,19 @@ public interface EmployeeDAO {
 	int delete_address_book(String addressno);
 	
 	// 관리자의 사원정보 수정 view 단에 줄 사원들의 정보 갖고오기
-	List<Map<String, String>> all_employee_info_list();	
+	List<Map<String, String>> all_employee_info_list();
+	
+	// 변경할 직급명에 대한 직급번호 알아오기 
+	String getPositionName(String positionName);
+
+	// 변경할 부서명에 대한 부서번호 알아오기
+	String getDepartmentName(String departmentName);
+
+	// 변경할 팀명에 대한 팀번호 알아오기 
+	String getTeamName(String teamName);
+
+	// 관리자의 사원정보 수정
+	int updateEmployee_byAdminEnd(Map<String, String> paraMap);
+
+
 }
