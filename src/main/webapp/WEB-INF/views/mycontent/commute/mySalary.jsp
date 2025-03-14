@@ -211,29 +211,9 @@ div.hoverDiv:hover {
 			spread_tbody(currentShowPageNo);
         });
 		
-		$("button#btn_search").click(function(e) {
-			
-			
-			spread_tbody(currentShowPageNo);
-			
-		});
 		
-		$("input#searchWord").keydown(function(e) {
-			
-			if(e.keyCode == 13) {
-				spread_tbody(currentShowPageNo);
-			}
-			
-		});
-        
-     	
-
-    	
-    	
     }); // end of $(document).ready(() => {})-------------
 
-   
-   
     function week_div(year, currentShowPageNo) {
     	
         $('div#today').text(year);
@@ -248,16 +228,12 @@ div.hoverDiv:hover {
    		const year = $("div#today").text();
     	
    		const sizePerPage = $("select#sizePerPage").val();
-   		const searchType = $("select#searchType").val();
-   		const searchWord = $("input#searchWord").val();
-   		
+   
    	    const currentDate = new Date(); 
         const currentDate_year = currentDate.getFullYear();
    		
    		console.log("sizePerPage : " + sizePerPage);
    		console.log("year : " + year);
-   		console.log("searchType : " + searchType);
-   		console.log("searchWord : " + searchWord);
    		console.log("currentShowPageNo : " + currentShowPageNo);
     	
    		$.ajax({
@@ -265,8 +241,6 @@ div.hoverDiv:hover {
 			type:"get",
 			data:{"employeeNo":"${sessionScope.loginuser.employeeNo}"
 				 ,"year":year
-				 ,"searchType":searchType
-				 ,"searchWord":searchWord
 				 ,"sizePerPage":sizePerPage
 				 ,"currentShowPageNo":currentShowPageNo},
 			dataType:"json",
@@ -282,19 +256,20 @@ div.hoverDiv:hover {
 				if(json.mapList.length > 0 ) {
 					
 					$.each(json.mapList, (index,item)=>{
-
-
+						
+						const totalPay = Number(item.monthSalary) + Number(item.overtimePay) + Number(item.incentive);
+						
 						html += `<tr>
-										<td style="text-align: center; vertical-align:middle">\${item.name}</td>
-										<td style="text-align: center; vertical-align:middle">\${item.departmentname}</td>
-										<td style="text-align: center; vertical-align:middle">\${item.registerDate}</td>
-										<td style="text-align: center; vertical-align:middle">\${item.workYear}년차</td>
-										<td style="text-align: center; vertical-align:middle">\${item.occurAnnual}</td>
-										<td style="text-align: center; vertical-align:middle">\${item.overAnnual}</td>
-										<td style="text-align: center; vertical-align:middle">\${item.addAnnual}</td>
-										<td style="text-align: center; vertical-align:middle">\${item.totalannual}</td>
-										<td style="text-align: center; vertical-align:middle">\${item.usedannual}</td>
-										<td style="text-align: center; vertical-align:middle">\${item.remainingannual}</td>
+									<td style="text-align: center; vertical-align:middle">\${item.workRange}</td>
+									<td style="text-align: center; vertical-align:middle">\${Number(item.monthSalary).toLocaleString('en')}</td>
+									<td style="text-align: center; vertical-align:middle">\${item.total_overtime}</td>
+									<td style="text-align: center; vertical-align:middle">\${Number(item.overtimePay).toLocaleString('en')}</td>
+									<td style="text-align: center; vertical-align:middle">\${item.incentiveReason}</td>
+									<td style="text-align: center; vertical-align:middle">\${Number(item.incentive).toLocaleString('en')}</td>
+									<td style="text-align: center; vertical-align:middle">\${totalPay.toLocaleString('en')}</td>
+									<td style="text-align: center; vertical-align:middle">\${item.bank}</td>
+									<td style="text-align: center; vertical-align:middle">\${item.account}</td>
+									<td style="text-align: center; vertical-align:middle">\${item.paymentDate}</td>
 								  </tr>`;
 					
 					});
@@ -393,17 +368,12 @@ div.hoverDiv:hover {
 			<div class="mb-1" style="display:flex" >
 				
 				<div style="margin:0 auto 0 0; display:flex; gap:8px;">
-					<select id="searchType" name="searchType" style="width:70px;">
-						<option value="">검색</option>
-						<option value="name">이름</option>
-					</select>
-					<input type="text" id="searchWord" name="searchWord" value="" style=""/>
-					<button type="button" id="btn_search" onclick="" class="btn btn-sm btn-outline-secondary" style="width:70px; height:30px; line-height:15px;">검색</button>
+				
 				</div>
 					
 				<div style="margin:0 0 0 auto;display:flex; gap:8px;">
 				
-					<button type="button" id="btn_search" onclick="" class="btn btn-sm btn-outline-secondary" style="width:80px; height:30px; line-height:15px;">연차 조정</button>
+					<button type="button" id="btn_search" onclick="" class="btn btn-sm btn-outline-secondary" style="width:100px; height:30px; line-height:15px;">엑셀 다운로드</button>
 					<select id="sizePerPage" name="sizePerPage" style="width:70px;">
 						<option value="3">3</option>
 						<option value="5">5</option>

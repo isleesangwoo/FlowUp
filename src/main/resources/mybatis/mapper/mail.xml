@@ -182,7 +182,6 @@
 	</select>
 
 	
-	
 	<!-- 메일함 정렬 선택 시작 -->
 	<select id="mailListSort" resultMap="selectMailList_Map" parameterType="HashMap">
 	    SELECT 
@@ -289,6 +288,62 @@
 	    FROM tbl_mailFile
 	    WHERE fk_mailNo = #{mailNo}
 	</select>
+	
+	
+	<!-- 메일 작성 -->
+	
+	<!-- 메일 정보 저장 -->
+	<insert id="insertMail" parameterType="MailVO" useGeneratedKeys="true" keyProperty="mailNo">
+	    INSERT INTO tbl_mail (mailNo, subject, content, fk_employeeNo, readStatus, deleteStatus, saveStatus, importantStatus, sendDate)
+	    VALUES (mailSeq.nextval, #{subject}, #{content}, #{fk_employeeNo}, #{readStatus}, #{deleteStatus}, #{saveStatus}, #{importantStatus},  TO_DATE(#{sendDate}, 'YYYY-MM-DD HH24:MI:SS'))
+	</insert>
+	
+	<!-- 참조자 정보 저장 -->
+	<insert id="insertReferenced" parameterType="map">
+	    INSERT INTO tbl_referenced (refMailNo, refStatus, refName, refMail, fk_mailNo, fk_adrsBNo)
+	    VALUES (referencedSeq.nextval, #{refStatus}, #{refName}, #{refMail}, #{fk_mailNo}, #{fk_adrsBNo})
+	</insert>
+
+	<!-- 첨부 파일 정보 저장 -->
+	<insert id="insertMailFile" parameterType="MailFileVO">
+	    INSERT INTO tbl_mailFile (fileNo, fileName, orgFileName, fileSize, fk_mailNo)
+	    VALUES (mailFileSeq.nextval, #{fileName}, #{orgFileName}, #{fileSize}, #{fk_mailNo})
+	</insert>
+
+	<!-- 받는사람 이름으로 사원 번호 조회 -->
+	<select id="findEmployeeNoByName" resultType="String">
+	    SELECT employeeNo FROM tbl_employee WHERE name = #{name}
+	</select>
+
+
+	<!-- 보낸메일함 조회 -->
+	<select id="selectSentMail" parameterType="map" resultType="MailVO">
+	    SELECT m.*
+	    FROM tbl_mail m
+	    JOIN tbl_referenced r ON m.mailNo = r.fk_mailNo
+	    WHERE m.fk_employeeNo = #{senderNo}
+	    AND deleteStatus = 0
+	    AND r.refMail != #{senderNo}
+	    AND r.refStatus = '0'
+	    ORDER BY m.sendDate DESC
+	    OFFSET (#{currentShowPageNo} - 1) * #{sizePerPage} ROWS
+	    FETCH NEXT #{sizePerPage} ROWS ONLY
+	</select>
+	
+	<!-- 보낸메일함 총 개수 조회 -->
+	<select id="getSentMailCount" parameterType="String" resultType="int">
+	    SELECT COUNT(*)
+	    FROM tbl_mail m
+	    JOIN tbl_referenced r ON m.mailNo = r.fk_mailNo
+	    WHERE m.fk_employeeNo = #{senderNo}
+	    AND r.refMail != #{senderNo}
+	    AND r.refStatus = '0'
+	</select>
+
+
+
+
+
 
 </mapper>
 

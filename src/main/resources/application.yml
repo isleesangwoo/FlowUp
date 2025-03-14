@@ -35,6 +35,12 @@ spring: # 주의할 점은 내용작성시 들여쓰기 내어쓰기시 공백�
       maximum-pool-size : 10 #최대 커넥션 개수 설정
       max-lifetime: 1800000  #커넥션 풀에서 살아있을 수 있는 커넥션의 최대 수명시간 1,800초(30분)
 
+  #//=== (#웹채팅관련11) === //
+  data:
+    mongodb:
+      #uri: mongodb://devuser:qwer1234$@15-164-234-113:27017/mydb
+      uri: mongodb://devuser:qwer1234$@localhost:27017/mydb
+
   messages: #메시지(파일이 여러개일 경우 ,로 구분)
     basename: messages.validation
     encoding: UTF-8

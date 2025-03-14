@@ -9,7 +9,156 @@
 %>
 
 
- <jsp:include page="../../header/header.jsp" />
+<%-- === 사내 캘린더 추가 Modal === --%>
+<div class="modal fade" id="modal_addComCal" role="dialog" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    
+      <!-- Modal header -->
+      <div class="modal-header">
+        <h4 class="modal-title">사내 캘린더 추가</h4>
+        <button type="button" class="close modal_close" data-dismiss="modal">&times;</button>
+      </div>
+      
+      <!-- Modal body -->
+      <div class="modal-body">
+       	<form name="modal_frm">
+       	<table style="width: 100%;" class="table table-bordered">
+     			<tr>
+     				<td style="text-align: left; ">소분류명</td>
+     				<td><input type="text" class="add_com_smcatgoname"/></td>
+     			</tr>
+     			<tr>
+     				<td style="text-align: left;">만든이</td>
+     				<td style="text-align: left; padding-left: 5px;">${sessionScope.loginuser.name}</td>
+     			</tr>
+     		</table>
+       	</form>	
+      </div>
+      
+      <!-- Modal footer -->
+      <div class="modal-footer">
+      	<button type="button" id="addCom" class="btn btn-success btn-sm" onclick="goAddComCal()">추가</button>
+          <button type="button" class="btn btn-danger btn-sm modal_close" data-dismiss="modal">취소</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<%-- === 사내 캘린더 수정 Modal === --%>
+<div class="modal fade" id="modal_editComCal" role="dialog" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    
+      <!-- Modal header -->
+      <div class="modal-header">
+        <h4 class="modal-title">사내 캘린더 수정</h4>
+        <button type="button" class="close modal_close" data-dismiss="modal">&times;</button>
+      </div>
+      
+      <!-- Modal body -->
+      <div class="modal-body">
+       	<form name="modal_frm">
+       	<table style="width: 100%;" class="table table-bordered">
+     			<tr>
+     				<td style="text-align: left; ">소분류명</td>
+     				<td><input type="text" class="edit_com_smcatgoname"/><input type="hidden" value="" class="edit_com_smcatgono"></td>
+     			</tr>
+     			<tr>
+     				<td style="text-align: left;">만든이</td>
+     				<td style="text-align: left; padding-left: 5px;">${sessionScope.loginuser.name}</td>
+     			</tr>
+     		</table>
+       	</form>	
+      </div>
+      
+      <!-- Modal footer -->
+      <div class="modal-footer">
+      	<button type="button" id="addCom" class="btn btn-success btn-sm" onclick="goEditComCal()">수정</button>
+          <button type="button" class="btn btn-danger btn-sm modal_close" data-dismiss="modal">취소</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<%-- === 내 캘린더 추가 Modal === --%>
+<div class="modal fade" id="modal_addMyCal" role="dialog" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <!-- Modal header -->
+      <div class="modal-header">
+        <h4 class="modal-title">내 캘린더 추가</h4>
+        <button type="button" class="close modal_close" data-dismiss="modal">&times;</button>
+      </div>
+      
+      <!-- Modal body -->
+      <div class="modal-body">
+          <form name="modal_frm">
+       	<table style="width: 100%;" class="table table-bordered">
+     			<tr>
+     				<td style="text-align: left; ">소분류명</td>
+     				<td><input type="text" class="add_my_smcatgoname" /></td>
+     			</tr>
+     			<tr>
+     				<td style="text-align: left;">만든이</td>
+     				<td style="text-align: left; padding-left: 5px;">${sessionScope.loginuser.name}</td> 
+     			</tr>
+     		</table>
+     		</form>
+      </div>
+      
+      <!-- Modal footer -->
+      <div class="modal-footer">
+      	<button type="button" id="addMy" class="btn btn-success btn-sm" onclick="goAddMyCal()">추가</button>
+          <button type="button" class="btn btn-danger btn-sm modal_close" data-dismiss="modal">취소</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+<%-- === 내 캘린더 수정 Modal === --%>
+<div class="modal fade" id="modal_editMyCal" role="dialog" data-backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content">
+    
+      <!-- Modal header -->
+      <div class="modal-header">
+        <h4 class="modal-title">내 캘린더 수정</h4>
+        <button type="button" class="close modal_close" data-dismiss="modal">&times;</button>
+      </div>
+      
+      <!-- Modal body -->
+      <div class="modal-body">
+      	<form name="modal_frm">
+       	<table style="width: 100%;" class="table table-bordered">
+     			<tr>
+     				<td style="text-align: left; ">소분류명</td>
+     				<td><input type="text" class="edit_my_smcatgoname"/><input type="hidden" value="" class="edit_my_smcatgono"></td>
+     			</tr>
+     			<tr>
+     				<td style="text-align: left;">만든이</td>
+     				<td style="text-align: left; padding-left: 5px;">${sessionScope.loginuser.name}</td>
+     			</tr>
+     		</table>
+       	</form>
+      </div>
+      
+      <!-- Modal footer -->
+      <div class="modal-footer">
+      	<button type="button" id="addCom" class="btn btn-success btn-sm" onclick="goEditMyCal()">수정</button>
+          <button type="button" class="btn btn-danger btn-sm modal_close" data-dismiss="modal">취소</button>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+
+<jsp:include page="../../header/header.jsp" />
 <%-- 각자 페이지에 해당되는 css 연결 --%>
 <link href="<%=ctxPath%>/css/email/email_main.css" rel="stylesheet">
 
@@ -18,6 +167,10 @@
 <script type="text/javascript">
 
 $(document).ready(function(){
+	
+	$('.searchOn').click(e=>{
+		$('#searchPart').toggle();
+	})
 	
 	// === 사내 캘린더에 사내캘린더 소분류 보여주기 ===
 	showCompanyCal();
@@ -188,9 +341,9 @@ $(document).ready(function(){
         selectable: true,
 	    editable: false,
 	    headerToolbar: {
-	    	  left: 'prev,next today',
-	          center: 'title',
-	          right: 'dayGridMonth dayGridWeek dayGridDay'
+	    	  left: 'dayGridMonth dayGridWeek dayGridDay',
+	          center: 'prev,title,next,today',
+	          right: 'listWeek'
 	    },
 	    dayMaxEventRows: true, // for all non-TimeGrid views
 	    views: {
@@ -203,20 +356,21 @@ $(document).ready(function(){
     	events:function(info, successCallback, failureCallback) {
 	
 	    	 $.ajax({
-                 url: '<%= ctxPath%>/schedule/selectSchedule',
-                 data:{"fk_userid":$('input#fk_userid').val()},
+                 url: '<%= ctxPath%>/calendar/selectSchedule',
+                 data:{"fk_employeeNo":$('input#fk_employeeNo').val()},
                  dataType: "json",
+                 async: false ,
                  success:function(json) {
                 	 /*
                 	    json 의 값 예
-                	    [{"enddate":"2021-11-26 18:00:00.0","fk_lgcatgono":"2","color":"#009900","scheduleno":"1","fk_smcatgono":"4","subject":"파이널 프로젝트 코딩","startdate":"2021-11-08 09:00:00.0","fk_userid":"seoyh"},{"enddate":"2021-11-29 13:50:00.0","fk_lgcatgono":"1","color":"#990008","scheduleno":"2","fk_smcatgono":"7","subject":"팀원들 점심식사","joinuser":"leess,eomjh","startdate":"2021-11-29 12:50:00.0","fk_userid":"seoyh"},{"enddate":"2021-12-02 20:00:00.0","fk_lgcatgono":"1","color":"#300bea","scheduleno":"3","fk_smcatgono":"11","subject":"팀원들 뒤풀이 여행","joinuser":"leess,eomjh","startdate":"2021-12-01 09:00:00.0","fk_userid":"seoyh"}]
+                	    [{"enddate":"2021-11-26 18:00:00.0","fk_lgcatgono":"2","color":"#009900","scheduleno":"1","fk_smcatgono":"4","subject":"파이널 프로젝트 코딩","startdate":"2021-11-08 09:00:00.0","fk_employeeNo":"seoyh"},{"enddate":"2021-11-29 13:50:00.0","fk_lgcatgono":"1","color":"#990008","scheduleno":"2","fk_smcatgono":"7","subject":"팀원들 점심식사","joinuser":"leess,eomjh","startdate":"2021-11-29 12:50:00.0","fk_employeeNo":"seoyh"},{"enddate":"2021-12-02 20:00:00.0","fk_lgcatgono":"1","color":"#300bea","scheduleno":"3","fk_smcatgono":"11","subject":"팀원들 뒤풀이 여행","joinuser":"leess,eomjh","startdate":"2021-12-01 09:00:00.0","fk_employeeNo":"seoyh"}]
                 	 */
                 	 var events = [];
                      if(json.length > 0){
                          
                              $.each(json, function(index, item) {
-                                    var startdate = moment(item.startdate).format('YYYY-MM-DD HH:mm:ss');
-                                    var enddate = moment(item.enddate).format('YYYY-MM-DD HH:mm:ss');
+                                    var startdate = moment(item.startdate).format('YYYY-MM-DD HH:mm');
+                                    var enddate = moment(item.enddate).format('YYYY-MM-DD HH:mm');
                                     var subject = item.subject;
                               
                                    // 사내 캘린더로 등록된 일정을 풀캘린더 달력에 보여주기 
@@ -232,7 +386,7 @@ $(document).ready(function(){
 	   			                                                title: item.subject,
 	   			                                                start: startdate,
 	   			                                                end: enddate,
-	   			                                        	    url: "<%= ctxPath%>/schedule/detailSchedule?scheduleno="+item.scheduleno,
+	   			                                        	    url: "<%= ctxPath%>/calendar/detailSchedule?scheduleno="+item.scheduleno,
 	   			                                                color: item.color,
 	   			                                                cid: item.fk_smcatgono  // 사내캘린더 내의 서브캘린더 체크박스의 value값과 일치하도록 만들어야 한다. 그래야만 서브캘린더의 체크박스와 cid 값이 연결되어 체크시 풀캘린더에서 일정이 보여지고 체크해제시 풀캘린더에서 일정이 숨겨져 안보이게 된다. 
 	   			                                   }); // end of events.push({})---------
@@ -249,14 +403,14 @@ $(document).ready(function(){
 	                                   
 	                                   for(var i=0; i<$("input:checkbox[name=my_smcatgono]:checked").length; i++){
 	                                	  
-	                                		   if($("input:checkbox[name=my_smcatgono]:checked").eq(i).val() == item.fk_smcatgono && item.fk_userid == "100012" ){
+	                                		   if($("input:checkbox[name=my_smcatgono]:checked").eq(i).val() == item.fk_smcatgono && item.fk_employeeNo == "${sessionScope.loginuser.employeeNo}" ){
 	   			                               //  alert("캘린더 소분류 번호 : " + $("input:checkbox[name=my_smcatgono]:checked").eq(i).val());
 	                                			   events.push({
 	   			                                	            id: item.scheduleno,
 	   			                                                title: item.subject,
 	   			                                                start: startdate,
 	   			                                                end: enddate,
-	   			                                        	    url: "<%= ctxPath%>/schedule/detailSchedule?scheduleno="+item.scheduleno,
+	   			                                        	    url: "<%= ctxPath%>/calendar/detailSchedule?scheduleno="+item.scheduleno,
 	   			                                                color: item.color,
 	   			                                                cid: item.fk_smcatgono  // 내캘린더 내의 서브캘린더 체크박스의 value값과 일치하도록 만들어야 한다. 그래야만 서브캘린더의 체크박스와 cid 값이 연결되어 체크시 풀캘린더에서 일정이 보여지고 체크해제시 풀캘린더에서 일정이 숨겨져 안보이게 된다. 
 	   			                                   }); // end of events.push({})---------
@@ -267,14 +421,14 @@ $(document).ready(function(){
 
                                  
                                   // 공유받은 캘린더(다른 사용자가 내캘린더로 만든 것을 공유받은 경우임)
-                                  if (item.fk_lgcatgono==1 && item.fk_userid != "100021" && (item.joinuser).indexOf("100021") != -1 ){  
+                                  if (item.fk_lgcatgono==1 && item.fk_employeeNo != "${sessionScope.loginuser.employeeNo}" && (item.joinuser).indexOf("${sessionScope.loginuser.employeeNo}") != -1 ){  
                                         
   	                                   events.push({
   	                                	   			id: "0",  // "0" 인 이유는  배열 events 에 push 할때 id는 고유해야 하는데 위의 사내캘린더 및 내캘린더에서 push 할때 id값으로 item.scheduleno 을 사용하였다. item.scheduleno 값은 DB에서 1 부터 시작하는 시퀀스로 사용된 값이므로 0 값은 위의 사내캘린더나 내캘린더에서 사용되지 않으므로 여기서 고유한 값을 사용하기 위해 0 값을 준 것이다. 
   	                                                title: item.subject,
   	                                                start: startdate,
   	                                                end: enddate,
-  	                                        	    url: "<%= ctxPath%>/schedule/detailSchedule?scheduleno="+item.scheduleno,
+  	                                        	    url: "<%= ctxPath%>/calendar/detailSchedule?scheduleno="+item.scheduleno,
   	                                                color: item.color,
   	                                                cid: "0"  // "0" 인 이유는  공유받은캘린더 에서의 체크박스의 value 를 "0" 으로 주었기 때문이다.
   	                                   }); // end of events.push({})--------- 
@@ -305,7 +459,7 @@ $(document).ready(function(){
       	    
       	    var frm = document.dateFrm;
       	    frm.method="POST";
-      	    frm.action="<%= ctxPath%>/schedule/insertSchedule";
+      	    frm.action="<%= ctxPath%>/calendar/insertSchedule";
       	    frm.submit();
       	  },
       	  
@@ -375,285 +529,6 @@ $(document).ready(function(){
 }); // end of $(document).ready(function(){})==============================
 
 
-// ~~~~~~~ Function Declartion ~~~~~~~
-
-// === 사내 캘린더 소분류 추가를 위해 +아이콘 클릭시 ===
-function addComCalendar(){
-	$('#modal_addComCal').modal('show'); // 모달창 보여주기	
-}// end of function addComCalendar(){}--------------------
-	
-	
-// === 사내 캘린더 추가 모달창에서 추가 버튼 클릭시 ===
-function goAddComCal(){
-	
-	if($("input.add_com_smcatgoname").val().trim() == ""){
- 		  alert("추가할 사내캘린더 소분류명을 입력하세요!!");
- 		  return;
- 	}
-	
- 	else {
- 		 $.ajax({
- 			 url: "<%= ctxPath%>/schedule/addComCalendar",
- 			 type: "post",
- 			 data: {"com_smcatgoname": $("input.add_com_smcatgoname").val(), 
- 				    "fk_userid": "100012"},
- 			 dataType: "json",
- 			 success:function(json){
- 				 if(json.n != 1){
-  					alert("이미 존재하는 '사내캘린더 소분류명' 입니다.");
-  					return;
-  				 }
- 				 else if(json.n == 1){
- 					 $('#modal_addComCal').modal('hide'); // 모달창 감추기				
- 					 alert("사내 캘린더에 "+$("input.add_com_smcatgoname").val()+" 소분류명이 추가되었습니다.");
- 					 
- 					 $("input.add_com_smcatgoname").val("");
- 					 showCompanyCal();  // 사내 캘린더 소분류 보여주기
- 				 }
- 			 },
- 			 error: function(request, status, error){
-  	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-    	     }	 
- 		 });
- 	  }
-	
-}// end of function goAddComCal(){}------------------------------------
-
-
-// === 사내 캘린더에서 사내캘린더 소분류  보여주기  === //
-function showCompanyCal(){
-	$.ajax({
-		 url:"<%= ctxPath%>/schedule/showCompanyCalendar",
-		 type:"get",
-		 dataType:"json",
-		 success:function(json){
-				 var html = "";
-				 
-				 if(json.length > 0){
-					 html += "<table style='width:80%;'>";
-					 
-					 $.each(json, function(index, item){
-						 html += "<tr style='font-size: 11pt;'>";
-						 html += "<td style='width:60%; padding: 3px 0px;'><input type='checkbox' name='com_smcatgono' class='calendar_checkbox com_smcatgono' style='margin-right: 3px;' value='"+item.smcatgono+"' checked id='com_smcatgono_"+index+"'/><label for='com_smcatgono_"+index+"'>"+item.smcatgoname+"</label></td>";  
-						 
-						 <%-- 사내 캘린더 추가를 할 수 있는 직원은 직위코드가 3 이면서 부서코드가 4 에 근무하는 사원이 로그인 한 경우에만 가능하도록 조건을 걸어둔다. 
-						 if("${sessionScope.loginuser.securityLevel}" =='3' && "${sessionScope.loginuser.securityLevel}" == '4') { --%>
-						 if("${sessionScope.loginuser.securityLevel}" =='10') {
-							 html += "<td style='width:20%; padding: 3px 0px;'><button class='btn_edit' data-target='editCal' onclick='editComCalendar("+item.smcatgono+",\""+item.smcatgoname+"\")'><i class='fas fa-edit'></i></button></td>";  
-							 html += "<td style='width:20%; padding: 3px 0px;'><button class='btn_edit delCal' onclick='delCalendar("+item.smcatgono+",\""+item.smcatgoname+"\")'><i class='fas fa-trash'></i></button></td>";
-						 }
-						 
-						 html += "</tr>";
-					 });
-				 	 
-					 html += "</table>";
-				 }
-			 
-				 $("div#companyCal").html(html);
-		},
-		error: function(request, status, error){
-	           alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-        }	 	
-	});
-
-}// end of function showCompanyCal()------------------	
-
-
-// === 사내 캘린더내의 서브캘린더 수정 모달창 나타나기 === 
-function editComCalendar(smcatgono, smcatgoname){
-	$('#modal_editComCal').modal('show'); // 모달 보이기
-	$("input.edit_com_smcatgono").val(smcatgono);
-	$("input.edit_com_smcatgoname").val(smcatgoname);
-}// end of function editComCalendar(smcatgono, smcatgoname){}----------------------
-	
-	
-// === 사내 캘린더내의 서브캘린더 수정 모달창에서 수정하기 클릭 === 
-function goEditComCal(){
-	
-	if($("input.edit_com_smcatgoname").val().trim() == ""){
-  		  alert("수정할 사내캘린더 소분류명을 입력하세요!!");
-  		  return;
-  	}
-  	else{
-		$.ajax({
-			url:"<%= ctxPath%>/schedule/editCalendar",
-			type: "post",
-			data:{"smcatgono":$("input.edit_com_smcatgono").val(), 
-				  "smcatgoname": $("input.edit_com_smcatgoname").val(), 
-				  "userid":"100021",
-				  "caltype":"2"  // 사내캘린더
-			     },
-			dataType:"json",
-			success:function(json){
-				if(json.n == 0){
-   					alert($("input.edit_com_smcatgoname").val()+"은(는) 이미 존재하는 캘린더 명입니다.");
-   					return;
-   				 }
-				if(json.n == 1){
-					$('#modal_editComCal').modal('hide'); // 모달 숨기기
-					alert("사내 캘린더명을 수정하였습니다.");
-					showCompanyCal();
-				}
-			},
-			 error: function(request, status, error){
-		            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		    }
-		});
-  	  }
-	
-}// end of function goEditComCal(){}--------------------------------
-
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ //	
-
-// === 내 캘린더 소분류 추가를 위해 +아이콘 클릭시 ===
-function addMyCalendar(){
-	$('#modal_addMyCal').modal('show');	
-}// end of function addMyCalendar(){}-----------------
-	
-
-// === 내 캘린더 추가 모달창에서 추가 버튼 클릭시 === 
-function goAddMyCal(){
-	
-	if($("input.add_my_smcatgoname").val().trim() == ""){
- 		  alert("추가할 내캘린더 소분류명을 입력하세요!!");
- 		  return;
- 	}
- 	
-	else {
- 		  $.ajax({
- 			 url: "<%= ctxPath%>/schedule/addMyCalendar",
- 			 type: "post",
- 			 data: {"my_smcatgoname": $("input.add_my_smcatgoname").val(), 
- 				    "fk_userid": "100012"},
- 			 dataType: "json",
- 			 success:function(json){
- 				 
- 				 if(json.n!=1){
- 					alert("이미 존재하는 '내캘린더 소분류명' 입니다.");
- 					return;
- 				 }
- 				 else if(json.n==1){
- 					 $('#modal_addMyCal').modal('hide'); // 모달창 감추기
- 					 alert("내 캘린더에 "+$("input.add_my_smcatgoname").val()+" 소분류명이 추가되었습니다.");
- 					 
- 					 $("input.add_my_smcatgoname").val("");
- 				 	 showmyCal(); // 내 캘린더 소분류 보여주기
- 				 }
- 			 },
- 			 error: function(request, status, error){
-  	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-    	     }	 
- 		 });
- 	  }
-	
-}// end of function goAddMyCal(){}-----------------------
-
-
-// === 내 캘린더에서 내캘린더 소분류 보여주기  === //
-function showmyCal(){
-	$.ajax({
-		 url:"<%= ctxPath%>/schedule/showMyCalendar",
-		 type:"get",
-		 data:{"fk_userid":"100012"},
-		 dataType:"json",
-		 success:function(json){
-			 var html = "";
-			 if(json.length > 0){
-				 html += "<table style='width:80%;'>";	 
-				 
-				 $.each(json, function(index, item){
-					 html += "<tr style='font-size: 11pt;'>";
-					 html += "<td style='width:60%; padding: 3px 0px;'><input type='checkbox' name='my_smcatgono' class='calendar_checkbox my_smcatgono' style='margin-right: 3px;' value='"+item.smcatgono+"' checked id='my_smcatgono_"+index+"' checked/><label for='my_smcatgono_"+index+"'>"+item.smcatgoname+"</label></td>";   
-					 html += "<td style='width:20%; padding: 3px 0px;'><button class='btn_edit editCal' data-target='editCal' onclick='editMyCalendar("+item.smcatgono+",\""+item.smcatgoname+"\")'><i class='fas fa-edit'></i></button></td>"; 
-					 html += "<td style='width:20%; padding: 3px 0px;'><button class='btn_edit delCal' onclick='delCalendar("+item.smcatgono+",\""+item.smcatgoname+"\")'><i class='fas fa-trash'></i></button></td>";
-				     html += "</tr>";
-				 });
-				 
-				 html += "</table>";
-			 }
-			 
-			 $("div#myCal").html(html);
-		 },
-		 error: function(request, status, error){
-	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-	     }	 	
-	});
-
-}// end of function showmyCal()---------------------	
-
-
-// === 내 캘린더내의 서브캘린더 수정 모달창 나타나기 === 
-function editMyCalendar(smcatgono, smcatgoname){
-	$('#modal_editMyCal').modal('show');  // 모달 보이기
-	$("input.edit_my_smcatgono").val(smcatgono);
-	$("input.edit_my_smcatgoname").val(smcatgoname);
-}// end of function editMyCalendar(smcatgono, smcatgoname){}-----------------------
-	
-	
-// === 내 캘린더내의 서브캘린더 수정 모달창에서 수정 클릭 === 
-function goEditMyCal(){
-	
-	if($("input.edit_my_smcatgoname").val().trim() == ""){
-		  alert("수정할 내캘린더 소분류명을 입력하세요!!");
-		  return;
-	}
-  	else{
-		 $.ajax({
-			url:"<%= ctxPath%>/schedule/editCalendar",
-			type: "post",
-			data:{"smcatgono":$("input.edit_my_smcatgono").val(), 
-				  "smcatgoname": $("input.edit_my_smcatgoname").val(), 
-				  "userid":"100012",
-				  "caltype":"1"  // 내캘린더
-				  },
-			dataType:"json",
-			success:function(json){
-				if(json.n == 0){
-					alert($("input.edit_com_smcatgoname").val()+"은(는) 이미 존재하는 캘린더 명입니다.");
-   					return;
-   				 }
-				if(json.n == 1){
-					$('#editMyCal').modal('hide'); // 모달 숨기기
-					alert("내캘린더명을 수정하였습니다.");
-					showmyCal(); 
-				}
-			},
-			 error: function(request, status, error){
-		            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		    }
-		});
-  	  }
-	
-}// end of function goEditMyCal(){}-------------------------------------
-	
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//		
-
-// === (사내캘린더 또는 내캘린더)속의 소분류 카테고리 삭제하기 === 
-function delCalendar(smcatgono, smcatgoname){ // smcatgono => 캘린더 소분류 번호, smcatgoname => 캘린더 소분류 명
-	
-	var bool = confirm(smcatgoname + " 캘린더를 삭제 하시겠습니까?");
-	
-	if(bool){
-		$.ajax({
-			url:"<%= ctxPath%>/schedule/deleteSubCalendar",
-			type: "post",
-			data:{"smcatgono":smcatgono},
-			dataType:"json",
-			success:function(json){
-				if(json.n==1){
-					alert(smcatgoname + " 캘린더를 삭제하였습니다.");
-					location.href="javascript:history.go(0);"; // 페이지 새로고침
-				}
-			},
-			error: function(request, status, error){
-		            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		    }
-		});
-	}
-	
-}// end of function delCalendar(smcatgono, smcatgoname){}------------------------
 
 
 // === 검색 기능 === //
@@ -676,7 +551,7 @@ function goSearch(){
 	
    	var frm = document.searchScheduleFrm;
     frm.method="get";
-    frm.action="<%= ctxPath%>/schedule/searchSchedule";
+    frm.action="<%= ctxPath%>/calendar/searchSchedule";
     frm.submit();
 	
 }// end of function goSearch(){}--------------------------
@@ -686,38 +561,53 @@ function goSearch(){
 
 
 	<%-- 이곳에 각 해당되는 뷰 페이지를 작성해주세요 --%>
-	
+	<link href="<%=ctxPath%>/css/reservation/assetDetailPage.css" rel="stylesheet">
+	<link href="<%=ctxPath%>/css/reservation/reservation_main.css" rel="stylesheet"> 
+
 	<jsp:include page="./calendar_bar.jsp" /> 
 
     <!-- 오른쪽 바 -->
     <div id="right_bar">
+		
+		<div id="right_title_box" style="display:flex; justify-content:space-between; align-items:center;">
+	        <span id="right_title" style="margin-right:8px;">calendar</span>
+	    
+		
+		<div style="display:flex; align-items:center;">
+		<span style="display:flex; align-items:center; gap: 2px; justify-content: end;" class="searchOn">
+			<span style="cursor:pointer;"><i class="fa-solid fa-magnifying-glass"></i></span>
+		</span> 
+		
+		<span id="searchPart" style="display:none; margin-left: 8px;">
 		<form name="searchScheduleFrm">
-			<div>
-				<input type="text" id="fromDate" name="startdate" style="width: 90px;" readonly="readonly">&nbsp;&nbsp; 
-            -&nbsp;&nbsp; <input type="text" id="toDate" name="enddate" style="width: 90px;" readonly="readonly">&nbsp;&nbsp;
+			<div >
+				<input type="text" id="fromDate" name="startdate" style="width: 90px;" readonly="readonly">
+            &nbsp;-&nbsp;<input type="text" id="toDate" name="enddate" style="width: 90px;" readonly="readonly">&nbsp;
 				<select id="searchType" name="searchType" style="height: 30px;">
 					<option value="">검색대상선택</option>
 					<option value="subject">제목</option>
 					<option value="content">내용</option>
 					<option value="joinuser">공유자</option>
-				</select>&nbsp;&nbsp;	
+				</select>&nbsp;
 				<input type="text" id="searchWord" value="" style="height: 30px; width:150px;" name="searchWord"/>
-				&nbsp;&nbsp;
+				&nbsp;
 				<select id="sizePerPage" name="sizePerPage" style="height: 30px;">
 					<option value="">보여줄개수</option>
 					<option value="10">10</option>
 					<option value="15">15</option>
 					<option value="20">20</option>
-				</select>&nbsp;&nbsp;
-				<input type="hidden" name="fk_userid" value="100012"/>
-				<button type="button" class="btn_normal" style="display: inline-block;" onclick="goSearch()">검색</button>
+				</select>&nbsp;
+				<input type="hidden" name="fk_employeeNo" value="${sessionScope.loginuser.employeeNo}"/>
+				<button type="button" class="okBtn" style="display: inline-block; height:30px; margin-bottom:0px;" onclick="goSearch()">검색</button>
 			</div>
 		</form>
-
+		</span>
+		</div>
+	</div>
 		
 
 		<%-- 풀캘린더가 보여지는 엘리먼트  --%>
-		<div id="calendar"></div>
+		<div id="calendar" style="margin-top:12px;"></div>
 
 
     </div>
@@ -744,153 +634,7 @@ function goSearch(){
 	
 	
 	
-	<%-- === 사내 캘린더 추가 Modal === --%>
-	<div class="modal fade" id="modal_addComCal" role="dialog" data-backdrop="static">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	    
-	      <!-- Modal header -->
-	      <div class="modal-header">
-	        <h4 class="modal-title">사내 캘린더 추가</h4>
-	        <button type="button" class="close modal_close" data-dismiss="modal">&times;</button>
-	      </div>
-	      
-	      <!-- Modal body -->
-	      <div class="modal-body">
-	       	<form name="modal_frm">
-	       	<table style="width: 100%;" class="table table-bordered">
-	     			<tr>
-	     				<td style="text-align: left; ">소분류명</td>
-	     				<td><input type="text" class="add_com_smcatgoname"/></td>
-	     			</tr>
-	     			<tr>
-	     				<td style="text-align: left;">만든이</td>
-	     				<td style="text-align: left; padding-left: 5px;">${sessionScope.loginuser.name}</td>
-	     			</tr>
-	     		</table>
-	       	</form>	
-	      </div>
-	      
-	      <!-- Modal footer -->
-	      <div class="modal-footer">
-	      	<button type="button" id="addCom" class="btn btn-success btn-sm" onclick="goAddComCal()">추가</button>
-	          <button type="button" class="btn btn-danger btn-sm modal_close" data-dismiss="modal">취소</button>
-	      </div>
-	      
-	    </div>
-	  </div>
-	</div>
-
-	<%-- === 사내 캘린더 수정 Modal === --%>
-	<div class="modal fade" id="modal_editComCal" role="dialog" data-backdrop="static">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	    
-	      <!-- Modal header -->
-	      <div class="modal-header">
-	        <h4 class="modal-title">사내 캘린더 수정</h4>
-	        <button type="button" class="close modal_close" data-dismiss="modal">&times;</button>
-	      </div>
-	      
-	      <!-- Modal body -->
-	      <div class="modal-body">
-	       	<form name="modal_frm">
-	       	<table style="width: 100%;" class="table table-bordered">
-	     			<tr>
-	     				<td style="text-align: left; ">소분류명</td>
-	     				<td><input type="text" class="edit_com_smcatgoname"/><input type="hidden" value="" class="edit_com_smcatgono"></td>
-	     			</tr>
-	     			<tr>
-	     				<td style="text-align: left;">만든이</td>
-	     				<td style="text-align: left; padding-left: 5px;">${sessionScope.loginuser.name}</td>
-	     			</tr>
-	     		</table>
-	       	</form>	
-	      </div>
-	      
-	      <!-- Modal footer -->
-	      <div class="modal-footer">
-	      	<button type="button" id="addCom" class="btn btn-success btn-sm" onclick="goEditComCal()">수정</button>
-	          <button type="button" class="btn btn-danger btn-sm modal_close" data-dismiss="modal">취소</button>
-	      </div>
-	      
-	    </div>
-	  </div>
-	</div>
-
-	<%-- === 내 캘린더 추가 Modal === --%>
-	<div class="modal fade" id="modal_addMyCal" role="dialog" data-backdrop="static">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	      
-	      <!-- Modal header -->
-	      <div class="modal-header">
-	        <h4 class="modal-title">내 캘린더 추가</h4>
-	        <button type="button" class="close modal_close" data-dismiss="modal">&times;</button>
-	      </div>
-	      
-	      <!-- Modal body -->
-	      <div class="modal-body">
-	          <form name="modal_frm">
-	       	<table style="width: 100%;" class="table table-bordered">
-	     			<tr>
-	     				<td style="text-align: left; ">소분류명</td>
-	     				<td><input type="text" class="add_my_smcatgoname" /></td>
-	     			</tr>
-	     			<tr>
-	     				<td style="text-align: left;">만든이</td>
-	     				<td style="text-align: left; padding-left: 5px;">${sessionScope.loginuser.name}</td> 
-	     			</tr>
-	     		</table>
-	     		</form>
-	      </div>
-	      
-	      <!-- Modal footer -->
-	      <div class="modal-footer">
-	      	<button type="button" id="addMy" class="btn btn-success btn-sm" onclick="goAddMyCal()">추가</button>
-	          <button type="button" class="btn btn-danger btn-sm modal_close" data-dismiss="modal">취소</button>
-	      </div>
-	      
-	    </div>
-	  </div>
-	</div>
-
-	<%-- === 내 캘린더 수정 Modal === --%>
-	<div class="modal fade" id="modal_editMyCal" role="dialog" data-backdrop="static">
-	  <div class="modal-dialog">
-	    <div class="modal-content">
-	    
-	      <!-- Modal header -->
-	      <div class="modal-header">
-	        <h4 class="modal-title">내 캘린더 수정</h4>
-	        <button type="button" class="close modal_close" data-dismiss="modal">&times;</button>
-	      </div>
-	      
-	      <!-- Modal body -->
-	      <div class="modal-body">
-	      	<form name="modal_frm">
-	       	<table style="width: 100%;" class="table table-bordered">
-	     			<tr>
-	     				<td style="text-align: left; ">소분류명</td>
-	     				<td><input type="text" class="edit_my_smcatgoname"/><input type="hidden" value="" class="edit_my_smcatgono"></td>
-	     			</tr>
-	     			<tr>
-	     				<td style="text-align: left;">만든이</td>
-	     				<td style="text-align: left; padding-left: 5px;">${sessionScope.loginuser.name}</td>
-	     			</tr>
-	     		</table>
-	       	</form>
-	      </div>
-	      
-	      <!-- Modal footer -->
-	      <div class="modal-footer">
-	      	<button type="button" id="addCom" class="btn btn-success btn-sm" onclick="goEditMyCal()">수정</button>
-	          <button type="button" class="btn btn-danger btn-sm modal_close" data-dismiss="modal">취소</button>
-	      </div>
-	      
-	    </div>
-	  </div>
-	</div>
+	
 
 	<%-- === 마우스로 클릭한 날짜의 일정 등록을 위한 폼 === --%>     
 	<form name="dateFrm">

@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-
+import com.spring.app.employee.domain.EmployeeVO;
 import com.spring.app.schedule.domain.*;
 import com.spring.app.schedule.model.*;
 
@@ -76,14 +76,14 @@ public class ScheduleService_imple implements ScheduleService {
 	}
 
 
-	/*
+	
 	// 공유자를 찾기 위한 특정글자가 들어간 회원명단 불러오기 
 	@Override
-	public List<MemberVO> searchJoinUserList(String joinUserName) {
-		List<MemberVO> joinUserList = dao.searchJoinUserList(joinUserName);
+	public List<EmployeeVO> searchJoinUserList(String joinUserName) {
+		List<EmployeeVO> joinUserList = dao.searchJoinUserList(joinUserName);
 		return joinUserList;
 	}
-	 */
+
 
 	// 일정 등록하기
 	@Override
@@ -163,6 +163,20 @@ public class ScheduleService_imple implements ScheduleService {
 		List<Map<String,String>> scheduleList = dao.scheduleListSearchWithPaging(paraMap);
 		return scheduleList;
 	}
+
+
+	// 해당날짜의 일정이 곂쳐있는 사람을 조회하는 기능
+	@Override
+	public List<Map<String, String>> displayUserListSelect(Map<String, Object> paraMap) {
+		
+		List<Map<String, String>> list = dao.displayUserListSelect(paraMap);
+		
+		return list;
+		
+	}
+
+
+
 	
 	
 	

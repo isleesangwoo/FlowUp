@@ -1,66 +1,66 @@
--- ì˜¤ë¼í´ ê³„ì • ìƒì„±ì„ ìœ„í•´ì„œëŠ” SYS ë˜ëŠ” SYSTEM ìœ¼ë¡œ ì—°ê²°í•˜ì—¬ ì‘ì—…ì„ í•´ì•¼ í•©ë‹ˆë‹¤. [SYS ì‹œì‘] --
+-- ?˜¤?¼?´ ê³„ì • ?ƒ?„±?„ ?œ„?•´?„œ?Š” SYS ?˜?Š” SYSTEM ?œ¼ë¡? ?—°ê²°í•˜?—¬ ?‘?—…?„ ?•´?•¼ ?•©?‹ˆ?‹¤. [SYS ?‹œ?‘] --
 show user;
--- USERì´(ê°€) "SYS"ì…ë‹ˆë‹¤.
+-- USER?´(ê°?) "SYS"?…?‹ˆ?‹¤.
 
--- ì˜¤ë¼í´ ê³„ì • ìƒì„±ì‹œ ê³„ì •ëª… ì•ì— c## ë¶™ì´ì§€ ì•Šê³  ìƒì„±í•˜ë„ë¡ í•˜ê² ìŠµë‹ˆë‹¤.
+-- ?˜¤?¼?´ ê³„ì • ?ƒ?„±?‹œ ê³„ì •ëª? ?•?— c## ë¶™ì´ì§? ?•Šê³? ?ƒ?„±?•˜?„ë¡? ?•˜ê² ìŠµ?‹ˆ?‹¤.
 alter session set "_ORACLE_SCRIPT"=true;
--- Sessionì´(ê°€) ë³€ê²½ë˜ì—ˆìŠµë‹ˆë‹¤.
+-- Session?´(ê°?) ë³?ê²½ë˜?—ˆ?Šµ?‹ˆ?‹¤.
 
--- ì˜¤ë¼í´ ê³„ì •ëª…ì€ FINAL_ORAUSER3 ì´ê³  ì•”í˜¸ëŠ” gclass ì¸ ì‚¬ìš©ì ê³„ì •ì„ ìƒì„±í•©ë‹ˆë‹¤.
+-- ?˜¤?¼?´ ê³„ì •ëª…ì? FINAL_ORAUSER3 ?´ê³? ?•”?˜¸?Š” gclass ?¸ ?‚¬?š©? ê³„ì •?„ ?ƒ?„±?•©?‹ˆ?‹¤.
 create user FINAL_ORAUSER3 identified by gclass default tablespace users; 
--- User FINAL_ORAUSER3ì´(ê°€) ìƒì„±ë˜ì—ˆìŠµë‹ˆë‹¤.
+-- User FINAL_ORAUSER3?´(ê°?) ?ƒ?„±?˜?—ˆ?Šµ?‹ˆ?‹¤.
 
--- ìœ„ì—ì„œ ìƒì„±ë˜ì–´ì§„ FINAL_ORAUSER3 ì´ë¼ëŠ” ì˜¤ë¼í´ ì¼ë°˜ì‚¬ìš©ì ê³„ì •ì—ê²Œ ì˜¤ë¼í´ ì„œë²„ì— ì ‘ì†ì´ ë˜ì–´ì§€ê³ ,
--- í…Œì´ë¸” ìƒì„± ë“±ë“±ì„ í•  ìˆ˜ ìˆë„ë¡ ì—¬ëŸ¬ê°€ì§€ ê¶Œí•œì„ ë¶€ì—¬í•´ì£¼ê² ìŠµë‹ˆë‹¤.
+-- ?œ„?—?„œ ?ƒ?„±?˜?–´ì§? FINAL_ORAUSER3 ?´?¼?Š” ?˜¤?¼?´ ?¼ë°˜ì‚¬?š©? ê³„ì •?—ê²? ?˜¤?¼?´ ?„œë²„ì— ? ‘?†?´ ?˜?–´ì§?ê³?,
+-- ?…Œ?´ë¸? ?ƒ?„± ?“±?“±?„ ?•  ?ˆ˜ ?ˆ?„ë¡? ?—¬?Ÿ¬ê°?ì§? ê¶Œí•œ?„ ë¶??—¬?•´ì£¼ê² ?Šµ?‹ˆ?‹¤.
 grant connect, resource, create view, unlimited tablespace to FINAL_ORAUSER3;
--- Grantì„(ë¥¼) ì„±ê³µí–ˆìŠµë‹ˆë‹¤.
+-- Grant?„(ë¥?) ?„±ê³µí–ˆ?Šµ?‹ˆ?‹¤.
 
 
 
--------------------------------- í…ŒìŠ¤íŠ¸ìš© í…Œì´ë¸” ìƒì„± --------------------------------
+-------------------------------- ?…Œ?Š¤?Š¸?š© ?…Œ?´ë¸? ?ƒ?„± --------------------------------
 
 CREATE TABLE tbl_test (
     no number not null,
     name NVARCHAR2(5) not null
     ,CONSTRAINT PK_tbl_test_no PRIMARY KEY(no)  
 );
--- Table TBL_TESTì´(ê°€) ìƒì„±ë˜ì—ˆìŠµë‹ˆë‹¤.
+-- Table TBL_TEST?´(ê°?) ?ƒ?„±?˜?—ˆ?Šµ?‹ˆ?‹¤.
 
 select *
 from tab;
 
-insert into tbl_test(no, name) values(100, 'ì´í›ˆ');
--- 1 í–‰ ì´(ê°€) ì‚½ì…ë˜ì—ˆìŠµë‹ˆë‹¤.
+insert into tbl_test(no, name) values(100, '?´?›ˆ');
+-- 1 ?–‰ ?´(ê°?) ?‚½?…?˜?—ˆ?Šµ?‹ˆ?‹¤.
 
 commit;
--- ì»¤ë°‹ ì™„ë£Œ.
+-- ì»¤ë°‹ ?™„ë£?.
 
 select *
 from TBL_EMPLOYEE;
 
 drop table tbl_test purge;
--- Table TBL_TESTì´(ê°€) ì‚­ì œë˜ì—ˆìŠµë‹ˆë‹¤.
+-- Table TBL_TEST?´(ê°?) ?‚­? œ?˜?—ˆ?Šµ?‹ˆ?‹¤.
 
 commit;
 
-------------------------------------- ê°•ì´í›ˆ í…Œì´ë¸” ë§Œë“¤ê¸° ì‹œì‘ -------------------------------------
+------------------------------------- ê°•ì´?›ˆ ?…Œ?´ë¸? ë§Œë“¤ê¸? ?‹œ?‘ -------------------------------------
 
 
 
--- ========== ìº˜ë¦°ë” ê´€ë ¨ í…Œì´ë¸” ìƒì„± ========== --
--- ìº˜ë¦°ë” í…Œì´ë¸”
+-- ========== ìº˜ë¦°?” ê´?? ¨ ?…Œ?´ë¸? ?ƒ?„± ========== --
+-- ìº˜ë¦°?” ?…Œ?´ë¸?
 CREATE TABLE tbl_calendar_schedule (
-   calendarNo     NUMBER(6)     NOT NULL,         -- ìº˜ë¦°ë” ID
+   calendarNo     NUMBER(6)     NOT NULL,         -- ìº˜ë¦°?” ID
    fk_employeeNo  NUMBER(6)     NOT NULL,         -- fk_employeeNo
-   calendarTitle  NVARCHAR2(50) NOT NULL,         -- ìº˜ë¦°ë” ì¼ì • ëª…
-   startDate      DATE          NOT NULL,         -- ì¼ì • ì‹œì‘ ë‚ ì§œ
-   endDate        DATE          NOT NULL,         -- ì¼ì • ë ë‚ ì§œ
-   bgColor        NVARCHAR2(50) DEFAULT  'red',   -- ì¼ì • ë°°ê²½ ìƒ‰ìƒ
-   releaseStatus  NUMBER(1)     DEFAULT  0,       -- ê³µê°œ ë¹„ê³µê°œ ì—¬ë¶€ / ê³µê°œ:0 ë¹„ê³µê°œ:1
-   registerday    DATE          DEFAULT  sysdate  -- ì¼ì • ë“±ë¡ ë‚ ì§œ
-   ,CONSTRAINT PK_tbl_calendar_calendarNo PRIMARY KEY(calendarNo)                                             -- ìº˜ë¦°ë” ID PK ì§€ì •
-   ,CONSTRAINT FK_tbl_calendar_fk_employeeNo FOREIGN KEY(fk_employeeNo) REFERENCES tbl_employee(employeeNo)   -- ì‚¬ì›í…Œì´ë¸”ì—ì„œ FK ê°€ì ¸ì˜´
-   ,CONSTRAINT CK_tbl_calendar_releaseStatus CHECK( releaseStatus In(0, 1))                                -- ê³µê°œ:0 ë¹„ê³µê°œ:1
+   calendarTitle  NVARCHAR2(50) NOT NULL,         -- ìº˜ë¦°?” ?¼? • ëª?
+   startDate      DATE          NOT NULL,         -- ?¼? • ?‹œ?‘ ?‚ ì§?
+   endDate        DATE          NOT NULL,         -- ?¼? • ? ?‚ ì§?
+   bgColor        NVARCHAR2(50) DEFAULT  'red',   -- ?¼? • ë°°ê²½ ?ƒ‰?ƒ
+   releaseStatus  NUMBER(1)     DEFAULT  0,       -- ê³µê°œ ë¹„ê³µê°? ?—¬ë¶? / ê³µê°œ:0 ë¹„ê³µê°?:1
+   registerday    DATE          DEFAULT  sysdate  -- ?¼? • ?“±ë¡? ?‚ ì§?
+   ,CONSTRAINT PK_tbl_calendar_calendarNo PRIMARY KEY(calendarNo)                                             -- ìº˜ë¦°?” ID PK ì§?? •
+   ,CONSTRAINT FK_tbl_calendar_fk_employeeNo FOREIGN KEY(fk_employeeNo) REFERENCES tbl_employee(employeeNo)   -- ?‚¬?›?…Œ?´ë¸”ì—?„œ FK ê°?? ¸?˜´
+   ,CONSTRAINT CK_tbl_calendar_releaseStatus CHECK( releaseStatus In(0, 1))                                -- ê³µê°œ:0 ë¹„ê³µê°?:1
 ); 
 
 
@@ -71,22 +71,22 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
--- Sequence SEQ_CALENDARNOì´(ê°€) ìƒì„±ë˜ì—ˆìŠµë‹ˆë‹¤.
+-- Sequence SEQ_CALENDARNO?´(ê°?) ?ƒ?„±?˜?—ˆ?Šµ?‹ˆ?‹¤.
 
 
--- ìº˜ë¦°ë” ì¼ì • ê³µìœ  í…Œì´ë¸”
+-- ìº˜ë¦°?” ?¼? • ê³µìœ  ?…Œ?´ë¸?
 CREATE TABLE tbl_calendar_share (
-   calendarShareNo        NUMBER(6)     NOT NULL,         -- ê³µìœ ìš”ì²­ ID
-   fk_requestEmployeeNo   NUMBER(6)     NOT NULL,         -- ì¼ì • ìš”ì²­ì ì‚¬ë²ˆ 
-   fk_responseEmployeeNo  NUMBER(6)     NOT NULL,         -- ì¼ì • ì‘ë‹µì ì‚¬ë²ˆ
-   ShareStatus            NUMBER(1)     DEFAULT  0,       -- ëŒ€ê¸°, ìˆ˜ë½, ê±°ì ˆ ì—¬ë¶€ / ëŒ€ê¸°:0, ìˆ˜ë½:1, ê±°ì ˆ:2
-   requestDate            DATE          DEFAULT  sysdate, -- ìš”ì²­ì¼ì
-   responseDate           DATE          NOT NULL          -- ì‘ë‹µì¼ì
-   ,CONSTRAINT PK_calendarShareNo PRIMARY KEY(calendarShareNo)                                             -- ìº˜ë¦°ë” ID PK ì§€ì •
-   ,CONSTRAINT FK_share_fk_requestEmployeeNo FOREIGN KEY(fk_requestEmployeeNo) REFERENCES tbl_employee(employeeNo)     -- ì‚¬ì›í…Œì´ë¸”ì—ì„œ FK ê°€ì ¸ì˜´
-   ,CONSTRAINT FK_share_fk_responseEmployeeNo FOREIGN KEY(fk_responseEmployeeNo) REFERENCES tbl_employee(employeeNo)   -- ì‚¬ì›í…Œì´ë¸”ì—ì„œ FK ê°€ì ¸ì˜´
-   ,CONSTRAINT CK_share_ShareStatus CHECK( ShareStatus In('0','1','2'))                                          -- ëŒ€ê¸°:0, ìˆ˜ë½:1, ê±°ì ˆ:2
-); -- ê¸€ì ë„ˆë¬´ ê¸¸ì–´ì„œ ì¤„ì¼ í•„ìš” ìˆìŒ
+   calendarShareNo        NUMBER(6)     NOT NULL,         -- ê³µìœ ?š”ì²? ID
+   fk_requestEmployeeNo   NUMBER(6)     NOT NULL,         -- ?¼? • ?š”ì²?? ?‚¬ë²? 
+   fk_responseEmployeeNo  NUMBER(6)     NOT NULL,         -- ?¼? • ?‘?‹µ? ?‚¬ë²?
+   ShareStatus            NUMBER(1)     DEFAULT  0,       -- ??ê¸?, ?ˆ˜?½, ê±°ì ˆ ?—¬ë¶? / ??ê¸?:0, ?ˆ˜?½:1, ê±°ì ˆ:2
+   requestDate            DATE          DEFAULT  sysdate, -- ?š”ì²??¼?
+   responseDate           DATE          NOT NULL          -- ?‘?‹µ?¼?
+   ,CONSTRAINT PK_calendarShareNo PRIMARY KEY(calendarShareNo)                                             -- ìº˜ë¦°?” ID PK ì§?? •
+   ,CONSTRAINT FK_share_fk_requestEmployeeNo FOREIGN KEY(fk_requestEmployeeNo) REFERENCES tbl_employee(employeeNo)     -- ?‚¬?›?…Œ?´ë¸”ì—?„œ FK ê°?? ¸?˜´
+   ,CONSTRAINT FK_share_fk_responseEmployeeNo FOREIGN KEY(fk_responseEmployeeNo) REFERENCES tbl_employee(employeeNo)   -- ?‚¬?›?…Œ?´ë¸”ì—?„œ FK ê°?? ¸?˜´
+   ,CONSTRAINT CK_share_ShareStatus CHECK( ShareStatus In('0','1','2'))                                          -- ??ê¸?:0, ?ˆ˜?½:1, ê±°ì ˆ:2
+); -- ê¸?? ?„ˆë¬? ê¸¸ì–´?„œ ì¤„ì¼ ?•„?š” ?ˆ?Œ
 
 
 create sequence seq_calendarShareNo
@@ -96,9 +96,9 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
--- Sequence SEQ_CALENDARSHARENOì´(ê°€) ìƒì„±ë˜ì—ˆìŠµë‹ˆë‹¤.
+-- Sequence SEQ_CALENDARSHARENO?´(ê°?) ?ƒ?„±?˜?—ˆ?Šµ?‹ˆ?‹¤.
 
--- ========== ìº˜ë¦°ë” ê´€ë ¨ í…Œì´ë¸” ìƒì„± ========== --
+-- ========== ìº˜ë¦°?” ê´?? ¨ ?…Œ?´ë¸? ?ƒ?„± ========== --
 
 
 
@@ -111,16 +111,16 @@ nocache;
 
 
 -----------------------------------------------------------------------------------------------
--- ========== ì˜ˆì•½ ê´€ë ¨ í…Œì´ë¸” ìƒì„± ========== --
--- ìì‚° ëŒ€ë¶„ë¥˜ í…Œì´ë¸”
+-- ========== ?˜ˆ?•½ ê´?? ¨ ?…Œ?´ë¸? ?ƒ?„± ========== --
+-- ??‚° ??ë¶„ë¥˜ ?…Œ?´ë¸?
 CREATE TABLE tbl_asset (
-   assetNo           NUMBER(6)     NOT NULL,         -- íšŒì˜ì‹¤ ID
-   assetTitle        NVARCHAR2(50) NOT NULL,         -- íšŒì˜ì‹¤ ì¥ì†Œ ëŒ€ë¶„ë¥˜ ëª… (ì˜ˆ: 4ì¸µ ê³µìš© ê³µê°„)
-   assetInfo         CLOB          NOT NULL,         -- íšŒì˜ì‹¤ ì¥ì†Œ ì •ë³´ (ì˜ˆ: ì†Œí™”ê¸° ë°°ì¹˜ë„ ë° ë¹„ìƒêµ¬ ìœ„ì¹˜ ì‚¬ì§„)
-   assetRegisterday  DATE          DEFAULT sysdate,  -- íšŒì˜ì‹¤ ë“±ë¡ì¼ì
-   assetChangeday    DATE          NULL,             -- íšŒì˜ì‹¤ ìˆ˜ì •ì¼ì
-   classification    NUMBER(6)     NOT NULL,         -- íšŒì˜ì‹¤ / ìì‚° êµ¬ë¶„ 0 : íšŒì˜ì‹¤ 1 : ì°¨,ë¹”í”„ë¡œì íŠ¸
-   CONSTRAINT PK_tbl_asset_assetNo PRIMARY KEY(assetNo)  -- íšŒì˜ì‹¤ ID PK ì§€ì •
+   assetNo           NUMBER(6)     NOT NULL,         -- ?šŒ?˜?‹¤ ID
+   assetTitle        NVARCHAR2(50) NOT NULL,         -- ?šŒ?˜?‹¤ ?¥?†Œ ??ë¶„ë¥˜ ëª? (?˜ˆ: 4ì¸? ê³µìš© ê³µê°„)
+   assetInfo         CLOB          NOT NULL,         -- ?šŒ?˜?‹¤ ?¥?†Œ ? •ë³? (?˜ˆ: ?†Œ?™”ê¸? ë°°ì¹˜?„ ë°? ë¹„ìƒêµ? ?œ„ì¹? ?‚¬ì§?)
+   assetRegisterday  DATE          DEFAULT sysdate,  -- ?šŒ?˜?‹¤ ?“±ë¡ì¼?
+   assetChangeday    DATE          NULL,             -- ?šŒ?˜?‹¤ ?ˆ˜? •?¼?
+   classification    NUMBER(6)     NOT NULL,         -- ?šŒ?˜?‹¤ / ??‚° êµ¬ë¶„ 0 : ?šŒ?˜?‹¤ 1 : ì°?,ë¹”í”„ë¡œì ?Š¸
+   CONSTRAINT PK_tbl_asset_assetNo PRIMARY KEY(assetNo)  -- ?šŒ?˜?‹¤ ID PK ì§?? •
 );
 
 create sequence seq_assetNo
@@ -130,30 +130,30 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
--- Sequence SEQ_ROOMNOì´(ê°€) ìƒì„±ë˜ì—ˆìŠµë‹ˆë‹¤.
+-- Sequence SEQ_ROOMNO?´(ê°?) ?ƒ?„±?˜?—ˆ?Šµ?‹ˆ?‹¤.
 ------------------------------------------------
 INSERT INTO tbl_asset (assetNo, assetTitle, assetInfo, assetRegisterday, assetChangeday, classification, asseGroupno, asseDepthno)
-VALUES ( seq_assetNo.NEXTVAL, 'íšŒì˜ì‹¤ 1', 'ì†Œí™”ê¸° ë°°ì¹˜ë„ ë° ë¹„ìƒêµ¬ ìœ„ì¹˜ ì‚¬ì§„', sysdate, NULL, 1, seq_assetNo.NEXTVAL, 0);
+VALUES ( seq_assetNo.NEXTVAL, '?šŒ?˜?‹¤ 1', '?†Œ?™”ê¸? ë°°ì¹˜?„ ë°? ë¹„ìƒêµ? ?œ„ì¹? ?‚¬ì§?', sysdate, NULL, 1, seq_assetNo.NEXTVAL, 0);
 
 select * from tbl_asset;
 ------------------------------------------------
--- ìì‚° ëŒ€ë¶„ë¥˜ í…Œì´ë¸”
+-- ??‚° ??ë¶„ë¥˜ ?…Œ?´ë¸?
 
 
 
 
 
 ------------------------------------------------
--- ìì‚° ìƒì„¸ í…Œì´ë¸”
+-- ??‚° ?ƒ?„¸ ?…Œ?´ë¸?
 CREATE TABLE tbl_assetDetail (
-   assetDetailNo           NUMBER(6)     NOT NULL,           -- íšŒì˜ì‹¤ ìƒì„¸ ID
-   fk_assetNo              NUMBER(6)     NOT NULL,           -- tbl_asset íšŒì˜ì‹¤ ID pk
-   assetName               NVARCHAR2(50) NOT NULL,           -- íšŒì˜ì‹¤ ìƒì„¸ ì´ë¦„
-   assetDetailRegisterday  DATE          DEFAULT sysdate,   -- íšŒì˜ì‹¤ ìƒì„¸ ë“±ë¡ì¼ì
-   assetDetailChangeday    DATE          NULL,              -- íšŒì˜ì‹¤ ìƒì„¸ ìˆ˜ì •ì¼ì
+   assetDetailNo           NUMBER(6)     NOT NULL,           -- ?šŒ?˜?‹¤ ?ƒ?„¸ ID
+   fk_assetNo              NUMBER(6)     NOT NULL,           -- tbl_asset ?šŒ?˜?‹¤ ID pk
+   assetName               NVARCHAR2(50) NOT NULL,           -- ?šŒ?˜?‹¤ ?ƒ?„¸ ?´ë¦?
+   assetDetailRegisterday  DATE          DEFAULT sysdate,   -- ?šŒ?˜?‹¤ ?ƒ?„¸ ?“±ë¡ì¼?
+   assetDetailChangeday    DATE          NULL,              -- ?šŒ?˜?‹¤ ?ƒ?„¸ ?ˆ˜? •?¼?
    
-   CONSTRAINT PK_tbl_assetDetail_assetDeNo PRIMARY KEY(assetDetailNo),  -- íšŒì˜ì‹¤ ìƒì„¸ ID PK ì§€ì •
-   CONSTRAINT FK_tbl_assetDetail_fk_assetNo FOREIGN KEY(fk_assetNo) REFERENCES tbl_asset(assetNo) ON DELETE CASCADE  -- íšŒì˜ì‹¤ í…Œì´ë¸”ì—ì„œ FK ê°€ì ¸ì˜´
+   CONSTRAINT PK_tbl_assetDetail_assetDeNo PRIMARY KEY(assetDetailNo),  -- ?šŒ?˜?‹¤ ?ƒ?„¸ ID PK ì§?? •
+   CONSTRAINT FK_tbl_assetDetail_fk_assetNo FOREIGN KEY(fk_assetNo) REFERENCES tbl_asset(assetNo) ON DELETE CASCADE  -- ?šŒ?˜?‹¤ ?…Œ?´ë¸”ì—?„œ FK ê°?? ¸?˜´
 );
 
 
@@ -164,21 +164,21 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
--- Sequence SEQ_ASSETDETAILNOì´(ê°€) ìƒì„±ë˜ì—ˆìŠµë‹ˆë‹¤.
+-- Sequence SEQ_ASSETDETAILNO?´(ê°?) ?ƒ?„±?˜?—ˆ?Šµ?‹ˆ?‹¤.
 ------------------------------------------------
 
 select *
 from tbl_assetDetail;
 
 INSERT INTO tbl_assetDetail (assetDetailNo,fk_assetNo,assetName,assetDetailRegisterday,assetDetailChangeday,asseDeGroupno,asseDeDepthno) 
-VALUES (seq_assetDetailNo.nextval, 100029, 'í–‰ë³µ', sysdate, NULL, 100016, 1);
+VALUES (seq_assetDetailNo.nextval, 100029, '?–‰ë³?', sysdate, NULL, 100016, 1);
 
 INSERT INTO tbl_assetDetail (assetDetailNo,fk_assetNo,assetName,assetDetailRegisterday,assetDetailChangeday,asseDeGroupno,asseDeDepthno) 
-VALUES (seq_assetDetailNo.nextval, 100029, 'ì‚¬ë‘', sysdate, NULL, 100016, 1);
+VALUES (seq_assetDetailNo.nextval, 100029, '?‚¬?‘', sysdate, NULL, 100016, 1);
 
 
 INSERT INTO tbl_assetDetail (assetDetailNo,fk_assetNo,assetName,assetDetailRegisterday,assetDetailChangeday,asseDeGroupno,asseDeDepthno) 
-VALUES (seq_assetDetailNo.nextval, 100027, 'ëˆˆë¬¼', sysdate, NULL, 100016, 1);
+VALUES (seq_assetDetailNo.nextval, 100027, '?ˆˆë¬?', sysdate, NULL, 100016, 1);
 
 commit;
 ------------------------------------------------
@@ -194,17 +194,17 @@ desc tbl_assetInformation;
 select *
 from tbl_assetInformation;
 
--- ë¹„í’ˆ ì •ë³´ í…Œì´ë¸”
+-- ë¹„í’ˆ ? •ë³? ?…Œ?´ë¸?
 CREATE TABLE tbl_assetInformation (
-   assetInformationNo           NUMBER(6)     NOT NULL,            -- íšŒì˜ì‹¤ ì´ìš©ì •ë³´ ID
-   fk_assetDetailNo             NUMBER(6)     NOT NULL,            -- tbl_assetDetail ìì‚°ìƒì„¸ ID fk
-   fk_assetNo                   NUMBER(6)     NOT NULL,            -- tbl_asset ìì‚° ID fk
-   InformationTitle             NVARCHAR2(50) NULL,                 -- íšŒì˜ì‹¤ ë¹„í’ˆ ì´ë¦„
-   InformationContents          CHAR(1)      DEFAULT 'X',          -- íšŒì˜ì‹¤ ë¹„í’ˆ ìœ ë¬´
-   CONSTRAINT PK_tbl_assetInfo_assetInfoNo PRIMARY KEY (assetInformationNo),  -- íšŒì˜ì‹¤ ID PK ì§€ì •
-   release                      NUMBER(1)    DEFAULT 0    NOT NULL, -- ê³µê°œì—¬ë¶€
-   CONSTRAINT FK_assetInfo_fk_assetDetailNo FOREIGN KEY (fk_assetDetailNo) REFERENCES tbl_assetDetail(assetDetailNo) ON DELETE CASCADE,  -- íšŒì˜ì‹¤ìƒì„¸í…Œì´ë¸”ì—ì„œ FK ê°€ì ¸ì˜´
-   CONSTRAINT FK_tbl_assetInfo_fk_assetNo FOREIGN KEY (fk_assetNo) REFERENCES tbl_asset(assetNo) ON DELETE CASCADE  -- íšŒì˜ì‹¤ í…Œì´ë¸”ì—ì„œ FK ê°€ì ¸ì˜´
+   assetInformationNo           NUMBER(6)     NOT NULL,            -- ?šŒ?˜?‹¤ ?´?š©? •ë³? ID
+   fk_assetDetailNo             NUMBER(6)     NOT NULL,            -- tbl_assetDetail ??‚°?ƒ?„¸ ID fk
+   fk_assetNo                   NUMBER(6)     NOT NULL,            -- tbl_asset ??‚° ID fk
+   InformationTitle             NVARCHAR2(50) NULL,                 -- ?šŒ?˜?‹¤ ë¹„í’ˆ ?´ë¦?
+   InformationContents          CHAR(1)      DEFAULT 'X',          -- ?šŒ?˜?‹¤ ë¹„í’ˆ ?œ ë¬?
+   CONSTRAINT PK_tbl_assetInfo_assetInfoNo PRIMARY KEY (assetInformationNo),  -- ?šŒ?˜?‹¤ ID PK ì§?? •
+   release                      NUMBER(1)    DEFAULT 0    NOT NULL, -- ê³µê°œ?—¬ë¶?
+   CONSTRAINT FK_assetInfo_fk_assetDetailNo FOREIGN KEY (fk_assetDetailNo) REFERENCES tbl_assetDetail(assetDetailNo) ON DELETE CASCADE,  -- ?šŒ?˜?‹¤?ƒ?„¸?…Œ?´ë¸”ì—?„œ FK ê°?? ¸?˜´
+   CONSTRAINT FK_tbl_assetInfo_fk_assetNo FOREIGN KEY (fk_assetNo) REFERENCES tbl_asset(assetNo) ON DELETE CASCADE  -- ?šŒ?˜?‹¤ ?…Œ?´ë¸”ì—?„œ FK ê°?? ¸?˜´
 );
 
 
@@ -215,10 +215,10 @@ nomaxvalue
 nominvalue
 nocycle
 nocache;
--- Sequence SEQ_ASSETINFORMATIONNOì´(ê°€) ìƒì„±ë˜ì—ˆìŠµë‹ˆë‹¤.
+-- Sequence SEQ_ASSETINFORMATIONNO?´(ê°?) ?ƒ?„±?˜?—ˆ?Šµ?‹ˆ?‹¤.
 ------------------------------------------------
 INSERT INTO tbl_assetInformation (assetInformationNo, fk_assetDetailNo, fk_assetNo, InformationTitle, InformationContents)
-VALUES ( seq_assetInformationNo.NEXTVAL, 100014, 100029, 'ë¹”í”„ë¡œì íŠ¸', DEFAULT);
+VALUES ( seq_assetInformationNo.NEXTVAL, 100014, 100029, 'ë¹”í”„ë¡œì ?Š¸', DEFAULT);
 
 
 select assetInformationNo, fk_assetDetailNo, fk_assetNo, InformationTitle, InformationContents
@@ -260,18 +260,18 @@ where Re.fk_employeeno = 100012;
 
 
 
--- ìƒì„¸ ì˜ˆì•½ í…Œì´ë¸”
+-- ?ƒ?„¸ ?˜ˆ?•½ ?…Œ?´ë¸?
 CREATE TABLE tbl_assetReservation (
-   assetReservationNo           NUMBER(6)     NOT NULL,          -- íšŒì˜ì‹¤ ì´ìš©ì •ë³´ ID
-   fk_assetDetailNo             NUMBER(6)     NOT NULL,          -- tbl_roomDetail íšŒì˜ì‹¤ ìƒì„¸ ID fk
-   fk_employeeNo               NUMBER(6)     NOT NULL,          -- tbl_employee ì‚¬ì› ID fk
-   reservationStart            DATE          NULL,              -- ì´ìš©ì‹œì‘ì‹œê°„
-   reservationEnd              DATE          NULL,              -- ì´ìš©ëì‹œê°„
-   reservationDay              DATE          NULL,              -- ì˜ˆì•½í•œ ë‚ ì§œ
-   reservationContents         NVARCHAR2(50) NULL               -- ì˜ˆì•½í•œ ì´ìœ 
-   ,CONSTRAINT PK_Reservation_ReservaNo PRIMARY KEY(assetReservationNo)                           -- íšŒì˜ì‹¤ ID PK ì§€ì •
-   ,CONSTRAINT FK_assetInfo_fk_assetDeNo FOREIGN KEY(fk_assetDetailNo) REFERENCES tbl_assetDetail(assetDetailNo) ON DELETE CASCADE    -- íšŒì˜ì‹¤ìƒì„¸í…Œì´ë¸”ì—ì„œ FK ê°€ì ¸ì˜´
-   ,CONSTRAINT FK_Reservation_fk_employeeNo FOREIGN KEY(fk_employeeNo) REFERENCES tbl_employee(employeeNo)   -- ì‚¬ì›í…Œì´ë¸”ì—ì„œ FK ê°€ì ¸ì˜´
+   assetReservationNo           NUMBER(6)     NOT NULL,          -- ?šŒ?˜?‹¤ ?´?š©? •ë³? ID
+   fk_assetDetailNo             NUMBER(6)     NOT NULL,          -- tbl_roomDetail ?šŒ?˜?‹¤ ?ƒ?„¸ ID fk
+   fk_employeeNo               NUMBER(6)     NOT NULL,          -- tbl_employee ?‚¬?› ID fk
+   reservationStart            DATE          NULL,              -- ?´?š©?‹œ?‘?‹œê°?
+   reservationEnd              DATE          NULL,              -- ?´?š©??‹œê°?
+   reservationDay              DATE          NULL,              -- ?˜ˆ?•½?•œ ?‚ ì§?
+   reservationContents         NVARCHAR2(50) NULL               -- ?˜ˆ?•½?•œ ?´?œ 
+   ,CONSTRAINT PK_Reservation_ReservaNo PRIMARY KEY(assetReservationNo)                           -- ?šŒ?˜?‹¤ ID PK ì§?? •
+   ,CONSTRAINT FK_assetInfo_fk_assetDeNo FOREIGN KEY(fk_assetDetailNo) REFERENCES tbl_assetDetail(assetDetailNo) ON DELETE CASCADE    -- ?šŒ?˜?‹¤?ƒ?„¸?…Œ?´ë¸”ì—?„œ FK ê°?? ¸?˜´
+   ,CONSTRAINT FK_Reservation_fk_employeeNo FOREIGN KEY(fk_employeeNo) REFERENCES tbl_employee(employeeNo)   -- ?‚¬?›?…Œ?´ë¸”ì—?„œ FK ê°?? ¸?˜´
 ); 
 
 drop table tbl_assetReservation purge;
@@ -295,7 +295,7 @@ order by assetReservationNo;
 
 5
 
-(reservationStart * 60) - (reservationEnd * 60) / 30 = 30ë¶„ ë‹¨ìœ„ë¡œ ëŠì€ ê²ƒì˜ ê°œìˆ˜
+(reservationStart * 60) - (reservationEnd * 60) / 30 = 30ë¶? ?‹¨?œ„ë¡? ?Š?? ê²ƒì˜ ê°œìˆ˜
 
 
 create sequence seq_roomReservationNo
@@ -306,9 +306,9 @@ nominvalue
 nocycle
 nocache;
 -- 
--- ============= íšŒì˜ì‹¤ ì˜ˆì•½ ìƒì„± ============= --
+-- ============= ?šŒ?˜?‹¤ ?˜ˆ?•½ ?ƒ?„± ============= --
 
--- ========== ì˜ˆì•½ ê´€ë ¨ í…Œì´ë¸” ìƒì„± ========== --
+-- ========== ?˜ˆ?•½ ê´?? ¨ ?…Œ?´ë¸? ?ƒ?„± ========== --
 
 
 
@@ -331,11 +331,11 @@ from tbl_assetInformation
 where FK_ASSETDETAILNO = 100030;
 
 insert into tbl_assetInformation(ASSETINFORMATIONNO, FK_ASSETDETAILNO, INFORMATIONTITLE, INFORMATIONCONTENTS, RELEASE)
-values(seq_assetInformationNo.nextval, 100030, 'í™”ì´íŠ¸ë³´ë“œ', 'O', 0);
+values(seq_assetInformationNo.nextval, 100030, '?™”?´?Š¸ë³´ë“œ', 'O', 0);
 
 
 insert into tbl_assetInformation(ASSETINFORMATIONNO, FK_ASSETDETAILNO, INFORMATIONTITLE, INFORMATIONCONTENTS, RELEASE)
-values(seq_assetInformationNo.nextval, 100030, 'ë¹”í”„ë¡œì íŠ¸', 'X', 1);
+values(seq_assetInformationNo.nextval, 100030, 'ë¹”í”„ë¡œì ?Š¸', 'X', 1);
 
 commit;
 
@@ -345,11 +345,39 @@ commit;
 
 
 
+desc tbl_calendar_schedule;
+
+
+select FK_EMPLOYEENO, SUBJECT, to_char(STARTDATE, 'yyyyMMdd HH24mi') as STARTDATE, to_char(ENDDATE, 'yyyyMMdd HH24mi') as ENDDATE
+from tbl_calendar_schedule;
 
 
 
 
 
+select fk_employeeno, subject, 
+       to_char(startdate, 'YYYYMMDD HH24MI') as startdate, 
+       to_char(enddate, 'YYYYMMDD HH24MI') as enddate
+from tbl_calendar_schedule
+where fk_employeeno = 100012
+and (
+    (startdate between to_date('20250312 0900', 'YYYY-MM-DD HH24:MI') 
+                   and to_date('20250312 2130', 'YYYY-MM-DD HH24:MI'))
+    or 
+    (enddate between to_date('20250312 0900', 'YYYY-MM-DD HH24:MI') 
+                 and to_date('20250312 2130', 'YYYY-MM-DD HH24:MI'))
+    or 
+    (startdate <= to_date('20250312 0900', 'YYYY-MM-DD HH24:MI') 
+     and enddate >= to_date('20250312 2130', 'YYYY-MM-DD HH24:MI'))
+);
 
 
 
+select distinct name, fk_employeeno, subject, 
+       to_char(startdate, 'YYYY-MM-DD HH24:MI') as startdate, 
+       to_char(enddate, 'YYYY-MM-DD HH24:MI') as enddate
+from tbl_calendar_schedule cs join tbl_employee em
+on cs.fk_employeeno = em.employeeno
+where 
+    (startdate <= to_date('20250312 235959', 'YYYY-MM-DD HH24:MI:SS') 
+     and enddate >= to_date('20250312 000000', 'YYYY-MM-DD HH24:MI:SS'));

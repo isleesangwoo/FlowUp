@@ -20,15 +20,17 @@ public interface SpringschedulerDAO {
 
 	int insertAnnual(Map<String, String> paraMap);
 
-	int scheduler_yesterday_workYN(String str_now);
+	int scheduler_yesterday_workYN();
 
-	List<String> scheduler_getEmployeeList(String yesterday);
+	List<String> scheduler_getEmployeeList();
 
-	void scheduler_absence_insert(String employeeNo) throws SQLException;
+	void scheduler_absence_insert(String employeeNo) throws Exception;
 
 	List<Map<String, String>> getEmpAnnualInfo();
 
 	void scheduler_monthly_payment_insert(Map<String, String> empAnnaulMap);
+
+	String getWorkRange(Map<String, String> empAnnaulMap);
 
 	
 

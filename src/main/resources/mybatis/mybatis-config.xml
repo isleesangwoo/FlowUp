@@ -22,6 +22,9 @@
       <typeAlias type="com.spring.app.document.domain.ApprovalVO" alias="ApprovalVO"/>
       <typeAlias type="com.spring.app.mail.domain.MailFileVO" alias="MailFileVO"/>
       <typeAlias type="com.spring.app.employee.domain.AddressBookVO" alias="AddressBookVO"/>
+      <typeAlias type="com.spring.app.board.domain.LikeVO" alias="LikeVO"/>
+      <typeAlias type="com.spring.app.mail.domain.ReferencedVO" alias="ReferencedVO"/>
+      <typeAlias type="com.spring.app.employee.domain.TeamVO" alias="TeamVO"/>
    </typeAliases>
 
 </configuration>

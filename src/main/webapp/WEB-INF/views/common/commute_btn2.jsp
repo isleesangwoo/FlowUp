@@ -212,7 +212,6 @@
 	$(document).ready(()=>{
 	
 		
-		
 	    // ========== 시간을 알려주는 메소드 ========== //
 	    function updateClock() {
 	        const now = new Date();
@@ -252,23 +251,6 @@
 	    
 	    });
 	    
-	 	// (내)근태 관리 버튼 클릭시 열림
-	    $('#btn_myCommute').click(e=>{
-	    	$('#btn_myCommute_list').slideToggle();
-	    });
-	 	
-		// 부서 근태 관리 버튼 클릭시 열림
-	    $('#btn_depCommute').click(e=>{
-	    	$('#btn_depCommute_list').slideToggle();
-	    });
-		
-	 // 부서 근태 관리 버튼 클릭시 열림
-	    $('#btn_allCommute').click(e=>{
-	    	$('#btn_allCommute_list').slideToggle();
-	    });
-	    
-	    
-		
 	    // 근무상태 하위 탭 클릭시
 	    $('#btn_status_list > li').click(e=>{
 	    	
@@ -373,76 +355,7 @@
 	    	} // confirm
 	    });
 	  
-    
-	    // 내 근태현황
-	    $("#myCommuteTable").click(e=>{
-	    	
-	    	location.href="<%= ctxPath%>/commute/";
-	    	
-	    });
-	    
-	    // 내 연차내역
-		$("#myAnnualInfo").click(e=>{
-	    	
-			location.href="<%= ctxPath%>/commute/myAnnual";
-			
-	    });
-	    
-		// 내 급여내역
-		$("#mySalaryInfo").click(e=>{
-	    	
-			location.href="<%= ctxPath%>/commute/mySalary";
-			
-	    });
- 		
-		
-		// 부서 근태현황
-		$(document).on('click', "div.deptCommuteTable", e=>{
-			
-			const departmentNo = $(e.target).parent().find("input").val();
 
-			location.href=`<%= ctxPath%>/commute/commuteTable?departmentNo=\${departmentNo}`;
-			
-		});
-		
-		// 부서 근태통계
-		$(document).on('click', "div.deptCommuteChart", e=>{
-			
-			const departmentNo = $(e.target).parent().find("input").val();
-
-			location.href=`<%= ctxPath%>/commute/commuteChart?departmentNo=\${departmentNo}`;
-			
-		});
-		
-		
-		
-	 	
-	 	
-		// 전사 근태현황
-	 	$("#allCommuteTable").click(e=>{
-	    	
-	 		location.href=`<%= ctxPath%>/commute/commuteTable?departmentNo=all`;
-		    	
-		});
-		
-	 	// 전사 근태통계
-	 	$("#allCommuteChart").click(e=>{
-	 		
-	 		location.href=`<%= ctxPath%>/commute/commuteChart?departmentNo=all`;
-		    	
-		});
-	 	
-	 // 전사 연차현황
-	 	$("#allAnnualInfo").click(e=>{
-	 		
-	 		location.href=`<%= ctxPath%>/commute/annualInfo`;
-		    	
-		});
- 		
- 		
-	 	getDeptname();
- 		
- 		
 	}); // ready
 	
 	
@@ -490,9 +403,9 @@
 				
 				$("#todayStartTime").html(todayStartTime);
 				$("#todayEndTime").html(todayEndTime);
-
+				
 				$("span#workTime_hour").html((json.workTime_hour).toString().padStart(2, '0'));
-				$("span#workTime_min").html((json.workTime_min).toString().padStart(2, '0'));
+	            $("span#workTime_min").html((json.workTime_min).toString().padStart(2, '0'));
 				
 				if(json.status == "1") {
 					$('#btn_status').html("휴가");
@@ -526,53 +439,6 @@
 		});
 		
 	}// function getTodayWorkInfo()
-	
-	function getDeptname() {
-		
-		
-		let html = ``;
-		
-		if(${sessionScope.loginuser.securityLevel == "10"}) {
-			
-			$.ajax({
-				url:"<%= ctxPath%>/commute/getDeptname",
-				type:"get",
-				async:false,
-				data:{"fk_employeeNo":"${sessionScope.loginuser.employeeNo}"},
-				dataType:"json",
-				success:function(json) {
-					
-					$.each(json, (index,item)=>{
-						
-						html += `<div style="margin-top:3px;">
-				            		<div class="deptCommuteTable hhover">&nbsp;&nbsp;&nbsp;\${item.departmentName} 근태현황</div>
-				            		<input type="hidden" value="\${item.departmentNo}" />
-			            		</div>`;
-						
-					});
-					
-				},
-				error: function(request, status, error){
-			        alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			    }
-			});
-		}
-		else {
-			
-			html += `<div>
-			        	<div class="deptCommuteTable hhover">&nbsp;&nbsp;&nbsp;\${sessionScope.loginuser.departmentName} 근태현황</div>
-			        	<input type="hidden" value="" />
-					</div>`;
-		}
-		
-		
-		
-		$("div#btn_depCommute_list").html(html);
-		
-		
-	}
-
-	
 	
 	
 	
@@ -630,42 +496,6 @@
             		<li style="margin-top:3px; margin-bottom:3px;" class="hhover">출장</li>
             	</ul>
             </div>
-            
-            <br>
-            
-            <div style="margin-top:5px;">
-	         	<div id="btn_myCommute" class="hhover" style="font-size:14pt; font-weight: bold;">내 근태관리</div>
-	            <div id="btn_myCommute_list" style="list-style: none; display: none;">
-            		<div id="myCommuteTable" class="hhover" style="margin-top:3px;">&nbsp;&nbsp;&nbsp;내 근태현황</div>
-            		<div id="myAnnualInfo" class="hhover" style="margin-top:3px;">&nbsp;&nbsp;&nbsp;내 연차내역</div>
-            		<div id="mySalaryInfo" class="hhover" style="margin-top:3px;">&nbsp;&nbsp;&nbsp;내 급여내역</div>
-            	</div>
-            </div>
-            
-            <div style="margin-top:10px;">
-            
-            		<div id="btn_depCommute" class="hhover" style="font-size:14pt; font-weight: bold;">부서 근태관리</div>
-		         	
-		            <div id="btn_depCommute_list" style="list-style: none; display: none;"></div>
-		            
-		    </div>
-            
-            <c:if test="${sessionScope.loginuser.securityLevel == '10'}">
-            	
-            	<div style="margin-top:10px;">
-            
-            		<div id="btn_allCommute" class="hhover" style="font-size:14pt; font-weight: bold;">전사 근태관리</div>
-		         	
-		            <div id="btn_allCommute_list" style="list-style: none; display: none;">
-			            <div id="allCommuteTable" class="hhover" style="margin-top:3px;">&nbsp;&nbsp;&nbsp;전사 근태현황</div>
-	            		<div id="allAnnualInfo" class="hhover" style="margin-top:3px;">&nbsp;&nbsp;&nbsp;전사 연차현황</div>
-            		</div>
-		            
-		    	</div>
-		         	
-            </c:if>
-            	
-            
             
         </div>
     </div>
