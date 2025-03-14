@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.spring.app.board.domain.BoardVO;
+import com.spring.app.board.domain.NotificationVO;
 import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.board.domain.PostVO;
 
@@ -88,7 +89,7 @@ public interface BoardService {
 	int getBoardGroupPostTotalCount(String boardNo);
 
 	// 좋아요를 추가 또는 삭제함
-	Map<String, Object> toggleLike(String postNo, String login_userid);
+	Map<String, Object> toggleLike(String postNo, String login_userid,String notificationtype,String fk_employeeNo);
 
 	// 로그인 된 사원이 해당 게시글에 좋아요 여부를 검사.
 	int checkLike(String login_userid, String postNo);
@@ -97,7 +98,7 @@ public interface BoardService {
 	List<Map<String, Object>> getLikeList(String postNo);
 
 	// 댓글 등록
-	int insertComment(String postNo, String login_userid, String login_name, String commentContent);
+	int insertComment(String postNo, String login_userid, String login_name, String commentContent,String fk_employeeNo, String fk_commentNo,String notificationtype);
 
 	// 해당 게시글의 댓글 조회
 	List<Map<String, Object>> getComment(String postNo,int start,int end);
@@ -109,7 +110,7 @@ public interface BoardService {
 	int deleteComment(String commentNo,String depthNo,String postNo);
 
 	// 대댓글 등록
-	int insertReComment(String postNo, String login_userid, String login_name, String replyContent, String fk_commentNo,String depthNo);
+	int insertReComment(String postNo, String login_userid, String login_name, String replyContent, String fk_commentNo,String depthNo,String notificationtype,String postCreateBy);
 
 	// 댓글 개수 
 	int getCommentCount(String postNo);
@@ -131,6 +132,15 @@ public interface BoardService {
 
 	// 조회수 상위 5개 글
 	List<Map<String, String>> getTopReadPosts();
+
+	// 로그인된 사원번호로 읽지않은 해당 알림 조회
+	List<NotificationVO> loadNotification(String login_userid);
+
+	// 클릭 된 알림을 0(안읽음)에서 1(읽음)으로 상태 변경
+	int notificationIsRead(String notificationNo);
+
+	// 알림의 해당글 클릭 시 글조회수 1증가 하기
+	int increase_readCount(String postNo);
 
 
 

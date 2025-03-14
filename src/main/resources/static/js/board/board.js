@@ -71,7 +71,7 @@ function goView(postNo) {
 }
 
 // 좋아요 버튼 클릭 시 
-function goLike(postNo) {
+function goLike(postNo,fk_employeeNo) {
 	
 	if($("#login_userid").text() == "" || $("#login_userid").text()== null){
 			alert("로그인 후 이용하실 수 있습니다.");
@@ -83,7 +83,9 @@ function goLike(postNo) {
           url : ctxPath+"/board/like",
           type : "post",
 		  data : { "postNo": postNo, 
-				   "login_userid": $("#login_userid").text() 
+				   "login_userid": $("#login_userid").text() ,
+				   "notificationtype":"like",
+				   "fk_employeeNo": fk_employeeNo
 		  },
           dataType:"json",
           success:function(json){

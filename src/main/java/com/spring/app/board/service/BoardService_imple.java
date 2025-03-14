@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import com.spring.app.board.domain.BoardVO;
 import com.spring.app.board.domain.LikeVO;
+import com.spring.app.board.domain.NotificationVO;
 import com.spring.app.board.domain.PostFileVO;
 import com.spring.app.board.domain.PostVO;
 import com.spring.app.board.model.BoardDAO;
@@ -89,7 +90,6 @@ public class BoardService_imple implements BoardService {
 	// 글쓰기 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기
 	@Override
 	public List<Map<String, String>> getAccessibleBoardList(String employeeNo, String login_userid) throws Exception{
-		System.out.println("login_userid : " + login_userid);
 		List<Map<String, String>> boardList = dao.getAccessibleBoardList(employeeNo,login_userid);
 		return boardList;
 	}
@@ -408,7 +408,7 @@ public class BoardService_imple implements BoardService {
 
 	// 좋아요를 추가 또는 삭제함
 	@Override
-	public Map<String,Object> toggleLike(String postNo, String login_userid) {
+	public Map<String,Object> toggleLike(String postNo, String login_userid,String notificationtype,String fk_employeeNo) {
 		
 		Map<String,Object> map = new HashMap<>();
 		
@@ -433,6 +433,15 @@ public class BoardService_imple implements BoardService {
 			if(n!=0) {
 				n = dao.updatePostLikeCnt(postNo); // 게시글테이블의 좋아요 수 누적
 				map.put("likeStatus", 1);
+				
+				String replyContent= null;
+				String fk_commentNo= null;
+				
+				if(!login_userid.equals(fk_employeeNo)) { // 로그인된 사원번호와 글 작성자가 같지 않을 시 실행 (본인이 작성한 것에 본인이 댓글 또는 좋아요 달 경우 실행 안됨)
+				
+					dao.insertNotificationInfo(postNo,login_userid,replyContent,fk_employeeNo,fk_commentNo,notificationtype); // 알림 테이블에 데이터 삽입
+				
+				}
 			}
 		}
 		
@@ -458,11 +467,27 @@ public class BoardService_imple implements BoardService {
 
 	// 댓글 등록
 	@Override
-	public int insertComment(String postNo, String login_userid, String login_name, String commentContent) {
+	public int insertComment(String postNo, String login_userid, String login_name, String commentContent,String fk_employeeNo, String fk_commentNo,String notificationtype) {
 		int insertCount = dao.insertComment(postNo, login_userid, login_name,commentContent); // 댓글 등록
 		
 		if(insertCount>0) {
 			dao.addCommentCount(postNo); // 해당 게시글의 댓글 개수 증감하기
+			
+			System.out.println(postNo);
+			System.out.println(login_userid);
+			System.out.println(commentContent);
+			System.out.println(fk_employeeNo);
+			System.out.println(fk_commentNo);
+			System.out.println(notificationtype);
+			
+			if(!login_userid.equals(fk_employeeNo)) { // 로그인된 사원번호와 글 작성자가 같지 않을 시 실행 (본인이 작성한 것에 본인이 댓글 또는 좋아요 달 경우 실행 안됨)
+				
+				System.out.println("실행됨");
+				
+				dao.insertNotificationInfo(postNo,login_userid,commentContent,fk_employeeNo,fk_commentNo,notificationtype); // 알림 테이블에 데이터 삽입
+				
+			}
+			
 		}
 		return insertCount;
 	}
@@ -509,14 +534,28 @@ public class BoardService_imple implements BoardService {
 	// 대댓글 등록
 	@Override
 	public int insertReComment(String postNo, String login_userid, String login_name, String replyContent,
-			String fk_commentNo, String depthNo) {
-		int insertCount = dao.insertReComment(postNo, login_userid, login_name,replyContent,fk_commentNo,depthNo); // 대댓글 등록
-		
-		if(insertCount>0) {
-			dao.addCommentCount(postNo); // 해당 게시글의 댓글 개수 증감하기
-		}
-		
-		return insertCount;
+	                           String fk_commentNo, String depthNo, String notificationtype, String postCreateBy) {
+
+	    int insertCount = dao.insertReComment(postNo, login_userid, login_name, replyContent, fk_commentNo, depthNo); // 대댓글 등록
+
+	    if (insertCount > 0) {
+	        dao.addCommentCount(postNo); // 해당 게시글의 댓글 개수 증가
+
+	        //  댓글 작성자에게 알림을 보내기 위한 사원 번호 조회 (알림받을 사원번호 추출)
+	        String fk_employeeNo = dao.getNotificationReceiverEmployeeNo(fk_commentNo); // 대댓글이 달린 댓글의 작성자
+
+	        //  댓글 작성자에게 알림 (자신이 작성한 글이 아닐 경우)
+	        if (!login_userid.equals(fk_employeeNo)) { 
+	            dao.insertNotificationInfo(postNo, login_userid, replyContent, fk_employeeNo, fk_commentNo, notificationtype);
+	        }
+
+	        //  게시글 작성자에게도 알림 (자신이 작성한 게시글이 아닐 경우)
+	        if (!login_userid.equals(postCreateBy)) { 
+	            dao.insertNotificationInfo(postNo, login_userid, replyContent, postCreateBy, fk_commentNo, notificationtype);
+	        }
+	    }
+
+	    return insertCount;
 	}
 
 	// 댓글 개수 
@@ -569,6 +608,27 @@ public class BoardService_imple implements BoardService {
 	public List<Map<String, String>> getTopReadPosts() {
 		List<Map<String, String>> topReadList = dao.getTopReadPosts();
 		return topReadList;
+	}
+
+	// 로그인된 사원번호로 읽지않은 해당 알림 조회
+	@Override
+	public List<NotificationVO> loadNotification(String login_userid) {
+		List<NotificationVO> ListNotificationVO= dao.loadNotification(login_userid); 
+		return ListNotificationVO;
+	}
+
+	// 클릭 된 알림을 0(안읽음)에서 1(읽음)으로 상태 변경
+	@Override
+	public int notificationIsRead(String notificationNo) {
+		int n = dao.notificationIsRead(notificationNo);
+		return n;
+	}
+
+	// 알림의 해당글 클릭 시 글조회수 1증가 하기
+	@Override
+	public int increase_readCount(String postNo) {
+		int n = dao.increase_readCount(postNo);
+		return n;
 	}
 
 	

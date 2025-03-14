@@ -137,17 +137,19 @@
 	    e.profileImg , p.positionName
 	FROM 
 	    ( 
-	        SELECT row_number() OVER (ORDER BY postNo DESC) AS rno, 
-	               postNo, fk_boardNo, fk_employeeNo, name, subject, content,
-	               readCount, to_char(regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate, 
-	               commentCount, allowComments, status, isNotice, noticeEndDate,likeCount
-	        FROM tbl_post
-	        WHERE status = 1
+	        SELECT row_number() OVER (ORDER BY p.postNo DESC) AS rno, 
+	               p.postNo, p.fk_boardNo, p.fk_employeeNo, p.name, p.subject, p.content,
+	               p.readCount, to_char(p.regDate, 'yyyy-mm-dd hh24:mi:ss') AS regDate, 
+	               p.commentCount, p.allowComments, p.status, p.isNotice, p.noticeEndDate,p.likeCount
+	        FROM tbl_post p
+            join tbl_board b
+            on p.fk_boardNo = b.boardNo
+	        WHERE p.status = 1 and b.isPublic = 1
 	    ) V
 	JOIN tbl_board b ON V.fk_boardNo = b.boardNo
 	JOIN tbl_employee e ON V.fk_employeeNo = e.employeeNo
     JOIN tbl_position p on e.FK_positionNo = p.positionNo
-	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})  and b.isPublic = 1
 </select>
 
 <!-- === 총 게시물 건수(totalCount) 구하기 === --> 
@@ -654,6 +656,71 @@
 	<update id="updateMinusCommentCount">
 	update tbl_post set commentCount = commentCount - #{deleteCount}
 	where postNo = #{postNo}
+	</update>
+	
+<!-- 	알림을 받을 사원 번호를 추출 -->
+	<select id="getNotificationReceiverEmployeeNo" parameterType="String" resultType="String">
+	select fk_employeeNo from tbl_comment
+	where commentNo = #{fk_commentNo}
+	</select>
+	
+<!-- 	알림 테이블에 데이터 삽입 -->
+	<insert id="insertNotificationInfo" parameterType="String">
+    <choose>
+        <when test="notificationtype == 'reply'"> <!-- 대댓글 작성 -->
+            insert into tbl_notification (notificationNo, fk_employeeNo, fk_postNo, fk_commentNo, senderEmployeeNo, message, notificationtype, isRead)
+            values(notificationSeq.nextval, #{fk_employeeNo}, #{postNo}, #{fk_commentNo}, #{login_userid}, #{commentContent}, #{notificationtype}, default)
+        </when>
+        <when test="notificationtype == 'like'"> <!-- 좋아요 클릭 -->
+            insert into tbl_notification (notificationNo, fk_employeeNo, fk_postNo, senderEmployeeNo, notificationtype, isRead)
+            values(notificationSeq.nextval, #{fk_employeeNo}, #{postNo}, #{login_userid}, #{notificationtype}, default)
+        </when>
+        <otherwise> <!-- 일반 댓글 작성 -->
+            insert into tbl_notification (notificationNo, fk_employeeNo, fk_postNo, senderEmployeeNo, message, notificationtype, isRead)
+            values(notificationSeq.nextval, #{fk_employeeNo}, #{postNo}, #{login_userid}, #{commentContent}, #{notificationtype}, default)
+        </otherwise>
+    </choose>
+</insert>
+
+	
+<!-- 	로그인된 사원번호로 읽지않은 해당 알림 조회 -->
+	<select id="loadNotification" parameterType="String" resultType="NotificationVO">
+	select E.name, 
+			N.notificationNo, N.fk_employeeNo, N.fk_postNo, N.fk_commentNo, N.senderEmployeeNo, 
+			P.fk_boardNo AS boardNo,
+			P.fk_employeeNo as postCreateBy, <!-- 글의 글쓴이 -->
+		    sender_emp.fk_positionno AS senderPostionNo,   <!-- 알림 보내는 사원번호 -->
+		    sender_emp.name as senderName,      
+		    sender_emp.profileimg, 
+    		P.positionname AS senderPositionName,          
+		    N.message, 
+		    N.notificationType, 
+		    N.isRead, 
+		    N.createdAt,
+		    case 
+		        when (sysdate - N.createdat) * 24 &lt; 1 then floor((sysdate - N.createdat) * 24 * 60) || '분 전'
+		        when (sysdate - N.createdat) * 24 &lt; 24 then floor((sysdate - N.createdat) * 24) || '시간 전'
+		        else floor((sysdate - N.createdat)) || '일 전'
+		    end as timeAgo
+	from tbl_notification N
+	join tbl_employee E 
+	    on N.fk_employeeno = E.employeeno
+	join tbl_employee sender_emp  <!-- senderemployeeNo를 통해 tbl_employee에 다시 조인-->
+	    on N.senderemployeeno = sender_emp.employeeNo
+	join tbl_position P  
+    on sender_emp.fk_positionNo = P.positionNo
+    join tbl_post P 
+    on N.fk_postNo = P.postNo
+	join tbl_board B
+    on P.fk_boardNo = B.boardNo
+	where N.fk_employeeNo = #{login_userid} and N.isRead = 0
+	order by N.notificationNo DESC
+	</select>
+
+	<!-- 클릭 된 알림을 0(안읽음)에서 1(읽음)으로 상태 변경 -->
+	<update id="notificationIsRead" parameterType="String">
+	update tbl_notification set isread = 1
+	where notificationNo = #{notificationNo}
 	</update>
 
 

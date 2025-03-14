@@ -359,8 +359,12 @@ $(document).ready(()=>{
 			$.ajax({
 		          url : ctxPath+"/board/like",
 		          type : "post",
-				  data : { "postNo": $("input[name='postNo']").val(), 
-						   "login_userid": $("#login_userid").text() 
+				  data : {  "postNo": $("input[name='postNo']").val(), 
+						    "login_userid": $("#login_userid").text(),
+						    "postNo": $("input[name='postNo']").val(),
+		   					"login_name": $("#login_name").text(),
+		   					"fk_employeeNo": $("#fk_employeeNo").text(),
+		   					"notificationtype" : "like"
 				  },
 		          dataType:"json",
 		          success:function(json){
@@ -450,7 +454,9 @@ $(document).ready(()=>{
 					"postNo": $("input[name='postNo']").val(),
 					"login_userid": $("#login_userid").text(),
 					"login_name": $("#login_name").text(),
-					"commentContent": $("#commentContent").val()
+					"commentContent": $("#commentContent").val(),
+					"fk_employeeNo": $("#fk_employeeNo").text(),
+					"notificationtype" : "comment"
 			    },
 		        success: function(json) {
 					if (json.success) {
@@ -504,7 +510,6 @@ $(document).ready(()=>{
   function loadComment(postNo, page = 1,reload) {
 	
 	currentPage = page;
-	console.log("최종 페이지 : " + currentPage)
       $.ajax({
           type: "GET",
           url: ctxPath + "/board/getComment", // 댓글 목록 조회
@@ -526,7 +531,7 @@ $(document).ready(()=>{
 				  <div class="commentOfpost"id="comment_${comment.commentNo}" style="margin-left:${marginLeft}px;">
 					  <span id="profile">`;
 					  if(comment.profileImg == null){ // 프로필 이미지가 없을 경우
-						html +=`<i class="fa-regular fa-user"></i> `;
+						html +=`<i class="fa-solid fa-user"></i> `;
 					  }
 					  else{
 						html +=`프로필이미지 존재(경로설정 필요) `;
@@ -559,13 +564,13 @@ $(document).ready(()=>{
 						        	<span id="profile">`;
 									
 									if(json.login_profileImg == null || json.login_profileImg ==""){ // 로그인한 사원의 프로필이미지가 없는 경우
-										html+=`<i class="fa-regular fa-user"></i>`;
+										html+=`<i class="fa-solid fa-user"></i>`;
 									}
 									else if(json.login_profileImg != null || json.login_profileImg != ""){	// 프로필이미지가 있는 경우 프로필이미지 존재(경로설정 필요)
 										html +=`p`;
 									}
 									else{
-										html+=`<i class="fa-regular fa-user"></i>`;
+										html+=`<i class="fa-solid fa-user"></i>`;
 									}
 									
 									html+=  `</span>
@@ -704,10 +709,12 @@ $(document).ready(()=>{
           data: {
               postNo: $("input[name='postNo']").val(),  			// 글번호
               login_userid: $("#login_userid").text(), 				// 대댓글 작성자 사원번호
-              login_name: $("#login_name").text(), 			// 대댓글 작성자명
+              login_name: $("#login_name").text(), 					// 대댓글 작성자명
               replyContent: replyContent, 							// 대댓글 내용
               fk_commentNo: parentCommentNo, 						// 부모 댓글 번호
-              depthNo: 1 											// 대댓글이므로 depth 1
+              depthNo: 1, 											// 대댓글이므로 depth 1
+			  notificationtype : "reply",							// 알림 유형
+			  postCreateBy : $("#fk_employeeNo").text()				// 게시글 작성자
           },
           dataType: "json",
           success: function(json) {
