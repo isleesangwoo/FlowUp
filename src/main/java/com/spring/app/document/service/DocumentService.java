@@ -47,11 +47,8 @@ public interface DocumentService {
 	// 조직도에 뿌려주기 위한 사원 목록 가져오기
 	List<EmployeeVO> getEmployeeList();
 	
-	// 휴가신청서 결재 요청
-	int annualDraft(Map<String, String> paraMap);
-	
-	// 연장근무신청서 결재 요청
-	int overtimeDraft(Map<String, String> paraMap);
+	// 결재 요청하기
+	Map<String, String> draft(Map<String, String> paraMap);
 
 	// 결재 승인하기
 	int approve(Map<String, String> map);
