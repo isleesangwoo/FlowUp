@@ -75,7 +75,7 @@ $(document).ready(function(){
     // === 웹소켓에 최초로 연결이 되었을 경우에 실행되어지는 콜백함수 정의 === //
     websocket.onopen = function(){
        // alert("웹소켓 연결됨!");
-       $("div#chatStatus").text("정보: 웹소켓에 연결이 성공됨!!"); 
+       // $("div#chatStatus").text("정보: 웹소켓에 연결이 성공됨!!"); 
     /*   
        messageObj.message = "채팅방에 <span style='color: red;'>입장</span> 했습니다.";
        messgaeObj.type = "all";   // messageObj.type = "all"; 은 "1 대 다" 채팅을 뜻하는 것이고, messageObj.type = "one"; 은 "1 대 1" 채팅을 뜻하는 것으로 하겠다.
@@ -86,6 +86,7 @@ $(document).ready(function(){
                   type : "all",
                   to : "all"};   // 자바 스크립트에서 객체의 데이터값 초기화
        
+                  
       websocket.send(JSON.stringify(messageObj));
       // JSON.stringify(자바스크립트객체) 는 자바스크립트객체를 JSON 표기법의 문자열(string)로 변환한다
         // JSON.parse(JSON 표기법의 문자열) 는 JSON 표기법의 문자열(string)을 자바스크립트객체(object)로 변환해준다.
@@ -98,6 +99,15 @@ $(document).ready(function(){
       */
       
     };// end of websocket.onopen -----
+    
+    
+    
+    websocket.onclose = function(event) {
+    	   console.log("웹소켓 연결이 끊어졌습니다. 재연결 시도...");
+    	   setTimeout(function() {
+    	      websocket = new WebSocket(wsUrl);
+    	   }, 3000);  // 3초 후 재연결 시도
+    	};
     
     // === 메시지 수신 시 콜백함수 정의하기 === //
     websocket.onmessage = function(event) {
@@ -166,7 +176,7 @@ $(document).ready(function(){
             messageObj.to = to;         // 귓속말(비밀대화)를 나눌 특정 웹소켓
          }
          
-         alert(JSON.stringify(messageObj));
+         // alert(JSON.stringify(messageObj));
          
          websocket.send(JSON.stringify(messageObj));
          // JSON.stringify() 는 값을 그 값을 나타내는 JSON 표기법의 문자열로 변환한다
@@ -259,28 +269,32 @@ $(document).ready(function(){
    <tbody></tbody>
 </table>
 
-<div class="container-fluid">
+<div class="container-fluid" style="background: silver;">
    <div class="row">
       <div class="col-md-10 offset-md-1">
          <div id="chatStatus"></div>
          <div class="my-3">
-         - 상대방의 대화내용이 검정색으로 보이면 채팅에 참여한 모두에게 보여지는 것입니다.<br>
+         <!-- - 상대방의 대화내용이 검정색으로 보이면 채팅에 참여한 모두에게 보여지는 것입니다.<br>
          - 상대방의 대화내용이 <span style="color: red;">붉은색</span>으로 보이면 나에게만 보여지는 1:1 귓속말 입니다.<br>
-         - 1:1 채팅(귓속말)을 하시려면 예를 들어, 채팅시 보이는 [이순신]대화내용 에서 이순신을 클릭하시면 됩니다.
+         - 1:1 채팅(귓속말)을 하시려면 예를 들어, 채팅시 보이는 [이순신]대화내용 에서 이순신을 클릭하시면 됩니다. -->
          </div>
          <input type="hidden" id="to" placeholder="귓속말대상웹소켓.getId()"/>
          <br/>
-         ♡ 귓속말대상 : <span id="privateWho" style="font-weight: bold; color: red;"></span>
+         귓속말대상 : <span id="privateWho" style="font-weight: bold; color: red;"></span>
          <br>
-         <button type="button" id="btnAllDialog" class="btn btn-secondary btn-sm">귀속말대화끊기</button>
+         <button type="button" id="btnAllDialog" class="btn btn-secondary btn-sm">귓속말대화끊기</button>
          <br><br>
-         현재접속자명단:<br/>
+         현재 접속자:<br/>
          <div id="connectingUserList" style=" max-height: 100px; overFlow: auto;"></div>
          
          <div id="chatMessage" style="max-height: 500px; overFlow: auto; margin: 20px 0;"></div>
       
-         <input type="text"   id="message" class="form-control" placeholder="메시지 내용"/>
-         <input type="button" id="btnSendMessage" class="btn btn-success btn-sm my-3" value="메시지보내기" />
+      	 <div>
+	      	 <input type="text"   id="message" class="form-control" placeholder="메시지 내용">
+	      	 <input type="button" id="btnSendMessage" class="btn btn-success btn-sm my-3" value="메시지보내기" />
+      	 </div>
+         
+         
          <input type="button" class="btn btn-danger btn-sm my-3 mx-3" onclick="javascript:location.href='<%=request.getContextPath() %>/index'" value="채팅방나가기" />
       </div>
    </div>
