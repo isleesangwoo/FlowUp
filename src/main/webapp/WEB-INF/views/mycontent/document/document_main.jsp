@@ -76,6 +76,7 @@
 
         <div class="mail_menu_container">
             <ul>
+            	<li onclick="location.href='<%= ctxPath%>/document/'"><a>전자결재 홈</a></li>
                 <li onclick="location.href='<%= ctxPath%>/document/todoList'">
                     <a>결재 대기 문서</a>
                     <span id="todoCount" class="doc_cnt"></span> <!-- 콤마처리 해주세요 -->

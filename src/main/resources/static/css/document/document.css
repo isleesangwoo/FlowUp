@@ -1,7 +1,7 @@
 /* 문서함의 문서 */
 tr.document:hover {
 	cursor: pointer;
-	background-color: gray;
+	background-color: #FFEFD5;
 }
 
 /* 전자결재 모든 버튼 */
@@ -13,7 +13,7 @@ button.doc_btn {
 	border-radius: 2px;
 }
 button.doc_btn:hover {
-	background-color: gray;
+	background-color: #FFEFD5;
 }
 
 /* 화면 가운데 뜨게 되는 네모 모양 모달의 컨테이너 */
@@ -152,4 +152,28 @@ span.rejected {
 
 .documentStatus_tab button.active {
   background-color: #ccc;
+}
+
+div.doc_todo_box {
+	border: 1px solid #c8c8c8;
+	min-height: 200px;
+}
+
+div.doc_box {
+	border: 1px solid #c8c8c8;
+	min-height: 250px;
+}
+
+div.doc_box th {
+	font-weight: normal;
+	font-size: 12pt;
+}
+
+thead.doc_box_thead tr {
+	background-color: #FDF5DC;
+}
+
+div.todo_card span {
+	display: block;
+	margin-bottom: 10px;
 }

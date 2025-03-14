@@ -1033,7 +1033,7 @@
 							<tr>
 								<th>연장 근무 시간</th>
 								<td>
-									<input type="text" name="totalAmount" value="3시간" style="width: 100%;" readonly />
+									<input type="text" value="3시간" style="width: 100%;" readonly />
 								</td>
 							</tr>
 							<tr>

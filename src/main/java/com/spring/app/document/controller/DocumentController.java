@@ -40,8 +40,24 @@ public class DocumentController {
 	
 	// 전자결재 메인 페이지
 	@GetMapping("")
-	public ModelAndView document(ModelAndView mav) {
+	public ModelAndView document(ModelAndView mav, HttpServletRequest request) {
 		
+		HttpSession session = request.getSession();
+		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+		
+		String employeeNo = null;
+		
+		if(loginuser != null) {
+			employeeNo = loginuser.getEmployeeNo();
+		}
+		
+		List<DocumentVO> todoList = service.mainTodoList(employeeNo);
+		List<DocumentVO> progressList = service.mainProgressList(employeeNo);
+		List<DocumentVO> completedList = service.mainCompletedList(employeeNo);
+		
+		mav.addObject("todoList", todoList);
+		mav.addObject("progressList", progressList);
+		mav.addObject("completedList", completedList);
 		mav.setViewName("mycontent/document/document");
 		
 		return mav;
@@ -54,18 +70,13 @@ public class DocumentController {
 		
 		//String referer = request.getHeader("referer");
 		
-		
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
-		// 테스트 중 로그인 안하고 처리하기 위해 임시로 사원번호 입력
 		String employeeNo = null;
 		
 		if(loginuser != null) {
 			employeeNo = loginuser.getEmployeeNo();
-		}
-		else {
-			employeeNo = "100014";
 		}
 		
 		List<DocumentVO> todoList = service.todoList(employeeNo);
@@ -85,14 +96,10 @@ public class DocumentController {
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
-		// 테스트 중 로그인 안하고 처리하기 위해 임시로 사원번호 입력
 		String employeeNo = null;
 		
 		if(loginuser != null) {
 			employeeNo = loginuser.getEmployeeNo();
-		}
-		else {
-			employeeNo = "100014";
 		}
 		
 		List<DocumentVO> upcomingList = service.upcomingList(employeeNo);
@@ -116,14 +123,10 @@ public class DocumentController {
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
-		// 테스트 중 로그인 안하고 처리하기 위해 임시로 사원번호 입력
 		String employeeNo = null;
 		
 		if(loginuser != null) {
 			employeeNo = loginuser.getEmployeeNo();
-		}
-		else {
-			employeeNo = "100014";
 		}
 		
 		searchWord = searchWord.trim(); // 검색어 공백 제거
@@ -246,14 +249,10 @@ public class DocumentController {
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
-		// 테스트 중 로그인 안하고 처리하기 위해 임시로 사원번호 입력
 		String employeeNo = null;
 		
 		if(loginuser != null) {
 			employeeNo = loginuser.getEmployeeNo();
-		}
-		else {
-			employeeNo = "100014";
 		}
 		
 		List<DocumentVO> tempList = service.tempList(employeeNo);
@@ -273,14 +272,10 @@ public class DocumentController {
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
-		// 테스트 중 로그인 안하고 처리하기 위해 임시로 사원번호 입력
 		String employeeNo = null;
 		
 		if(loginuser != null) {
 			employeeNo = loginuser.getEmployeeNo();
-		}
-		else {
-			employeeNo = "100014";
 		}
 		
 		List<DocumentVO> approvedList = service.approvedList(employeeNo);
@@ -300,14 +295,10 @@ public class DocumentController {
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
-		// 테스트 중 로그인 안하고 처리하기 위해 임시로 사원번호 입력
 		String employeeNo = null;
 		
 		if(loginuser != null) {
 			employeeNo = loginuser.getEmployeeNo();
-		}
-		else {
-			employeeNo = "100014";
 		}
 		
 		List<DocumentVO> deptDocumentList = service.deptDocumentList(employeeNo);

@@ -298,6 +298,55 @@
 		where fk_employeeNo = #{employeeNo} and year = #{year}
 	</select>
 	
+	
+	<select id="mainTodoList" parameterType="String" resultType="DocumentVO">
+		select fk_employeeNo, subject, draftDate, documentType, name, documentNo, positionname
+		from
+		(
+		    select rownum, fk_documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo, positionname
+		    from
+		    (
+		        select fk_approver, fk_documentNo, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+		        from tbl_approval
+		        where APPROVALSTATUS = 0
+		    ) A JOIN tbl_document D
+		    ON fk_documentNo = documentNo
+		    JOIN tbl_employee
+		    ON fk_employeeNo = employeeNo
+		    JOIN tbl_position
+		    ON fk_positionno = positionno
+		    where rn = 1 and fk_approver = #{employeeNo} and temp = 0 and D.status != 2
+		    order by documentNo desc
+		)
+		where rownum between 1 and 5
+	</select>
+	
+	
+	<select id="mainProgressList" parameterType="String" resultType="DocumentVO">
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
+		from
+		(
+		    select rownum as rn, documentNo, subject, documentType, draftDate, status
+		    from tbl_document
+		    where fk_employeeNo = #{employeeNo} and status = 0 and temp = 0
+		    order by documentNo desc
+		)
+		where rn BETWEEN 1 AND 5
+	</select>
+	
+	
+	<select id="mainCompletedList" parameterType="String" resultType="DocumentVO">
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
+		from
+		(
+		    select rownum as rn, documentNo, subject, documentType, draftDate, status
+		    from tbl_document
+		    where fk_employeeNo = #{employeeNo} and status = 1 and temp = 0
+		    order by documentNo desc
+		)
+		where rn BETWEEN 1 AND 5
+	</select>
+	
 </mapper>
 
 

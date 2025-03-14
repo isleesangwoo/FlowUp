@@ -84,7 +84,7 @@
 			<button class="tablinks" value="2">반려</button>
 		</div>
 		<table id="myDocumentList" class="table">
-			<thead>
+			<thead class="doc_box_thead">
 				<tr>
 					<th>
 						<input type="checkbox" id="check_all"/>

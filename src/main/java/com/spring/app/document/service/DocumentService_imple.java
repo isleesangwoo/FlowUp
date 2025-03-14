@@ -196,6 +196,10 @@ public class DocumentService_imple implements DocumentService {
 		if(approvalOrder == 1) {
 			// 문서의 결재 상태를 업데이트 하기
 			m = mapper_dao.updateDocumentApprovalStatus(map);
+			
+			if(m == 1 && "휴가신청서".equals(map.get("documentType"))) {
+				// mapper_dao.documentView(map);
+			}
 		}
 		
 		return n*m;
@@ -261,6 +265,30 @@ public class DocumentService_imple implements DocumentService {
 		int totalAmount = mapper_dao.getAnnual(map);
 		
 		return totalAmount;
+	}
+
+
+	@Override
+	public List<DocumentVO> mainTodoList(String employeeNo) {
+		
+		List<DocumentVO> todoList = mapper_dao.mainTodoList(employeeNo);
+		return todoList;
+	}
+
+
+	@Override
+	public List<DocumentVO> mainProgressList(String employeeNo) {
+
+		List<DocumentVO> todoList = mapper_dao.mainProgressList(employeeNo);
+		return todoList;
+	}
+
+
+	@Override
+	public List<DocumentVO> mainCompletedList(String employeeNo) {
+
+		List<DocumentVO> todoList = mapper_dao.mainCompletedList(employeeNo);
+		return todoList;
 	}
 
 

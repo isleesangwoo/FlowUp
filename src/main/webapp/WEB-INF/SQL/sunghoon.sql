@@ -287,3 +287,40 @@ commit;
 select occurannual, overannual, addannual, occurannual + overannual - addannual as total
 from tbl_annual
 where fk_employeeNo = '100014' and year = 2025;
+
+
+
+select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
+from
+(
+    select rownum as rn, documentNo, subject, documentType, draftDate, status
+    from tbl_document
+    where fk_employeeNo = '100014' and status = 0 and temp != 1
+    order by documentNo desc
+)
+where rn BETWEEN 1 AND 5;
+
+select fk_approver, fk_documentNo, fk_employeeNo, subject, draftDate, documentType, name, documentNo, positionname
+from
+(
+    select rownum, fk_approver, fk_documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo, positionname
+    from
+    (
+        select fk_approver, fk_documentNo, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+        from tbl_approval
+        where APPROVALSTATUS = 0
+    ) A JOIN tbl_document D
+    ON fk_documentNo = documentNo
+    JOIN tbl_employee
+    ON fk_employeeNo = employeeNo
+    JOIN tbl_position
+    ON fk_positionno = positionno
+    where rn = 1 and fk_approver = '100020' and temp = 0 and D.status != 2
+    order by documentNo desc
+)
+where rownum between 1 and 5;
+
+
+
+
+

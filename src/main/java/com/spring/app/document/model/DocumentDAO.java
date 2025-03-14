@@ -89,6 +89,12 @@ public interface DocumentDAO {
 	// 휴가신청서 잔여 연차 가져오기
 	int getAnnual(Map<String, String> map);
 
+	List<DocumentVO> mainTodoList(String employeeNo);
+
+	List<DocumentVO> mainProgressList(String employeeNo);
+
+	List<DocumentVO> mainCompletedList(String employeeNo);
+
 	
 
 	
