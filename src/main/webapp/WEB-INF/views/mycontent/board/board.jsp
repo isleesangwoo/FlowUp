@@ -53,7 +53,7 @@
 									</span>
 								</div>
 								<div>
-									<div class="likeBtn" onclick="goLike.call(this, '${post.postNo}')"><i class="<c:choose>
+									<div class="likeBtn" onclick="goLike.call(this, '${post.postNo}','${post.fk_employeeNo}')"><i class="<c:choose>
 				                        <c:when test='${post.liked}'>fa-solid</c:when>
 				                        <c:otherwise>fa-regular</c:otherwise>
 					                    </c:choose> fa-heart"></i>
@@ -130,7 +130,7 @@
    <input type="hidden" name="goBackURL" />
 </form>	     
     
-<span id="login_userid" style="display: none">${login_userid}</span>	<%-- 필요한 것 --%>
+<span style="display: none;" id="login_userid" >${login_userid}</span>	<%-- 필요한 것 --%>
 	
 	
 <jsp:include page="../../footer/footer.jsp" /> 

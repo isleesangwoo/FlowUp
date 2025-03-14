@@ -201,18 +201,20 @@ function getLoadNotification(){ // 읽지 않은 알림 조회하기 ( 최신화
 	$.ajax({
 		     type: "get",
 		     url: ctxPath + "/board/getNotification", 
-		     data: { }, // 로그인된 사원의 정보를 서버로 넘겨줌, '알림 받는 사람' 컬럼에 조건으로 설정하여 조회함.
 		     dataType: "json",
 		     success: function(json) {
-				if (json.login_userid == null) {
-		             //alert("로그인된 사용자가 없습니다.")
+				if (json.login_userid == null) {// 로그인이 안된 경우
+		             $(".bell").remove(); // 알림 요소를 삭제
 		        }
+				else if(json.listNotification.length == 0){ // 로그인 사원이 알림을 모두 읽을 시 
+					newAlarm += `<div style='text-align:center;line-height:120px; height:100px;'>알림이 없습니다.</div>`;
+					$('.alarm ul').append(newAlarm); 
+				}
 				else{ // 알림 조회 완료 시
-					//alert("로그인된 사용자가 있습니다.")
-					
+					$('.alarm ul').empty(); // 기존 알림 데이터들을 지움
 					json.listNotification.forEach(function(item) {
 						newAlarm += `
-								<li onclick="goPostView('${item.fk_postNo}','${item.boardNo}')">
+								<li onclick="goPostView('${item.fk_postNo}','${item.boardNo}','${item.notificationNo}','${item.fk_employeeNo}')">
 						            <a href="#">
 						                <div>
 						                    <div class="profile">`;
@@ -220,7 +222,7 @@ function getLoadNotification(){ // 읽지 않은 알림 조회하기 ( 최신화
 							if(item.profileimg==null){ // 프로필 등록을 안 했을 경우
 								newAlarm +=`<i class="fa-solid fa-user"></i>`;
 							}
-							else{
+							else{ // 프로필 등록을 했을 경우
 								newAlarm +=`사진있음경로설정하시오`;
 							}
 											
@@ -255,13 +257,10 @@ function getLoadNotification(){ // 읽지 않은 알림 조회하기 ( 최신화
 	                });
 					
 					// 알림 목록에 추가
-					$('.alarm ul').append(newAlarm);
-					$("input[name='goBackURL']").val(ctxPath+ json.goBackURL);
-					
-					//$("#login_userid").html(json.login_userid); // 헤더에 로그인 사원번호를 뿌려줌 
+					$('.alarm ul').append(newAlarm); 
 				}
 				
-				updateAlarmCount();
+				updateAlarmCount(); // 알림 개수 새로고침
 		     },
 		     error: function(request, status, error) {
 		         alert("댓글을 불러오는 데 실패했습니다.");
@@ -299,27 +298,33 @@ function updateAlarmCount() {
 
 
 
-function goPostView(postNo,boardNo) { // 알림하나 클릭 시 알림에 해당하는 게시글로 이동
+function goPostView(postNo,boardNo,notificationNo,fk_employeeNo) { // 알림하나 클릭 시 알림에 해당하는 게시글로 이동
 	
-	
-	alert(postNo);
-	
-	window.location.href = ctxPath + "/board/goViewOnePost?postNo="+postNo+"&goBackURL=&checkAll_or_boardGroup=1&fk_boardNo="+boardNo;
+	$.ajax({
+	     type: "post",
+	     url: ctxPath + "/board/notificationIsRead", 
+	     data: {notificationNo:notificationNo , 	// 알림 번호 
+				postNo:postNo,						// 글 번호
+				fk_employeeNo: fk_employeeNo, 		// 알림을 받는 사원 번호 (로그인 된 사용자와 알림을 받는 사원번호가 같다면 조회수가 증감되지 않음)
+				boardNo : boardNo
+		 }, 
+	     dataType: "json",
+	     success: function(json) {
+			if(json){ // 알림 읽음처리가 완료되었을 경우
+				getLoadNotification(); // 알침 새로고침
+				
+				window.location.href = ctxPath + "/board/goViewOnePost?postNo="+postNo+"&goBackURL="+json.goBackURL+"&checkAll_or_boardGroup=1&fk_boardNo="+boardNo;
+			}
+			else{ // 그 외
+				window.location.href = ctxPath + "/";
+			}
+	     },
+	     error: function(request, status, error) {
+	         alert("ajax요청 실패");
+	     }
+	 });
 
-	
-//	const frm = document.goPostViewFrm;
-//    frm.postNo.value = postNo;
-//	frm.fk_boardNo.value = boardNo;
-//    frm.checkAll_or_boardGroup.value = "1"; // 글 상세페이지의 이전/다음글 을 전체게시판 기준으로 조회할지, 해당게시판 조건으로 조회할지
-//	// 1이면 해당게시판을 조건으로, 값이 없으면 전체게시판(조건없음)
-//    frm.method = "get";
-//    frm.action = ctxPath + "/board/goViewOnePost";
-//    frm.submit();
 }
-
-
-
-
 
 
 

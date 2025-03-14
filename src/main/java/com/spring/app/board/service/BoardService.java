@@ -110,7 +110,7 @@ public interface BoardService {
 	int deleteComment(String commentNo,String depthNo,String postNo);
 
 	// 대댓글 등록
-	int insertReComment(String postNo, String login_userid, String login_name, String replyContent, String fk_commentNo,String depthNo,String notificationtype);
+	int insertReComment(String postNo, String login_userid, String login_name, String replyContent, String fk_commentNo,String depthNo,String notificationtype,String postCreateBy);
 
 	// 댓글 개수 
 	int getCommentCount(String postNo);
@@ -135,6 +135,12 @@ public interface BoardService {
 
 	// 로그인된 사원번호로 읽지않은 해당 알림 조회
 	List<NotificationVO> loadNotification(String login_userid);
+
+	// 클릭 된 알림을 0(안읽음)에서 1(읽음)으로 상태 변경
+	int notificationIsRead(String notificationNo);
+
+	// 알림의 해당글 클릭 시 글조회수 1증가 하기
+	int increase_readCount(String postNo);
 
 
 

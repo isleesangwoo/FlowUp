@@ -21,6 +21,7 @@ public class NotificationVO {
 	
 	
 	private String boardNo; 				// 알림의 해당 글의 게시판 번호
+	private String postCreateBy; 			// 알림의 게시글 작성자
 	
 	
 	public String getNotificationNo() {
@@ -112,6 +113,12 @@ public class NotificationVO {
 	}
 	public void setBoardNo(String boardNo) {
 		this.boardNo = boardNo;
+	}
+	public String getPostCreateBy() {
+		return postCreateBy;
+	}
+	public void setPostCreateBy(String postCreateBy) {
+		this.postCreateBy = postCreateBy;
 	}
 	
 	

@@ -185,13 +185,18 @@ public interface BoardDAO {
 	void updateMinusCommentCount(Map<String, Integer> map);
 
 	// 알림 테이블에 데이터 삽입
-	void insertNotificationInfo(String postNo, String login_userid, String commentContent, String fk_employeeNo,String fk_commentNo,String notificationtype);
+	int insertNotificationInfo(String postNo, String login_userid, String commentContent, String fk_employeeNo,String fk_commentNo,String notificationtype);
 
 	// 알림을 받을 사원 번호를 추출
 	String getNotificationReceiverEmployeeNo(String fk_commentNo);
 
 	// 로그인된 사원번호로 읽지않은 해당 알림 조회
 	List<NotificationVO> loadNotification(String login_userid);
+
+	// 클릭 된 알림을 0(안읽음)에서 1(읽음)으로 상태 변경
+	int notificationIsRead(String notificationNo);
+	
+	
 	
 
 	

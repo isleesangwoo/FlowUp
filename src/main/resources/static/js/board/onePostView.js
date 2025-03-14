@@ -709,11 +709,12 @@ $(document).ready(()=>{
           data: {
               postNo: $("input[name='postNo']").val(),  			// 글번호
               login_userid: $("#login_userid").text(), 				// 대댓글 작성자 사원번호
-              login_name: $("#login_name").text(), 			// 대댓글 작성자명
+              login_name: $("#login_name").text(), 					// 대댓글 작성자명
               replyContent: replyContent, 							// 대댓글 내용
               fk_commentNo: parentCommentNo, 						// 부모 댓글 번호
               depthNo: 1, 											// 대댓글이므로 depth 1
-			  notificationtype : "reply"
+			  notificationtype : "reply",							// 알림 유형
+			  postCreateBy : $("#fk_employeeNo").text()				// 게시글 작성자
           },
           dataType: "json",
           success: function(json) {

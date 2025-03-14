@@ -141,12 +141,3 @@
             <!-- top header -->
 
             <section id="main_section">
-                
-
-<!-- <form name="goPostViewFrm"> -->
-<!--    <input type="text" name="postNo" /> -->
-<!--    <input type="text" name="goBackURL" /> -->
-<!--    <input type="text" name="checkAll_or_boardGroup" /> -->
-<!--    <input type="text" name="fk_boardNo" />   -->
-<!--    <!-- 이전/다음 글 할 때 전체 게시판은 조건이 필요없지만 게시판 별 게시글의 이전/다음글은 boardNo가 필요함 -->
-<!-- </form> -->
