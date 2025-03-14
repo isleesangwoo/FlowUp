@@ -1,8 +1,8 @@
 
 .writePostBtn {
-    width: 10%;
+    width: 120px;
     height: var(--size44);
-    font-size: var(--size18);
+    font-size: var(--size16);
     transition-duration: 150ms;
     border-width: 1px;
     border-style: solid;

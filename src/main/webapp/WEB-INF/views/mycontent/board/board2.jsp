@@ -6,10 +6,7 @@
 %>      
 <%-- 각자 페이지에 해당되는 css 연결 --%>
 <link href="<%=ctxPath%>/css/board/board_main2.css" rel="stylesheet"> 
-<%-- Font Awesome 6 Icons --%>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">   
-<%-- Optional JavaScript --%>
-<script type="text/javascript" src="<%=ctxPath%>/js/jquery-3.7.1.min.js"></script>
+
 <script>
 	var ctxPath = "<%= request.getContextPath() %>";
 	const goBackURL = "<%= request.getAttribute("goBackURL") %>";
@@ -22,12 +19,12 @@
 	
 
     <!-- 오른쪽 바 -->
-    <div id="right_bar">
+    <div >
         
         
         <%-- 이곳에 각 해당되는 뷰 페이지를 작성 시작 --%>
 		<div id="postContainer"> <!-- 게시글 보여주는 요소 전체 박스-->
-			<div style="width:80%;">
+			<div style="width:100%;">
 			 <c:if test="${postAllList[0] != null}"> <%-- 게시글이 있다면 --%>
 			 	<div id="allPostElmt">
 					<c:forEach var="post" items="${postAllList}">
@@ -73,8 +70,8 @@
 			  </c:if>
 			  <c:if test="${postAllList[0] == null}"> <%-- 게시글이 없다면 --%>
 				  <div style="text-align: center; margin: 150px 0;">
-				  	<p>작성된 글이 없습니다.</p>
-				  	<p>새로운 정보, 기분 좋은 소식을 동료들과 공유하세요.</p>
+				  	<p style="font-size:14px; margin-bottom: 4px;">작성된 글이 없습니다.</p>
+				  	<p style="font-size:14px;">새로운 정보, 기분 좋은 소식을 동료들과 공유하세요.</p>
 				  	<button type="button" class="writePostBtn">글쓰기</button>
 				  </div>
 			  </c:if>
@@ -94,5 +91,3 @@
     
 <span id="login_userid" style="display: none;">${login_userid}</span>	<%-- 필요한 것 --%>
 	
-	
-<jsp:include page="../../footer/footer.jsp" /> 
