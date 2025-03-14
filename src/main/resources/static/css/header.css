@@ -483,8 +483,22 @@ header:nth-child(1) {
 	line-height: 36px;
 }
 
+.top_ikon {
+	
+}
+
 .right-ikon{
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	color: black;
+}
+
+.dropdown-item{
+	display: inline-block;
+	width: none !important;
+	padding:0px;
+	text-align: center;
 }
 
 .ikon-img {
