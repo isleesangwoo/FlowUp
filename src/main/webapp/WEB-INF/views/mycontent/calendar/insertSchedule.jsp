@@ -696,9 +696,12 @@
 						
 		});
 		
-				
+		$('span.firstment').hide();
 		// 내캘린더,사내캘린더 선택에 따른 서브캘린더 종류를 알아와서 select 태그에 넣어주기 
 		$("select.calType").change(function(){
+			$("select.calType").find('option:first-child').attr('selected', false);
+			
+			
 			var fk_lgcatgono = $("select.calType").val();      // 내캘린더이라면 1, 사내캘린더이라면 2 이다.
 			var fk_employeeNo = $("input[name=fk_employeeNo]").val();  // 로그인 된 사용자아이디
 			
@@ -717,6 +720,14 @@
 								});
 								$("select.small_category").html(html);
 								$("select.small_category").show();
+								$('span.firstment').hide();
+							}
+							else{
+								
+								$("select.calType").find('option:first-child').attr('selected', true)
+								
+								$("select.small_category").hide();
+								$('span.firstment').show();
 							}
 						},
 						error: function(request, status, error){
@@ -728,6 +739,7 @@
 			else {
 				// 선택하세요 이라면
 				$("select.small_category").hide();
+				$('span.firstment').hide();
 			}
 			
 		});
@@ -1407,7 +1419,7 @@
 					<td>
 						<select class="calType schedule" name="fk_lgcatgono">
 						<c:choose>
-						<%-- 사내 캘린더 추가를 할 수 있는 직원은 직위코드가 3 이면서 부서코드가 4 에 근무하는 사원이 로그인 한 경우에만 가능하도록 조건을 걸어둔다.--%> 
+						<%-- 사내 캘린더 추가를 할 수 있는 직원은 loginuser.gradelevel =='10' 인 사원이 로그인 한 경우에만 가능하도록 조건을 걸어둔다.--%> 
 							<c:when test="${loginuser.securityLevel =='10' && loginuser.securityLevel == '10' }">
 								<option value="">선택하세요</option>
 								<option value="1">내 캘린더</option>
@@ -1428,6 +1440,7 @@
 						</c:choose>
 						</select> &nbsp;
 						<select class="small_category schedule" name="fk_smcatgono"></select>
+						<span class="firstment" style="color:#999; font-size:12px;">해당 캘린더의 소분류를 먼저 등록해주세요.</span>
 					</td>
 				</tr>
 				<tr>
@@ -1456,7 +1469,7 @@
 				<tr>
 					<th>예약하기</th>
 					<td>
-						<span style="font-size:10px; color:#999;">*설정한 시간대에 예약 가능한 회의실만 보여집니다.</span>
+						<span style="font-size:12px; color:#999;">*설정한 시간대에 예약 가능한 회의실만 보여집니다.</span>
 						<div class="reservationHere" style="min-height:50px;">
 							
 							<%-- 내가 고른 시간에 맞는 예약가능 자산 띄워주기 기능 --%>

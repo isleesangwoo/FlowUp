@@ -479,17 +479,17 @@
                     </div>
                 </div>
             </div>
-            <div>
-                <button type="button" id="startWork" class="">출근</button> <!-- 해당버튼 클릭시 출근시간이 input태그의 value값에 들어가게 해주세요 -->
-                <button type="button" id="endWork" class="">퇴근</button> <!-- 해당버튼 클릭시 퇴근시간이 input태그의 value값에 들어가게 해주세요 -->
+            <div style="font-size:14px;">
+                <button style="font-size:14px;" type="button" id="startWork" class="">출근</button> <!-- 해당버튼 클릭시 출근시간이 input태그의 value값에 들어가게 해주세요 -->
+                <button style="font-size:14px;" type="button" id="endWork" class="">퇴근</button> <!-- 해당버튼 클릭시 퇴근시간이 input태그의 value값에 들어가게 해주세요 -->
                 <!-- 출근시간과 퇴근시간의 차에 시급을 곱한 값이 일당입니다. -->
             </div>
             
-            <div style="margin-top:6px;">
+            <div style="margin-top:12px;">
             
-            	<div id="btn_status" class="hhover" style="font-size:14pt; font-weigt:bold; border:solid 1px #21255b; text-align:center; border-radius: 6px; margin-bottom:3px; height:35px;">업무시작전</div>
+            	<div id="btn_status" class="hhover" style="font-size:14px; font-weigt:bold; border:solid 1px #21255b; text-align:center; border-radius: 500px; margin-bottom:3px; line-height:40px; height:40px;">업무시작전</div>
             	
-            	<ul id="btn_status_list" style="list-style: none; display: none; text-align:center; border:solid 1px #21255b; border-radius: 6px; ">
+            	<ul id="btn_status_list" style="list-style: none; display: none; font-size:14px; text-align:center; border:solid 1px #21255b; border-radius: 10px; ">
             		<li style="margin-top:3px; margin-bottom:3px;" class="hhover">내근</li>
             		<li style="margin-top:3px; margin-bottom:3px;" class="hhover">외근</li>
             		<li style="margin-top:3px; margin-bottom:3px;" class="hhover">파견</li>

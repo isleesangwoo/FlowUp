@@ -1,0 +1,236 @@
+:root{
+	--size1340 : clamp(1340px, 69.7917vw, 10000px);
+}
+
+
+.dashboard {
+	width: 100%;
+	height: auto;
+	padding: var(--size40);
+	box-sizing: border-box;
+	background-color: #eff4fc;
+	display: grid;
+	grid-template-columns: var(--size1340) 1fr;
+	gap: 16px;
+}
+
+.titleSearchBox {
+	width: var(--size1340);
+	height: var(--size36);
+	display: flex;
+	justify-content: space-between;
+}
+
+.dashboardTitle {
+	font-size: var(--size22);
+	color: rgb(41, 133, 219);
+}
+
+.searchbox{
+	display:flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--size36);
+	height: var(--size36);
+	background-color: #fff;
+	text-align: center;
+	border-radius: 50%;
+	cursor: pointer;
+	border: 1px solid #dadce0;
+	transition: 0.3s all;
+}
+
+.searchbox > i {
+	font-size: var(--size16);
+}
+
+.searchbox:hover {
+	background-color: #f0f0f0;
+}
+
+
+
+/*-------------- 첫번째 컨테이너 --------------*/
+.topContainer {
+	display: grid;
+	grid-template-columns: 1fr 1fr 1fr;
+	gap: 16px;
+	margin-top:24px;
+}
+
+#employeeNoCopy {
+	font-size: var(--size20);
+}
+
+.topInnerContentTitle {
+	font-size: var(--size20);
+}
+
+.employeeNoCopyBox {
+	display: flex;
+	justify-content: space-between;
+	font-size: var(--size16);
+}
+
+.arrow {
+	transform: rotate(90deg);
+}
+
+.btnBack {
+	width: var(--size32);
+	height: var(--size32);
+	cursor: pointer;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	border-radius: 50%;
+	transition: 0.3s all;
+}
+
+.btnBack:hover{
+	background-color: #f0f0f0;
+}
+
+.topInnerContainer {
+	padding: var(--size22) var(--size14) var(--size22) var(--size22);
+	width: 100%;
+	height: auto;
+	background-color: #fff;
+	border-radius: var(--size20);
+	border: 1px solid #dadce0;
+	box-sizing: border-box;
+}
+
+.topInnerTitle {
+	font-size: var(--size14);
+	font-weight: 500;
+	color : #808389;
+	margin-bottom: var(--size12);
+}
+
+.topInnerTitle > i {
+	margin-right: var(--size2);
+}
+
+
+
+/*-------------- 두번째 컨테이너 --------------*/
+.secContainer{
+	padding: var(--size22);
+	margin-top: 16px;
+	width: 100%;
+	height: auto;
+	background-color: #fff;
+	border-radius: var(--size20);
+	border: 1px solid #dadce0;
+	box-sizing: border-box;
+}
+
+
+
+/*-------------- 세번째 컨테이너 --------------*/
+.treContainer {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+	margin-top: 16px;
+}
+
+.treInnerContainer {
+	padding: var(--size22);
+	width: 100%;
+	height: 300px;
+	background-color: #fff;
+	border-radius: var(--size20);
+	border: 1px solid #dadce0;
+	box-sizing: border-box;
+}
+
+
+/*-------------- 네번째 컨테이너 --------------*/
+.forContainer {
+	padding: var(--size22);
+	margin-top: 16px;
+	width: 100%;
+	height: auto;
+	background-color: #fff;
+	border-radius: var(--size20);
+	border: 1px solid #dadce0;
+	box-sizing: border-box;
+}
+
+
+
+
+
+.rightDiv {
+	min-width: var(--size400);
+	position: relative;
+}
+
+.stickyBox {
+	position: sticky;
+	top: 16px;
+}
+
+
+.rightTopContainer {
+	padding: var(--size22);
+	width: 100%;
+	height: 400px;
+	background-color: rgb(41, 133, 219);
+	border-radius: var(--size20);
+	border: 1px solid #dadce0;
+	box-sizing: border-box;
+	color: #fff;
+}
+
+
+
+.rightSeContainer {
+	padding: var(--size22);
+	width: 100%;
+	height: 400px;
+	background-color: #fff;
+	border-radius: var(--size20);
+	border: 1px solid #dadce0;
+	box-sizing: border-box;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 모바일 가로 & 태블릿 세로 (해상도 480px ~ 767px)*/ 
+@media all and (min-width:480px) and (max-width:767px) {
+	.dashboard {
+		grid-template-columns: 630px;
+	}
+	
+	.topContainer {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 16px;
+		margin-top:24px;
+	}
+	
+}
+
+/* 모바일 세로 (해상도 ~ 479px)*/ 
+@media all and (max-width:479px) {
+  
+    .dashboard {
+	    grid-template-columns: 300px;
+    }
+  
+}
+

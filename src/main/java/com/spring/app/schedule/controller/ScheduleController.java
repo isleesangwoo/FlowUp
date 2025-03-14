@@ -160,6 +160,9 @@ public class ScheduleController {
 		String fk_lgcatgono = request.getParameter("fk_lgcatgono"); // 캘린더 대분류 번호
 		String fk_employeeNo = request.getParameter("fk_employeeNo");       // 사용자아이디
 		
+		System.out.println("확인 fk_lgcatgono : " + fk_lgcatgono);
+		System.out.println("확인 fk_employeeNo : " + fk_employeeNo);
+		
 		Map<String,String> paraMap = new HashMap<>();
 		paraMap.put("fk_lgcatgono", fk_lgcatgono);
 		paraMap.put("fk_employeeNo", fk_employeeNo);
