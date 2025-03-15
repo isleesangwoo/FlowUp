@@ -68,7 +68,6 @@ public class SpringschedulerService_imple implements SpringschedulerService {
 	@Override
 	public void scheduler_absenceCnt_insert() { // 무단결근 insert
 		
-		
 			// 어제 누군가 출근 했다면 평일 이라고 가정
 			int n = dao.scheduler_yesterday_workYN();
 			

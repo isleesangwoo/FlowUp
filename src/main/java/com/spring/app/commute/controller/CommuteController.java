@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.gson.JsonArray;
 import com.spring.app.commute.domain.AnnualVO;
 import com.spring.app.commute.domain.CommuteVO;
 import com.spring.app.commute.service.CommuteService;
@@ -43,12 +45,6 @@ public class CommuteController {
 
 	@GetMapping("")
 	public ModelAndView commute(HttpServletRequest request, ModelAndView mav) {
-		
-		HttpSession session = request.getSession();
-		EmployeeVO loginuser = (EmployeeVO)session.getAttribute("loginuser");
-		
-		System.out.println("getDepartmentName : " + loginuser.getDepartmentName());
-		
 		
 		String referer = request.getHeader("referer");
 		
@@ -425,22 +421,16 @@ public class CommuteController {
 		
 		List<Map<String, String>> mapList = service.getCommuteTableInfo(paraMap);
 		
-		
-		
 		int blockSize = 5; 
 		int loop = 1;
 		int pageNo = ((n_currentShowPageNo - 1)/blockSize) * blockSize + 1;
 		
-		
-		
-		
-		
 		String pageBar = "<div style='width:100%; margin:0 auto;'>";
 		
-	    pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+(Integer.parseInt(paraMap.get("month"))-1)+", 1), 1)'>[처음]</button>";
+	    pageBar += "<button type='button' class='btn' style='width: 30px; font-size:12pt; color:#007bff;' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+(Integer.parseInt(paraMap.get("month"))-1)+", 1), 1)'><i style='transform: scaleX(-1)' class='fa-solid fa-forward-step'></i></button>";
 	    
 	    if(n_currentShowPageNo > 1) {
-	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+(Integer.parseInt(paraMap.get("month"))-1)+", 1), "+ (pageNo-1) +")'>[이전]</button>";
+	    	pageBar += "<button type='button' class='btn' style='width: 30px; font-size:12pt; color:#007bff;' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+(Integer.parseInt(paraMap.get("month"))-1)+", 1), "+ (pageNo-1) +")'><i class='fa-solid fa-chevron-left'></i></button>";
 
 	    }
 	    
@@ -448,10 +438,10 @@ public class CommuteController {
 	    	
 	    
 	    	if(pageNo == n_currentShowPageNo) {
-	            pageBar += "<button type='button'  class='btn' style='color:#2985DB;'>"+pageNo+"</button>";
+	            pageBar += "<button type='button'  class='btn' style='width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</button>";
 	        }
 	    	else {
-	    		pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+(Integer.parseInt(paraMap.get("month"))-1)+", 1), "+pageNo+")'>"+pageNo+"</button>"; 
+	    		pageBar += "<button type='button' class='btn' style='width:30px; font-size:12pt; color:#007bff;' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+(Integer.parseInt(paraMap.get("month"))-1)+", 1), "+pageNo+")'>"+pageNo+"</button>"; 
 	    	}    
 	    	
 	    	loop++;
@@ -463,10 +453,10 @@ public class CommuteController {
 	    System.out.println("totalPage"+ totalPage);
 	    
 	    if(pageNo <= totalPage) {
-	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+ (Integer.parseInt(paraMap.get("month"))-1)+ ", 1), "+pageNo+")'>[다음]</button>"; 
+	    	pageBar += "<button type='button' class='btn' style='width:30px; font-size:12pt; color:#007bff;' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+ (Integer.parseInt(paraMap.get("month"))-1)+ ", 1), "+pageNo+")'><i class='fa-solid fa-chevron-right'></i></button>"; 
 	    }
 
-	    pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+(Integer.parseInt(paraMap.get("month"))-1)+", 1), "+totalPage+")'>[마지막]</button>"; 
+	    pageBar += "<button type='button' class='btn' style='width:30px; font-size:12pt; color:#007bff;' onclick='spread_tbody( new Date("+paraMap.get("year")+", "+(Integer.parseInt(paraMap.get("month"))-1)+", 1), "+totalPage+")'><i class='fa-solid fa-forward-step'></i></button>"; 
 		    
 	    pageBar += "</div>";
 		
@@ -583,10 +573,10 @@ public class CommuteController {
 		
 		String pageBar = "<div style='width:100%; margin:0 auto;'>";
 		
-	    pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody(1)'>[처음]</button>";
+	    pageBar += "<button type='button' class='btn' style='width: 30px; font-size:12pt; color:#007bff;' onclick='spread_tbody(1)'><i style='transform: scaleX(-1)' class='fa-solid fa-forward-step'></i></button>";
 	    
 	    if(n_currentShowPageNo > 1) {
-	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+ (pageNo-1) +")'>[이전]</button>";
+	    	pageBar += "<button type='button' class='btn' style='width: 30px; font-size:12pt; color:#007bff;' onclick='spread_tbody("+ (pageNo-1) +")'><i class='fa-solid fa-chevron-left'></i></button>";
 
 	    }
 	    
@@ -594,10 +584,10 @@ public class CommuteController {
 	    	
 	    
 	    	if(pageNo == n_currentShowPageNo) {
-	            pageBar += "<button type='button'  class='btn' style='color:#2985DB;'>"+pageNo+"</button>";
+	            pageBar += "<button type='button'  class='btn' style='width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</button>";
 	        }
 	    	else {
-	    		pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+pageNo+")'>"+pageNo+"</button>"; 
+	    		pageBar += "<button type='button' class='btn' style='width: 30px; font-size:12pt; color:#007bff;' onclick='spread_tbody("+pageNo+")'>"+pageNo+"</button>"; 
 	    	}    
 	    	
 	    	loop++;
@@ -607,10 +597,10 @@ public class CommuteController {
 
 	    
 	    if(pageNo <= totalPage) {
-	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+pageNo+")'>[다음]</button>"; 
+	    	pageBar += "<button type='button' class='btn' style='width: 30px; font-size:12pt; color:#007bff;' onclick='spread_tbody("+pageNo+")'><i class='fa-solid fa-chevron-right'></i></button>"; 
 	    }
 
-	    pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+totalPage+")'>[마지막]</button>"; 
+	    pageBar += "<button type='button' class='btn' style='width: 30px; font-size:12pt; color:#007bff;' onclick='spread_tbody("+totalPage+")'><i class='fa-solid fa-forward-step'></i></button>"; 
 		    
 	    pageBar += "</div>";
 
@@ -700,10 +690,10 @@ public class CommuteController {
 		
 		String pageBar = "<div style='width:100%; margin:0 auto;'>";
 		
-	    pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody(1)'>[처음]</button>";
+	    pageBar += "<button type='button' class='btn' style='width: 30px; font-size:12pt; color:#007bff;' onclick='spread_tbody(1)'><i style='transform: scaleX(-1)' class='fa-solid fa-forward-step'></i></button>";
 	    
 	    if(n_currentShowPageNo > 1) {
-	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+ (pageNo-1) +")'>[이전]</button>";
+	    	pageBar += "<button type='button' class='btn' style='width: 30px; font-size:12pt; color:#007bff;' onclick='spread_tbody("+ (pageNo-1) +")'><i class='fa-solid fa-chevron-left'></i></button>";
 
 	    }
 	    
@@ -711,10 +701,10 @@ public class CommuteController {
 	    	
 	    
 	    	if(pageNo == n_currentShowPageNo) {
-	            pageBar += "<button type='button'  class='btn' style='color:#2985DB;'>"+pageNo+"</button>";
+	            pageBar += "<button type='button'  class='btn' style='width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>"+pageNo+"</button>";
 	        }
 	    	else {
-	    		pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+pageNo+")'>"+pageNo+"</button>"; 
+	    		pageBar += "<button type='button' class='btn' style='width: 30px; font-size:12pt; color:#007bff;' onclick='spread_tbody("+pageNo+")'>"+pageNo+"</button>"; 
 	    	}    
 	    	
 	    	loop++;
@@ -724,10 +714,10 @@ public class CommuteController {
 
 	    
 	    if(pageNo <= totalPage) {
-	    	pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+pageNo+")'>[다음]</button>"; 
+	    	pageBar += "<button type='button' class='btn' style='width: 30px; font-size:12pt; color:#007bff;' onclick='spread_tbody("+pageNo+")'><i class='fa-solid fa-chevron-right'></i></button>"; 
 	    }
 
-	    pageBar += "<button type='button' class='btn' style='' onclick='spread_tbody("+totalPage+")'>[마지막]</button>"; 
+	    pageBar += "<button type='button' class='btn' style='width: 30px; font-size:12pt; color:#007bff;' onclick='spread_tbody("+totalPage+")'><i class='fa-solid fa-forward-step'></i></button>"; 
 		    
 	    pageBar += "</div>";
 
@@ -752,8 +742,32 @@ public class CommuteController {
 	}
 	
 	
+	@GetMapping("organization")
+	public ModelAndView orgChart(HttpServletRequest request, ModelAndView mav) {
+
+		mav.setViewName("mycontent/commute/orgChart");
+
+		return mav;
+	}
 	
-	
+	@GetMapping("getOrgChartInfo")
+	@ResponseBody
+	public Map<String, Object> getOrgChartInfo() {
+		
+		Map<String, Object> map = new HashMap<>();
+		
+		List<Map<String, String>> CEOList = service.getCEO();
+
+		List<Map<String, String>> deptList = service.getDept();
+
+		List<Map<String, String>> teamList = service.getTeam();
+		
+		map.put("CEOList", CEOList);
+		map.put("deptList", deptList);
+		map.put("teamList", teamList);
+		
+		return map;
+	}
 	
 	
 	

@@ -442,6 +442,54 @@
    	</update>
    	
    	
+   	
+   	
+   	
+   	<resultMap type="HashMap" id="getCEOMap">
+   		<result property="name" 	column="name" 	javaType="String" />
+   		<result property="employeeNo" 	column="employeeNo" 	javaType="String" />
+   	</resultMap>
+   	<select id="getCEO" resultMap="getCEOMap">
+   		select E.name, E.employeeNo
+		from tbl_position P join tbl_employee E
+		on P.positionNo = E.fk_positionNo
+		where P.positionNo = 100008 and E.securitylevel = 10 
+   	</select>
+   	
+   	<resultMap type="HashMap" id="getDeptMap">
+   		<result property="departmentNo" 	column="departmentNo" 	javaType="String" />
+   		<result property="departmentName" 	column="departmentName" javaType="String" />
+   		<result property="deptManagerNo" 	column="deptManagerNo" 	javaType="String" />
+   		<result property="deptManagerName" 	column="deptManagerName" javaType="String" />
+   	</resultMap>
+   	<select id="getDept" resultMap="getDeptMap">
+   		select D.departmentNo
+		     , D.departmentName
+		     , nvl(E.employeeNo, 0) as deptManagerNo
+		     , nvl(E.name, '공석') as deptManagerName
+		from tbl_department D left join tbl_employee E
+		on D.fk_managerNo = E.employeeNo
+   	</select>
+   	
+   	<resultMap type="HashMap" id="getTeamMap">
+   		<result property="teamNo" 			column="teamNo" 		javaType="String" />
+   		<result property="teamName" 		column="teamName" 		javaType="String" />
+   		<result property="fk_departmentNo" 	column="fk_departmentNo" javaType="String" />
+   		<result property="teamManagerNo" 	column="teamManagerNo" 	javaType="String" />
+   		<result property="teamManagerName" 	column="teamManagerName" javaType="String" />
+   	</resultMap>
+   	<select id="getTeam" resultMap="getTeamMap">
+   		select T.teamNo
+		     , T.teamName
+		     , T.fk_departmentNo
+		     , nvl(E.employeeNo, 0) as teamManagerNo
+		     , nvl(E.name, '공석') as teamManagerName
+		from tbl_team T left join tbl_employee E
+		on T.fk_managerNo = E.employeeNo
+   	</select>
+  
+   	
+   	
 </mapper>
 
 

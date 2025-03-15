@@ -84,6 +84,16 @@ public interface CommuteService {
 	// 연차 조정 uppdate
 	int changeAddAnnual(Map<String, String> paraMap);
 
+	
+	
+	
+	
+	List<Map<String, String>> getCEO();
+
+	List<Map<String, String>> getDept();
+
+	List<Map<String, String>> getTeam();
+
 
 
 	

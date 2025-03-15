@@ -249,13 +249,6 @@ div.hoverDiv:hover {
 		
 	} //
 	
-	
-	
-	
-	
-	
-	
-	
     
 </script>
 <div style="display: flex;">
@@ -370,16 +363,6 @@ div.hoverDiv:hover {
 				
 			</table>
 		</div>
-	
-		
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	
 	</div>
