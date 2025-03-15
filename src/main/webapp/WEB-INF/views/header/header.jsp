@@ -5,7 +5,6 @@
 
 <%
    String ctxPath = request.getContextPath();
-   //     /myspring 
 %>      
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
@@ -93,16 +92,6 @@
                     <span>
                         <img id="logo_img" src="<%=ctxPath%>/images/logo/logo1.png" /> 
                     </span>
-                    <span class="bell">
-                        <i class="fa-regular fa-bell far"></i>
-                        <div class="alarm-cnt"></div> <!-- js를 통해 자동적으로 개수가 카운트 됩니다. -->
-                        <div class="alarm">
-                            <div class="alarm-title">최근 알림</div>
-                            <ul>
-                               <%-- 알림 List가 ajax를 통해 추가됨 --%>
-                            </ul>
-                        </div>
-                    </span>
                 </div>
 
                 <div id="header_ikon_container">
@@ -149,6 +138,16 @@
             <div id="top_header_container">
                 <div class="top_header_l top_header">
                     <div class="top_ikon">
+	                    <span class="bell">
+	                        <i class="fa-solid fa-bell" style="color: black;"></i>
+	                        <div class="alarm-cnt"></div> <!-- js를 통해 자동적으로 개수가 카운트 됩니다. -->
+	                        <div class="alarm">
+	                            <div class="alarm-title">최근 알림</div>
+	                            <ul>
+	                               <%-- 알림 List가 ajax를 통해 추가됨 --%>
+	                            </ul>
+	                        </div>
+	                    </span>
                     </div>
                 </div>
                 <div class="top_header_c top_header">

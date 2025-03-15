@@ -695,6 +695,7 @@
 		    sender_emp.fk_positionno AS senderPostionNo,   <!-- 알림 보내는 사원번호 -->
 		    sender_emp.name as senderName,      
 		    sender_emp.profileimg, 
+		    sender_emp.fileName,
     		P.positionname AS senderPositionName,          
 		    N.message, 
 		    N.notificationType, 

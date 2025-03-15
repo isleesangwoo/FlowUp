@@ -630,7 +630,7 @@ public class BoardController {
     		  else {
     			  //System.out.println("게시글 등록이 실패되었습니다");
     		  }
-    		jsonObj.put("boardNo", postvo.getFk_boardNo());  // 글 작성시 삭성한 게시판으로 이동하기 위함.
+    		jsonObj.put("boardNo", postvo.getFk_boardNo());  // 글 작성시 작성한 게시판으로 이동하기 위함.
     		jsonObj.put("result", 1);
     	}catch (Exception e) {
 			e.printStackTrace();

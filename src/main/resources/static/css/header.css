@@ -143,7 +143,6 @@ header:nth-child(1) {
     height: var(--size24);
     width: var(--size24);
     border-radius: var(--size8);
-    background-color: #0C1929;
     cursor: pointer;
 }
 

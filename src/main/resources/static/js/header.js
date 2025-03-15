@@ -91,9 +91,9 @@ $(document).ready(()=>{
     });
 
 
-    $('.bell').css({
-        'display': 'none'
-    });
+//    $('.bell').css({
+//        'display': 'none'
+//    });
 
     $('#header_ikon_container').css({
         'height': '100%',
@@ -144,9 +144,9 @@ $(document).ready(()=>{
             });
 
 
-            $('.bell').css({
-                'display': 'none'
-            });
+//            $('.bell').css({
+//                'display': 'none'
+//            });
 
             $('#header_ikon_container').css({
                 'height': '100%',
@@ -236,7 +236,8 @@ function getLoadNotification(){ // 읽지 않은 알림 조회하기 ( 최신화
 								newAlarm +=`<i class="fa-solid fa-user"></i>`;
 							}
 							else{ // 프로필 등록을 했을 경우
-								newAlarm +=`사진있음경로설정하시오`;
+								console.log(item.fileName);
+								newAlarm +=`<img src='/flowUp/resources/files/${item.fileName}' width='32' height='32'/>`;
 							}
 											
 												
@@ -275,9 +276,7 @@ function getLoadNotification(){ // 읽지 않은 알림 조회하기 ( 최신화
 				
 				updateAlarmCount(); // 알림 개수 새로고침
 		     },
-		     error: function(request, status, error) {
-		         alert("댓글을 불러오는 데 실패했습니다.");
-		     }
+		     error: function(request, status, error) {}
 		 });
 	
 	
