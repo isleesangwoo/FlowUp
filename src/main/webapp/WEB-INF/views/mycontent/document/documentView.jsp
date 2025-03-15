@@ -95,7 +95,8 @@ String ctxPath = request.getContextPath();
 		$.ajax({
 			url:"<%=ctxPath%>/document/documentView/approve",
 			dataType:"json",
-			data:{"documentNo":"${document.documentNo}"},
+			data:{"documentNo":"${document.documentNo}"
+				  ,"documentType":"${document.documentType}"},
 			success:function(json){
 				if(json.n == 1) {
 					alert("결재 성공");
@@ -285,19 +286,31 @@ String ctxPath = request.getContextPath();
 							<c:if test="${not empty requestScope.approvalList}">
 								<c:forEach var="approval" items="${requestScope.approvalList}">
 									<table class="ml-2" style="display: inline-block;">
+										<thead>
+			    							<tr>
+			    								<th colspan='2'>결재자</th>
+			    							</tr>
+			    						</thead>
 										<tbody>
 											<tr>
-												<th rowspan="4" style="width: 50px;">승인</th>
-												<td>${approval.positionName}</td>
+												<th>부서</th>
+												<td>${approval.teamName}</td>
 											</tr>
 											<tr>
-												<td>${approval.approvalStatus}</td>
-											</tr>
-											<tr>
+												<th>이름</th>
 												<td>${approval.name}</td>
 											</tr>
 											<tr>
-												<td>${approval.executionDate}</td>
+												<th>직급</th>
+												<td>${approval.positionName}</td>
+											</tr>
+											<tr>
+												<th>결재상태</th>
+												<td>
+													<c:if test="${approval.approvalStatus == 0}"><span class="p-1 in_progress">대기중</span></c:if>
+													<c:if test="${approval.approvalStatus == 1}"><span class="p-1 approved">승인</span></c:if>
+													<c:if test="${approval.approvalStatus == 2}"><span class="p-1 rejected">반려</span></c:if>
+												</td>
 											</tr>
 										</tbody>
 									</table>
@@ -318,10 +331,10 @@ String ctxPath = request.getContextPath();
 								<tr>
 									<th>긴급</th>
 									<td>
-										<c:if test="${document.urgent == 0}">
+										<c:if test="${document.urgent eq 0}">
 											<input class="ml-1" type="checkbox" name="check_urgent" onClick="return false;"/>
 										</c:if>
-										<c:if test="${document.urgent == 1}">
+										<c:if test="${document.urgent eq 1}">
 											<input class="ml-1" type="checkbox" name="check_urgent" checked="checked" onClick="return false;"/>
 										</c:if>
 									</td>
@@ -369,6 +382,17 @@ String ctxPath = request.getContextPath();
 						<table class="mt-5" style="width: 100%;">
 							<tbody>
 								<tr>
+									<th>긴급</th>
+									<td>
+										<c:if test="${document.urgent eq 0}">
+											<input class="ml-1" type="checkbox" name="check_urgent" onClick="return false;"/>
+										</c:if>
+										<c:if test="${document.urgent eq 1}">
+											<input class="ml-1" type="checkbox" name="check_urgent" checked="checked" onClick="return false;"/>
+										</c:if>
+									</td>
+								</tr>
+								<tr>
 									<th>제목</th>
 									<td>${document.subject}</td>
 								</tr>
@@ -396,11 +420,92 @@ String ctxPath = request.getContextPath();
 					<!-- 연장근무신청서 폼 -->
 					
 					
+					<!-- 지출품의서 폼 -->
+					<c:if test="${document.documentType == '지출품의서'}">
+						<table class="mt-5" style="width: 100%;">
+							<tbody>
+								<tr>
+									<th>긴급</th>
+									<td>
+										<c:if test="${document.urgent eq 0}">
+											<input class="ml-1" type="checkbox" name="check_urgent" onClick="return false;"/>
+										</c:if>
+										<c:if test="${document.urgent eq 1}">
+											<input class="ml-1" type="checkbox" name="check_urgent" checked="checked" onClick="return false;"/>
+										</c:if>
+									</td>
+								</tr>
+								<tr>
+									<th>제목</th>
+									<td>${document.subject}</td>
+								</tr>
+								<tr>
+									<th>사유</th>
+									<td>${document.reason}</td>
+								</tr>
+								<tr>
+									<th>연장 근무 일자</th>
+									<td>${document.overtimeDate}</td>
+								</tr>
+								<tr>
+									<th>연장 근무 시간</th>
+									<td>3 시간</td>
+								</tr>
+					
+							</tbody>
+						</table>
+					</c:if>
+					<!-- 지출품의서 폼 -->
+					
+					
+					<!-- 업무기안 폼 -->
+					<c:if test="${document.documentType eq '업무기안'}">
+						<table class="mt-5" style="width: 100%;">
+							<tbody>
+								<tr>
+									<th>긴급</th>
+									<td>
+										<c:if test="${document.urgent eq 0}">
+											<input class="ml-1" type="checkbox" name="check_urgent" onClick="return false;"/>
+										</c:if>
+										<c:if test="${document.urgent eq 1}">
+											<input class="ml-1" type="checkbox" name="check_urgent" checked="checked" onClick="return false;"/>
+										</c:if>
+									</td>
+								</tr>
+								<tr>
+									<th>제목</th>
+									<td>${document.subject}</td>
+								</tr>
+								<tr>
+									<th>협조부서</th>
+									<td>${document.coDepartment}</td>
+								</tr>
+								<tr>
+									<th>시행 일자</th>
+									<td>${document.doDate}</td>
+								</tr>
+								<tr>
+									<th>내용</th>
+									<td>${document.businessContent}</td>
+								</tr>
+							</tbody>
+						</table>
+					</c:if>
+					<!-- 연장근무신청서 폼 -->
+					
+					
 					
 				</div>
 			</div>
 			<div id="fileList" class="my-5 p-1">
 				<div><i class="fa-solid fa-paperclip mx-2"></i>첨부파일 0개 (0.0KB)</div>
+			</div>
+			
+			<div class="mt-5">
+				<a onclick="history.back()" style="color: black; cursor: pointer">
+					<i class="fa-solid fa-circle-arrow-left">&nbsp;뒤로가기</i>
+				</a>
 			</div>
 		</div>
 	</div>

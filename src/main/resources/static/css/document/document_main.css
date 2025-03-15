@@ -213,6 +213,7 @@
 
 #sortCnt_btn > ul > li:hover {
     background-color: #eee;
+    cursor: pointer;
 }
 
 #reBtn_box > span > span:hover{

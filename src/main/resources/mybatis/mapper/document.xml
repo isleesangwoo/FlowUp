@@ -7,6 +7,58 @@
 <mapper namespace="com.spring.app.document.model.DocumentDAO">
 	
 	
+	<!-- 메인 페이지에서 보여줄 결재 대기 문서 5개 가져오기 -->
+	<select id="mainTodoList" parameterType="String" resultType="DocumentVO">
+		select fk_employeeNo, subject, draftDate, documentType, name, documentNo, positionname, urgent
+		from
+		(
+		    select rownum, fk_documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo, positionname, urgent
+		    from
+		    (
+		        select fk_approver, fk_documentNo, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+		        from tbl_approval
+		        where APPROVALSTATUS = 0
+		    ) A JOIN tbl_document D
+		    ON fk_documentNo = documentNo
+		    JOIN tbl_employee
+		    ON fk_employeeNo = employeeNo
+		    JOIN tbl_position
+		    ON fk_positionno = positionno
+		    where rn = 1 and fk_approver = #{employeeNo} and temp = 0 and D.status != 2
+		    order by urgent desc, documentNo desc
+		)
+		where rownum between 1 and 5
+	</select>
+	
+	
+	<!-- 메인 페이지에서 보여줄 기안 진행 문서 5개 가져오기 -->
+	<select id="mainProgressList" parameterType="String" resultType="DocumentVO">
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, urgent
+		from
+		(
+		    select rownum as rn, documentNo, subject, documentType, draftDate, status, urgent
+		    from tbl_document
+		    where fk_employeeNo = #{employeeNo} and status = 0 and temp = 0
+		    order by documentNo desc
+		)
+		where rn BETWEEN 1 AND 5
+	</select>
+	
+	
+	<!-- 메인 페이지에서 보여줄 기안 완료 문서 5개 가져오기 -->
+	<select id="mainCompletedList" parameterType="String" resultType="DocumentVO">
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, urgent, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate
+		from
+		(
+		    select rownum as rn, documentNo, subject, documentType, draftDate, status, urgent, approvalDate
+		    from tbl_document
+		    where fk_employeeNo = #{employeeNo} and status = 1 and temp = 0
+		    order by documentNo desc
+		)
+		where rn BETWEEN 1 AND 5
+	</select>
+	
+	
 	<!-- 결재 대기 문서 리스트 가져오기 -->
 	<select id="todoList" parameterType="String" resultType="DocumentVO">
 		select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo, urgent
@@ -41,28 +93,129 @@
 	</select>
 	
 	
+	<!-- 결재 대기 문서함에서 검색어를 포함한 문서 갯수 가져오기 -->
+	<select id="todoListCount_Search" parameterType="HashMap" resultType="Integer">
+		select count(*)
+		from
+		(
+		    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+		    from tbl_approval
+		    where APPROVALSTATUS = 0
+		) A JOIN tbl_document D
+		ON fk_documentNo = documentNo
+		JOIN tbl_employee
+		ON fk_employeeNo = employeeNo
+		where rn = 1 and fk_approver = #{employeeNo} and temp = 0 and D.status != 2
+		<choose>
+			<when test='searchWord != ""'> and lower(subject) like '%'||lower(#{searchWord})||'%' </when>
+		</choose>
+		<choose>
+			<when test='documentType != ""'> and documentType = #{documentType} </when>
+		</choose>
+	</select>
+	
+	
+	<!-- 결재 대기 문서함에서 검색어를 포함한 페이징 처리한 문서 리스트 가져오기 -->
+	<select id="todoList_Search_Paging" parameterType="HashMap" resultType="DocumentVO">
+		select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject
+			 , draftDate, documentType, name, documentNo, urgent
+		from
+		(
+			select rownum as rno, approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject
+				 , draftDate, documentType, name, documentNo, urgent
+			from
+			(
+				select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo, urgent
+				from
+				(
+				    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+				    from tbl_approval
+				    where APPROVALSTATUS = 0
+				) A JOIN tbl_document D
+				ON fk_documentNo = documentNo
+				JOIN tbl_employee
+				ON fk_employeeNo = employeeNo
+				where rn = 1 and fk_approver = #{employeeNo} and temp = 0 and D.status != 2
+				<choose>
+					<when test='searchWord != ""'> and lower(subject) like '%'||lower(#{searchWord})||'%' </when>
+				</choose>
+				<choose>
+					<when test='documentType != ""'> and documentType = #{documentType} </when>
+				</choose>
+				order by urgent desc, documentNo desc
+			)
+		)
+		WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+	</select>
+	
+	
+	<!-- 결재 예정 문서함에서 검색어를 포함한 문서 갯수 가져오기 -->
+	<select id="upcomingListCount_Search" parameterType="HashMap" resultType="Integer">
+		select count(*)
+		from
+		(
+		    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+		    from tbl_approval
+		    where APPROVALSTATUS = 0
+		) A JOIN tbl_document
+		ON fk_documentNo = documentNo
+		JOIN tbl_employee
+		ON fk_employeeNo = employeeNo
+		where rn != 1 and fk_approver = #{employeeNo} and temp = 0
+		<choose>
+			<when test='searchWord != ""'> and lower(subject) like '%'||lower(#{searchWord})||'%' </when>
+		</choose>
+		<choose>
+			<when test='documentType != ""'> and documentType = #{documentType} </when>
+		</choose>
+	</select>
+	
+	
+	<!-- 결재 예정 문서함에서 검색어를 포함한 페이징 처리한 문서 리스트 가져오기 -->
+	<select id="upcomingList_Search_Paging" parameterType="HashMap" resultType="DocumentVO">
+		select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, draftDate, documentType, name, documentNo, urgent
+		from
+		(
+			select rownum as rno, approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, draftDate, documentType, name, documentNo, urgent
+			from
+			(
+				select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo, urgent
+				from
+				(
+				    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+				    from tbl_approval
+				    where APPROVALSTATUS = 0
+				) A JOIN tbl_document
+				ON fk_documentNo = documentNo
+				JOIN tbl_employee
+				ON fk_employeeNo = employeeNo
+				where rn != 1 and fk_approver = #{employeeNo} and temp = 0
+				<choose>
+					<when test='searchWord != ""'> and lower(subject) like '%'||lower(#{searchWord})||'%' </when>
+				</choose>
+				<choose>
+					<when test='documentType != ""'> and documentType = #{documentType} </when>
+				</choose>
+				order by urgent desc, documentNo desc
+			)
+		)
+		WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+	</select>
+	
+	
 	<!-- 기안 문서함에서 검색어를 포함한 문서 갯수 가져오기 -->
 	<select id="myDocumentListCount_Search" parameterType="HashMap" resultType="Integer">
 		select count(*)
 		from tbl_document
 		where fk_employeeNo = #{employeeNo} and temp = 0
 		<choose>
-			<when test='searchWord != ""'>
-				and lower(subject) like '%'||lower(#{searchWord})||'%'
-			</when>
-			<otherwise></otherwise>
+			<when test='searchWord != ""'> and lower(subject) like '%'||lower(#{searchWord})||'%' </when>
 		</choose>
 		<choose>
-			<when test='status != ""'>
-				and status = #{status}
-			</when>
-			<otherwise></otherwise>
+			<when test='status != ""'> and status = #{status} </when>
 		</choose>
 		<choose>
-			<when test='documentType != ""'>
-				and documentType = #{documentType}
-			</when>
-			<otherwise></otherwise>
+			<when test='documentType != ""'> and documentType = #{documentType} </when>
 		</choose>
 	</select>
 	
@@ -79,19 +232,13 @@
 				from tbl_document
 				where fk_employeeNo = #{employeeNo} and temp = 0
 				<choose>
-					<when test='searchWord != ""'>
-						and lower(subject) like '%'||lower(#{searchWord})||'%'
-					</when>
+					<when test='searchWord != ""'> and lower(subject) like '%'||lower(#{searchWord})||'%' </when>
 				</choose>
 				<choose>
-					<when test='status != ""'>
-						and status = #{status}
-					</when>
+					<when test='status != ""'> and status = #{status} </when>
 				</choose>
 				<choose>
-					<when test='documentType != ""'>
-						and documentType = #{documentType}
-					</when>
+					<when test='documentType != ""'> and documentType = #{documentType} </when>
 				</choose>
 				order by documentNo desc
 			)
@@ -100,19 +247,47 @@
 	</select>
 	
 	
-	<!-- 임시저장 문서 리스트 가져오기 -->
-	<select id="tempList" parameterType="String" resultType="DocumentVO">
-		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, urgent
+	<!-- 임시 저장 문서함에서 검색어를 포함한 문서 갯수 가져오기 -->
+	<select id="tempListCount_Search" parameterType="HashMap" resultType="Integer">
+		select count(*)
 		from tbl_document
 		where fk_employeeNo = #{employeeNo} and temp = 1
-		order by documentNo desc
+		<choose>
+			<when test='searchWord != ""'> and lower(subject) like '%'||lower(#{searchWord})||'%' </when>
+		</choose>
+		<choose>
+			<when test='documentType != ""'> and documentType = #{documentType} </when>
+		</choose>
 	</select>
 	
 	
-	<!-- 결재 처리한 문서 리스트 가져오기 -->
-	<select id="approvedList" parameterType="String" resultType="DocumentVO">
-		select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate
-			 , documentType, name, documentNo, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate ,D.status, urgent
+	<!-- 임시 저장 문서함에서 검색어를 포함한 페이징 처리한 문서 리스트 가져오기 -->
+	<select id="tempList_Search_Paging" parameterType="HashMap" resultType="DocumentVO">
+		select documentNo, subject, documentType, draftDate, status, urgent
+		from
+		(
+			select rownum as rno, documentNo, subject, documentType, draftDate, status, urgent
+			from
+			(
+				select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, urgent
+				from tbl_document
+				where fk_employeeNo = #{employeeNo} and temp = 1
+				<choose>
+					<when test='searchWord != ""'> and lower(subject) like '%'||lower(#{searchWord})||'%' </when>
+				</choose>
+				<choose>
+					<when test='documentType != ""'> and documentType = #{documentType} </when>
+				</choose>
+				order by documentNo desc
+			)
+		)
+		WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+	</select>
+	
+	
+	<!-- 결재 문서함에서 검색어를 포함한 문서 갯수 가져오기 -->
+	<select id="approvedtListCount_Search" parameterType="HashMap" resultType="Integer">
+		select count(*)	
 		from
 		(
 		    select approvalNo, fk_approver, fk_documentNo, approvalOrder
@@ -120,17 +295,55 @@
 		    where APPROVALSTATUS != 0 and fk_approver = #{employeeNo}
 		) A JOIN tbl_document D
 		ON fk_documentNo = documentNo
-		JOIN tbl_employee
-		ON fk_employeeNo = employeeNo
 		where temp = 0
-		order by documentNo desc
+		<choose>
+			<when test='searchWord != ""'> and lower(subject) like '%'||lower(#{searchWord})||'%' </when>
+		</choose>
+		<choose>
+			<when test='status != ""'> and status = #{status} </when>
+		</choose>
+		<choose>
+			<when test='documentType != ""'> and documentType = #{documentType} </when>
+		</choose>
 	</select>
 	
 	
-	<!-- 부서 문서 리스트 가져오기 -->
-	<select id="deptDocumentList" parameterType="String" resultType="DocumentVO">
-		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, name
-			 , nvl(to_char(approvalDate, 'yyyy-mm-dd'), '-') as approvalDate, urgent
+	<!-- 결재 문서함에서 검색어를 포함한 페이징 처리한 문서 리스트 가져오기 -->
+	<select id="approvedList_Search_Paging" parameterType="HashMap" resultType="DocumentVO">
+		select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, draftDate
+			 , documentType, name, documentNo, approvalDate , status, urgent
+		from
+		(
+			select rownum as rno, approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate
+				 , documentType, name, documentNo, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate , D.status as status, urgent
+			from
+			(
+			    select  approvalNo, fk_approver, fk_documentNo, approvalOrder
+			    from tbl_approval
+			    where APPROVALSTATUS != 0 and fk_approver = #{employeeNo}
+			) A JOIN tbl_document D
+			ON fk_documentNo = documentNo
+			JOIN tbl_employee
+			ON fk_employeeNo = employeeNo
+			where temp = 0
+			<choose>
+				<when test='searchWord != ""'> and lower(subject) like '%'||lower(#{searchWord})||'%' </when>
+			</choose>
+			<choose>
+				<when test='status != ""'> and D.status = #{status} </when>
+			</choose>
+			<choose>
+				<when test='documentType != ""'> and documentType = #{documentType} </when>
+			</choose>
+			order by documentNo desc
+		)
+		WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
+	</select>
+	
+	
+	<!-- 부서 문서함에서 검색어를 포함한 문서 갯수 가져오기 -->
+	<select id="deptDocumentListCount_Search" parameterType="HashMap" resultType="Integer">
+		select count(*)
 		from
 		(
 		    select employeeNo, name
@@ -144,7 +357,54 @@
 		) E JOIN tbl_document D
 		ON E.employeeNO = D.fk_employeeNo
 		where temp = 0
-		order by D.documentNo desc
+		<choose>
+			<when test='searchWord != ""'> and lower(subject) like '%'||lower(#{searchWord})||'%' </when>
+		</choose>
+		<choose>
+			<when test='status != ""'> and status = #{status} </when>
+		</choose>
+		<choose>
+			<when test='documentType != ""'> and documentType = #{documentType} </when>
+		</choose>
+	</select>
+	
+	
+	<!-- 부서 문서함에서 검색어를 포함한 페이징 처리한 문서 리스트 가져오기 -->
+	<select id="deptDocumentList_Search_Paging" parameterType="HashMap" resultType="DocumentVO">
+		select documentNo, subject, documentType, draftDate, status, name, approvalDate, urgent
+		from
+		(
+			select rownum as rno, documentNo, subject, documentType, draftDate, status, name, approvalDate, urgent
+			from
+			(
+				select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, name
+					 , nvl(to_char(approvalDate, 'yyyy-mm-dd'), '-') as approvalDate, urgent
+				from
+				(
+				    select employeeNo, name
+				    from
+				        (
+				            select fk_departmentno
+				            from tbl_employee
+				            where employeeNo = #{employeeNo}
+				        ) E1 JOIN tbl_employee E2
+				    ON E1.fk_departmentNo = E2.fk_departmentno
+				) E JOIN tbl_document D
+				ON E.employeeNO = D.fk_employeeNo
+				where temp = 0
+				<choose>
+					<when test='searchWord != ""'> and lower(subject) like '%'||lower(#{searchWord})||'%' </when>
+				</choose>
+				<choose>
+					<when test='status != ""'> and status = #{status} </when>
+				</choose>
+				<choose>
+					<when test='documentType != ""'> and documentType = #{documentType} </when>
+				</choose>
+				order by D.documentNo desc
+			)
+		)
+		WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
 	</select>
 	
 	
@@ -158,16 +418,19 @@
 		<result column="securityLevel"	property="securityLevel"	javaType="String" />
 		<result column="temp"			property="temp"				javaType="String" />
 		<result column="documentType"	property="documentType"		javaType="String" />
+		<result column="urgent"			property="urgent"			javaType="String" />
 		<result column="approvalDate"	property="approvalDate"		javaType="String" />
+		<result column="name"			property="name"				javaType="String" />
+		<result column="teamName"		property="teamName"			javaType="String" />
 		<result column="useAmount"		property="useAmount"		javaType="String" />
-		<result column="reason"			property="reason"			javaType="String" />
 		<result column="startDate"		property="startDate"		javaType="String" />
 		<result column="endDate"		property="endDate"			javaType="String" />
 		<result column="annualType"		property="annualType"		javaType="String" />
+		<result column="reason"			property="reason"			javaType="String" />
 		<result column="overtimeDate"	property="overtimeDate"		javaType="String" />
-		<result column="name"			property="name"				javaType="String" />
-		<result column="teamName"		property="teamName"			javaType="String" />
-		<result column="urgent"			property="urgent"			javaType="String" />
+		<result column="doDate"			property="doDate"			javaType="String" />
+		<result column="businessContent" property="businessContent"	javaType="String" />
+		<result column="coDepartment"	property="coDepartment"		javaType="String" />
 	</resultMap>
 	<select id="documentView" parameterType="HashMap" resultMap="documentView_Map">
 		select d.documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, d.status
@@ -183,6 +446,11 @@
 			, case to_char(overtimeDate, 'yyyy-mm-dd') when '1111-11-11' then '-' else to_char(overtimeDate, 'yyyy-mm-dd') end as overtimeDate
 		from tbl_document D JOIN tbl_draft_overtime A
 		</if>
+		<if test="documentType == '업무기안'">
+			, businessContent, coDepartment
+			, case to_char(doDate, 'yyyy-mm-dd') when '1111-11-11' then '-' else to_char(doDate, 'yyyy-mm-dd') end as doDate
+		from tbl_document D JOIN tbl_draft_business A
+		</if>
 		ON d.documentNo = A.documentNo JOIN tbl_employee E
 		ON d.fk_employeeNo = E.employeeNo JOIN tbl_team T
 		ON E.fk_teamNo = T.teamno
@@ -192,11 +460,12 @@
 	
 	<!-- 문서함에서 보여줄 결재자 리스트 가져오기 -->
 	<select id="getApprovalList" parameterType="String" resultType="ApprovalVO">
-		select approvalNo, fk_documentNo, fk_approver, approvalOrder, approvalStatus
+		select approvalNo, fk_documentNo, fk_approver, approvalOrder, approvalStatus, teamName
 			 , nvl(to_char(executionDate, 'yyyy-mm-dd'), '-') as executionDate, positionname, name, approvalStatus
 		from tbl_approval JOIN tbl_employee
 		ON fk_approver = employeeNo JOIN tbl_position
-		ON fk_positionno = positionno
+		ON fk_positionno = positionno JOIN tbl_team
+		ON fk_teamno = teamno
 		where fk_documentNo = #{documentNo}
 		order by approvalOrder desc
 	</select>
@@ -227,9 +496,11 @@
 	
 	<!-- 결재 라인에 추가하기 위한 사원 1명 가져오기 -->
 	<select id="getEmployeeOne" parameterType="String" resultType="EmployeeVO">
-		select employeeNo, departmentName, name, securityLevel
-		from tbl_employee E JOIN tbl_department D
-		ON FK_departmentNo = departmentNo
+		select employeeNo, teamname, name, securityLevel, positionname
+		from tbl_employee JOIN tbl_team
+		ON FK_teamno = teamno
+		JOIN tbl_position
+		ON FK_positionNo = positionno
 		where employeeNo = #{employeeNo}
 	</select>
 	
@@ -265,6 +536,13 @@
 	<insert id="insertOvertimeDraft" parameterType="HashMap">
 		insert into tbl_draft_overtime(DOCUMENTNO, REASON, OVERTIMEDATE)
 		values(#{documentNo}, #{reason}, to_date(#{overtimeDate}, 'yyyy-MM-dd'))
+	</insert>
+	
+	
+	<!-- 업무기안 테이블에 데이터 입력 -->
+	<insert id="insertBusinessDraft" parameterType="HashMap">
+		insert into tbl_draft_business(DOCUMENTNO, businessContent, DODATE, CODEPARTMENT)
+		values(#{documentNo}, #{businessContent}, to_date(#{doDate}, 'yyyy-MM-dd'), #{coDepartment})
 	</insert>
 	
 	
@@ -321,53 +599,12 @@
 	</select>
 	
 	
-	<select id="mainTodoList" parameterType="String" resultType="DocumentVO">
-		select fk_employeeNo, subject, draftDate, documentType, name, documentNo, positionname, urgent
-		from
-		(
-		    select rownum, fk_documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo, positionname, urgent
-		    from
-		    (
-		        select fk_approver, fk_documentNo, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
-		        from tbl_approval
-		        where APPROVALSTATUS = 0
-		    ) A JOIN tbl_document D
-		    ON fk_documentNo = documentNo
-		    JOIN tbl_employee
-		    ON fk_employeeNo = employeeNo
-		    JOIN tbl_position
-		    ON fk_positionno = positionno
-		    where rn = 1 and fk_approver = #{employeeNo} and temp = 0 and D.status != 2
-		    order by urgent desc, documentNo desc
-		)
-		where rownum between 1 and 5
-	</select>
+	<!-- 휴가신청서 승인 시 근태 테이블에 데이터 넣어주기 -->
+	<insert id="updateCommuteWithAnnual" parameterType="HashMap">
+		insert into tbl_commute(commuteNo, FK_employeeNo, status, rest, overTimeYN, workdate, starttime, endtime)
+		values(commuteSeq.nextval, to_number(#{fk_employeeNo}), to_number('6'), to_number(#{annualType}), to_number('0'), #{startDate}, to_date(#{startDate}, 'yyyy-mm-dd'), to_date(#{startDate}, 'yyyy-mm-dd'))
+	</insert>
 	
-	
-	<select id="mainProgressList" parameterType="String" resultType="DocumentVO">
-		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, urgent
-		from
-		(
-		    select rownum as rn, documentNo, subject, documentType, draftDate, status, urgent
-		    from tbl_document
-		    where fk_employeeNo = #{employeeNo} and status = 0 and temp = 0
-		    order by documentNo desc
-		)
-		where rn BETWEEN 1 AND 5
-	</select>
-	
-	
-	<select id="mainCompletedList" parameterType="String" resultType="DocumentVO">
-		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, urgent, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate
-		from
-		(
-		    select rownum as rn, documentNo, subject, documentType, draftDate, status, urgent, approvalDate
-		    from tbl_document
-		    where fk_employeeNo = #{employeeNo} and status = 1 and temp = 0
-		    order by documentNo desc
-		)
-		where rn BETWEEN 1 AND 5
-	</select>
 	
 </mapper>
 

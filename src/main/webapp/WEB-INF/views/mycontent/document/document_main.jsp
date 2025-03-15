@@ -52,8 +52,8 @@
 			<ul class="list-group">
 				<li class="list-group-item" onclick="location.href='<%= ctxPath%>/document/annual'"><a>휴가신청</a></li>
 				<li class="list-group-item" onclick="location.href='<%= ctxPath%>/document/overtime'"><a>연장근무신청</a></li>
-				<li class="list-group-item"><a href="#">지출품의</a></li>
-				<li class="list-group-item"><a href="#">업무기안</a></li>
+				<li class="list-group-item" onclick="location.href='<%= ctxPath%>/document/expenditure'"><a>지출품의</a></li>
+				<li class="list-group-item" onclick="location.href='<%= ctxPath%>/document/business'"><a>업무기안</a></li>
 			</ul>
 		</div>
     </div>
