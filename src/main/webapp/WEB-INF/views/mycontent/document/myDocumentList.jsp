@@ -28,6 +28,20 @@
 		$("span#sortCnt_btn span").text("${requestScope.sizePerPage}");	// 페이지를 이동하더라도 한 페이지에 보여줄 문서 갯수가 저장되도록
 		$("input#searchWord").val("${requestScope.searchWord}");		// 페이지를 이동하더라도 검색어가 저장되도록
 		
+		$("div.documentStatus_tab button").each(function(index, item){	// 페이지를 이동하더라도 검색상태가 저장되도록
+			if($(this).val() == "${requestScope.status}"){
+				$("div.documentStatus_tab button").removeClass("active");
+				$(this).addClass("active");
+			}
+		});
+		
+		if("${requestScope.documentType}" == "") {
+			$("span#documentType").text("결재양식");
+		}
+		else {
+			$("span#documentType").text("${requestScope.documentType}");
+		}
+		
 		// 검색 아이콘을 클릭했을 때
 		$("a.doc_search_btn").click(e=>{
 			getDocumentList();
@@ -55,9 +69,13 @@
 			$("div.documentStatus_tab button").removeClass("active");
 			$(e.target).addClass("active");
 			
-			// getDocumentList();
+			getDocumentList();
 		});
 		
+		// 결재양식 탭에서 리스트를 선택했을 때
+		$('#documentType_btn > ul li').click(e=>{
+			getDocumentList();
+		});
 		
 		
 	}); // end of $(document).ready(function(){})-------------------------------------------------
@@ -65,26 +83,37 @@
 	function getDocumentList() {
 		let pageSize = $("span#sortCnt_btn span").text().trim(); // 한 페이지에 보여줄 문서 갯수
 		let searchWord = $("input#searchWord").val().trim(); // 검색어
-		let status = 0;
+		let documentType = $("span#documentType").text().trim(); // 결재양식
+		if(documentType == "결재양식") {
+			documentType = "";
+		}
+		
+		let approvalStatus = 0;	// 결재상태
+		
 		$("div.documentStatus_tab button").each(function(index, item){
-			if($(this).hasClass("active")){
-				status = $(this).val();	// 결재상태
+			if($(this).hasClass("active")){ // 선택된 탭
+				approvalStatus = $(this).val();	// 결재상태
 			}
 		});
-		location.href = `<%= ctxPath%>/document/myDocumentList?currentShowPageNo=1&sizePerPage=\${pageSize}&searchWord=\${searchWord}`;
+		
+		location.href = "<%= ctxPath%>/document/myDocumentList?currentShowPageNo=1"
+						+ "&sizePerPage=" + pageSize
+						+ "&searchWord=" + searchWord
+						+ "&approvalStatus=" + approvalStatus
+						+ "&documentType=" + documentType;
 	}
 	
 </script>
 
 	<div>
 		<div class="documentStatus_tab">
-			<button class="tablinks active" value="">전체</button>
+			<button class="tablinks" value="">전체</button>
 			<button class="tablinks" value="0">진행중</button>
 			<button class="tablinks" value="1">완료</button>
 			<button class="tablinks" value="2">반려</button>
 		</div>
 		<table id="myDocumentList" class="table">
-			<thead>
+			<thead class="doc_box_thead">
 				<tr>
 					<th>
 						<input type="checkbox" id="check_all"/>
@@ -93,7 +122,21 @@
 						<span>기안일</span>
 					</th>
 					<th>
-						<span>결재양식</span>
+						<span>완료일</span>
+					</th>
+					<th>
+						<span>긴급</span>
+					</th>
+					<th>
+						<span id="documentType_btn">
+							<span id="documentType">결재양식</span>
+							<i style="transform: rotate(90deg)" class="fa-solid fa-angle-right"></i>
+							<ul>
+								<li>전체</li>
+								<li>휴가신청서</li>
+								<li>연장근무신청서</li>
+							</ul>
+						</span>
 					</th>
 					<th>
 						<span>제목</span>
@@ -118,6 +161,12 @@
 							</td>
 							<td>
 								<span>${myDocument.draftDate}</span>
+							</td>
+							<td>
+								<span>${myDocument.approvalDate}</span>
+							</td>
+							<td>
+								<c:if test="${myDocument.urgent == 1}"><span class="p-1 urgent">긴급</span></c:if>
 							</td>
 							<td>
 								<span>${myDocument.documentType}</span>

@@ -34,6 +34,9 @@
 						<span>기안일</span>
 					</th>
 					<th>
+						<span>긴급</span>
+					</th>
+					<th>
 						<span>결재양식</span>
 					</th>
 					<th>
@@ -59,6 +62,9 @@
 							</td>
 							<td>
 								<span>${upcoming.draftDate}</span>
+							</td>
+							<td>
+								<c:if test="${upcoming.urgent == 1}"><span class="p-1 urgent">긴급</span></c:if>
 							</td>
 							<td>
 								<span>${upcoming.documentType}</span>

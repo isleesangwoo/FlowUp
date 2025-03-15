@@ -316,14 +316,27 @@ String ctxPath = request.getContextPath();
 						<table class="mt-5" style="width: 100%;">
 							<tbody>
 								<tr>
+									<th>긴급</th>
+									<td>
+										<c:if test="${document.urgent == 0}">
+											<input class="ml-1" type="checkbox" name="check_urgent" onClick="return false;"/>
+										</c:if>
+										<c:if test="${document.urgent == 1}">
+											<input class="ml-1" type="checkbox" name="check_urgent" checked="checked" onClick="return false;"/>
+										</c:if>
+									</td>
+								</tr>
+								<tr>
 									<th>제목</th>
 									<td>${document.subject}</td>
 								</tr>
 								<tr>
 									<th>휴가 종류</th>
-									<td><c:if test="${document.annualType == 1}">연차</c:if> <c:if
-											test="${document.annualType == 2}">오전반차</c:if> <c:if
-											test="${document.annualType == 3}">오후반차</c:if></td>
+									<td>
+										<c:if test="${document.annualType == 1}">연차</c:if>
+										<c:if test="${document.annualType == 2}">오전반차</c:if>
+										<c:if test="${document.annualType == 3}">오후반차</c:if>
+									</td>
 								</tr>
 								<tr>
 									<th>사유</th>
