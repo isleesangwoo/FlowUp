@@ -96,6 +96,13 @@
 .profileImg{
 	margin-right: 15px;
 }
+.profileImgElmt{
+	border-radius: 50%;
+	background-color: #eff4fc;
+	width: 32px;
+	height: 32px;
+	display: inline-block;
+}
 .postCreateBy{
 	margin-right: var(--size8);
 	font-size:var(--size14);
@@ -128,6 +135,7 @@
 	height: 100%;
 	border-right: solid 1px #c8c8c8;
 	border-bottom: solid 1px #c8c8c8;
+	padding-bottom: var(--size30);
 }
 #postOfBoardGroup_name_1{
 	padding: 15px 16px 8px;
@@ -135,8 +143,16 @@
 	font-weight: bold;
 }
 #postOfBoardGroup_name_2{
+	border-top:solid 1px #c8c8c8;
 	padding: 15px 16px 8px;
-	margin-top:50px;
+	margin-top:var(--size20);
+	margin-bottom: 0px;
+	font-weight: bold;
+}
+#postOfBoardGroup_name_3{
+	border-top:solid 1px #c8c8c8;
+	padding: 15px 16px 8px;
+	margin-top:var(--size20);
 	margin-bottom: 0px;
 	font-weight: bold;
 }

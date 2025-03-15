@@ -166,6 +166,9 @@ public class BoardController {
 		// 조회수 상위 5개 글
 		List<Map<String, String>> topReadList = service.getTopReadPosts();
 		
+		// 댓글 상위 5개 글 
+		List<Map<String, String>> topCommentList = service.getTopCommentPosts();
+		
 		
 		mav.addObject("pageBar", pageBar);
 		 
@@ -174,6 +177,7 @@ public class BoardController {
 		mav.addObject("sizePerPage", sizePerPage); // 페이징 처리시 보여주는 순번을 나타내기 위한 것
 		mav.addObject("topLikeList", topLikeList); // 좋아요 상위 5개 글 리스트
 		mav.addObject("topReadList", topReadList); // 조회수 상위 5개 글 리스트
+		mav.addObject("topCommentList", topCommentList); // 댓글 상위 5개 글 리스트
 		
 		
 		

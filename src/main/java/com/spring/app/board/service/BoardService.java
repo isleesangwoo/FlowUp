@@ -142,6 +142,9 @@ public interface BoardService {
 	// 알림의 해당글 클릭 시 글조회수 1증가 하기
 	int increase_readCount(String postNo);
 
+	//댓글 상위 5개 글 
+	List<Map<String, String>> getTopCommentPosts();
+
 
 
 	

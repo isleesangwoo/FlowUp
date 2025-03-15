@@ -631,6 +631,13 @@ public class BoardService_imple implements BoardService {
 		return n;
 	}
 
+	// 댓글 상위 5개 글 
+	@Override
+	public List<Map<String, String>> getTopCommentPosts() {
+		List<Map<String, String>> topCommentList = dao.getTopCommentPosts();
+		return topCommentList;
+	}
+
 	
 
 	

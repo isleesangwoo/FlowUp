@@ -484,6 +484,7 @@
 	JOIN tbl_employee E
 	on L.fk_employeeNo = E.employeeNo
 	where fk_postNo = #{postNo}
+	order by regDate desc
 	</select>
 
 <!-- 댓글등록 -->
@@ -725,6 +726,22 @@
 	where notificationNo = #{notificationNo}
 	</update>
 
+<!-- 댓글 상위 5개 글  -->
+	<resultMap type="HashMap" id="getTopCommentPosts_map">
+		<result property="postNo" 	 	 column="postNo"  			javaType="String" />
+		<result property="subject" 		 column="subject" 			javaType="String" />
+   		<result property="regDate" 		 column="regDate" 			javaType="String" />
+   </resultMap>
+	<select id="getTopCommentPosts" resultMap="getTopCommentPosts_map">
+	select postNo
+   	 	   ,case when length(subject) &lt; 11 then subject 
+			else substr(subject, 1, 11)||'..' end AS subject
+			,to_char(regDate,'yyyy-mm-dd') as regDate from (
+    select p.*, ROWNUM AS rn
+    from (select * FROM tbl_post where status = 1 order by commentCount DESC) p
+    where rownum &lt;= 5
+	)
+	</select>
 
 </mapper>
 
