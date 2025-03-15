@@ -46,20 +46,16 @@
 	<!-- 전자결재작성 폼 -->
     <div id="modal" class="modal_bg">
     </div>
-    <div class="modal_container">
+    <div id="doc_menu_container" class="box_modal_container">
 
-		<div class="mail_menu_container">
-			<ul>
-				<li onclick="location.href='<%= ctxPath%>/document/annual'"><a>휴가신청</a></li>
-				<li onclick="location.href='<%= ctxPath%>/document/overtime'"><a>연장근무신청</a></li>
-				<li><a href="#">지출품의</a></li>
-				<li><a href="#">업무기안</a></li>
+		<div class="doc_menu_container m-5">
+			<ul class="list-group">
+				<li class="list-group-item" onclick="location.href='<%= ctxPath%>/document/annual'"><a>휴가신청</a></li>
+				<li class="list-group-item" onclick="location.href='<%= ctxPath%>/document/overtime'"><a>연장근무신청</a></li>
+				<li class="list-group-item"><a href="#">지출품의</a></li>
+				<li class="list-group-item"><a href="#">업무기안</a></li>
 			</ul>
 		</div>
-        <!-- 여기에 메일작성 폼을 만들어주세요!! -->
-        <!-- 여기에 메일작성 폼을 만들어주세요!! -->
-        <!-- 여기에 메일작성 폼을 만들어주세요!! -->
-
     </div>
     <!-- 전자결재작성 폼 -->
 
@@ -68,13 +64,13 @@
     <div id="left_bar">
 
         <!-- === 새 결재 작성 버튼 === -->
-        <button id="goMail">
+        <button id="goDoc">
             <i class="fa-solid fa-plus"></i>
             <span>새 결재</span>
         </button>
         <!-- === 새 결재 작성 버튼 === -->
 
-        <div class="mail_menu_container">
+        <div class="doc_menu_container">
             <ul>
             	<li onclick="location.href='<%= ctxPath%>/document/'"><a>전자결재 홈</a></li>
                 <li onclick="location.href='<%= ctxPath%>/document/todoList'">

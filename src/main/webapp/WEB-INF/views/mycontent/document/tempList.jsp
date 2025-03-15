@@ -79,6 +79,9 @@
 						<span>생성일</span>
 					</th>
 					<th>
+						<span>긴급</span>
+					</th>
+					<th>
 						<span>결재양식</span>
 					</th>
 					<th>
@@ -101,6 +104,9 @@
 							</td>
 							<td>
 								<span>${temp.draftDate}</span>
+							</td>
+							<td>
+								<c:if test="${temp.urgent == 1}"><span class="p-1 urgent">긴급</span></c:if>
 							</td>
 							<td>
 								<span>${temp.documentType}</span>

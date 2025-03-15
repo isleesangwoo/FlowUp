@@ -26,13 +26,16 @@
         <div class="doc_todo_box" style="display: flex;">
         	<c:if test="${not empty requestScope.todoList}">
         		<c:forEach var="todo" items="${requestScope.todoList}">
-        			<div class="card todo_card" style="width: 20rem;">
+        			<div class="card todo_card m-4">
         				<div class="card-body">
-        					<span class="p-1 in_progress">진행중</span>
-        					<span>${todo.subject}</span>
+        					<span class="p-1 mb-2 in_progress">진행중</span><c:if test="${todo.urgent == 1}"><span class="p-1 urgent ml-2">긴급</span></c:if>
+        					<span class="card_subject">${todo.subject}</span>
         					<span>기안자:  ${todo.name} ${todo.positionName}</span>
         					<span>기안일:  ${todo.draftDate}</span>
         					<span>결재양식: ${todo.documentType}</span>
+        				</div>
+        				<div class="card-footer" onclick="location.href='<%= ctxPath%>/document/documentView?documentNo=${todo.documentNo}&documentType=${todo.documentType}';">
+        					<button>결재하기</button>
         				</div>
         			</div>
         		</c:forEach>
@@ -67,7 +70,7 @@
 									<span>${progress.documentType}</span>
 								</td>
 								<td>
-									<span></span>
+									<c:if test="${progress.urgent == 1}"><span class="p-1 urgent">긴급</span></c:if>
 								</td>
 								<td>
 									<span>${progress.subject}</span>
@@ -102,6 +105,7 @@
         		<thead class="doc_box_thead">
         			<tr>
 	        			<th>기안일</th>
+	        			<th>기안일</th>
 	        			<th>결재양식</th>
 	        			<th>긴급</th>
 	        			<th>제목</th>
@@ -118,10 +122,13 @@
 									<span>${completed.draftDate}</span>
 								</td>
 								<td>
+									<span>${completed.approvalDate}</span>
+								</td>
+								<td>
 									<span>${completed.documentType}</span>
 								</td>
 								<td>
-									<span></span>
+									<c:if test="${progress.urgent == 1}"><span class="p-1 urgent">긴급</span></c:if>
 								</td>
 								<td>
 									<span>${completed.subject}</span>
@@ -142,7 +149,7 @@
 					</c:if>
 					<c:if test="${empty requestScope.completedList}">
 						<tr>
-							<td colspan="7"><span>완료된 없습니다.</span></td>
+							<td colspan="8"><span>완료된 없습니다.</span></td>
 						</tr>
 					</c:if>
         		</tbody>

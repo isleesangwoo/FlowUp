@@ -117,8 +117,9 @@ public class DocumentController {
 	public ModelAndView myDocumentList(ModelAndView mav, HttpServletRequest request
 									 , @RequestParam(defaultValue = "10") String sizePerPage
 									 , @RequestParam(defaultValue = "") String searchWord
-									 , @RequestParam(defaultValue = "1") String currentShowPageNo) {
-		
+									 , @RequestParam(defaultValue = "1") String currentShowPageNo
+									 , @RequestParam(defaultValue = "") String approvalStatus
+									 , @RequestParam(defaultValue = "") String documentType) {
 		
 		HttpSession session = request.getSession();
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
@@ -141,7 +142,9 @@ public class DocumentController {
 		// === 페이지를 이동하거나 sizePerPage 를 변경하더라도 검색어가 남아있도록 === //
 		paraMap.put("searchWord", searchWord);
 		
-		// paraMap.put("approvalStatus", approvalStatus);
+		paraMap.put("status", approvalStatus); // 결재상태
+		paraMap.put("documentType", documentType); // 결재양식
+		
 		
 		// 기안 문서함에서 검색어를 포함한 문서 갯수 가져오기
 		int totalCount = service.myDocumentListCount_Search(paraMap);
@@ -192,10 +195,10 @@ public class DocumentController {
 		String url = "myDocumentList";
 		
 		// === [맨처음][이전] 만들기 === //
-		pageBar += "<li style='display:inline-block; width: 30px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=1&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "'><i style='transform: scaleX(-1)' class='fa-solid fa-forward-step'></i></a></li>";
+		pageBar += "<li style='display:inline-block; width: 30px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=1&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "&approvalStatus=" + approvalStatus + "&documentType=" + documentType + "'><i style='transform: scaleX(-1)' class='fa-solid fa-forward-step'></i></a></li>";
 		
 		if(pageNo != 1) {
-			pageBar += "<li style='display:inline-block; width: 30px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + (pageNo-1) + "&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "'><i class='fa-solid fa-chevron-left'></i></a></li>";
+			pageBar += "<li style='display:inline-block; width: 30px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + (pageNo-1) + "&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "&approvalStatus=" + approvalStatus + "&documentType=" + documentType + "'><i class='fa-solid fa-chevron-left'></i></a></li>";
 		}
 		
 		while( !(loop > blockSize || pageNo > totalPage) ) {
@@ -204,7 +207,7 @@ public class DocumentController {
 				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt; border:solid 1px gray; color:red; padding:2px 4px;'>" + pageNo + "</li>";
 			}
 			else {
-				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + pageNo + "&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "'>" + pageNo + "</a></li>";
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + pageNo + "&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "&approvalStatus=" + approvalStatus + "&documentType=" + documentType + "'>" + pageNo + "</a></li>";
 			}
 			
 			loop++;
@@ -214,9 +217,9 @@ public class DocumentController {
 		
 		// === [다음][마지막] 만들기 === //
 		if(pageNo <= totalPage) {
-			pageBar += "<li style='display:inline-block; width: 30px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + pageNo + "&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "'><i class='fa-solid fa-chevron-right'></i></a></li>";
+			pageBar += "<li style='display:inline-block; width: 30px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + pageNo + "&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "&approvalStatus=" + approvalStatus + "&documentType=" + documentType + "'><i class='fa-solid fa-chevron-right'></i></a></li>";
 		}
-		pageBar += "<li style='display:inline-block; width: 30px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + totalPage + "&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "'><i class='fa-solid fa-forward-step'></i></a></li>";
+		pageBar += "<li style='display:inline-block; width: 30px; font-size:12pt;'><a href='" + url + "?currentShowPageNo=" + totalPage + "&sizePerPage=" + sizePerPage + "&searchWord=" + searchWord + "&approvalStatus=" + approvalStatus + "&documentType=" + documentType + "'><i class='fa-solid fa-forward-step'></i></a></li>";
 		
 		pageBar += "</ul>";
 		
@@ -224,7 +227,8 @@ public class DocumentController {
 		
 		mav.addObject("searchWord", searchWord);				// 페이지를 이동하거나 sizePerPage 를 변경하더라도 검색어가 남아있도록 하기 위한 것
 		mav.addObject("totalCount", totalCount);				// 페이징 처리시 총 문서 갯수
-	//	mav.addObject("approvalStatus", approvalStatus);		// 페이징 처리시 결재 상태
+		mav.addObject("status", approvalStatus);				// 페이징 처리시 결재 상태
+		mav.addObject("documentType", documentType);			// 페이징 처리시 결재 양식
 		mav.addObject("currentShowPageNo", currentShowPageNo);	// 페이징 처리시 현재 페이지 번호
 		mav.addObject("sizePerPage", sizePerPage);				// 페이징 처리시 한 페이지에 보여줄 문서 갯수
 		
@@ -457,9 +461,6 @@ public class DocumentController {
 		
 		if(loginuser != null) {
 			paraMap.put("fk_employeeNo", loginuser.getEmployeeNo());
-		}
-		else {
-			paraMap.put("fk_employeeNo", "100014");
 		}
 		
 		paraMap.put("temp", "1"); // 임시 저장 문서임을 나타냄

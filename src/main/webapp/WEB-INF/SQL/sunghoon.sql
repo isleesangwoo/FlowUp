@@ -300,10 +300,10 @@ from
 )
 where rn BETWEEN 1 AND 5;
 
-select fk_approver, fk_documentNo, fk_employeeNo, subject, draftDate, documentType, name, documentNo, positionname
+select fk_employeeNo, subject, draftDate, documentType, name, documentNo, positionname
 from
 (
-    select rownum, fk_approver, fk_documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo, positionname
+    select rownum, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo, positionname
     from
     (
         select fk_approver, fk_documentNo, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn

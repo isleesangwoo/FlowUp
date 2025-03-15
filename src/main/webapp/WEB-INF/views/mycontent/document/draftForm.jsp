@@ -137,12 +137,13 @@
 		$('#approval_line_btn').click(e=>{
 			
 	        $('#approval_line_bg').fadeIn();
-			$('.box_modal_container').css({
+			$('#approval_line_container').css({
 				'display':'block'
 			});
 	    });
 		
 		//////////////////////////////////////////////////////////////////////////////////////////////////
+
 		
 		<%-- 조직도에서 사원을 선택하지 않으면 	사원추가를 할 수 없게 하는 이벤트 --%>
 		$("#add_approval_btn").css({"pointer-events":"none"}); // 추가 버튼 비활성화
@@ -415,7 +416,7 @@
 	<%-- 모달창을 사라지게 하기 --%>
 	function close_modal() {
 		$('#approval_line_bg').fadeOut();
-        $('.box_modal_container').css({
+        $('#approval_line_container').css({
         	'display':''
 		});
 	}
@@ -423,6 +424,11 @@
 	
 	<%-- 결재 요청하기 --%>
 	function draft(){
+		
+		if($("input[name='check_urgent']").is(":checked")) { 
+			// 긴급 체크되어 있는 경우
+			$("input[name='urgent']").val("1");
+		}
 		
 		const queryString = $("form[name='draftForm']").serialize();
 		
@@ -456,6 +462,11 @@
 	
 	<%-- 임시 저장 함수 --%>
 	function saveTemp(){
+		
+		if($("input[name='check_urgent']").is(":checked")) { 
+			// 긴급 체크되어 있는 경우
+			$("input[name='urgent']").val("1");
+		}
 		
 		const queryString = $("form[name='draftForm']").serialize();
 		console.log(queryString);
@@ -876,6 +887,18 @@
 					<table class="mt-5" style="width: 100%">
 						<tbody>
 							<tr>
+								<th>긴급</th>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										<input class="ml-1" type="checkbox" name="check_urgent"/>
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										<input class="ml-1" type="checkbox" name="check_urgent" checked="checked"/>
+									</c:if>
+									<input type="hidden" name="urgent" value="0"/>
+								</td>
+							</tr>
+							<tr>
 								<th>제목</th>
 								<td>
 									<c:if test="${empty requestScope.document}">
@@ -991,6 +1014,18 @@
 					<input type="hidden" name="documentType" value="연장근무신청서" />
 					<table class="mt-5" style="width: 100%">
 						<tbody>
+							<tr>
+								<th>긴급</th>
+								<td>
+									<c:if test="${empty requestScope.document || requestScope.document.urgent eq 0}">
+										<input class="ml-1" type="checkbox" name="check_urgent"/>
+									</c:if>
+									<c:if test="${requestScope.document.urgent eq 1}">
+										<input class="ml-1" type="checkbox" name="check_urgent" checked="checked"/>
+									</c:if>
+									<input type="hidden" name="urgent" value="0"/>
+								</td>
+							</tr>
 							<tr>
 								<th>제목</th>
 								<td>
