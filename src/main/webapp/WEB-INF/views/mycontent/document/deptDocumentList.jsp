@@ -37,6 +37,9 @@
 						<span>완료일</span>
 					</th>
 					<th>
+						<span>긴급</span>
+					</th>
+					<th>
 						<span>결재양식</span>
 					</th>
 					<th>
@@ -68,6 +71,9 @@
 							</td>
 							<td>
 								<span>${deptDocument.approvalDate}</span>
+							</td>
+							<td>
+								<c:if test="${deptDocument.urgent == 1}"><span class="p-1 urgent">긴급</span></c:if>
 							</td>
 							<td>
 								<span>${deptDocument.documentType}</span>

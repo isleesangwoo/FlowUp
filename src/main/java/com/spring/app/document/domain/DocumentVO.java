@@ -12,6 +12,8 @@ public class DocumentVO {
 	private String temp;			// 임시저장여부
 	private String documentType;	// 양식이름
 	private String name;			// 기안자이름
+	private String positionName;	// 기안자직책
+	private String urgent;			// 긴급여부
 	
 	public String getDocumentNo() {
 		return documentNo;
@@ -72,6 +74,18 @@ public class DocumentVO {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public String getPositionName() {
+		return positionName;
+	}
+	public void setPositionName(String positionName) {
+		this.positionName = positionName;
+	}
+	public String getUrgent() {
+		return urgent;
+	}
+	public void setUrgent(String urgent) {
+		this.urgent = urgent;
 	}
 	
 	

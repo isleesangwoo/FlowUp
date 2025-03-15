@@ -35,7 +35,7 @@ public class MailController {
 	@Autowired // Type 에 따라 알아서 Bean 을 주입해준다.
 	private MailService service;
 	
-	@GetMapping("") // 메일 목록
+	@GetMapping("") // 받은 메일 목록 (기본 메일함)
 	public ModelAndView mail(ModelAndView mav, 
 	                         HttpServletRequest request,
 	                         @RequestParam(defaultValue = "1") String currentShowPageNo,

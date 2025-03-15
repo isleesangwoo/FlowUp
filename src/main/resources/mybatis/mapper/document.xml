@@ -9,7 +9,7 @@
 	
 	<!-- 결재 대기 문서 리스트 가져오기 -->
 	<select id="todoList" parameterType="String" resultType="DocumentVO">
-		select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo
+		select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo, urgent
 		from
 		(
 		    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
@@ -20,13 +20,13 @@
 		JOIN tbl_employee
 		ON fk_employeeNo = employeeNo
 		where rn = 1 and fk_approver = #{employeeNo} and temp = 0 and D.status != 2
-		order by documentNo desc
+		order by urgent desc, documentNo desc
 	</select>
 	
 	
 	<!-- 결재 예정 문서 리스트 가져오기 -->
 	<select id="upcomingList" parameterType="String" resultType="DocumentVO">
-		select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo
+		select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo, urgent
 		from
 		(
 		    select approvalNo, fk_approver, fk_documentNo, approvalOrder, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
@@ -37,7 +37,7 @@
 		JOIN tbl_employee
 		ON fk_employeeNo = employeeNo
 		where rn != 1 and fk_approver = #{employeeNo} and temp = 0
-		order by documentNo desc
+		order by urgent desc, documentNo desc
 	</select>
 	
 	
@@ -52,25 +52,46 @@
 			</when>
 			<otherwise></otherwise>
 		</choose>
+		<choose>
+			<when test='status != ""'>
+				and status = #{status}
+			</when>
+			<otherwise></otherwise>
+		</choose>
+		<choose>
+			<when test='documentType != ""'>
+				and documentType = #{documentType}
+			</when>
+			<otherwise></otherwise>
+		</choose>
 	</select>
 	
 	
 	<!-- 기안 문서함에서 검색어를 포함한 페이징 처리한 문서 리스트 가져오기 -->
 	<select id="myDocumentList_Search_Paging" parameterType="HashMap" resultType="DocumentVO">
-		select documentNo, subject, documentType, draftDate, status
+		select documentNo, subject, documentType, draftDate, status, approvalDate, urgent
 		from
 		(
-			select rownum AS rno, documentNo, subject, documentType, draftDate, status
+			select rownum AS rno, documentNo, subject, documentType, draftDate, status, approvalDate, urgent
 			from
 			(
-				select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
+				select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, urgent, nvl(to_char(approvalDate, 'yyyy-mm-dd'), '-') as approvalDate
 				from tbl_document
 				where fk_employeeNo = #{employeeNo} and temp = 0
 				<choose>
 					<when test='searchWord != ""'>
 						and lower(subject) like '%'||lower(#{searchWord})||'%'
 					</when>
-					<otherwise></otherwise>
+				</choose>
+				<choose>
+					<when test='status != ""'>
+						and status = #{status}
+					</when>
+				</choose>
+				<choose>
+					<when test='documentType != ""'>
+						and documentType = #{documentType}
+					</when>
 				</choose>
 				order by documentNo desc
 			)
@@ -81,7 +102,7 @@
 	
 	<!-- 임시저장 문서 리스트 가져오기 -->
 	<select id="tempList" parameterType="String" resultType="DocumentVO">
-		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, urgent
 		from tbl_document
 		where fk_employeeNo = #{employeeNo} and temp = 1
 		order by documentNo desc
@@ -91,7 +112,7 @@
 	<!-- 결재 처리한 문서 리스트 가져오기 -->
 	<select id="approvedList" parameterType="String" resultType="DocumentVO">
 		select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate
-			 , documentType, name, documentNo, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate ,D.status
+			 , documentType, name, documentNo, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate ,D.status, urgent
 		from
 		(
 		    select approvalNo, fk_approver, fk_documentNo, approvalOrder
@@ -109,7 +130,7 @@
 	<!-- 부서 문서 리스트 가져오기 -->
 	<select id="deptDocumentList" parameterType="String" resultType="DocumentVO">
 		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, name
-			 , nvl(to_char(approvalDate, 'yyyy-mm-dd'), '-') as approvalDate
+			 , nvl(to_char(approvalDate, 'yyyy-mm-dd'), '-') as approvalDate, urgent
 		from
 		(
 		    select employeeNo, name
@@ -146,10 +167,11 @@
 		<result column="overtimeDate"	property="overtimeDate"		javaType="String" />
 		<result column="name"			property="name"				javaType="String" />
 		<result column="teamName"		property="teamName"			javaType="String" />
+		<result column="urgent"			property="urgent"			javaType="String" />
 	</resultMap>
 	<select id="documentView" parameterType="HashMap" resultMap="documentView_Map">
 		select d.documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, d.status
-			 , d.securityLevel, temp, documentType, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate, name, teamName
+			 , d.securityLevel, temp, documentType, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate, name, teamName, urgent
 		<if test="documentType == '휴가신청서'">
 		     , useAmount, reason, annualType
 		     , case to_char(startDate, 'yyyy-mm-dd') when '1111-11-11' then '-' else to_char(startDate, 'yyyy-mm-dd') end as startDate
@@ -227,8 +249,8 @@
 
 	<!-- document 테이블에 데이터 입력 -->
 	<insert id="insertDocument" parameterType="HashMap">
-		insert into tbl_document(DOCUMENTNO, FK_EMPLOYEENO, SUBJECT, DRAFTDATE, TEMP, DOCUMENTTYPE)
-		values(#{documentNo}, #{fk_employeeNo}, #{subject}, sysdate, #{temp}, #{documentType})
+		insert into tbl_document(DOCUMENTNO, FK_EMPLOYEENO, SUBJECT, DRAFTDATE, TEMP, DOCUMENTTYPE, URGENT)
+		values(#{documentNo}, #{fk_employeeNo}, #{subject}, sysdate, #{temp}, #{documentType}, #{urgent})
 	</insert>
 	
 	
@@ -296,6 +318,55 @@
 		select occurannual + overannual - addannual as totalAmount
 		from tbl_annual
 		where fk_employeeNo = #{employeeNo} and year = #{year}
+	</select>
+	
+	
+	<select id="mainTodoList" parameterType="String" resultType="DocumentVO">
+		select fk_employeeNo, subject, draftDate, documentType, name, documentNo, positionname, urgent
+		from
+		(
+		    select rownum, fk_documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, documentType, name, documentNo, positionname, urgent
+		    from
+		    (
+		        select fk_approver, fk_documentNo, ROW_NUMBER() OVER(PARTITION BY fk_documentNo ORDER BY approvalOrder DESC) AS rn
+		        from tbl_approval
+		        where APPROVALSTATUS = 0
+		    ) A JOIN tbl_document D
+		    ON fk_documentNo = documentNo
+		    JOIN tbl_employee
+		    ON fk_employeeNo = employeeNo
+		    JOIN tbl_position
+		    ON fk_positionno = positionno
+		    where rn = 1 and fk_approver = #{employeeNo} and temp = 0 and D.status != 2
+		    order by urgent desc, documentNo desc
+		)
+		where rownum between 1 and 5
+	</select>
+	
+	
+	<select id="mainProgressList" parameterType="String" resultType="DocumentVO">
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, urgent
+		from
+		(
+		    select rownum as rn, documentNo, subject, documentType, draftDate, status, urgent
+		    from tbl_document
+		    where fk_employeeNo = #{employeeNo} and status = 0 and temp = 0
+		    order by documentNo desc
+		)
+		where rn BETWEEN 1 AND 5
+	</select>
+	
+	
+	<select id="mainCompletedList" parameterType="String" resultType="DocumentVO">
+		select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, urgent, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate
+		from
+		(
+		    select rownum as rn, documentNo, subject, documentType, draftDate, status, urgent, approvalDate
+		    from tbl_document
+		    where fk_employeeNo = #{employeeNo} and status = 1 and temp = 0
+		    order by documentNo desc
+		)
+		where rn BETWEEN 1 AND 5
 	</select>
 	
 </mapper>

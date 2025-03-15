@@ -15,7 +15,7 @@
     border-right: 1px solid #c8c8c8;
 }
 
-#goMail {
+#goDoc {
     width: 100%;
     height: var(--size44);
     font-size: var(--size18);
@@ -31,20 +31,20 @@
     margin-bottom: var(--size10);
 }
 
-#goMail > i {
+#goDoc > i {
     margin-right: var(--size10);
 }
 
-#goMail:hover{
+#goDoc:hover{
     background-color: #056ac9;
 }
 
-.mail_menu_container{
-    width: 100%;
+.doc_menu_container{
+    width: 80%;
     height: auto;
 }
 
-.mail_menu_container > ul li {
+.doc_menu_container > ul li {
     width: 100%;
     height: var(--size38);
     font-size: var(--size15);
@@ -56,25 +56,25 @@
     padding-left: var(--size10);
 }
 
-.mail_menu_container > ul > li > a {
+.doc_menu_container > ul > li > a {
     color: #333;
     text-decoration: none;
 }
 
-.mail_menu_container > ul > li:hover {
+.doc_menu_container > ul > li:hover {
     background-color: var(--baseColor1);
 }
 
 
 
 /* 현재 페이지에 이렇게 넣어주세요! */
-.mail_menu_container > ul li:nth-child(1){
+.doc_menu_container > ul li:nth-child(1){
     background-color: #dae8f8 !important;
     color: #056ac9;
     font-weight: 600;
 }
 
-.mail_menu_container > ul li:nth-child(1) > a {
+.doc_menu_container > ul li:nth-child(1) > a {
     color: #056ac9;
 }
 /* 현재 페이지에 이렇게 넣어주세요! */

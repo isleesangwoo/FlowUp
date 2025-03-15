@@ -67,6 +67,15 @@ public interface CommuteDAO {
 
 	int changeAddAnnual(Map<String, String> paraMap);
 
+	
+	
+	
+	List<Map<String, String>> getCEO();
+
+	List<Map<String, String>> getDept();
+
+	List<Map<String, String>> getTeam();
+
 
 
 }
