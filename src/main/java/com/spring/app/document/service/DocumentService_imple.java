@@ -294,13 +294,27 @@ public class DocumentService_imple implements DocumentService {
 			else if("업무기안".equals(paraMap.get("documentType"))) {
 				m = mapper_dao.insertBusinessDraft(paraMap);
 			}
+			else if("지출품의서".equals(paraMap.get("documentType"))) {
+				m = mapper_dao.insertExpenseDraft(paraMap);
+				System.out.println("m 은" + m);
+				int expense_detail_count = Integer.parseInt(paraMap.get("expense_detail_count"));
+				for(int i = 0; i < expense_detail_count; i++) {
+					paraMap.put("amount", paraMap.get("amount" + i));
+					paraMap.put("type", paraMap.get("type" + i));
+					paraMap.put("useDate", paraMap.get("useDate" + i));
+					paraMap.put("content", paraMap.get("content" + i));
+					paraMap.put("note", paraMap.get("note" + i));
+					
+					mapper_dao.insertExpenseDetail(paraMap);
+				}
+			}
 		}
 		
 		int approval_count = Integer.parseInt(paraMap.get("added_approval_count"));
 		
 		int a = 1;
 		
-		for(int i=0; i<approval_count; i++) {
+		for(int i = 0; i < approval_count; i++) {
 			paraMap.put("fk_approver", paraMap.get("added_employee_no" + i));
 			paraMap.put("approvalorder", String.valueOf(approval_count-i));
 			a *= mapper_dao.insertApprover(paraMap);
@@ -500,6 +514,15 @@ public class DocumentService_imple implements DocumentService {
 		documentMap.put("tempDocCnt", tempDocCnt);
 		
 		return documentMap;
+	}
+
+
+	// 지출 품의 상세 가져오기
+	@Override
+	public List<Map<String, String>> expenseDetailList(Map<String, String> paraMap) {
+		
+		List<Map<String, String>> expenseDetailList = mapper_dao.expenseDetailList(paraMap);
+		return expenseDetailList;
 	}
 
 

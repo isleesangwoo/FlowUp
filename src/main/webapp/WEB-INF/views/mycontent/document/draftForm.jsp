@@ -203,7 +203,7 @@
 											<td class='selected_employee_teamName'>\${json.teamName}</td>
 											<td class='selected_employee_name'>\${json.name}</td>
 											<td class='selected_employee_positionName'>\${json.positionName}</td>
-											<td class='delete_approver'>삭제</td>
+											<td class='delete_approver'><a class='delete_approver' style="cursor: pointer; color: black;"><i class="fa-solid fa-trash-can"></i></a></td>
 										</tr>`;
 										
 							$("tbody#added_approval_line").append(v_html);
@@ -222,8 +222,8 @@
 		}); 
 		
 		<%-- 모달에서 결재 라인에서 삭제 버튼 클릭 시 추가된 사원을 삭제하는 이벤트 --%>
-		$("tbody#added_approval_line").on('click', "td.delete_approver", function(e) {
-			$(e.target).parent().remove();
+		$("tbody#added_approval_line").on('click', "a.delete_approver", function(e) {
+			$(e.target).parent().parent().parent().remove();
 		});
 
 	    <%-- 모달에서 확인 버튼을 클릭했을 때 추가된 결재 라인이 메인 페이지에 보이게 하는 이벤트 --%>
@@ -710,6 +710,9 @@
 			return;
 		}
 		
+		let no = $("tbody.expense_detail tr").length/2;
+		$("input[name='expense_detail_count']").val(no);
+		
 		draft(); // 결재 요청하기
 		
 	} // end of function overtimeDraft(){}---------------------------------------------
@@ -742,6 +745,138 @@
 		draft(); // 결재 요청하기
 		
 	}
+	
+	
+	////////////////////////////////////////////////////////////////////////////
+	<%-- 지출품의서 함수 --%>
+	
+	<%-- 지출 내역 추가하기 --%>
+	function add_expense_detail() {
+		let no = $("tbody.expense_detail tr").length/2;
+		if(no < 3) {
+			let html = `<tr>
+							<td><input type="date" class="useDate"	name="useDate\${no}" onkeydown="return false" style="width: 100%;"/></td>
+							<td><input type="text" class="type"		name="type\${no}" style="width: 100%;"/></td>
+							<td><input type="number" class="amount" name="amount\${no}" onchange="check_amount(this)" onkeyup="check_amount(this)" style="width: 100%;"/></td>
+							<td><input type="text" class="content" name="content\${no}" style="width: 100%;"/></td>
+							<td><input type="text" class="note"	 name="note\${no}" style="width: 100%;"/></td>
+						<tr>`;
+			
+			$("tbody.expense_detail").append(html);
+		}
+		else {
+			alert("더 이상 추가할 수 없습니다.");
+		}
+	}
+	
+	<%-- 지출 내역 삭제하기 --%>
+	function delete_expense_detail() {
+		if($("tbody.expense_detail").children().length > 2) {
+			$("tbody.expense_detail tr:last-child").remove();
+			$("tbody.expense_detail tr:last-child").remove();
+		}
+		else {
+			alert("더 이상 삭제할 수 없습니다.");
+		}
+	}
+	
+	
+	<%-- 지출품의서 금액을 검사하는 함수 --%>
+	function check_amount(obj) {
+		
+		if(!Number.isInteger(Number($(obj).val()))) {
+			alert("정수만 입력 가능합니다.");
+			$(obj).val(Math.round(Number($(obj).val())));
+		}
+		
+		if($(obj).val() < 0) {
+			alert("음수는 입력이 불가능합니다.");
+			$(obj).val(0);
+		}
+		
+		let totalAmount = 0;
+		
+		$("input.amount").each(function(index, item){
+			totalAmount += Number($(item).val());
+		});
+		
+		$("input[name='totalExpenseAmount']").val(totalAmount);
+	}
+	
+	
+	<%-- 지출품의서 결재요청하는 함수 --%>
+	function expenseDraft() {
+		
+		if($("input[name='subject']").val().trim() == "") {	// 제목을 입력하지 않았을 경우
+			alert("제목을 입력하세요!")
+			return;
+		}
+		if($("input[name='totalExpenseAmount']").val() == 0) {			// 금액을 입력하지 않았을 경우
+			alert("금액을 입력하세요!");
+			return;
+		}
+		if($("textarea[name='reason']").val().trim() == "") {		// 지출사유를 입력하지 않았을 경우
+			alert("지출사유를 입력하세요!");
+			return;
+		}
+		
+		let check = true;
+		
+		$("input.useDate").each(function(index, item){
+			if($(item).val().trim() == "") {
+				check = false;
+			}
+		});
+		
+		if(!check) {
+			alert("사용일자를 입력하세요!");
+			return;
+		}
+		
+		$("input.type").each(function(index, item){
+			if($(item).val().trim() == "") {
+				check = false;
+			}
+		});
+		
+		if(!check) {
+			alert("분류를 입력하세요!");
+			return;
+		}
+		
+		$("input.amount").each(function(index, item){
+			if($(item).val() == 0) {
+				check = false;
+			}
+		});
+		
+		if(!check) {
+			alert("금액을 입력하세요!");
+			return;
+		}
+		
+		$("input.content").each(function(index, item){
+			if($(item).val().trim() == "") {
+				check = false;
+			}
+		});
+		
+		if(!check) {
+			alert("사용내역을 입력하세요!");
+			return;
+		}
+		
+		if($("div#approval_line").children().length == 0) {	// 결재자를 한명도 추가하지 않았을 경우
+			alert("결재 라인을 추가해주세요!");
+			return;
+		}
+		
+		draft(); // 결재 요청하기
+		
+	}
+	
+	////////////////////////////////////////////////////////////////////////////
+	
 	
 	
 </script>
@@ -798,22 +933,22 @@
 	<div class="m-3">
 		<c:if test="${requestScope.documentType == '휴가신청서'}">
 			<h3 class="mb-3">휴가신청서</h3>
-			<button class="doc_btn mr-3" onclick="annualDraft()">결재요청</button>
+			<button class="doc_btn mr-3 mb-3" onclick="annualDraft()">결재요청</button>
 		</c:if>
 		<c:if test="${requestScope.documentType == '연장근무신청서'}">
 			<h3 class="mb-3">연장근무신청서</h3>
-			<button class="doc_btn mr-3" onclick="overtimeDraft()">결재요청</button>
+			<button class="doc_btn mr-3 mb-3" onclick="overtimeDraft()">결재요청</button>
 		</c:if>
 		<c:if test="${requestScope.documentType == '지출품의서'}">
 			<h3 class="mb-3">지출품의서</h3>
-			<button class="doc_btn mr-3" onclick="expenseDraft()">결재요청</button>
+			<button class="doc_btn mr-3 mb-3" onclick="expenseDraft()">결재요청</button>
 		</c:if>
 		<c:if test="${requestScope.documentType == '업무기안'}">
 			<h3 class="mb-3">업무기안</h3>
-			<button class="doc_btn mr-3" onclick="businessDraft()">결재요청</button>
+			<button class="doc_btn mr-3 mb-3" onclick="businessDraft()">결재요청</button>
 		</c:if>
 		<button class="doc_btn mr-3" onclick="saveTemp()">임시저장</button>
-		<button class="doc_btn mr-3">미리보기</button>
+		<!-- <button class="doc_btn mr-3">미리보기</button> -->
 		<button class="doc_btn" id="approval_line_btn">결재 정보</button>
 	</div>
 	<div class="m-3 draftForm">
@@ -822,16 +957,16 @@
 			<input type="hidden" name="temp" value="0" />
 			
 			<c:if test="${requestScope.documentType == '휴가신청서'}">
-				<h3 style="text-align: center">연차신청서</h3>
+				<h3 style="text-align: center" class="mb-5">연차신청서</h3>
 			</c:if>
 			<c:if test="${requestScope.documentType == '연장근무신청서'}">
-				<h3 style="text-align: center">연장근무신청서</h3>
+				<h3 style="text-align: center" class="mb-5">연장근무신청서</h3>
 			</c:if>
 			<c:if test="${requestScope.documentType == '지출품의서'}">
-				<h3 style="text-align: center">지출품의서</h3>
+				<h3 style="text-align: center" class="mb-5">지출품의서</h3>
 			</c:if>
 			<c:if test="${requestScope.documentType == '업무기안'}">
-				<h3 style="text-align: center">업무기안</h3>
+				<h3 style="text-align: center" class="mb-5">업무기안</h3>
 			</c:if>
 			
 			<div style="display: flex">
@@ -1136,6 +1271,7 @@
 				<%-- 지출품의서 폼 --%>
 				<c:if test="${requestScope.documentType == '지출품의서'}">
 					<input type="hidden" name="documentType" value="지출품의서" />
+					<input name='expense_detail_count' type='hidden' value='1'/>
 					<table class="mt-5" style="width: 100%">
 						<tbody>
 							<tr>
@@ -1162,45 +1298,53 @@
 								</td>
 							</tr>
 							<tr>
-								<th>사유</th>
+								<th>총 금액</th>
 								<td>
 									<c:if test="${empty requestScope.document}">
-										<input type="text" name="reason" value=" " style="width: 100%;"/>
+										<input type="number" name="totalExpenseAmount" value="0" style="width: 100%;" readonly="readonly"/>
 									</c:if>
 									<c:if test="${not empty requestScope.document}">
-										<input type="text" name="reason" value="${requestScope.document.reason}" style="width: 100%;"/>
+										<input type="number" name="totalExpenseAmount" value="${requestScope.document.totalExpenseAmount}" style="width: 100%;" readonly="readonly"/>
 									</c:if>
 								</td>
 							</tr>
 							<tr>
-								<th>연장 근무 일자</th>
+								<th>지출사유</th>
 								<td>
 									<c:if test="${empty requestScope.document}">
-										<input type="date" name="overtimeDate" onchange="check_weekend()" onkeydown="return false" />
+										<textarea name="reason" style="width: 100%; height: 150px; overflow: auto;"></textarea>
 									</c:if>
 									<c:if test="${not empty requestScope.document}">
-										<c:if test="${requestScope.document.overtimeDate eq '-'}">
-											<input type="date" name="overtimeDate" onchange="check_weekend()" onkeydown="return false" />
-										</c:if>
-										<c:if test="${requestScope.document.overtimeDate ne '-'}">
-											<input type="date" name="overtimeDate" onchange="check_weekend()" value="${requestScope.document.overtimeDate}" onkeydown="return false" />
-										</c:if>
+										<textarea name="reason" style="width: 100%; height: 150px; overflow: auto;">${requestScope.document.reason}</textarea>
 									</c:if>
-									<span id="check_weekend" class="alert"></span>
 								</td>
 							</tr>
+						</tbody>
+					</table>
+					
+					<div class="mt-5 mb-1">
+						<a onclick="add_expense_detail()" style="cursor: pointer;"><i style="font-size: 20pt;" class="fa-solid fa-plus mr-2"></i></a>
+						<a onclick="delete_expense_detail()" style="cursor: pointer;"><i style="font-size: 20pt;" class="fa-solid fa-trash-can"></i></a>
+					</div>
+					
+					<table style="width: 100%">
+						<thead>
 							<tr>
-								<th>연장 근무 시간</th>
-								<td>
-									<input type="text" value="3시간" style="width: 100%;" readonly />
-								</td>
+								<th>사용일자</th>
+								<th>분류</th>
+								<th>금액</th>
+								<th>사용내역</th>
+								<th>비고</th>
 							</tr>
+						</thead>
+						<tbody class="expense_detail">
 							<tr>
-								<th class="pl-4" colspan="2" style="text-align: left;">
-									1. 연장 근무는 3시간을 규정으로 한다.
-									<br>2. 연장 근무 신청은 반드시 퇴근 시간 이전에 이루어져야 한다. 
-								</th>
-							</tr>
+								<td><input type="date" class="useDate" name="useDate0" onkeydown="return false" style="width: 100%;"/></td>
+								<td><input type="text" class="type" name="type0" style="width: 100%;"/></td>
+								<td><input type="number" class="amount" name="amount0" onchange="check_amount(this)" onkeyup="check_amount(this)" style="width: 100%;"/></td>
+								<td><input type="text" class="content" name="content0" style="width: 100%;"/></td>
+								<td><input type="text" class="note" name="note0" style="width: 100%;"/></td>
+							<tr>
 						</tbody>
 					</table>
 				</c:if>
@@ -1282,11 +1426,11 @@
 			</div>
 			
 			<%-- 파일 첨부 --%>
-			<div class="mt-4" style="display: flex">
+		<%--	<div class="mt-4" style="display: flex">
 				<span class="mr-5" style="width: 10%; margin-top:auto; margin-bottom:auto;">파일첨부</span>
 				<div id="fileDrop" class="fileDrop border border-secondary"></div>
 			</div>
-			<div id="fileList" class="mt-1"></div>
+			<div id="fileList" class="mt-1"></div> --%>
 			
 			<div class="mt-5">
 				<a onclick="history.back()" style="color: black; cursor: pointer">
