@@ -11,11 +11,32 @@ import com.spring.app.employee.domain.TeamVO;
 
 public interface DocumentService {
 
+	// 메인 페이지에서 보여줄 결재 대기 문서 5개 가져오기
+	List<DocumentVO> mainTodoList(String employeeNo);
+
+	// 메인 페이지에서 보여줄 기안 진행 문서 5개 가져오기
+	List<DocumentVO> mainProgressList(String employeeNo);
+
+	// 메인 페이지에서 보여줄 기안 완료 문서 5개 가져오기
+	List<DocumentVO> mainCompletedList(String employeeNo);
+	
 	// 결재 대기 문서 리스트 가져오기
 	List<DocumentVO> todoList(String emplowlqwndyeeNo);
 	
 	// 결재 예정 문서 리스트 가져오기
 	List<DocumentVO> upcomingList(String employeeNo);
+	
+	// 결재 대기 문서함에서 검색어를 포함한 문서 갯수 가져오기
+	int todoListCount_Search(Map<String, String> paraMap);
+
+	// 결재 대기 문서함에서 검색어를 포함한 페이징 처리한 문서 리스트 가져오기
+	List<DocumentVO> todoList_Search_Paging(Map<String, String> paraMap);
+
+	// 결재 예정 문서함에서 검색어를 포함한 문서 갯수 가져오기
+	int upcomingListCount_Search(Map<String, String> paraMap);
+
+	// 결재 예정 문서함에서 검색어를 포함한 페이징 처리한 문서 리스트 가져오기
+	List<DocumentVO> upcomingList_Search_Paging(Map<String, String> paraMap);
 	
 	// 기안 문서함에서 검색어를 포함한 문서 갯수 가져오기
 	int myDocumentListCount_Search(Map<String, String> paraMap);
@@ -23,15 +44,24 @@ public interface DocumentService {
 	// 기안 문서함에서 검색어를 포함한 페이징 처리한 문서 리스트 가져오기
 	List<DocumentVO> myDocumentList_Search_Paging(Map<String, String> paraMap);
 
-	// 임시저장 문서 리스트 가져오기
-	List<DocumentVO> tempList(String employeeNo);
-	
-	// 결재 처리한 문서 리스트 가져오기
-	List<DocumentVO> approvedList(String employeeNo);
+	// 임시 저장 문서함에서 검색어를 포함한 문서 갯수 가져오기
+	int tempListCount_Search(Map<String, String> paraMap);
 
-	// 부서 문서 리스트 가져오기
-	List<DocumentVO> deptDocumentList(String employeeNo);
+	// 임시 저장 문서함에서 검색어를 포함한 페이징 처리한 문서 리스트 가져오기
+	List<DocumentVO> tempList_Search_Paging(Map<String, String> paraMap);
+
+	// 결재 문서함에서 검색어를 포함한 문서 갯수 가져오기
+	int approvedtListCount_Search(Map<String, String> paraMap);
 	
+	// 결재 문서함에서 검색어를 포함한 페이징 처리한 문서 리스트 가져오기
+	List<DocumentVO> approvedList_Search_Paging(Map<String, String> paraMap);
+
+	// 부서 문서함에서 검색어를 포함한 문서 갯수 가져오기
+	int deptDocumentListCount_Search(Map<String, String> paraMap);
+
+	// 부서 문서함에서 검색어를 포함한 페이징 처리한 문서 리스트 가져오기
+	List<DocumentVO> deptDocumentList_Search_Paging(Map<String, String> paraMap);
+
 	// 문서함에서 문서 1개 보여주기
 	Map<String, String> documentView(Map<String, String> paraMap);
 
@@ -68,11 +98,12 @@ public interface DocumentService {
 	// 휴가신청서 잔여 연차 가져오기
 	int getAnnual(String employeeNo);
 
-	List<DocumentVO> mainTodoList(String employeeNo);
+	
 
-	List<DocumentVO> mainProgressList(String employeeNo);
 
-	List<DocumentVO> mainCompletedList(String employeeNo);
+	
+
+	
 
 	
 

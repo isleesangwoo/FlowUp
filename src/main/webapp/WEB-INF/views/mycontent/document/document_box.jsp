@@ -9,7 +9,7 @@
 
 
 <div id="right_title_box">
-    <h1 id="doc_title"></h1>
+    <h3 id="doc_title"></h3>
 
     <!-- 오른쪽 바 메뉴버튼들입니다! -->
 	<div id="right_menu_container">
