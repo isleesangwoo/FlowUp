@@ -238,7 +238,7 @@ function getLoadNotification(){ // 읽지 않은 알림 조회하기 ( 최신화
 								newAlarm +=`<i class="fa-solid fa-user"></i>`;
 							}
 							else{ // 프로필 등록을 했을 경우
-								newAlarm +=`<img src='/flowUp/resources/files/${item.fileName}' width='32' height='32'/>`;
+								newAlarm +=`<img src='/flowUp/resources/files/${item.fileName}' width='32' height='32' style="border-radius: 50%;"/>`;
 							}
 											
 												

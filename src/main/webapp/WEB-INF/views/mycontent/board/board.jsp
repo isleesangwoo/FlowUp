@@ -65,10 +65,10 @@
 							
 							<span id="profileImg"> <!-- 프로필 사진 -->
 								<c:if test="${post.fileName == null}">
-									<span class="profileImgElmt" style="text-align: center; "><i class="fa-solid fa-user"></i></span>
+									<span class="profileImgElmt"><i class="fa-solid fa-user"></i></span>
 								</c:if>
 								<c:if test="${post.fileName != null}">
-									<span class="profileImgElmt"><img src='/flowUp/resources/files/${post.fileName}' width='32' height='32'/></span>
+									<span class="profileImgElmt"><img src='/flowUp/resources/files/${post.fileName}' width='32' height='32' style="border-radius:50%;"/></span>
 								</c:if>
 							</span>
 							<span class="postCreateBy">${post.name} ${post.positionName}</span>

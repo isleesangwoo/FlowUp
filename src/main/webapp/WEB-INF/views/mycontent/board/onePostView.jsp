@@ -202,7 +202,7 @@
 	        <div id="commentCreate" class="padding">
 	        	<span id="profile"> <%-- 이 곳은 로그인된 사원의 프로필이 들어올 자리 --%>
 	        	<c:if test="${login_fileName != null}">
-	        		<img src='/flowUp/resources/files/${login_fileName}' width='32' height='32'/>
+	        		<img src='/flowUp/resources/files/${login_fileName}' width='32' height='32' style="border-radius: 50%;"/>
 	        	</c:if>
 	        	<c:if test="${login_fileName == null}">
 	        		<i class="fa-solid fa-user"></i>

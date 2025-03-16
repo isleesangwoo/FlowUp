@@ -526,7 +526,7 @@ $(document).ready(()=>{
 						html +=`<i class="fa-solid fa-user"></i> `;
 					  }
 					  else{ // 프로필이미지 존재(경로설정 필요)
-						html +=`<img src='/flowUp/resources/files/${comment.fileName}' width='32' height='32'/>`;
+						html +=`<img src='/flowUp/resources/files/${comment.fileName}' width='32' height='32' style="border-radius: 50%;"/>`;
 					  }
 					   
 				html +=`</span>
@@ -562,7 +562,7 @@ $(document).ready(()=>{
 									}
 									else if(json.login_profileImg != null || json.login_profileImg != ""){	// 프로필이미지가 있는 경우 프로필이미지 존재(경로설정 필요)
 										
-										html +=`<img src='/flowUp/resources/files/${login_fileName}' width='32' height='32'/>`;
+										html +=`<img src='/flowUp/resources/files/${login_fileName}' width='32' height='32' style="border-radius: 50%;"/>`;
 									}
 									else{
 										html+=`<i class="fa-solid fa-user"></i>`;
