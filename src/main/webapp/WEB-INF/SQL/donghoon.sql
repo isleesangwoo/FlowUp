@@ -1096,17 +1096,27 @@ commit;
     SELECT M.mailNo, M.subject, M.content, M.sendDate, 
            R.readSt AS readStatus, R.deleteSt AS deleteStatus, R.importantSt AS importantStatus,
            E.employeeNo, E.name AS senderName,
-           COALESCE(SUM(F.fileSize), 0) AS totalFileSize
+           MAX(f.fileSize) AS fileSize
     FROM tbl_receiver R
     JOIN tbl_mail M ON R.fk_mailNo = M.mailNo
     JOIN tbl_employee E ON M.fk_employeeNo = E.employeeNo  -- 발신자 정보
     LEFT JOIN tbl_mailFile F ON M.mailNo = F.fk_mailNo
-    WHERE R.fk_employeeNo = 100013 -- 로그인한 사용자가 수신자인 경우
+    WHERE R.fk_employeeNo = 100014 -- 로그인한 사용자가 수신자인 경우
       AND R.deleteSt = 0  -- 삭제되지 않은 메일만 조회
     GROUP BY M.mailNo, M.subject, M.content, M.sendDate, 
              R.readSt, R.deleteSt, R.importantSt, 
              E.employeeNo, E.name;
 </select>
+
+SELECT fk_mailNo, fk_employeeNo, readSt, deleteSt, importantSt
+FROM tbl_receiver
+WHERE fk_employeeNo = 100013
+ORDER BY fk_mailNo;
+
+SELECT *
+FROM tbl_referenced 
+WHERE refEmployeeNo = '100013'
+AND refStatus = '0';
 
 SELECT * FROM tbl_receiver WHERE fk_employeeNo = 100001;
 
@@ -1117,3 +1127,4 @@ INSERT INTO tbl_receiver (receiverNo, fk_mailNo, fk_employeeNo, readSt, deleteSt
 SELECT receiverSeq.nextval, mailNo, fk_employeeNo, 0, 0, 0
 FROM tbl_mail;
 
+commit;

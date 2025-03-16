@@ -270,7 +270,7 @@ $(document).ready(function(){
 </table>
 
 <div class="container-fluid" style="background: silver;">
-   <div class="row">
+   <div class="row" style="min-height: 85vh; margin-top: auto;"> 
       <div class="col-md-10 offset-md-1">
          <div id="chatStatus"></div>
          <div class="my-3">
@@ -289,15 +289,85 @@ $(document).ready(function(){
          
          <div id="chatMessage" style="max-height: 500px; overFlow: auto; margin: 20px 0;"></div>
       
-      	 <div>
-	      	 <input type="text"   id="message" class="form-control" placeholder="메시지 내용">
-	      	 <input type="button" id="btnSendMessage" class="btn btn-success btn-sm my-3" value="메시지보내기" />
-      	 </div>
+		<div class="input-group" style="position: relative;">
+		
+		    <input type="text" id="message" class="form-control"
+		           style="padding-right: 100px; border-radius: 25px;">
+		    <div class="input-group-append" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); z-index: 5;">
+		        <input type="button" id="btnSendMessage" class="btn btn-success btn-sm" 
+		               value="보내기" style="border-radius: 20px; height: 38px;">
+		    </div>
+		</div>
          
-         
-         <input type="button" class="btn btn-danger btn-sm my-3 mx-3" onclick="javascript:location.href='<%=request.getContextPath() %>/index'" value="채팅방나가기" />
+         <button type="button" 
+		        class="btn btn-danger btn-sm my-3 mx-3" 
+		        onclick="javascript:location.href='<%=request.getContextPath() %>/index'"
+		        style="position: absolute; top: 10px; right: 10px; z-index: 1000; padding: 8px 12px;"
+		        aria-label="채팅방 나가기">
+		    <i class="fa-solid fa-arrow-right-from-bracket fa-lg"></i>
+		</button>
+      
       </div>
    </div>
 </div> 
+
+
+
+
+
+
+<style>
+/* 모든 스크롤바 완전 숨김 */
+#chatMessage::-webkit-scrollbar,
+#connectingUserList::-webkit-scrollbar {
+    display: none; /* 웹킷 기반 브라우저 */
+}
+
+#chatMessage,
+#connectingUserList {
+    -ms-overflow-style: none;  /* IE/Edge */
+    scrollbar-width: none;  /* Firefox */
+    overflow: -moz-scrollbars-none; /* 구형 Firefox */
+}
+
+/* 스크롤 기능은 유지 */
+#chatMessage {
+    overflow-y: scroll !important;
+    scroll-behavior: smooth;
+}
+
+/* 채팅 메시지 영역 추가 효과 */
+#chatMessage {
+    scroll-behavior: smooth;
+    overscroll-behavior: contain;
+}
+
+#chatMessage {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 15px;
+    background-color: white;
+}
+
+.input-group {
+    margin-top: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.form-control {
+    border: 2px solid #4CAF50 !important;
+}
+
+.btn-success {
+    background-color: #4CAF50 !important;
+    border-color: #45a049 !important;
+    transition: all 0.3s;
+}
+
+.btn-success:hover {
+    background-color: #45a049 !important;
+    transform: scale(1.05);
+}
+</style>
 
 <jsp:include page="../../footer/footer.jsp" /> 
