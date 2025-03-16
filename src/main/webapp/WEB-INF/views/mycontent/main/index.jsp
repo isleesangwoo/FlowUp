@@ -144,33 +144,33 @@ tr.tbodyTr:nth-child(even){
 				<div class="treInnerContainer">
 					<div class="topInnerTitle" style="margin-bottom:0px;">
 						<i class="fa-solid fa-money-check-dollar"></i>
-						전자결제
+						전자결재
 					</div>
 					
 					<div style="display: flex; flex-direction: column; align-items: center; justify-content:center; height: 100%;">
 						<div class="paybox">
 							<div class="payBtn">
-								<a href="#">						<!-- 성훈이형! 각 문서 파트 별 링크 달아주세요!!!!!! -->
-									<span>결재 대기 문서</span>			<!-- 형 파트는 이쁘게 못 만들어드려서 죄송해요 ㅜㅜ -->
-									<span class="payCnt">11</span>	<!-- 이 자리에 개수 띄워주세요!! -->
+								<a href="<%= ctxPath%>/document/todoList">
+									<span>결재 대기 문서</span>	
+									<span class="payCnt">${documentMap.todoDocCnt}</span>
 								</a>
 							</div>
 							<div class="payBtn">
-								<a href="#">						<!-- 각 문서 파트 별 링크 달아주세요!!!!!! -->
+								<a href="<%= ctxPath%>/document/upcomingList">
 									<span>결재 예정 문서</span>	
-									<span class="payCnt"></span>	<!-- 이 자리에 개수 띄워주세요!! -->
+									<span class="payCnt">${documentMap.upcomingDocCnt}</span>
 								</a>
 							</div>
 							<div class="payBtn">
-								<a href="#">						<!-- 각 문서 파트 별 링크 달아주세요!!!!!! -->
+								<a href="<%= ctxPath%>/document/myDocumentList">
 									<span>기안 문서함</span>
-									<span class="payCnt">1</span>	<!-- 이 자리에 개수 띄워주세요!! -->
+									<span class="payCnt">${documentMap.myDocCnt}</span>
 								</a>
 							</div>
 							<div class="payBtn">
-								<a href="#">						<!-- 각 문서 파트 별 링크 달아주세요!!!!!! -->
+								<a href="<%= ctxPath%>/document/tempList">
 									<span>임시 저장함</span>
-									<span class="payCnt">100</span> <!-- 이 자리에 개수 띄워주세요!! -->
+									<span class="payCnt">${documentMap.tempDocCnt}</span>
 								</a>
 							</div>
 						</div>

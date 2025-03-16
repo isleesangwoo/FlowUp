@@ -98,6 +98,9 @@ public interface DocumentService {
 	// 휴가신청서 잔여 연차 가져오기
 	int getAnnual(String employeeNo);
 
+	// 메인페이지에 보여줄 유저의 결재대기문서, 결재예정문서, 기안문서, 임시저장문서 개수 알아오기
+	Map<String, Integer> getDocCnt(String employeeno);
+
 	
 
 
