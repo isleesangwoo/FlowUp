@@ -125,6 +125,12 @@ public interface DocumentDAO {
 	// 휴가신청서 승인 시 근태 테이블에 데이터 넣어주기
 	int updateCommuteWithAnnual(Map<String, String> paramap);
 
+	// 휴가신청서 신청 시 겹치는지 확인
+	int checkAnuualOverlap(Map<String, String> paraMap);
+
+	// 연장근무신청서 일자가 겹치는지 확인
+	int checkOvertimeOverlap(Map<String, String> paraMap);
+
 	
 
 

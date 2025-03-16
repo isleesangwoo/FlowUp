@@ -346,3 +346,7 @@ where employeeNo = '100014';
 insert into tbl_commute(commuteNo, FK_employeeNo, status, rest, overTimeYN, workdate, starttime, endtime)
 values(commuteSeq.nextval, 100014, to_number('6'), 2, to_number('0'), '2025-03-28', to_date('2025-03-28', 'yyyy-mm-dd'), to_date('2025-03-28', 'yyyy-mm-dd'));
 rollback;
+
+select *
+from tbl_commute
+where status in (1,2,3) and fk_employeeNo = 100014 and workdate between '2025-03-28' and '2025-03-31';

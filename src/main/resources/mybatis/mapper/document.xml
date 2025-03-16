@@ -606,6 +606,22 @@
 	</insert>
 	
 	
+	<!-- 휴가신청서 신청 시 겹치는지 확인 -->
+	<select id="checkAnuualOverlap" parameterType="HashMap" resultType="Integer">
+		select count(*)
+		from tbl_commute
+		where rest in (1,2,3) and fk_employeeNo = #{fk_employeeNo} and workdate between #{startDate} and #{endDate}
+	</select>
+	
+	
+	<!-- 연장근무신청서 일자가 겹치는지 확인 -->
+	<select id="checkOvertimeOverlap" parameterType="HashMap" resultType="Integer">
+		select count(*)
+		from tbl_draft_overtime O JOIN tbl_document D
+		ON O.documentNo = D.documentNo
+		where fk_employeeNo = #{fk_employeeNo} and overtimeDate = #{overtimeDate}
+	</select>
+	
 </mapper>
 
 

@@ -456,8 +456,11 @@
 					alert("결재 요청이 완료되었습니다.");
 					location.href=`<%= ctxPath%>/document/documentView?documentNo=\${json.documentNo}&documentType=\${json.documentType}`;
 				}
-				else {
-					alert("결재 요청이 실패되었습니다.");
+				else if(json.n == "-1"){
+					alert("중복되는 휴가 일자입니다.");
+				}
+				else if(json.n == "-2"){
+					alert("중복되는 연장 근무 일자입니다.");
 				}
 			},
 			error: function(request, status, error){

@@ -1,7 +1,6 @@
 package com.spring.app.document.service;
 
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -238,6 +237,27 @@ public class DocumentService_imple implements DocumentService {
 	@Transactional(value = "transactionManager_mymvc_user", propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	public Map<String, String> draft(Map<String, String> paraMap) {
 		
+		Map<String, String> map = new HashMap<>();
+		
+		// 휴가신청서 휴가 일자가 겹치는지 확인
+		if("휴가신청서".equals(paraMap.get("documentType")) && !"1111-11-11".equals(paraMap.get("startDate")) && !"1111-11-11".equals(paraMap.get("endDate"))) {
+			int n = mapper_dao.checkAnuualOverlap(paraMap);
+			if(n > 0) {
+				map.put("n", "-1");
+				return map;
+			}
+		}
+		
+		// 연장근무신청서 일자가 겹치는지 확인
+		else if("연장근무신청서".equals(paraMap.get("documentType")) && !"1111-11-11".equals(paraMap.get("overtimeDate"))) {
+			int n = mapper_dao.checkOvertimeOverlap(paraMap);
+			if(n > 0) {
+				map.put("n", "-2");
+				return map;
+			}
+		}
+		
+		
 		// 채번하기
 		String seq_document = mapper_dao.getSeqDocument();
 		
@@ -272,7 +292,7 @@ public class DocumentService_imple implements DocumentService {
 			a *= mapper_dao.insertApprover(paraMap);
 		}
 		
-		Map<String, String> map = new HashMap<>();
+		
 		map.put("n", String.valueOf(n*m*a));	// 결과 넣어주기
 		map.put("documentNo", documentNo);		// 문서번호 넣어주기
 		
