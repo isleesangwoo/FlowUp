@@ -28,7 +28,7 @@
                
                <table>
                   <tr style="height:40px;">
-                     <td>대분류명</td>
+                     <td style="display: inline-block; width: 100px; vertical-align: middle;">대분류명</td>
                      <td><input type="text" name="assetTitle"></td> <%-- 대분류명 자리 --%>
                   </tr>
                   <tr>
@@ -40,7 +40,7 @@
                    
                </table>
                
-               <button type="button" id="addReserBtn">등록</button><button type="reset">취소</button>
+               <button class="okBtn" type="button" id="addReserBtn">등록</button><button class="resetBtn" type="reset">취소</button>
             </form>
 		</div>
 		

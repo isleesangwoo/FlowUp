@@ -73,14 +73,13 @@
 	    background-color: var(--whiteColor);
 	    border-radius: var(--size20);
 	    box-sizing: border-box;
-	    padding: var(--size16);
 	    color: #000;
 	}
 	
 	#goToWork > div {
 	    position: relative;
 	    width: 100%;
-	    height: 100%;
+	    height: auto;
 	}
 	
 	#workTitle {

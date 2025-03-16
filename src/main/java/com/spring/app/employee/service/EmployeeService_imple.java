@@ -355,6 +355,23 @@ public class EmployeeService_imple implements EmployeeService {
 		return mapList;
 	}
 
+	
+	
+	
+	// tbl_loginhistory 테이블에 insert 해주기
+	@Override
+	public void insert_tbl_loginhistory(Map<String, String> paraMap) {
+		dao.insert_tbl_loginhistory(paraMap);
+		
+	}
+
+
+	// 해당 유저의 ip 주소 갖고오기
+	@Override
+	public List<Map<String, String>> getIpAddr(String employeeno) {
+		List<Map<String, String>> ipMap = dao.getIpAddr(employeeno);
+		return ipMap;
+	}
 
 	
 

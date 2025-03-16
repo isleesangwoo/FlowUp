@@ -286,6 +286,33 @@
 	where fk_employeeno  = #{fk_employeeno} and groupNo=#{groupNo}
 </select>
 	
+	
+	
+	
+	<!-- tbl_loginhistory 테이블에 insert 해주기 -->
+  <insert id="insert_tbl_loginhistory" parameterType="HashMap">
+	  insert into tbl_loginhistory(historyno, fk_employeeno, logindate, clientip)
+	  values(historyno.nextval, #{id}, default, #{clientIp})
+  </insert>	
+
+
+  <resultMap type="HashMap" id="ipMap">
+    <result column="historyno" property="historyno" javaType="String"/>
+    <result column="fk_employeeno" property="fk_employeeno" javaType="String"/>
+    <result column="logindate" property="logindate" javaType="String"/>
+    <result column="clientip" property="clientip" javaType="String"/>
+  </resultMap>
+  <!-- 메인페이지 이동시 ip 주소 갖고오기 -->
+  <select id="getIpAddr" parameterType="String" resultMap="ipMap">
+  	  select historyno, fk_employeeno, to_char(logindate, 'yyyy-MM-dd HH24:mi:ss') as logindate, clientip
+	  from tbl_loginhistory
+	  where fk_employeeno = #{employeeno}
+	  order by logindate desc
+  </select>
+	
+	
+	
+	
 </mapper>
 
 

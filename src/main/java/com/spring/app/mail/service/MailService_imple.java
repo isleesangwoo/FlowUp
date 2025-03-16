@@ -292,5 +292,23 @@ public class MailService_imple implements MailService {
     public List<MailVO> getReceivedMailList(int loginEmployeeNo) {
         return mailDAO.selectReceivedMailList(loginEmployeeNo);
     }
+    
+    
+    // 읽은메일, 중요메일, 임시저장 비율 구해오기
+ 	@Override
+ 	public Map<String, String> selectMail(String fk_employeeNo) {
+ 		Map<String, String> map = mailDAO.selectMail(fk_employeeNo);
+ 		return map;
+ 	}
+
+
+ 	// 해당 유저의 중요, 읽은, 임시저장함 개수 알아오기
+ 	@Override
+ 	public List<Map<String, String>> getMailCnt(String employeeno) {
+ 		List<Map<String, String>> map = mailDAO.getMailCnt(employeeno);
+ 		return map;
+ 	}
+    
+    
 
 }

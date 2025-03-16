@@ -594,4 +594,18 @@ public class MailController {
         return service.getReceivedMailList(employeeNo);
     }
     
+    
+    
+    
+    @GetMapping("/selectMail")
+	@ResponseBody
+	public Map<String, String> selectMail(@RequestParam String fk_employeeNo) {
+		// System.out.println("되려나");
+    	
+    	Map<String, String> map = service.selectMail(fk_employeeNo); // 읽은메일, 중요메일, 임시저장 비율 구해오기
+    	
+		return map;
+	}
+    
+    
 }

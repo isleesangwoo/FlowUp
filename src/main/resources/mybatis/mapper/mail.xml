@@ -396,4 +396,68 @@
 
 
 
+
+	<!-- ================= yh ================= -->
+	<resultMap type="HashMap" id="yh_map">
+		<result property="readStatusPercentage" column="readStatusPercentage" javaType="String"/>
+		<result property="importantStatusPercentage" column="importantStatusPercentage" javaType="String"/>
+		<result property="saveStatusPercentage" column="saveStatusPercentage" javaType="String"/>
+	</resultMap>
+	<select id="selectMail" resultMap="yh_map" parameterType="String">
+		SELECT 
+		    ROUND(
+		        CASE 
+		            WHEN COUNT(DISTINCT M.mailNo) = 0 THEN 0 
+		            ELSE (COUNT(DISTINCT CASE WHEN READSTATUS = 1 THEN M.mailNo END) / COUNT(DISTINCT M.mailNo)) * 100 
+		        END, 2
+		    ) AS readStatusPercentage,
+		    
+		    ROUND(
+		        CASE 
+		            WHEN COUNT(DISTINCT M.mailNo) = 0 THEN 0 
+		            ELSE (COUNT(DISTINCT CASE WHEN IMPORTANTSTATUS = 1 THEN M.mailNo END) / COUNT(DISTINCT M.mailNo)) * 100 
+		        END, 2
+		    ) AS importantStatusPercentage,
+		    
+		    ROUND(
+		        CASE 
+		            WHEN COUNT(DISTINCT M.mailNo) = 0 THEN 0 
+		            ELSE (COUNT(DISTINCT CASE WHEN SAVESTATUS = 1 THEN M.mailNo END) / COUNT(DISTINCT M.mailNo)) * 100 
+		        END, 2
+		    ) AS saveStatusPercentage
+		FROM tbl_receiver R
+		JOIN tbl_mail M ON R.fk_mailNo = M.mailNo
+		WHERE R.fk_employeeNo = #{fk_employeeNo}
+		  AND R.deleteSt = 0
+	</select>
+	
+	
+	
+	<resultMap type="HashMap" id="yh_cnt_map">
+		<result property="MAILECNT" column="MAILECNT" javaType="String"/>
+	</resultMap>
+	<select id="getMailCnt" parameterType="String" resultMap="yh_cnt_map">
+		SELECT count(*) as MAILECNT
+		FROM tbl_receiver R
+		JOIN tbl_mail M ON R.fk_mailNo = M.mailNo
+		WHERE R.fk_employeeNo = #{employeeno} AND R.deleteSt = 0 AND M.IMPORTANTSTATUS = 1
+		
+		union all
+		
+		SELECT count(*) as MAILECNT
+		FROM tbl_receiver R
+		JOIN tbl_mail M ON R.fk_mailNo = M.mailNo
+		WHERE R.fk_employeeNo = #{employeeno} AND R.deleteSt = 0 AND M.SAVESTATUS = 1
+		
+		union all
+		
+		SELECT count(*) as MAILECNT
+		FROM tbl_receiver R
+		JOIN tbl_mail M ON R.fk_mailNo = M.mailNo
+		WHERE R.fk_employeeNo = #{employeeno} AND R.deleteSt = 0 AND M.READSTATUS = 1
+	</select>
+	<!-- ================= yh ================= -->
+
+
+
 </mapper>

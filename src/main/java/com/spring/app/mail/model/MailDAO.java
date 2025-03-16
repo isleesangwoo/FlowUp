@@ -93,6 +93,13 @@ public interface MailDAO {
     // 받은 메일 목록 조회
     List<MailVO> selectReceivedMailList(@Param("loginEmployeeNo") int loginEmployeeNo);
 
+    
+    
+    // 읽은메일, 중요메일, 임시저장 비율 구해오기
+ 	Map<String, String> selectMail(String fk_employeeNo);
+
+ 	// 해당 유저의 중요, 읽은, 임시저장함 개수 알아오기
+ 	List<Map<String, String>> getMailCnt(String employeeno);
 
 	
 }

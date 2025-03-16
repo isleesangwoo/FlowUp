@@ -648,7 +648,12 @@ public class BoardService_imple implements BoardService {
 	
 
 	
-	
+	// 게시판 메인 페이지에 뿌려줄 모든 게시글 조회
+	@Override
+	public List<PostVO> selectAllPostMain(Map<String, String> paraMap) {
+		List<PostVO> list = dao.selectAllPostMain(paraMap);
+		return list;
+	}
 	
 	
 	
