@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import com.spring.app.mail.domain.MailFileVO;
 import com.spring.app.mail.domain.MailVO;
@@ -79,13 +80,19 @@ public interface MailDAO {
     // 첨부 파일 정보 저장
     void insertMailFile(Map<String, Object> fileMap);
 
-	String findEmployeeNoByName(String name);
+    // 메일 받은 사원 이름 조회
+	Integer findEmployeeNoByName(String name);
 
 	// 보낸 메일 조회
 	List<MailVO> selectSentMail(Map<String, String> paraMap);
 
 	// 보낸 메일 개수 조회
 	int getSentMailCount(String senderNo);
+
+	
+    // 받은 메일 목록 조회
+    List<MailVO> selectReceivedMailList(@Param("loginEmployeeNo") int loginEmployeeNo);
+
 
 	
 }

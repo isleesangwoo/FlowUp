@@ -36,23 +36,26 @@
 	        <result property="employeeNo" column="employeeNo"/>
 	        <result property="name" column="name"/>
 	    </association>
+	    
+	     <collection property="mailfilevo" ofType="MailFileVO">
+	        <result property="fileSize" column="fileSize"/>
+	    </collection>
 	</resultMap>
 
+	<!-- 받은 메일 조회 -->
 	<select id="selectMailList" resultMap="selectMailList_Map" parameterType="HashMap">
-		SELECT M.mailNo, M.fk_employeeNo, M.subject, M.content, 
-		       M.sendDate, M.readStatus, M.deleteStatus, M.saveStatus, M.importantStatus,
-		       e.employeeNo, e.name,
-		       f.Filesize
-		FROM 
-		    ( 
-		        SELECT row_number() OVER (ORDER BY mailNo DESC) AS rno, 
-		               mailNo, fk_employeeNo, subject, content,
-		               to_char(sendDate, 'yyyy-mm-dd hh24:mi') AS sendDate,
-		               readStatus, deleteStatus, saveStatus, importantStatus
-		        FROM tbl_mail
-		        WHERE 1 = 1
-		        
-		        <!-- status 값이 null이 아니고 빈 문자열("")도 아닐 경우에만 조건을 추가 -->
+	    SELECT M.mailNo, M.fk_employeeNo, M.subject, M.content, 
+	           M.sendDate, M.readStatus, M.deleteStatus, M.saveStatus, M.importantStatus,
+	           e.employeeNo, e.name,
+	           MAX(f.fileSize) AS fileSize
+	    FROM 
+	        ( 
+	            SELECT row_number() OVER (ORDER BY mailNo DESC) AS rno, 
+	                   mailNo, fk_employeeNo, subject, content,
+	                   to_char(sendDate, 'yyyy-mm-dd hh24:mi') AS sendDate,
+	                   readStatus, deleteStatus, saveStatus, importantStatus
+	            FROM tbl_mail
+	            WHERE 1 = 1
 	            <if test="deleteStatus != null and deleteStatus != ''"> 
 	                AND deleteStatus = #{deleteStatus} 
 	            </if>
@@ -62,19 +65,25 @@
 	            <if test="importantStatus != null and importantStatus != ''"> 
 	                AND importantStatus = #{importantStatus} 
 	            </if>
+	        ) M
+	    JOIN tbl_employee e ON M.fk_employeeNo = e.employeeNo
+	    LEFT JOIN tbl_mailFile f ON M.mailNo = f.fk_mailNo
+	    LEFT JOIN tbl_referenced r ON r.fk_mailNo = M.mailNo
+	    
+	    <!-- 로그인한 사용자가 수신자인 메일만 필터링 -->
+	    <if test="loginUserId != null and loginUserId != ''">
+	        AND r.refEmployeeNo  = #{loginUserId}  <!-- 로그인한 사용자의 employeeNo와 refMail이 일치 -->
+	        AND r.refStatus = '0'  <!-- 수신자로 표시된 메일만 -->
+	    </if>
+	    
+	    <!-- 페이징 처리 -->
+    	WHERE rno BETWEEN #{startRno} AND #{endRno}
+	    
+	    GROUP BY M.mailNo, M.fk_employeeNo, M.subject, M.content, M.sendDate,
+	    		 M.readStatus, M.deleteStatus, M.saveStatus, M.importantStatus,
+	    		 e.employeeNo, e.name
+	</select>
 
-		    ) M
-			JOIN tbl_employee e
-			  ON M.fk_employeeNo = e.employeeNo
-		  	LEFT JOIN tbl_mailFile f
-	  		  ON M.mailNo = f.fk_mailNo
-		
-		<!-- startRno와 endRno가 null이 아닐 때만 페이징 조건을 적용 -->
-	    <if test="startRno != null and endRno != null">
-        	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
-    	</if>
-   	</select>
-   
    
 	<!-- 안 읽은 메일 개수(unread) 조회 -->
 	<select id="getUnreadCount" resultType="int">
@@ -147,9 +156,11 @@
 	    <result property="readStatus"    column="readStatus"/>
 	    
 	    <!-- 참조 정보 관련 필드 매핑 -->
+	    <association property="referencedVO" javaType="ReferencedVO">
 	    <result property="refStatus"     column="refStatus"/>
 	    <result property="refName"       column="refName"/>
-	    <result property="refMail"       column="refMail"/>
+	    <result property="refEmail"       column="refEmail"/>
+		</association>
 	    
 	    <!-- EmployeeVO의 필드 매핑 -->
 	    <association property="employeevo" javaType="EmployeeVO">
@@ -170,7 +181,7 @@
 	    select M.mailNo, M.subject, M.content, M.sendDate, M.importantStatus, M.readStatus,
 	           f.fileSize, f.orgFileName, f.fileName,
 	           e.employeeNo, e.name, e.email,
-	           r.refStatus, r.refName, r.refMail
+	           r.refStatus, r.refName, r.refEmail
 	    from tbl_mail M
 	    left join tbl_mailFile f
 	      on M.mailNo = f.fk_mailNo
@@ -206,9 +217,9 @@
 	            <when test="sortKey == 'sendDate'">
 	                M.sendDate DESC
 	            </when>
-	            <when test="sortKey == 'fileSize'">
-	                f.fileSize DESC
-	            </when>
+				<when test="sortKey == 'fileSize'">
+				    NVL(f.fileSize, 0) DESC
+				</when>
 	            <otherwise>
 	                M.mailNo DESC
 	            </otherwise>
@@ -218,15 +229,15 @@
 	<!-- 메일함 정렬 선택 끝 -->
 	
 	<!-- 체크된 메일 deleteStatus=1 로 변경 -->
-	<update id="updateCheckDeleteStatus" parameterType="list">
-	    UPDATE tbl_mail
-	    SET deleteStatus = 1
-	    WHERE mailNo IN
-	    <foreach collection="list" item="mailNo" open="(" separator="," close=")">
-	        #{mailNo}
-	    </foreach>
+	<update id="updateCheckDeleteStatus">
+	  UPDATE tbl_mail
+	  SET deleteStatus = 1
+	  WHERE mailNo IN
+	  <foreach item="mailNo" collection="mailNoList" open="(" separator="," close=")">
+	    #{mailNo}
+	  </foreach>
 	</update>
-	
+
    	<!-- deleteStatus=1 인 메일 조회 -->
 	<select id="selectDeletedMail" resultMap="selectMailList_Map">
 	    SELECT 
@@ -278,8 +289,12 @@
 	    WHERE 1=1
 	    <if test="importantStatus != null">
 	        AND importantStatus = #{importantStatus}
-	        <if test="deleteStatus != null"> AND deleteStatus = #{deleteStatus} </if>
-	        <if test="saveStatus != null"> AND saveStatus = #{saveStatus} </if>
+	    </if>
+	    <if test="deleteStatus != null">
+	        AND deleteStatus = #{deleteStatus}
+	    </if>
+	    <if test="saveStatus != null">
+	        AND saveStatus = #{saveStatus}
 	    </if>
 	</select>
 		
@@ -293,26 +308,45 @@
 	<!-- 메일 작성 -->
 	
 	<!-- 메일 정보 저장 -->
-	<insert id="insertMail" parameterType="MailVO" useGeneratedKeys="true" keyProperty="mailNo">
-	    INSERT INTO tbl_mail (mailNo, subject, content, fk_employeeNo, readStatus, deleteStatus, saveStatus, importantStatus, sendDate)
-	    VALUES (mailSeq.nextval, #{subject}, #{content}, #{fk_employeeNo}, #{readStatus}, #{deleteStatus}, #{saveStatus}, #{importantStatus},  TO_DATE(#{sendDate}, 'YYYY-MM-DD HH24:MI:SS'))
-	</insert>
+	<insert id="insertMail" parameterType="com.spring.app.mail.domain.MailVO">
+	    INSERT INTO tbl_mail (mailNo, subject, content, sendDate, fk_employeeNo)
+	    VALUES (mailSeq.nextval, #{subject}, #{content}, SYSDATE, #{fk_employeeNo});
 	
+	    INSERT INTO tbl_receiver (receiverNo, fk_mailNo, fk_employeeNo, readSt, deleteSt, importantSt)
+	    VALUES (receiverSeq.nextval, mailSeq.currval, #{receiverEmployeeNo}, 0, 0, 0);
+	</insert>
+
 	<!-- 참조자 정보 저장 -->
-	<insert id="insertReferenced" parameterType="map">
-	    INSERT INTO tbl_referenced (refMailNo, refStatus, refName, refMail, fk_mailNo, fk_adrsBNo)
-	    VALUES (referencedSeq.nextval, #{refStatus}, #{refName}, #{refMail}, #{fk_mailNo}, #{fk_adrsBNo})
+	<insert id="insertReferenced" parameterType="java.util.Map">
+	  INSERT INTO tbl_referenced (
+	    refMailNo, 
+	    refStatus, 
+	    refName, 
+	    refEmail,
+	    refEmployeeNo, 
+	    fk_mailNo
+	  )  
+	  VALUES (
+	    referencedSeq.nextval, 
+	    #{refStatus, jdbcType=NUMERIC},
+	    #{refName, jdbcType=VARCHAR},
+	    #{refEmail, jdbcType=VARCHAR},  <!-- jdbcType=VARCHAR 명시 -->
+	    #{refEmployeeNo, jdbcType=NUMERIC},  <!-- jdbcType=NUMERIC 명시 -->
+	    #{fk_mailNo, jdbcType=NUMERIC}
+	  )
 	</insert>
 
 	<!-- 첨부 파일 정보 저장 -->
 	<insert id="insertMailFile" parameterType="MailFileVO">
 	    INSERT INTO tbl_mailFile (fileNo, fileName, orgFileName, fileSize, fk_mailNo)
-	    VALUES (mailFileSeq.nextval, #{fileName}, #{orgFileName}, #{fileSize}, #{fk_mailNo})
+	    VALUES (mailFileSeq.nextval, #{fileName}, #{orgFileName}, #{fileSize, jdbcType=BIGINT}, #{fk_mailNo})
 	</insert>
 
 	<!-- 받는사람 이름으로 사원 번호 조회 -->
-	<select id="findEmployeeNoByName" resultType="String">
-	    SELECT employeeNo FROM tbl_employee WHERE name = #{name}
+	<select id="findEmployeeNoByName" resultType="java.lang.Integer">
+	    SELECT employeeNo 
+	    FROM tbl_employee 
+	    WHERE name = #{name}
 	</select>
 
 
@@ -321,13 +355,15 @@
 	    SELECT m.*
 	    FROM tbl_mail m
 	    JOIN tbl_referenced r ON m.mailNo = r.fk_mailNo
-	    WHERE m.fk_employeeNo = #{senderNo}
-	    AND deleteStatus = 0
-	    AND r.refMail != #{senderNo}
-	    AND r.refStatus = '0'
+	    WHERE m.fk_employeeNo = #{senderNo}  <!-- 발신자 -->
+	    AND r.refEmail != #{senderNo}  <!-- 수신자가 발신자와 같지 않음 -->
+	    AND r.refStatus = '0'  <!-- 활성화된 메일만 -->
 	    ORDER BY m.sendDate DESC
-	    OFFSET (#{currentShowPageNo} - 1) * #{sizePerPage} ROWS
-	    FETCH NEXT #{sizePerPage} ROWS ONLY
+	    
+	    <if test="currentShowPageNo != null and sizePerPage != null">
+	        OFFSET ((#{currentShowPageNo} - 1) * #{sizePerPage}) ROWS
+	        FETCH NEXT #{sizePerPage} ROWS ONLY
+	    </if>
 	</select>
 	
 	<!-- 보낸메일함 총 개수 조회 -->
@@ -336,22 +372,28 @@
 	    FROM tbl_mail m
 	    JOIN tbl_referenced r ON m.mailNo = r.fk_mailNo
 	    WHERE m.fk_employeeNo = #{senderNo}
-	    AND r.refMail != #{senderNo}
+	    AND r.refEmail != #{senderNo}
 	    AND r.refStatus = '0'
+	</select>
+
+	<!-- 받은 메일 조회 -->
+	<select id="selectReceivedMailList" resultType="com.spring.app.mail.domain.MailVO">
+	    SELECT M.mailNo, M.subject, M.content, M.sendDate, 
+	           R.readSt AS readStatus, R.deleteSt AS deleteStatus, R.importantSt AS importantStatus,
+	           E.employeeNo AS senderEmployeeNo, E.name AS senderName,
+	           COALESCE(SUM(F.fileSize), 0) AS totalFileSize
+	    FROM tbl_receiver R
+	    JOIN tbl_mail M ON R.fk_mailNo = M.mailNo
+	    JOIN tbl_employee E ON M.fk_employeeNo = E.employeeNo  -- 발신자 정보
+	    LEFT JOIN tbl_mailFile F ON M.mailNo = F.fk_mailNo
+	    WHERE R.fk_employeeNo = #{loginEmployeeNo} -- 로그인한 사용자가 수신자인 경우
+	      AND R.deleteSt = 0  -- 삭제되지 않은 메일만 조회
+	    GROUP BY M.mailNo, M.subject, M.content, M.sendDate, 
+	             R.readSt, R.deleteSt, R.importantSt, 
+	             E.employeeNo, E.name;
 	</select>
 
 
 
 
-
-
 </mapper>
-
-
-
-
-
-
-
-
-
