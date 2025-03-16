@@ -77,13 +77,24 @@ public class EmployeeController {
 		ModelAndView mav = new ModelAndView();
 
 		// 클라이언트 ip 가져오기
-		String clientIp = request.getRemoteAddr();
+		String clientIp = request.getHeader("X-Forwarded-For");
+		if (clientIp == null || clientIp.isEmpty() || "unknown".equalsIgnoreCase(clientIp)) {
+		    clientIp = request.getRemoteAddr();
+		}
+		paraMap.put("id", request.getParameter("id") );
 		paraMap.put("clientIp", clientIp);
-
+		// System.out.println("잘 갖고오나 확인 : " + paraMap.get("id"));
+		// System.out.println("로그인 ip주소 : " + clientIp);
+		
 		EmployeeVO loginuser = service.login(paraMap);
+		
+		
+		
 
 		if (loginuser != null) { // 로그인 유저가 null 이 아닐때
-
+ 
+			service.insert_tbl_loginhistory(paraMap); // tbl_loginhistory 테이블에 insert 해주기
+			
 			HttpSession session = request.getSession();
 			session.setAttribute("loginuser", loginuser); // 로그인 유저 세션에 저장
 

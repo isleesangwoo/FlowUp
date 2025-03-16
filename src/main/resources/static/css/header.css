@@ -486,6 +486,7 @@ header:nth-child(1) {
 	text-align: center;
 	border-radius: 50%;
 	line-height: 36px;
+	overflow: hidden;
 }
 
 .top_ikon {

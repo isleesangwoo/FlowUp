@@ -167,6 +167,7 @@
     	position: absolute;
 	    top: var(--size30);
 	    left: 120px;
+	    overflow: hidden;
     }
     
     #timeLine {
@@ -184,8 +185,8 @@
 	    transform: translate(0px, -50%);
 	    height: calc(100% - 9px);
 	    border-radius: 30px;
-background: rgb(52,113,159);
-background: linear-gradient(90deg, rgba(52,113,159,1) 0%, rgba(41,133,219,1) 10%, rgba(99,173,244,1) 86%);
+		background: rgb(52,113,159);
+		background: linear-gradient(90deg, rgba(52,113,159,1) 0%, rgba(41,133,219,1) 10%, rgba(99,173,244,1) 86%);
 	    font-size: var(--size12);
 	    box-sizing: border-box;
 	    padding-left: 6px;
@@ -432,51 +433,51 @@ background: linear-gradient(90deg, rgba(52,113,159,1) 0%, rgba(41,133,219,1) 10%
   	  
   	  
   	  
-  		<%-- 타임라인바 --%>
-  		updateTimelinePosition();
-  		setInterval(() => {
-  			updateTimelinePosition();
-  		}, 100000);
-
-  		function updateTimelinePosition() {
-  			// console.log('되는중')
-  			const totalWidth = $('.time_table_back_form').width();
-  			// console.log("totalWidth: ", totalWidth); // totalWidth를 확인
-  		
-  			// 15시로 시간 설정
-  			const now = new Date();
-  			now.setHours(15, 0, 0, 0); // 15시 0분으로 설정
-  			// console.log("현재 시간: ", now); // 현재 시간이 15시로 잘 설정되었는지 확인
-  		
-  			const startHour = 9; // 9시
-  			const endHour = 21;  // 21시
-  		
-  			// 9시부터 현재 시간까지 경과한 분
-  			const startTime = new Date(now);
-  			startTime.setHours(startHour, 0, 0, 0); // 오늘 9시 기준
-  			const minutesPassed = (now - startTime) / (1000 * 60); // 경과 시간 (분)
-  			// console.log("경과 시간: ", minutesPassed, "분"); // 경과한 시간이 360분인지 확인
-  		
-  			// 타임라인의 총 분 (9시부터 21시까지 720분)
-  			const totalMinutes = (endHour - startHour) * 60;
-  		
-  			// 비율로 계산하여 left 값 설정
-  			const leftPercentage = (minutesPassed / totalMinutes) * totalWidth;
-  			// console.log("leftPercentage: ", leftPercentage); // leftPercentage가 정상적으로 계산되는지 확인
-  			
-  			// 타임라인의 스타일 업데이트
-  			$("#timeLine").css({
-  			    'left': leftPercentage + "px",
-  				'top': '0px',
-  				'z-index': '0'
-  			});
-  		}
-
-  		
-  		$(window).resize(function() {
-  	        updateTimelinePosition(); // 윈도우 크기 변경 시 위치 업데이트
-  	    });
-  	 	<%-- 타임라인바 --%>
+  		// ============== 타임라인 바 ============== //
+		updateTimelinePosition();
+		setInterval(() => {
+			updateTimelinePosition();
+		}, 100000);
+	
+		function updateTimelinePosition() {
+			// console.log('되는중')
+			const totalWidth = $('.time_table_back_form').outerWidth() - 210;
+			// console.log("totalWidth: ", totalWidth); // totalWidth를 확인
+		
+			// 15시로 시간 설정
+			const now = new Date();
+			// now.setHours(15, 0, 0, 0); // 15시 0분으로 설정
+			// console.log("현재 시간: ", now); // 현재 시간이 15시로 잘 설정되었는지 확인
+		
+			const startHour = 9; // 9시
+			const endHour = 21;  // 21시
+		
+			// 9시부터 현재 시간까지 경과한 분
+			const startTime = new Date(now);
+			startTime.setHours(startHour, 0, 0, 0); // 오늘 9시 기준
+			const minutesPassed = (now - startTime) / (1000 * 60); // 경과 시간 (분)
+			console.log("경과 시간: ", minutesPassed, "분"); // 경과한 시간이 360분인지 확인
+		
+			// 타임라인의 총 분 (9시부터 21시까지 720분)
+			const totalMinutes = (endHour - startHour) * 60;
+		
+			// 비율로 계산하여 left 값 설정
+			const leftPercentage = (minutesPassed / totalMinutes) * totalWidth ;
+			// console.log("leftPercentage: ", leftPercentage); // leftPercentage가 정상적으로 계산되는지 확인
+			
+			// 타임라인의 스타일 업데이트
+			$("#timeLine").css({
+			    'left': leftPercentage + "px",
+				'top': '0px',
+				'z-index': '0'
+			});
+		}
+	
+		
+		$(window).resize(function() {
+	        updateTimelinePosition(); // 윈도우 크기 변경 시 위치 업데이트
+	    });
+	 	// ============== 타임라인 바 ============== //
   		<%-- ================================ 예약정보, 회의실들 뿌려주기 ================================ --%>
   		
   		

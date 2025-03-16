@@ -47,16 +47,14 @@
 /* 게시글 보여주는 요소 시작 */
 #postContainer{
 	width: 100%;
-	min-width:1050px;
 	display:flex;
 }
 #allPostElmt{
 	min-height: 590px;
 }
 .onePostElmt{
-	padding: var(--size12) var(--size22);;
+	padding: var(--size12) 0px;
 	border-bottom: solid 1px #c8c8c8;
-	border-right: solid 1px #c8c8c8;
 }
 .article_wrap{
 	width:85%;
@@ -123,7 +121,9 @@
 }
 
 
-
+.onePostElmt.tbodyTr:nth-child(even){
+	background-color: rgba(242, 247, 253, 0.5);
+}
 
 
 

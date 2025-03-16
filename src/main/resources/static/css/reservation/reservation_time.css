@@ -102,6 +102,7 @@ table {
 	position: absolute;
     top: var(--size30);
     left: 120px;
+    overflow: hidden;
 }
 
 #timeLine {

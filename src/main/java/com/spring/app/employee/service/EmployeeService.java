@@ -89,4 +89,12 @@ public interface EmployeeService {
 	//
 	List<Map<String, String>> addGroup(String fk_employeeno);
 
+	
+	
+	// tbl_loginhistory 테이블에 insert 해주기
+	void insert_tbl_loginhistory(Map<String, String> paraMap);
+
+	// 해당 유저의 ip 주소 갖고오기
+	List<Map<String, String>> getIpAddr(String employeeno);
+	
 }

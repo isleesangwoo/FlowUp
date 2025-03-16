@@ -16,6 +16,11 @@
     flex-shrink: 0;	
 }
 
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
 #writePostBtn {
     width: 100%;
     height: var(--size44);
@@ -279,4 +284,39 @@
 	opacity: 0;
 	transition: 0.5s all;
 	overflow: hidden; 
+}
+
+
+
+.okBtn {
+	width: 80px;
+    height: var(--size40);
+    font-size: var(--size14);
+    transition-duration: 150ms;
+    align-items: center;
+    background-color: rgb(41, 133, 219);
+    color: rgb(255, 255, 255);
+    margin-bottom: var(--size10);
+    border-width: 1px;
+    border-style: solid;
+    border-radius: calc(var(--size2) + var(--size2));
+    text-wrap: nowrap;
+    border-color: rgb(5, 106, 201);
+}
+
+.resetBtn {
+    width: 80px;
+    height: var(--size40);
+    font-size: var(--size14);
+    transition-duration: 150ms;
+    align-items: center;
+    background-color: #dbdbdb;
+    color: rgb(0, 0, 0);
+    margin-bottom: var(--size10);
+    border-width: 1px;
+    border-style: solid;
+    border-radius: calc(var(--size2) + var(--size2));
+    text-wrap: nowrap;
+    border-color: #eee;
+    margin-left:12px;
 }

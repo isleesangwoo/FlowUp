@@ -7,19 +7,44 @@
    String ctxPath = request.getContextPath();
     //     /myspring
 %>
-
+<style>
+tr.tbodyTr:nth-child(even){
+	background-color: rgba(242, 247, 253, 0.5);
+}
+.onePostElmt.tbodyTr:nth-child(even){
+	background-color: rgba(242, 247, 253, 0.5);
+}
+</style>
 <jsp:include page="../../header/header.jsp" /> 
 
 <!-- clipboard.js cdn 추가 -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.10/clipboard.min.js"></script>
 
-
+<!-- Highcharts.js -->
+<script src="<%=ctxPath%>/Highcharts-10.3.1/code/highcharts.js"></script>
+<script src="<%=ctxPath%>/Highcharts-10.3.1/code/highcharts-more.js"></script>
+<script src="<%=ctxPath%>/Highcharts-10.3.1/code/modules/solid-gauge.js"></script>
+<script src="<%=ctxPath%>/Highcharts-10.3.1/code/modules/exporting.js"></script>
+<script src="<%=ctxPath%>/Highcharts-10.3.1/code/modules/export-data.js"></script>
+<script src="<%=ctxPath%>/Highcharts-10.3.1/code/modules/accessibility.js"></script>
 
 <link href="<%=ctxPath%>/css/main/main.css" rel="stylesheet"> 
 
 
+
+
 	<%-- <div class="dashboard"> --%>
 	<div id="assetModalBg" class="modal_bg"></div>
+	<div class="modal_container">
+
+		<div style="padding: var(--size24)">
+			<form name="addReserFrm" enctype="multipart/form-data">
+               ss
+            </form>
+		</div>
+		
+    </div>
+	
 	
 	
 	<div class="dashboard">
@@ -58,38 +83,18 @@
 				<div class="topInnerContainer">
 					<div class="topInnerTitle">
 						<i class="fa-solid fa-address-card"></i>
-						주소록
+						간편 주소록
 					</div>
 					
 					<!-- 주소록 기능 -->
 					<div class="employeeNoCopyBox">
-						<span class="topInnerContentTitle">
+						<span class="topInnerContentTitle addrTitle">
 							강이훈 외 9건+
 						</span>
 						
 						
 						<span class="btnBack addrBtn" style="display: flex; position: relative;">
 							<i style="margin:auto;" class="fa-solid fa-angle-right arrow"></i>
-							
-							<div class="addrModal">
-								<div style="padding: 16px;">
-								
-									<div style="margin-bottom: 12px;">
-										강이훈 님의 주소록입니다.
-									</div>
-									
-									<table border="1" class="time_table_back_form">
-										<tr>
-											<th>이름</th>
-											<th>직위</th>
-											<th>이메일</th>
-											<th>전화번호</th>
-											<th>내선번호</th>
-										</tr>
-									</table>
-									
-								</div>
-							</div>
 						</span>
 							
 							
@@ -106,10 +111,10 @@
 					<!-- ip 기능 -->
 					<div class="employeeNoCopyBox">
 						<span class="topInnerContentTitle">
-							192.168.0.205
+							${requestScope.ipMap[0].clientip}
 						</span>
 						
-						<span class="btnBack">
+						<span class="btnBack ipBtn">
 							<i class="fa-solid fa-angle-right arrow"></i>
 						</span>
 					</div>
@@ -137,9 +142,48 @@
 			<!-- 세번째 container -->
 			<div class="treContainer">
 				<div class="treInnerContainer">
-					<div class="topInnerTitle">
+					<div class="topInnerTitle" style="margin-bottom:0px;">
 						<i class="fa-solid fa-money-check-dollar"></i>
 						전자결제
+					</div>
+					
+					<div style="display: flex; flex-direction: column; align-items: center; justify-content:center; height: 100%;">
+						<div class="paybox">
+							<div class="payBtn">
+								<a href="#">						<!-- 성훈이형! 각 문서 파트 별 링크 달아주세요!!!!!! -->
+									<span>결재 대기 문서</span>			<!-- 형 파트는 이쁘게 못 만들어드려서 죄송해요 ㅜㅜ -->
+									<span class="payCnt">11</span>	<!-- 이 자리에 개수 띄워주세요!! -->
+								</a>
+							</div>
+							<div class="payBtn">
+								<a href="#">						<!-- 각 문서 파트 별 링크 달아주세요!!!!!! -->
+									<span>결재 예정 문서</span>	
+									<span class="payCnt"></span>	<!-- 이 자리에 개수 띄워주세요!! -->
+								</a>
+							</div>
+							<div class="payBtn">
+								<a href="#">						<!-- 각 문서 파트 별 링크 달아주세요!!!!!! -->
+									<span>기안 문서함</span>
+									<span class="payCnt">1</span>	<!-- 이 자리에 개수 띄워주세요!! -->
+								</a>
+							</div>
+							<div class="payBtn">
+								<a href="#">						<!-- 각 문서 파트 별 링크 달아주세요!!!!!! -->
+									<span>임시 저장함</span>
+									<span class="payCnt">100</span> <!-- 이 자리에 개수 띄워주세요!! -->
+								</a>
+							</div>
+						</div>
+						<a href="<%= ctxPath%>/document/">
+							<div class="moreBtn pay-button">
+								<span>
+								더보기
+									<div class="plane"><i class="fas fa-plane"></i></div>
+							        <div class="cloud" style="top: 10px; left: 50px;"></div>
+							        <div class="cloud" style="top: 30px; left: 120px;"></div>
+								</span>
+							</div>
+						</a>
 					</div>
 				</div>
 				
@@ -148,6 +192,44 @@
 						<i class="fa-solid fa-envelope"></i>
 						이메일
 					</div>
+					
+					<div style="grid-template-columns: 200px 1fr; display: grid;">
+						<div style="width: 200px; height:100%;">
+							
+							<div class="chart_box">
+							    <div id="chart_container"></div>
+							    
+							</div>
+						</div>
+						<div class="email_chart_here" style="display: flex; align-items:center;">
+							<div>
+								<table border="1" class="time_table_back_form">
+									<thead>
+										<tr>
+											<th>읽은 메일</th>
+											<th>중요 메일</th>
+											<th>임시 저장함</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr style="height: var(--size30); text-align: center; vertical-align: middle;">
+											<c:forEach var="mailMap" items="${requestScope.mailMap}">
+												<td>${mailMap.MAILECNT}</td>
+											</c:forEach>
+										</tr>
+									</tbody>
+								</table>
+								
+								<a href="<%= ctxPath%>/mail">
+									<div class="moreBtn">
+										<span>더보기</span>
+									</div>
+								</a>
+							</div>
+						</div>
+						
+					</div>
+					
 				</div>
 			</div>
 			<!-- 세번째 container -->
@@ -158,6 +240,7 @@
 				<div class="topInnerTitle">
 					<i class="fa-solid fa-comments"></i>
 					게시판
+					<p style="color:#999; font-size:12px;">최대 30개의 게시물을 읽을 수 있습니다.</p>
 				</div>
 				<jsp:include page="../board/board2.jsp" /> 
 				
@@ -170,7 +253,21 @@
 			<div class="stickyBox">
 		
 				<div class="rightTopContainer">
-					
+						
+					<div style="overflow: hidden; display: flex; justify-content: center; align-items:center; width: 120px; height: 120px; border-radius: 50%; background-color: #fff;">
+						<c:if test="${sessionScope.loginuser.fileName == null}">
+							<i class="fa-solid fa-user" style="color:#999; font-size: 60px;"></i>
+						</c:if>
+						<c:if test="${sessionScope.loginuser.fileName != null}">
+							<span><img class="ikon-img" style="width:120px; height:100%;" src="<%= ctxPath%>/resources/files/${sessionScope.loginuser.fileName}" /></span>
+						</c:if>
+					</div> <!-- 프로필 사진 -->
+					<div style="font-size:14px;">
+						<div>${sessionScope.loginuser.name}</div>
+						<div>${sessionScope.loginuser.departmentName}</div>
+						<div>${sessionScope.loginuser.email}</div>
+						<div>${sessionScope.loginuser.motive}</div>
+					</div>
 				</div>
 				
 				<div class="rightSeContainer" style="margin-top:16px; height: auto;">
@@ -194,17 +291,101 @@
 		<jsp:include page="../../common/commute_btn2.jsp" /> 
 	</div>
 	--%>
+<%-- =========== 주소록 모달창 =========== --%>
+<div class="addrModal">
+	<div style="padding: 16px;">
 	
+		<div style="margin-bottom: 12px;">
+			<div>${sessionScope.loginuser.name} 님의 주소록입니다.</div>
+			<div style="color:#999; font-size:12px;">클릭시 해당 정보가 복사됩니다.</div>
+		</div>
+		
+		<table border="1" class="time_table_back_form">
+			<thead>
+				<tr>
+					<th>이름</th>
+					<th>이메일</th>
+					<th>전화번호</th>
+					
+				</tr>
+			</thead>
+			
+			<tbody class="addrHere">
+				
+			</tbody>
+			
+		</table>
+		<div class="bottom_btn_box">
+			<div class="okBtn">
+				<span>
+					<a href="<%= ctxPath%>/employee/addressBook">전체보기</a>
+				</span>
+			</div>
+			<div class="resetBtn" id="closeAddr">
+				<span>
+					닫기
+				</span>
+			</div>
+		</div>
+	</div>
+</div>
+<%-- =========== 주소록 모달창 =========== --%>
+
+
+
+<%-- =========== ip주소 모달창 =========== --%>
+<div class="ipModal">
+	<div style="padding: 16px;">
+	
+		<div style="margin-bottom: 12px;">
+			<div>${sessionScope.loginuser.name} 님의 접속기록입니다.</div>
+			<div style="color:#999; font-size:12px;">최근 10개의 접속기록만 표시됩니다.</div>
+		</div>
+		
+		<table border="1" class="time_table_back_form">
+			<thead>
+				<tr>
+					<th>접속ip</th>
+					<th>날짜</th>
+				</tr>
+			</thead>
+			
+			<tbody class="ipHere">
+				<c:if test="${empty requestScope.ipMap}">
+					<tr><td colspan="2" style="text-align: center; vertical-align:middle; height: 200px; color:#999;">최근 접속기록이 없습니다.</td></tr>
+				</c:if>
+				<c:if test="${not empty requestScope.ipMap}">
+				    <c:forEach var="map" items="${requestScope.ipMap}" varStatus="status">
+				        <c:if test="${status.index < 10}">
+				            <tr class="tbodyTr">
+				                <td>${map.clientip}</td>
+				                <td>${map.logindate}</td>
+				            </tr>
+				        </c:if>
+				    </c:forEach>
+				</c:if>
+			</tbody>
+			
+		</table>
+		<div class="bottom_btn_box">
+			<div class="resetBtn" id="closeIp">
+				<span>
+					닫기
+				</span>
+			</div>
+		</div>
+	</div>
+</div>
+<%-- =========== ip주소 모달창 =========== --%>
 
 
 
 <!-- 라이브러리 실행 -->
 <link rel="stylesheet" href="<%=ctxPath%>/js-snackbar-master/dist/js-snackbar.css">
-<script src="<%=ctxPath%>/js-snackbar-master/dist/js-snackbar.js">
-
-
-</script>
+<script src="<%=ctxPath%>/js-snackbar-master/dist/js-snackbar.js"></script>
 <script>
+	
+	// =========== 사번복사 =========== //
     var clipboard = new ClipboardJS('.copyBtn');
   
     clipboard.on('success', function(e) {
@@ -216,30 +397,391 @@
     });
     
     
-    
+    var clipaddr = new ClipboardJS('.tbodyTd', {
+        target: function(trigger) {
+            return trigger;
+        }
+    });
+
+    clipaddr.on('success', function(e) {
+        demoContainer();
+    });
+
+    clipaddr.on('error', function(e) {
+        console.log(e);
+    });
+ 	// =========== 사번복사 =========== //
+ 	
+ 	
+ 	
+ 	// =========== 토스트 라이브러리 =========== //
     var demoContainer = function () {
 	    SnackBar({
 	    	message: "복사가 완료되었습니다.",
 		    status: "success"
 	    })
 	}
-    
-    
-    
+ 	// =========== 토스트 라이브러리 =========== //
+ 	
+ 	
+ 	
+ 	// =========== 주소록 모달 =========== //
     $('.addrBtn').click(e=>{
-    	$('.addrModal').css({
-    		'height': '500px'
-    	})
-    	
-    	setTimeout( ()=>{
-    		$('.addrModal').css({
-        		'width': '400px'
-        	})
-    	}, 500);
-    	
+    	$('.addrModal').fadeIn();
     	$('#assetModalBg').fadeIn();
-    	
+    });
+    
+    
+    $('#closeAddr').click(e=>{
+    	$('.addrModal').fadeOut();
+    	$('#assetModalBg').fadeOut();
     })
+    // =========== 주소록 모달 =========== //
+    
+    
+    
+    $('.ipBtn').click(e=>{
+    	$('.ipModal').fadeIn();
+    	$('#assetModalBg').fadeIn();
+    });
+    
+    
+    $('#closeIp').click(e=>{
+    	$('.ipModal').fadeOut();
+    	$('#assetModalBg').fadeOut();
+    });
+    
+    
+    
+    $('.searchbox').click(e=>{
+
+        $('.modal_bg').fadeIn();
+        $('.modal_container').css({
+            'width': '70%'
+        })
+  
+    }) // end of $('#writePostBtn').click(e=>{})-----------
+
+    $('.modal_bg:not(.modal_container)').click(e=>{
+
+        $('.modal_bg').fadeOut();
+        $('.addrModal').fadeOut();
+        $('.ipModal').fadeOut();
+        
+        
+        $('.modal_container').css({
+            'width': '0%'
+        })
+
+    })
+    
+    
+    // ========================= 본격적인 메인페이지 ajax 함수들 시작 ========================= //
+    let importantStatusPercentage;
+    let readStatusPercentage;
+    let saveStatusPercentage;
+    
+    addrModal();
+    selectMail();
+    
+    function addrModal(){
+	    $.ajax({
+	    	url:"<%=ctxPath%>/employee/all_address_data",
+	    	data: {"fk_employeeNo": ${sessionScope.loginuser.employeeNo} },
+	    	type:"get",
+	    	dataType:"json",
+	    	success:function(json){
+	    		console.log(JSON.stringify(json));
+	    		// [{"DIRECTCALL":"0211115555","PHONENO":"01010102020","ADRSBNO":"100061","name":"이순신","DEPARTMENT":"IT","RANK":"대리","EMAIL":"lee2@naver.com","COMPANY":"삼성"}]
+	    		
+	    		let v_html = ``;
+	    		
+	    		//////////////////////////
+	    		if(json.length > 0) {
+	    			
+	    			$.each(json, function(index, item){
+	    				v_html += `<tr class="tbodyTr">
+			    						<td class="tbodyTd" id="copyTarget_${index}" data-clipboard-target="#copyTarget_${index}">\${item.name}</td>
+			    	                    <td class="tbodyTd" id="copyTarget_email_${index}" data-clipboard-target="#copyTarget_email_${index}">\${item.EMAIL}</td>
+			    	                    <td class="tbodyTd" id="copyTarget_phone_${index}" data-clipboard-target="#copyTarget_phone_${index}">\${item.PHONENO}</td>
+			 					   <tr>`;
+			 			
+			 					   
+			 			if(json.length == 1) {
+			 				$('.addrTitle').text(`\${item.name}`);
+			 			}
+			 			else{
+	    					$('.addrTitle').text(`\${item.name} 님 외 \${json.length - 1}건`);
+			 			}
+	    			}) // end of for ------------
+	    		}
+	    		else{
+	    			v_html += `<tr><td colspan="3" style="text-align: center; vertical-align:middle; height: 200px; color:#999;">등록된 주소록이 없습니다.</td></tr>`;
+	    			$('.addrTitle').text(`등록된 주소록이 없습니다.`);
+	    		}
+				//////////////////////////
+				
+	    		$('.addrHere').append(v_html);
+	    		
+	    	},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+	    	
+	    })
+    } // end of function addrModal(){})---------------
+    
+    
+    
+    function selectMail(){
+	    $.ajax({
+	    	url:"<%=ctxPath%>/mail/selectMail",
+	    	data: {"fk_employeeNo": ${sessionScope.loginuser.employeeNo} },
+	    	type:"get",
+	    	dataType:"json",
+	    	success:function(json){
+	    		console.log(JSON.stringify(json));
+	    		// {"importantStatusPercentage":"0","readStatusPercentage":"0","saveStatusPercentage":"0"}
+
+	    		importantStatusPercentage = parseInt(json.importantStatusPercentage);
+	    		readStatusPercentage = parseInt(json.readStatusPercentage);
+	    		saveStatusPercentage = parseInt(json.saveStatusPercentage);
+	    		
+	    		console.log("importantStatusPercentage : " + importantStatusPercentage)
+	    		console.log("readStatusPercentage : " + parseInt(readStatusPercentage))
+	    		console.log("saveStatusPercentage : " + saveStatusPercentage)
+	    		chart();
+	    	},
+			error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+	    })
+    }
+    
+    
+    // ======== 비행기 버튼 모션 ======== //
+    $(document).ready(function() {
+        $('.pay-button').on('click', function(e) {
+            let ripple = $('<span class="ripple"></span>');
+            let x = e.pageX - $(this).offset().left;
+            let y = e.pageY - $(this).offset().top;
+            ripple.css({
+                width: '100px',
+                height: '100px',
+                top: y - 50 + 'px',
+                left: x - 50 + 'px'
+            });
+            $(this).append(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+    });
+ 	// ======== 비행기 버튼 모션 ======== //
+    
+    
+    
+    
+    // ============================= chart 그리기 ============================= //
+    // Uncomment to style it like Apple Watch
+	/*
+	if (!Highcharts.theme) {
+	    Highcharts.setOptions({
+	        chart: {
+	            backgroundColor: 'black'
+	        },
+	        colors: ['#F62366', '#9DFF02', '#0CCDD6'],
+	        title: {
+	            style: {
+	                color: 'silver'
+	            }
+	        },
+	        tooltip: {
+	            style: {
+	                color: 'silver'
+	            }
+	        }
+	    });
+	}
+	// */
+	
+	/**
+	 * In the chart render event, add icons on top of the circular shapes
+	 */
+	function renderIcons() {
+	
+		
+		// ======================= 각 아이콘 만들기 ======================= //
+	    // Move icon
+	    if (!this.series[0].icon) {
+	        this.series[0].icon = this.renderer.path(['M', -4, 0, 'L', 4, 0, 'M', 0, -4, 'L', 4, 0, 0, 4])
+	            .attr({
+	                stroke: '#303030',
+	                'stroke-linecap': 'round',
+	                'stroke-linejoin': 'round',
+	                'stroke-width': 1,
+	                zIndex: 10
+	            })
+	            .add(this.series[2].group);
+	    }
+	    this.series[0].icon.translate(
+	        this.chartWidth / 2 - 10,
+	        this.plotHeight / 2 - this.series[0].points[0].shapeArgs.innerR -
+	            (this.series[0].points[0].shapeArgs.r - this.series[0].points[0].shapeArgs.innerR) / 2
+	    );
+	
+	    // Exercise icon
+	    if (!this.series[1].icon) {
+	        this.series[1].icon = this.renderer.path(
+	            ['M', -4, 0, 'L', 4, 0, 'M', 0, -4, 'L', 4, 0, 0, 4,
+	                'M', 4, -4, 'L', 8, 0, 4, 4]
+	        )
+	            .attr({
+	                stroke: '#ffffff',
+	                'stroke-linecap': 'round',
+	                'stroke-linejoin': 'round',
+	                'stroke-width': 1,
+	                zIndex: 10
+	            })
+	            .add(this.series[2].group);
+	    }
+	    this.series[1].icon.translate(
+	        this.chartWidth / 2 - 10,
+	        this.plotHeight / 2 - this.series[1].points[0].shapeArgs.innerR -
+	            (this.series[1].points[0].shapeArgs.r - this.series[1].points[0].shapeArgs.innerR) / 2
+	    );
+	
+	    // Stand icon
+	    if (!this.series[2].icon) {
+	        this.series[2].icon = this.renderer.path(['M', 0, 4, 'L', 0, -4, 'M', -4, 0, 'L', 0, -4, 4, 0])
+	            .attr({
+	                stroke: '#303030',
+	                'stroke-linecap': 'round',
+	                'stroke-linejoin': 'round',
+	                'stroke-width': 1,
+	                zIndex: 10
+	            })
+	            .add(this.series[2].group);
+	    }
+	
+	    this.series[2].icon.translate(
+	        this.chartWidth / 2 - 10,
+	        this.plotHeight / 2 - this.series[2].points[0].shapeArgs.innerR -
+	            (this.series[2].points[0].shapeArgs.r - this.series[2].points[0].shapeArgs.innerR) / 2
+	    );
+	}
+	// ======================= 각 아이콘 만들기 ======================= //
+	
+	
+	// ======================= 차트생성 ======================= //
+	function chart(){
+	Highcharts.chart('chart_container', {
+	
+	    chart: {
+	        type: 'solidgauge',
+	        height: '110%',
+	        events: {
+	            render: renderIcons
+	        }
+	    },
+	
+	    title: {	// title
+	        text: 'email 사용도',
+	        style: {
+	            fontSize: '12px'
+	        }
+	    },
+	
+	    tooltip: {	// 호버시 나오는 글자
+	        borderWidth: 0,
+	        backgroundColor: 'none',
+	        shadow: false,
+	        style: {
+	            fontSize: '12px'
+	        },
+	        valueSuffix: '%',
+	        pointFormat: '{series.name}<br><span style="font-size:2em; color: {point.color}; font-weight: bold">{point.y}</span>',
+	        positioner: function (labelWidth) {
+	            return {
+	                x: (this.chart.chartWidth - labelWidth) / 2,
+	                y: (this.chart.plotHeight / 2) + 15
+	            };
+	        }
+	    },
+	
+	 	// ======================= 각 원형 영역 생성 ======================= //
+	    pane: {
+	        startAngle: 0,
+	        endAngle: 360,
+	        background: [{ // Track for Move
+	            outerRadius: '112%',
+	            innerRadius: '88%',
+	            backgroundColor: Highcharts.color(Highcharts.getOptions().colors[0])
+	                .setOpacity(0.3)
+	                .get(),
+	            borderWidth: 0
+	        }, { // Track for Exercise
+	            outerRadius: '87%',
+	            innerRadius: '63%',
+	            backgroundColor: Highcharts.color(Highcharts.getOptions().colors[1])
+	                .setOpacity(0.3)
+	                .get(),
+	            borderWidth: 0
+	        }, { // Track for Stand
+	            outerRadius: '62%',
+	            innerRadius: '38%',
+	            backgroundColor: Highcharts.color(Highcharts.getOptions().colors[2])
+	                .setOpacity(0.3)
+	                .get(),
+	            borderWidth: 0
+	        }]
+	    },
+	 	// ======================= 각 원형 영역 생성 ======================= //
+	    
+	    yAxis: {
+	        min: 0,
+	        max: 100,
+	        lineWidth: 0,
+	        tickPositions: []
+	    },
+	
+	    plotOptions: {
+	        solidgauge: {
+	            dataLabels: {
+	                enabled: false
+	            },
+	            linecap: 'round',
+	            stickyTracking: false,
+	            rounded: true
+	        }
+	    },
+	
+	    series: [{
+	        name: '읽은 메일',
+	        data: [{
+	            color: Highcharts.getOptions().colors[0],
+	            radius: '112%',
+	            innerRadius: '88%',
+	            y: readStatusPercentage
+	        }]
+	    }, {
+	        name: '중요 메일',
+	        data: [{
+	            color: Highcharts.getOptions().colors[1],
+	            radius: '87%',
+	            innerRadius: '63%',
+	            y: importantStatusPercentage
+	        }]
+	    }, {
+	        name: '임시 저장함',
+	        data: [{
+	            color: Highcharts.getOptions().colors[2],
+	            radius: '62%',
+	            innerRadius: '38%',
+	            y: saveStatusPercentage
+	        }]
+	    }]
+	});
+	}
+    
     
 </script>
 

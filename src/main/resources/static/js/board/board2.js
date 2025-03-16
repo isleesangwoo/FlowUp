@@ -20,12 +20,17 @@ function goView(postNo) {
 }
 
 // 좋아요 버튼 클릭 시 
-function goLike(postNo,fk_employeeNo) {
+function goLike(postNo,fk_employeeNo,currentShowPageNo) {
 	
 	if($("#login_userid").text() == "" || $("#login_userid").text()== null){
 			alert("로그인 후 이용하실 수 있습니다.");
 			return;
 	}
+	
+	console.log("확인 postNo " +postNo)
+	console.log("확인 login_userid " +$("#login_userid").text())
+	console.log("확인 fk_employeeNo " +fk_employeeNo)
+	
 	let btn = $(this);	
 	let likeCounter = btn.closest(".onePostElmt").find(".likeCount");
 	$.ajax({
@@ -38,6 +43,8 @@ function goLike(postNo,fk_employeeNo) {
 		  },
           dataType:"json",
           success:function(json){
+			// alert('성공')
+			
               if(json.likeStatus == 1) {
 				  btn.html("<i class='fa-solid fa-heart'></i>");
 			  }
@@ -45,6 +52,7 @@ function goLike(postNo,fk_employeeNo) {
 				  btn.html("<i class='fa-regular fa-heart'></i>");
               }
 			  likeCounter.html(json.likeCnt);
+			  
           },
           error: function(request, status, error){}
       });

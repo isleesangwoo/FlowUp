@@ -381,3 +381,147 @@ on cs.fk_employeeno = em.employeeno
 where 
     (startdate <= to_date('20250312 235959', 'YYYY-MM-DD HH24:MI:SS') 
      and enddate >= to_date('20250312 000000', 'YYYY-MM-DD HH24:MI:SS'));
+
+
+
+
+
+
+
+
+
+
+
+
+
+--------------------------------------------------------
+--  DDL for Table TBL_LOGINHISTORY
+--------------------------------------------------------
+drop table TBL_LOGINHISTORY purge;
+
+select HISTORYNO, FK_EMPLOYEENO, to_char(LOGINDATE, 'yyyy-MM-dd HH24:mi:ss') as LOGINDATE, CLIENTIP
+from TBL_LOGINHISTORY
+where fk_employeeno = 100012
+order by LOGINDATE desc;
+
+CREATE TABLE TBL_LOGINHISTORY
+("HISTORYNO" NUMBER NOT NULL, 
+ "FK_EMPLOYEENO" NUMBER(6) NOT NULL, 
+ "LOGINDATE" DATE DEFAULT sysdate, 
+ "CLIENTIP" VARCHAR2(20),
+ CONSTRAINT PK_TBL_LOGINHISTORY_HISTORYNO PRIMARY KEY(HISTORYNO),
+ CONSTRAINT FK_TBL_LOGINHISTORY_EMPLOYEENO FOREIGN KEY (FK_EMPLOYEENO) REFERENCES TBL_EMPLOYEE(EMPLOYEENO) ON DELETE CASCADE
+)
+
+CREATE SEQUENCE historyno;
+
+commit;
+
+--------------------------------------------------------
+--  DDL for Index PK_TBL_LOGINHISTORY
+--------------------------------------------------------
+
+  CREATE UNIQUE INDEX "MYMVC_USER"."PK_TBL_LOGINHISTORY" ON "MYMVC_USER"."TBL_LOGINHISTORY" ("HISTORYNO") 
+  PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  TABLESPACE "USERS" ;
+--------------------------------------------------------
+--  Constraints for Table TBL_LOGINHISTORY
+--------------------------------------------------------
+
+  ALTER TABLE "MYMVC_USER"."TBL_LOGINHISTORY" MODIFY ("FK_USERID" NOT NULL ENABLE);
+  ALTER TABLE "MYMVC_USER"."TBL_LOGINHISTORY" MODIFY ("LOGINDATE" NOT NULL ENABLE);
+  ALTER TABLE "MYMVC_USER"."TBL_LOGINHISTORY" MODIFY ("CLIENTIP" NOT NULL ENABLE);
+  ALTER TABLE "MYMVC_USER"."TBL_LOGINHISTORY" ADD CONSTRAINT "PK_TBL_LOGINHISTORY" PRIMARY KEY ("HISTORYNO")
+  USING INDEX PCTFREE 10 INITRANS 2 MAXTRANS 255 COMPUTE STATISTICS 
+  TABLESPACE "USERS"  ENABLE;
+--------------------------------------------------------
+--  Ref Constraints for Table TBL_LOGINHISTORY
+--------------------------------------------------------
+
+  ALTER TABLE "MYMVC_USER"."TBL_LOGINHISTORY" ADD CONSTRAINT "FK_TBL_LOGINHISTORY_FK_USERID" FOREIGN KEY ("FK_USERID")
+	  REFERENCES "MYMVC_USER"."TBL_MEMBER" ("USERID") ENABLE;
+
+
+select BOARDNO, BOARDNAME, BOARDDESC, ISPUBLIC, CREATEDBY, CREATEDAT, STATUS
+from tbl_board
+order by CREATEDBY desc;
+
+desc tbl_board;
+
+
+
+
+
+
+
+select V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, V.subject,V.content, 
+
+            V.readCount, V.regDate, V.commentCount, V.allowComments,
+            V.isNotice, V.noticeEndDate, V.likeCount,
+            b.boardNo, b.boardName,B.createdBy,sysdate AS currentDate,
+            ps.positionName
+from
+(
+    SELECT  V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, V.subject,V.content, 
+            V.readCount, V.regDate, V.commentCount, V.allowComments,
+            V.isNotice, V.noticeEndDate, V.likeCount,
+            b.boardNo, b.boardName,B.createdBy,sysdate AS currentDate ,
+            ps.positionName,
+            row_number() over(order by postNo desc) AS rno
+    FROM tbl_post V
+    JOIN tbl_board b 
+    ON V.fk_boardNo = b.boardNo
+    join tbl_employee E 
+    on v.fk_employeeNo = E.employeeNo
+    JOIN tbl_position ps 
+    on e.FK_positionNo = ps.positionNo
+    order by V.postNo;
+) V
+where rno Between 1 and 5;
+
+
+
+
+
+
+
+SELECT 
+    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, V.subject, V.content, 
+    V.readCount, V.regDate, V.commentCount, V.allowComments,
+    V.isNotice, V.noticeEndDate, V.likeCount,
+    V.boardNo, V.boardName, V.createdBy, V.currentDate,
+    V.positionName
+FROM (
+    SELECT  
+        P.postNo, P.fk_boardNo, P.fk_employeeNo, P.name, P.subject, P.content, 
+        P.readCount, P.regDate, P.commentCount, P.allowComments,
+        P.isNotice, P.noticeEndDate, P.likeCount,
+        B.boardNo, B.boardName, B.createdBy, 
+        SYSDATE AS currentDate,
+        PS.positionName,
+        ROW_NUMBER() OVER (ORDER BY P.postNo DESC) AS rno
+    FROM tbl_post P
+    JOIN tbl_board B ON P.fk_boardNo = B.boardNo
+    JOIN tbl_employee E ON P.fk_employeeNo = E.employeeNo
+    JOIN tbl_position PS ON E.FK_positionNo = PS.positionNo
+) V
+WHERE V.rno BETWEEN 1 AND 5;
+
+
+
+
+
+select seq, fk_userid, name, content, regdate, fileName, orgFilename, fileSize
+from
+(
+    select seq, fk_userid, name, content, to_char(regdate, 'yyyy-mm-dd hh24:mi:ss') AS regdate
+         , row_number() over(order by seq desc) AS rno
+         , nvl(fileName, ' ') AS fileName, nvl(orgFilename, ' ') AS orgFilename, nvl(to_char(fileSize), ' ') AS fileSize
+    from tbl_comment
+    where parentSeq = to_number(#{parentSeq})
+) V
+where rno Between #{startRno} and #{endRno}
+        
+        
+        
+        
