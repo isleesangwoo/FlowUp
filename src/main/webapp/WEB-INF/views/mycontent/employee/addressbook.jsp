@@ -15,6 +15,7 @@ $(document).ready(function() {
 	
 	$("span.error").hide();
 	$("div.addFrmModal").hide();
+	$("div.displayCenterCss").hide();
 	
 	$("button#openModal").click(function(){
 		
@@ -30,8 +31,6 @@ $(document).ready(function() {
 	 		if(!bool){
 				 
 				 $(e.target).next().show();
-				 $(e.target).focus();
-				 
 			}
 	 		
 	 		else{
@@ -49,7 +48,6 @@ $(document).ready(function() {
 	 		if(!bool){
 				 
 				 $(e.target).next().show();
-				 $(e.target).focus();
 				 
 			}
 	 		
@@ -67,7 +65,6 @@ $(document).ready(function() {
 	 		
 	 		if(!bool){
 				 $(e.target).next().show();
-				 $(e.target).focus();
 			}
 	 		
 	 		else{
@@ -82,7 +79,7 @@ $(document).ready(function() {
 	    	
 	    	if($(e.target).val() == ""){
 		    	 $(e.target).next().show();
-				 $(e.target).focus();
+				
 			}
 		
 	    	else{
@@ -101,7 +98,7 @@ $(document).ready(function() {
 	 		if(!bool){
 				 
 				 $(e.target).next().show();
-				 $(e.target).focus();
+				
 				 
 			}
 	 		
@@ -121,7 +118,7 @@ $(document).ready(function() {
 	 		if(!bool){
 				 
 				 $(e.target).next().show();
-				 $(e.target).focus();	 
+	 
 			}
 	 		
 	 		else{
@@ -139,8 +136,6 @@ $(document).ready(function() {
 	    	if(!bool){
 				 
 				 $(e.target).next().show();
-				 $(e.target).focus();
-				 
 			}
 	 		
 	 		else{
@@ -157,8 +152,6 @@ $(document).ready(function() {
 	    	if(!bool){
 				 
 				 $(e.target).next().show();
-				 $(e.target).focus();
-				 
 			}
 	 		
 	 		else{
@@ -170,7 +163,6 @@ $(document).ready(function() {
 	    
 	    const companyAddress = $("input:text[name='companyAddress']").val();
 	    if(companyAddress == ""){
-	    	$("input:text[name='companyAddress']").focus();
 	    	$("input:text[name='companyAddress']").next().show();
 	    }
 	    
@@ -216,6 +208,48 @@ $(document).ready(function() {
 	// 주소록 전체 목록
 	view_address(fk_employeeNo);
 	
+	
+	// 북마크 버튼을 누른다면 
+	// <i class="fa-solid fa-bookmark"></i> 색깔이 있는 아이콘
+	
+
+	
+	
+	
+	
+const g_fk_employee = $("input:hidden[name='g_fk_employeeno']").val();
+	
+	$.ajax({	
+		url:"<%= ctxpath%>/employee/groupNo_and_groupName_select",
+		type:"get",
+		data:{"g_fk_employee":g_fk_employee},
+		dataType:"json",
+		success:function(json){
+		//	alert(JSON.stringify(json));
+		   //[{groupName=우리회사, groupNo=100002}, {groupName=다른회사, groupNo=100003}]
+			let v_html="";
+		
+			for(let i =0; i<json.length;i++){
+				v_html +="<option class='groupNo' value='"+json[i].groupNo+"'>"+json[i].groupName+"</option>";
+			}// end of for----------------
+			
+			$("select.group_select").html(v_html);
+		
+			
+		},
+	 	 error: function(request, status, error){
+	 		 	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	 	     }
+	});// end of$.ajax({});-----------------
+	
+	$("button.insertGroupBtn").click(function(){
+		
+		$("div.displayCenterCss").show();
+		
+	})
+	
+	
+	
 }); //$(document).ready(function(){});-------------------
 
 
@@ -257,6 +291,8 @@ function view_address(fk_employeeNo) {
 					+			"<th class='thcss'><span class='tabletitle'>부서</span></th>"
 					+			"<th class='thcss'><span class='tabletitle'>회사</span></th>"
 					+			"<th class='thcss'><span class='tabletitle'>내선번호</span></th>"
+					+			"<th class='thcss'><span class='tabletitle'>그룹</span></th>"
+					+			"<th class='thcss'><span class='tabletitle'></span></th>"
 					+		  "</tr>"
 					+		"</thead>"		
 					+	"<tbody>";
@@ -264,7 +300,7 @@ function view_address(fk_employeeNo) {
 		  		for(let i=0;i<json.length;i++){	
 		  			
 		  			v_html+="<tr>"
-		  				  +		"<td class='tdcss thcheck'><input type='checkbox' name='checkSelect' class='checkSelect' value="+json[i].ADRSBNO+"></td>"
+		  			  +		"<td class='tdcss thcheck'><input type='checkbox' name='checkSelect' class='checkSelect' value="+json[i].ADRSBNO+"></td>"
 		  			  +		"<td class='tdcss'><span class='tabletitle hoverEvent' name='data_name'>"+json[i].name+"</span></td>"
 		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_rank'>"+json[i].RANK+"</span></td>"
 		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_email' id='email'>"+json[i].EMAIL+"</span></td>"
@@ -272,6 +308,8 @@ function view_address(fk_employeeNo) {
 		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_department'>"+json[i].DEPARTMENT+"</td>"
 		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_company'>"+json[i].COMPANY+"</span></td>"
 		  			  +		"<td class='tdcss'><span class='tabletitle' name='data_directcall'>"+json[i].DIRECTCALL+"</span></td>"
+		  			  +		"<td class='tdcss'><button class='insertGroupBtn' onclick='addgroup()'>+그룹추가하기</button></td>"
+		  			  +		"<td class='tdcss'><span class='tabletitle' id='bookmark'><i class='fa-regular fa-bookmark'></i></span></td>"
 		  			  + "</tr>";  	  			
 		  		}// end of for(let i = 0; i<json.length; i++){}
 		  	
@@ -330,15 +368,98 @@ function delete_address(){
 };// end of function delete_address(){};--------------------
 
 
-function goToPage(adrsbno) {
+function addGroupOption(){
 	
+	//alert("그룹옵션 추가할게요~~");
 	
+	//alert($("input#fk_employeeno").val());
 	
-}; // end of  function goToPage(adrsbno) {};---------------------------------
+	const g_fk_employee = $("input#fk_employeeno").val();
+	const groupname = $("input:text[name='groupname']").val();
+	
+	//alert(groupname)
+		
+	$.ajax({
+		
+		url:"<%= ctxpath%>/employee/addGroupOptionEnd",
+		type:"post",
+		data:{"g_fk_employee":g_fk_employee,"groupname":groupname},
+		dataType:"json",
+		success:function(json){
+			
+			if(json.n==1){
+				alert("옵션이 추가 되었습니다.");
+			}
+			else{
+				alert("옵션 추가가 실패되었습니다");
+			}
+			
+		},
+	 	 error: function(request, status, error){
+	 		 	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	 	     }
+		
+	});// end of $.ajax({});--------------------------------------
+
+}
 
 
+
+
+<%-- 그룹 넣기 --%>
+function addGroup(){
+	
+	
+	
+	//alert("그룹추가 깜박함ㅋㅋㅋ..");
+	const groupNo = $("select.groupno").val();
+	alert(groupNo); 
+	
+	$.ajax({
+		url:"<%= ctxpath%>/employee/addGroup",
+		type:"get",
+		data:{"fk_employeeno":fk_employeeno},
+		dataType:"json",
+		success:function(json){
+			
+			
+			
+		},
+ 	 	 error: function(request, status, error){
+	 		 	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	 	     }
+    });
+
+ }//
+
+$("span#bookmark").click(function(e){
+	//alert("클릭");
+	
+	// 주소록 번호 찾기
+	 const tr = $(e.target).parent().parent().parent();
+	// alert(tr);
+	//alert(tr.find("td.thcheck").html());
+	 const td = tr.find("td.thcheck"); // 
+	 //alert(td.find("input").val());
+	 
+	 const fk_employeeno_addr = td.find("input").val(); 
+	 
+	 if(confirm("북마크 하시겠습니까?")){
+		// alert("북마크 완료");
+		
+		
+	 }
+	 
+	 else{
+		 alert("북마크를 취소합니다")
+	 }
+}); // end of $("span#bookmark").click(function(e){});
 
 </script>
+
+
+
+
 
 
 <!-- --------------------------------------- -->
@@ -360,7 +481,7 @@ function goToPage(adrsbno) {
 </div>
 
 <div class="navtab_spelling">
-<button class="spelling listall list">전체</button>
+	<button class="spelling listall list">전체</button>
 	<button class="spelling list" id="a">ㄱ</button>
 	<button class="spelling list" id="b">ㄴ</button>
 	<button class="spelling list" id="c">ㄷ</button>
@@ -429,26 +550,29 @@ function goToPage(adrsbno) {
 					</li>
 					<li class="input_li">
 						<label class="modal_input_title">이메일</label>
-						<input type="text" name="email" class="modal_input"/>
+						<input type="text" name="email" class="modal_input" placeholder="ex)hongildong123@naver.com"/>
 						<span class = "error">이메일 형식에 맞게 입력해주세요</span>	
 					</li>
 					<li class="input_li">
 						<label class="modal_input_title">전화번호</label>
-						<input type="text" name="phoneNo" class="modal_input"/>
+						<input type="text" name="phoneNo" class="modal_input" placeholder="ex)01012341234"/>
 						<span class = "error">'-'를 빼고 입력해주세요</span>	
 					</li>
 					<li class="input_li">
 						<label class="modal_input_title">내선번호</label>
-						<input type="text" name="directCall" class="modal_input"/>
+						<input type="text" name="directCall" class="modal_input" placeholder="ex)03112129090"/>
 						<span class = "error">'-'를 빼고 입력해주세요</span>	
 					</li>
 					<li class="input_li">
 						<label class="modal_input_title">회사주소</label>
 						<input type="text" name="companyAddress" class="modal_input"/>
 					</li>
+					
 					<li class="input_li">
 						<input type="hidden" name="fk_employeeNo" class="modal_input" value="${sessionScope.loginuser.employeeNo}"/>
 					</li>
+					
+					
 					
 					<li class="input_li">
 						<button type="button" class="add">주소록 등록</button>
@@ -457,6 +581,39 @@ function goToPage(adrsbno) {
 				</ul>
 					
 			</form>
+		</div>
+	</div>
+	
+	
+	<div class="displayCenterCss">
+	<div class="groupModalBackground"></div>
+		<div class="addgroup_modal">
+		
+			<div class="GroupModaltitle">
+			<h3>그룹추가</h3>
+			</div>
+		
+			<form>
+			<button class="groupaddclose">x</button>	
+				<ul>
+					<li class="groupList">
+						<select class="group_select">
+							<!-- ajax 로 option 넣기 -->
+						</select>
+					</li>
+					<li class="groupList">	
+						<label id="inputlabel">새로우 그룹 추가</label>
+						
+						<input type="text" class="groupname" name="groupname"/>
+						<input name="g_fk_employeeno" type="hidden" id="fk_employeeno" value="${sessionScope.loginuser.employeeNo}"/>
+						<button class="addGroup" onclick="addGroupOption()">추가</button>
+						
+					</li>	
+					<li>
+						<button type="button" class="addGroupBtn">추가하기</button>
+					</li>
+				</ul>
+			</form>	
 		</div>
 	</div>
 	

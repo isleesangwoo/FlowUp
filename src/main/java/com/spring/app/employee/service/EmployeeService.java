@@ -8,6 +8,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.app.employee.domain.AddressBookVO;
 import com.spring.app.employee.domain.EmployeeVO;
+import com.spring.app.employee.domain.GroupVO;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -75,5 +76,17 @@ public interface EmployeeService {
 
 	// 관리자의 사원정보 수정 
 	int updateEmployee_byAdminEnd(Map<String, String> paraMap);
+
+	//그룹 옵션 추가하기
+	int addGroupOptionEnd(GroupVO gvo, String g_fk_employee,String groupname);
+
+	//그룹 옵션 select 태그 안에 넣어주기
+	List<Map<String, String>> groupOptionSelect();
+
+	//그룹 번호와 이름 가져오기
+	List<Map<String, String>> groupNo_and_groupName_select(String g_fk_employee);
+
+	//
+	List<Map<String, String>> addGroup(String fk_employeeno);
 
 }

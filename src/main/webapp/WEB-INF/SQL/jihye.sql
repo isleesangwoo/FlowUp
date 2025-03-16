@@ -646,7 +646,52 @@ SELECT E.EMPLOYEENO, E.passwd, E.FK_POSITIONNO, E.FK_TEAMNO, E.Name,
 	    ON E.FK_DEPARTMENTNO = D.DEPARTMENTNO
 	    WHERE E.employeeNo = 111111
 	    AND E.passwd = #{passwd}
-	    AND E.status = 1
+	    AND E.status = 1;
+
+
+
+
+
+
+
+select *
+from tbl_addressbook A join  tbl_group G
+on A.ADRSBNO = G.fk_ADRSBNO;
+
+select * from tbl_addressbook;
+
+insert into tbl_group(GROUPNO,FK_ADRSBNO,GROUPNAME)
+values(100000,111111,'그룹은');
+
+
+ALTER TABLE tbl_group 
+RENAME COLUMN FK_ADRSBNO TO FK_EMPLOYEENO;
+commit;
+
+rollback;
+
+select *
+from tbl_group;
+
+insert into tbl_group(groupno,fk_employeeno,GROUPNAME)
+values(groupno.nextval,111111,'우리회사');
+
+rollback;
+
+select *
+from tbl_group ;
+
+select groupNo, groupName
+from tbl_group 
+where fk_employeeno = 111111
+order by groupno asc;
+
+delete tbl_group where groupno = 100004;
+commit;
+
+select groupNo, groupName
+from tbl_group
+where fk_employeeno  = 111111 and groupNo=100002;
 
 
 
