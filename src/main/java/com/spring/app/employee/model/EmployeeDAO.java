@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 
 import com.spring.app.employee.domain.AddressBookVO;
 import com.spring.app.employee.domain.EmployeeVO;
+import com.spring.app.employee.domain.GroupVO;
 
 
 @Mapper
@@ -53,12 +54,10 @@ public interface EmployeeDAO {
 
 	// ==== 외부 주소록 목록 가져오기 ====
 	List<Map<String, String>> external_address_data(String fk_employeeNo);
-
 	
 	// 우리 회사 주소록 부서별로 알아오기
 	List<Map<String, String>> addressBook_select_department_list();
 
-	
 	// 전체주소록 중 선택한 주소 삭제하기
 	int delete_address_book(String addressno);
 	
@@ -77,5 +76,16 @@ public interface EmployeeDAO {
 	// 관리자의 사원정보 수정
 	int updateEmployee_byAdminEnd(Map<String, String> paraMap);
 
+	//그룹 옵션 추가하기
+	int addGroupOptionEnd(GroupVO gvo, String g_fk_employee,String groupname);
+
+	//그룹 옵션 select 태그 안에 넣어주기
+	List<Map<String, String>> groupOptionSelect();
+	
+	//그룹 번호와 이름 가져오기
+	List<Map<String, String>> groupNo_and_groupName_select(String g_fk_employee);
+
+	//그룹에 추가하기
+	List<Map<String, String>> addGroup(String fk_employeeno);
 
 }

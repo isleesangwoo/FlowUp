@@ -18,6 +18,7 @@ import com.spring.app.common.AES256;
 import com.spring.app.common.Sha256;
 import com.spring.app.employee.domain.AddressBookVO;
 import com.spring.app.employee.domain.EmployeeVO;
+import com.spring.app.employee.domain.GroupVO;
 import com.spring.app.employee.model.EmployeeDAO;
 
 
@@ -314,6 +315,44 @@ public class EmployeeService_imple implements EmployeeService {
 	public int updateEmployee_byAdminEnd(Map<String, String> paraMap) {
 		int n = dao.updateEmployee_byAdminEnd(paraMap);
 		return n;
+	}
+
+	
+	//그룹 옵션 추가하기
+	@Override
+	public int addGroupOptionEnd(GroupVO gvo, String g_fk_employee,String groupname) {
+		
+		int n = dao.addGroupOptionEnd(gvo,g_fk_employee,groupname);
+		
+		return n;
+	}
+
+
+	//그룹 옵션 select 태그 안에 넣어주기
+	@Override
+	public List<Map<String, String>> groupOptionSelect() {
+		
+		List<Map<String, String>> mapList = dao.groupOptionSelect();
+		
+		return mapList;
+	}
+
+
+	//그룹 번호와 이름 가져오기
+	@Override
+	public List<Map<String, String>> groupNo_and_groupName_select(String g_fk_employee) {
+		List<Map<String, String>> listMap = dao.groupNo_and_groupName_select(g_fk_employee);
+		return listMap;
+	}
+
+
+	//그룹에 추가하기
+	@Override
+	public List<Map<String, String>> addGroup(String fk_employeeno) {
+		
+		List<Map<String, String>> mapList = dao.addGroup(fk_employeeno);
+		
+		return mapList;
 	}
 
 
