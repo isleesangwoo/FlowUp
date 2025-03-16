@@ -410,27 +410,28 @@
 	
 	<!-- 문서함에서 문서 1개 보여주기 -->
 	<resultMap type="HashMap" id="documentView_Map">
-		<result column="documentNo"		property="documentNo"		javaType="String" />
-		<result column="fk_employeeNo"	property="fk_employeeNo"	javaType="String" />
-		<result column="subject"		property="subject"			javaType="String" />
-		<result column="draftDate"		property="draftDate"		javaType="String" />
-		<result column="status"			property="status"			javaType="String" />
-		<result column="securityLevel"	property="securityLevel"	javaType="String" />
-		<result column="temp"			property="temp"				javaType="String" />
-		<result column="documentType"	property="documentType"		javaType="String" />
-		<result column="urgent"			property="urgent"			javaType="String" />
-		<result column="approvalDate"	property="approvalDate"		javaType="String" />
-		<result column="name"			property="name"				javaType="String" />
-		<result column="teamName"		property="teamName"			javaType="String" />
-		<result column="useAmount"		property="useAmount"		javaType="String" />
-		<result column="startDate"		property="startDate"		javaType="String" />
-		<result column="endDate"		property="endDate"			javaType="String" />
-		<result column="annualType"		property="annualType"		javaType="String" />
-		<result column="reason"			property="reason"			javaType="String" />
-		<result column="overtimeDate"	property="overtimeDate"		javaType="String" />
-		<result column="doDate"			property="doDate"			javaType="String" />
-		<result column="businessContent" property="businessContent"	javaType="String" />
-		<result column="coDepartment"	property="coDepartment"		javaType="String" />
+		<result column="documentNo"			property="documentNo"			javaType="String" />
+		<result column="fk_employeeNo"		property="fk_employeeNo"		javaType="String" />
+		<result column="subject"			property="subject"				javaType="String" />
+		<result column="draftDate"			property="draftDate"			javaType="String" />
+		<result column="status"				property="status"				javaType="String" />
+		<result column="securityLevel"		property="securityLevel"		javaType="String" />
+		<result column="temp"				property="temp"					javaType="String" />
+		<result column="documentType"		property="documentType"			javaType="String" />
+		<result column="urgent"				property="urgent"				javaType="String" />
+		<result column="approvalDate"		property="approvalDate"			javaType="String" />
+		<result column="name"				property="name"					javaType="String" />
+		<result column="teamName"			property="teamName"				javaType="String" />
+		<result column="useAmount"			property="useAmount"			javaType="String" />
+		<result column="startDate"			property="startDate"			javaType="String" />
+		<result column="endDate"			property="endDate"				javaType="String" />
+		<result column="annualType"			property="annualType"			javaType="String" />
+		<result column="reason"				property="reason"				javaType="String" />
+		<result column="overtimeDate"		property="overtimeDate"			javaType="String" />
+		<result column="doDate"				property="doDate"				javaType="String" />
+		<result column="businessContent" 	property="businessContent"		javaType="String" />
+		<result column="coDepartment"		property="coDepartment"			javaType="String" />
+		<result column="totalExpenseAmount"	property="totalExpenseAmount"	javaType="String" />
 	</resultMap>
 	<select id="documentView" parameterType="HashMap" resultMap="documentView_Map">
 		select d.documentNo, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate, d.status
@@ -450,6 +451,10 @@
 			, businessContent, coDepartment
 			, case to_char(doDate, 'yyyy-mm-dd') when '1111-11-11' then '-' else to_char(doDate, 'yyyy-mm-dd') end as doDate
 		from tbl_document D JOIN tbl_draft_business A
+		</if>
+		<if test="documentType == '지출품의서'">
+			, reason, totalexpenseamount
+		from tbl_document D JOIN tbl_draft_expense A
 		</if>
 		ON d.documentNo = A.documentNo JOIN tbl_employee E
 		ON d.fk_employeeNo = E.employeeNo JOIN tbl_team T
@@ -543,6 +548,13 @@
 	<insert id="insertBusinessDraft" parameterType="HashMap">
 		insert into tbl_draft_business(DOCUMENTNO, businessContent, DODATE, CODEPARTMENT)
 		values(#{documentNo}, #{businessContent}, to_date(#{doDate}, 'yyyy-MM-dd'), #{coDepartment})
+	</insert>
+	
+	
+	<!-- 업무기안 테이블에 데이터 입력 -->
+	<insert id="insertExpenseDraft" parameterType="HashMap">
+		insert into tbl_draft_expense(DOCUMENTNO, REASON, TOTALEXPENSEAMOUNT)
+		values(#{documentNo}, #{reason}, #{totalExpenseAmount})
 	</insert>
 	
 	
@@ -648,6 +660,7 @@
 	</insert>
 	
 	
+	<!-- 해당 사원이 휴가 캘린더가 있는지 확인 -->
 	<select id="checkVacationCalendar" parameterType="String" resultType="Integer">
 		select SMCATGONO
 		from TBL_CALENDAR_SMALL_CATEGORY
@@ -680,10 +693,33 @@
 	</insert>
 	
 	
+	<!-- 휴가 스케쥴 생성하기 -->
 	<insert id="createVacationSchedule" parameterType="HashMap">
 		insert into TBL_CALENDAR_SCHEDULE(SCHEDULENO, STARTDATE, ENDDATE, SUBJECT, COLOR, FK_SMCATGONO, FK_LGCATGONO, FK_EMPLOYEENO)
 		values(seq_scheduleno.nextval, to_date(#{startDate}, 'yyyy-mm-dd hh24:mi'), to_date(#{endDate}, 'yyyy-mm-dd hh24:mi'), '연차', '#009900', #{smcatgono}, 1, #{fk_employeeNo})
 	</insert>
+	
+	
+	<!-- 지출 품의 상세 insert -->
+	<insert id="insertExpenseDetail" parameterType="HashMap">
+		insert into TBL_EXPENSE_DETAIL(EXPENSEDETAILNO, FK_DOCUMENTNO, AMOUNT, USEDATE, TYPE, CONTENT, NOTE)
+		values(seq_expensedetail.nextval, '${documentNo}', ${amount}, to_date('${useDate}', 'yyyy-mm-dd'), ${type}, ${content}, ${note})
+	</insert>
+	
+	
+	<!-- 지출 품의 상세 가져오기 -->
+	<resultMap type="HashMap" id="expenseDetailList_map">
+		<result column="amount"		property="amount" 	javaType="String" />
+		<result column="useDate"	property="useDate" 	javaType="String" />
+		<result column="type"		property="type" 	javaType="String" />
+		<result column="content"	property="content" 	javaType="String" />
+		<result column="note"		property="note" 	javaType="String" />
+	</resultMap>
+	<select id="expenseDetailList" parameterType="HashMap" resultMap="expenseDetailList_map">
+		select AMOUNT, to_char(USEDATE, 'yyyy-mm-dd') as useDate, TYPE, CONTENT, NOTE
+		from tbl_expense_detail
+		where fk_documentno = '${documentNo}'
+	</select>
 	
 </mapper>
 

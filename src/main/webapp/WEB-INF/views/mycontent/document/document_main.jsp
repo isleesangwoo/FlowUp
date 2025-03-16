@@ -52,7 +52,7 @@
 			<ul class="list-group">
 				<li class="list-group-item" onclick="location.href='<%= ctxPath%>/document/annual'"><a>휴가신청서</a></li>
 				<li class="list-group-item" onclick="location.href='<%= ctxPath%>/document/overtime'"><a>연장근무신청서</a></li>
-				<li class="list-group-item" onclick="location.href='<%= ctxPath%>/document/expenditure'"><a>지출품의서</a></li>
+				<li class="list-group-item" onclick="location.href='<%= ctxPath%>/document/expense'"><a>지출품의서</a></li>
 				<li class="list-group-item" onclick="location.href='<%= ctxPath%>/document/business'"><a>업무기안</a></li>
 			</ul>
 		</div>

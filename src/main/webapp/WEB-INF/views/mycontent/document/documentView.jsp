@@ -191,7 +191,7 @@ String ctxPath = request.getContextPath();
 
 	<div>
 		<div id="right_title_box">
-			<h1 class="mb-3">${document.documentType}</h1>
+			<h3 class="mb-3">${document.documentType}</h3>
 			
 			<%-- 결재해야할 문서 (결재 순서가 자기 차례인 문서)를 보는 경우 결재/반려 버튼이 보이도록 --%>
 			<c:if test="${not empty requestScope.approvalList}">
@@ -220,10 +220,11 @@ String ctxPath = request.getContextPath();
 			
 			
 			<%-- 결재완료된 문서라면 다운로드 버튼이 보이도록 --%>
+			<%--
 			<c:if test="${requestScope.document.status == 1}">
 				<button id="download_btn" class="doc_btn">다운로드</button>
 			</c:if>
-
+			--%>
 			
 			<%-- 결재완료된 문서라면 다운로드 버튼이 보이도록 --%>
 
@@ -255,7 +256,7 @@ String ctxPath = request.getContextPath();
 		</div>
 		<div class="m-3 draftForm">
 			<div>
-				<h3 style="text-align: center">${document.documentType}</h3>
+				<h3 style="text-align: center" class="mb-5">${document.documentType}</h3>
 				<div style="display: flex">
 					<div class="drafter_info">
 						<table>
@@ -436,22 +437,39 @@ String ctxPath = request.getContextPath();
 									</td>
 								</tr>
 								<tr>
-									<th>제목</th>
-									<td>${document.subject}</td>
+									<th>총 금액</th>
+									<td>${requestScope.document.totalExpenseAmount}</td>
 								</tr>
 								<tr>
-									<th>사유</th>
-									<td>${document.reason}</td>
-								</tr>
-								<tr>
-									<th>연장 근무 일자</th>
-									<td>${document.overtimeDate}</td>
-								</tr>
-								<tr>
-									<th>연장 근무 시간</th>
-									<td>3 시간</td>
+									<th>지출사유</th>
+									<td style="height: 150px; vertical-align: top;">${requestScope.document.reason}</td>
 								</tr>
 					
+							</tbody>
+						</table>
+						
+						<table style="width: 100%" class="mt-5">
+							<thead>
+								<tr>
+									<th>사용일자</th>
+									<th>분류</th>
+									<th>금액</th>
+									<th>사용내역</th>
+									<th>비고</th>
+								</tr>
+							</thead>
+							<tbody class="expense_detail">
+								<c:if test="${not empty requestScope.expenseDetailList}">
+									<c:forEach var="expenseDetail" items="${requestScope.expenseDetailList}">
+										<tr>
+											<td>${expenseDetail.useDate}</td>
+											<td>${expenseDetail.type}</td>
+											<td>${expenseDetail.amount}</td>
+											<td>${expenseDetail.content}</td>
+											<td>${expenseDetail.note}</td>
+										<tr>
+									</c:forEach>
+								</c:if>
 							</tbody>
 						</table>
 					</c:if>
@@ -498,9 +516,12 @@ String ctxPath = request.getContextPath();
 					
 				</div>
 			</div>
+			
+			<%--
 			<div id="fileList" class="my-5 p-1">
 				<div><i class="fa-solid fa-paperclip mx-2"></i>첨부파일 0개 (0.0KB)</div>
 			</div>
+			--%>
 			
 			<div class="mt-5">
 				<a onclick="history.back()" style="color: black; cursor: pointer">

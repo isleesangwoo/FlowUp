@@ -964,9 +964,6 @@ public class DocumentController {
 		if(loginuser != null) {
 			paraMap.put("fk_employeeNo", loginuser.getEmployeeNo());
 		}
-		else {
-			paraMap.put("fk_employeeNo", "100014");
-		}
 		
 		Map<String, String> map = service.draft(paraMap); // 결재 요청
 		map.put("documentType", paraMap.get("documentType")); // 문서양식넣어주기
@@ -1042,6 +1039,11 @@ public class DocumentController {
 		// 문서함에서 문서 1개 보여주기
 		List<ApprovalVO> approvalList = service.getApprovalList(paraMap.get("documentNo"));
 		// 문서함에서 보여줄 결재자 리스트 가져오기
+		
+		if("지출품의서".equals(paraMap.get("documentType"))) {
+			List<Map<String, String>> expenseDetailList = service.expenseDetailList(paraMap);
+			mav.addObject("expenseDetailList", expenseDetailList);
+		}
 		
 		mav.addObject("document", document);
 		mav.addObject("approvalList", approvalList);

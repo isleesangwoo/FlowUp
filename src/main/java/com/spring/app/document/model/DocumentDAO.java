@@ -97,6 +97,9 @@ public interface DocumentDAO {
 	
 	// 업무기안 문서 생성
 	int insertBusinessDraft(Map<String, String> paraMap);
+	
+	// 지출품의서 문서 생성
+	int insertExpenseDraft(Map<String, String> paraMap);
 
 	// 결재 승인하기
 	int approve(Map<String, String> map);
@@ -148,6 +151,14 @@ public interface DocumentDAO {
 
 	// 휴가 스케쥴 생성하기
 	void createVacationSchedule(Map<String, String> document);
+
+	// 지출 품의 상세 insert
+	void insertExpenseDetail(Map<String, String> paraMap);
+
+	// 지출 품의 상세 가져오기
+	List<Map<String, String>> expenseDetailList(Map<String, String> paraMap);
+
+	
 
 	
 

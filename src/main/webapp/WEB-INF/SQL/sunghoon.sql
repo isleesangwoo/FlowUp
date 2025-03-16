@@ -108,6 +108,14 @@ CREATE table tbl_expense_detail
 );
 -- Table TBL_EXPENSE_DETAIL이(가) 생성되었습니다.
 
+create sequence seq_expensedetail
+start with 100001
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
 
 select * from tab;
 
