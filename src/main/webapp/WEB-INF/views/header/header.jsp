@@ -106,9 +106,6 @@
                               <a href="<%= ctxPath%>/reservation/"><i class="fa-solid fa-file-contract"></i><span>예약</span></a>
                           </li>
                           <li>
-                              <a href="#"><i class="fa-regular fa-file"></i><span>자료실</span></a>
-                          </li>
-                          <li>
                               <a href="<%= ctxPath%>/document/"><i class="fa-solid fa-file-invoice-dollar"></i><span>전자결제</span></a>
                           </li>
                           <li>
@@ -142,7 +139,10 @@
 	                        <i class="fa-solid fa-bell" style="color: black;"></i>
 	                        <div class="alarm-cnt"></div> <!-- js를 통해 자동적으로 개수가 카운트 됩니다. -->
 	                        <div class="alarm">
-	                            <div class="alarm-title">최근 알림</div>
+	                        	<div class="alarmInfo">
+	                            	<div class="alarm-title">최근 알림</div>
+	                            	<div class="alarm-allRead" onclick="goNotificationReadAll()">전체읽기</div>
+	                            </div>
 	                            <ul>
 	                               <%-- 알림 List가 ajax를 통해 추가됨 --%>
 	                            </ul>

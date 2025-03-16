@@ -79,9 +79,11 @@ public class BoardController {
 		
 	    String login_userid = null;
 	    String login_fileName = null;
+	    String login_departmentNo = null;
 	    if(loginuser != null) {
 		  login_userid = loginuser.getEmployeeNo();
 		  login_fileName = loginuser.getFileName();
+		  login_departmentNo = loginuser.getFK_departmentNo();
 	    }
 	    
 		// 총 게시물 건수(totalCount)를 구하기
@@ -115,9 +117,10 @@ public class BoardController {
 		 
 		 paraMap.put("startRno", String.valueOf(startRno));
 		 paraMap.put("endRno", String.valueOf(endRno)); 
-		 
+		 paraMap.put("login_userid", login_userid);
+		 paraMap.put("login_departmentNo", login_departmentNo); 
 		// === 게시판 메인 페이지에 뿌려줄 모든 게시글 조회 === //
-		 List<PostVO> postAllList = service.selectAllPost(paraMap,login_userid); 
+		 List<PostVO> postAllList = service.selectAllPost(paraMap); 
 		 mav.addObject("postAllList",postAllList);
 		 
 		 // === 페이지바 만들기 === //
@@ -204,9 +207,11 @@ public class BoardController {
 		EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
 		
 	    String login_userid = null;
+	    String login_departmentNo = null;
 	  
 	    if(loginuser != null) {
 		  login_userid = loginuser.getEmployeeNo();
+		  login_departmentNo = loginuser.getFK_departmentNo();
 	    }
 	    
 		// 총 게시물 건수(totalCount)를 구하기
@@ -240,9 +245,12 @@ public class BoardController {
 		 
 		 paraMap.put("startRno", String.valueOf(startRno));
 		 paraMap.put("endRno", String.valueOf(endRno)); 
+
+		 paraMap.put("login_userid", login_userid);
+		 paraMap.put("login_departmentNo", login_departmentNo); 
 		 
 		// === 게시판 메인 페이지에 뿌려줄 모든 게시글 조회 === //
-		 List<PostVO> postAllList = service.selectAllPost(paraMap,login_userid); 
+		 List<PostVO> postAllList = service.selectAllPost(paraMap); 
 		 mav.addObject("postAllList",postAllList);
 		 
 		 // === 페이지바 만들기 === //
@@ -1383,6 +1391,26 @@ public class BoardController {
 	 
 	 map.put("n", n);
 	 map.put("goBackURL", goBackURL);
+	 
+	 return map;
+ }
+ 
+ // 알림의 전체읽기 클릭 시 알림을 모두 읽음 처리
+ @PostMapping("goNotificationReadAll")
+ @ResponseBody
+ public Map<String, Object> goNotificationReadAll(HttpServletRequest request){
+	 
+	 HashMap<String, Object> map = new HashMap<>();
+	 
+	 HttpSession session = request.getSession();
+	 EmployeeVO loginuser = (EmployeeVO) session.getAttribute("loginuser");
+     String login_userid = null;
+     if(loginuser != null) {
+	   login_userid = loginuser.getEmployeeNo();
+     }
+     
+     int n = service.goNotificationReadAll(login_userid); // 알림의 전체읽기 클릭 시 알림을 모두 읽음 처리
+     map.put("n",n);
 	 
 	 return map;
  }

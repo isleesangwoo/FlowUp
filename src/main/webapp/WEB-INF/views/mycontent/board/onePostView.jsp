@@ -176,9 +176,10 @@
         </c:forEach>
         
         <div id="ViewOption" class="padding">
+        	<i class="fa-regular fa-comment" style="font-size: 12px;"></i> 
         	<span class="tranBlock" id="commentCount"><%-- 댓글의 개 수가 ajax를 통해 렌더링 됨 --%></span>
-        	<span class="tranBlock">조회 ${postvo.readCount}</span>
-        	<span class="tranBlock" id="likeListElmt">좋아요 누른 사람 <span id="span_likeCount">${postvo.likeCount}</span>명</span>
+        	<span class="tranBlock"><i class="fa-regular fa-eye"></i> 조회 ${postvo.readCount}</span>
+        	<span class="tranBlock" id="likeListElmt"><i class="fa-regular fa-heart" ></i> 좋아요 누른 사람 <span id="span_likeCount">${postvo.likeCount}</span>명</span>
         	<!-- 모달 -->
 			<div id="likeModal" class="modal">
 			    <div class="modal-content">
@@ -257,36 +258,34 @@
        	</table>
 	     <div id="noticeEndDate" style="display: none;">${postvo.noticeEndDate}</div>   
 	     
-<form name="postFrm">
-	<div>
-	  게시글 번호 : <input type="text" name="postNo" value="${postvo.postNo}"><br> <%-- 필요한 것임 지우지말 것 --%>
-	  상세보기 페이지 이전 url : <input type="text" name="goBackURL" value="<%= request.getAttribute("goBackURL") %>"/><%-- 필요한 것임 지우지말 것 --%><br>
-	  전체 or 게시판별 게시글 구분 번호 : <input type="text" name="checkAll_or_boardGroup" value="${checkAll_or_boardGroup}"> <%-- 필요한 것임 지우지말 것 --%><br>
-	  게시판 번호 : <input type="text" name="boardNo" value="${postvo.fk_boardNo}"> <%-- 필요한 것임 지우지말 것 --%><br>
-	  로그인 사원번호 : <span id="login_userid">${login_userid}</span><br><%-- 필요한 것임 지우지말 것 --%>
-	</div>
-</form>
-
-<%-- 이전글제목 보기, 다음글제목 보기시 POST 방식으로 넘기기 위한것 --%>
-<form name="postFrm_2">
-	<input type="hidden" name="postNo" />
-	<input type="hidden" name="goBackURL" />
-	<input type="hidden" name="fk_boardNo" value="${postvo.fk_boardNo}"/>
-	<input type="hidden" name="checkAll_or_boardGroup" value="${checkAll_or_boardGroup}"> 
-</form>
-
-	
-	
-	
-	
-	공지글 여부 : ${postvo.isNotice}<br>
-	공지글 종료일 : ${postvo.noticeEndDate}<br>
-	작성자 번호 : <span id="fk_employeeNo">${postvo.fk_employeeNo}</span><%-- $(document).on("click", "#commentEnterBtn", function(){})에서 사용 --%><br>
-	댓글 허용 여부 : <span id="allowComments">${postvo.allowComments}</span> <%-- loadComment()에서 사용 --%><br>
-	로그인 사원번호 : <span id="login_userid">${login_userid}</span><%-- addReply()에서 사용 --%><br>
-	로그인 사원이름 : <span id="login_name">${login_name}</span><%-- addReply()에서 사용 --%><br>
-	로그인 사원 프로필 이미지 : <span id="login_fileName">${login_fileName}</span><br> <%-- loadComment(postNo, page = 1,reload)에서 사용 --%>
-	좋아요 여부 : ${likeCnt}<br>
+		<form name="postFrm">
+			<div>
+			  <input type="hidden" name="postNo" value="${postvo.postNo}"><br> 
+			  <input type="hidden" name="goBackURL" value="<%= request.getAttribute("goBackURL") %>"/><br>
+			  <input type="hidden" name="checkAll_or_boardGroup" value="${checkAll_or_boardGroup}"> <%-- 전체 or 게시판별 게시글 구분 번호  --%><br>
+			  <input type="hidden" name="boardNo" value="${postvo.fk_boardNo}"> <%-- 필요한 것임 지우지말 것 --%><br>
+			  <span id="login_userid" style="display: none">${login_userid}</span><br><%-- 로그인 사원번호 :  --%>
+			</div>
+		</form>
+		
+		<%-- 이전글제목 보기, 다음글제목 보기시 POST 방식으로 넘기기 위한것 --%>
+		<form name="postFrm_2">
+			<input type="hidden" name="postNo" />
+			<input type="hidden" name="goBackURL" />
+			<input type="hidden" name="fk_boardNo" value="${postvo.fk_boardNo}"/>
+			<input type="hidden" name="checkAll_or_boardGroup" value="${checkAll_or_boardGroup}"> 
+		</form>
+		
+		<span style="display: none">
+			공지글 여부 : ${postvo.isNotice}<br>
+			공지글 종료일 : ${postvo.noticeEndDate}<br>
+			작성자 번호 : <span id="fk_employeeNo">${postvo.fk_employeeNo}</span><%-- $(document).on("click", "#commentEnterBtn", function(){})에서 사용 --%><br>
+			댓글 허용 여부 : <span id="allowComments">${postvo.allowComments}</span> <%-- loadComment()에서 사용 --%><br>
+			로그인 사원번호 : <span id="login_userid">${login_userid}</span><%-- addReply()에서 사용 --%><br>
+			로그인 사원이름 : <span id="login_name">${login_name}</span><%-- addReply()에서 사용 --%><br>
+			로그인 사원 프로필 이미지 : <span id="login_fileName">${login_fileName}</span><br> <%-- loadComment(postNo, page = 1,reload)에서 사용 --%>
+			좋아요 여부 : ${likeCnt}<br>
+		</span>
 
 </div>
 
