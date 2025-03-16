@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.spring.app.document.service.DocumentService;
 import com.spring.app.employee.domain.EmployeeVO;
 import com.spring.app.employee.service.EmployeeService;
 import com.spring.app.mail.service.MailService;
@@ -26,6 +27,10 @@ public class IndexController {
 	
 	@Autowired
 	private MailService MaService;
+	
+	
+	@Autowired
+	private DocumentService doService;
 	
 	
 	@GetMapping("/")
@@ -48,6 +53,11 @@ public class IndexController {
 		
 		List<Map<String, String>> mailMap = MaService.getMailCnt(employeeno); // 해당 유저의 중요, 읽은, 임시저장함 개수 알아오기
 		request.setAttribute("mailMap", mailMap);
+		
+		
+		Map<String, Integer> documentMap = doService.getDocCnt(employeeno); // 해당 유저의 결재대기문서, 결재예정문서, 기안문서, 임시저장문서 개수 알아오기
+		request.setAttribute("documentMap", documentMap);
+		
 		
 		return "mycontent/main/index";
 	}

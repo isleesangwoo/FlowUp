@@ -3,6 +3,7 @@ package com.spring.app.document.service;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
@@ -255,6 +256,19 @@ public class DocumentService_imple implements DocumentService {
 				map.put("n", "-2");
 				return map;
 			}
+			// 당일 6시 이후에는 연장근무 신청 못하게 막기
+			LocalDate localDate = LocalDate.now(); // 현재 날짜
+			LocalTime localTime = LocalTime.now();
+			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			String today = localDate.format(dateTimeFormatter);
+			
+			System.out.println(localTime.getHour());
+			
+			if(today.equals(paraMap.get("overtimeDate")) && localTime.getHour() >= 18) {
+				map.put("n", "-3");
+				return map;
+			}
+			
 		}
 		
 		
@@ -410,6 +424,31 @@ public class DocumentService_imple implements DocumentService {
 		int totalAmount = mapper_dao.getAnnual(map);
 		
 		return totalAmount;
+	}
+
+
+	// 메인페이지에 보여줄 유저의 결재대기문서, 결재예정문서, 기안문서, 임시저장문서 개수 알아오기
+	@Override
+	public Map<String, Integer> getDocCnt(String employeeno) {
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("employeeNo", employeeno);
+		paraMap.put("searchWord", "");
+		paraMap.put("documentType", "");
+		paraMap.put("status", "");
+		
+		Map<String, Integer> documentMap = new HashMap<>();
+		
+		int todoDocCnt		= mapper_dao.todoListCount_Search(paraMap);
+		int upcomingDocCnt	= mapper_dao.upcomingListCount_Search(paraMap);
+		int myDocCnt		= mapper_dao.myDocumentListCount_Search(paraMap);
+		int tempDocCnt		= mapper_dao.tempListCount_Search(paraMap);
+		documentMap.put("todoDocCnt", todoDocCnt);
+		documentMap.put("upcomingDocCnt", upcomingDocCnt);
+		documentMap.put("myDocCnt", myDocCnt);
+		documentMap.put("tempDocCnt", tempDocCnt);
+		
+		return documentMap;
 	}
 
 

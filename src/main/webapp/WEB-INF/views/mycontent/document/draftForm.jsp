@@ -462,6 +462,9 @@
 				else if(json.n == "-2"){
 					alert("중복되는 연장 근무 일자입니다.");
 				}
+				else if(json.n == "-3"){
+					alert("당일 6시 이후에는 연장 근무 신청이 불가능합니다.");
+				}
 			},
 			error: function(request, status, error){
 				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -543,7 +546,7 @@
 		let startDay = new Date(startDate).getDay();
 		let endDay = new Date(endDate).getDay();
 		
-		if(startDate < today) {
+		if(startDate <= today) {
 			// 오늘 날짜보다 이전 날짜를 선택하면
 			alert("오늘보다 이전 날짜에는 휴가 신청이 불가능합니다.");
 			$("input[name='startDate']").val("");
