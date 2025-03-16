@@ -18,10 +18,11 @@ public class NotificationVO {
 	private String senderPositionName; 		// 직급명
 	private String timeAgo;					// 알림이 발생한 시간 계산 
 	private String profileimg;				// 알림 보내는 사원의 프로필
-	
+	private String fileName;				// 알림 보내는 사원의 프로필사진 파일명
 	
 	private String boardNo; 				// 알림의 해당 글의 게시판 번호
 	private String postCreateBy; 			// 알림의 게시글 작성자
+	
 	
 	
 	public String getNotificationNo() {
@@ -119,6 +120,12 @@ public class NotificationVO {
 	}
 	public void setPostCreateBy(String postCreateBy) {
 		this.postCreateBy = postCreateBy;
+	}
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 	
 	

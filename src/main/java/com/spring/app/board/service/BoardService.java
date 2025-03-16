@@ -41,7 +41,7 @@ public interface BoardService {
 	int addPost(PostVO postvo,PostFileVO postfilevo,List<Map<String, Object>> mapList);
 
 	// 게시판 메인 페이지에 뿌려줄 모든 게시글 조회
-	List<PostVO> selectAllPost(Map<String, String> paraMap,String login_userid);
+	List<PostVO> selectAllPost(Map<String, String> paraMap);
 
 	// 총 게시물 건수 (totalCount)
 	int getTotalCount();
@@ -141,6 +141,12 @@ public interface BoardService {
 
 	// 알림의 해당글 클릭 시 글조회수 1증가 하기
 	int increase_readCount(String postNo);
+
+	//댓글 상위 5개 글 
+	List<Map<String, String>> getTopCommentPosts();
+
+	// 알림의 전체읽기 클릭 시 알림을 모두 읽음 처리
+	int goNotificationReadAll(String login_userid);
 
 
 

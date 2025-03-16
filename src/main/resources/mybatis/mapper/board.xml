@@ -123,7 +123,6 @@
     </association>
 </resultMap>
 <select id="selectAllPost" resultMap="selectAllPost_Map" parameterType="HashMap">
-	<!-- 스마트에디터 이미지첨후 구현 후 전체게시판 조회 -->
 	SELECT 
 	    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, 
 	    case when length( V.subject) > 40 then substr(subject, 0, 40) || '...' else subject end as subject, 
@@ -145,12 +144,15 @@
 	        FROM tbl_post p
             join tbl_board b
             on p.fk_boardNo = b.boardNo
-	        WHERE p.status = 1 and b.isPublic = 1
+            LEFT JOIN tbl_board_department bd 
+            ON bd.fk_boardNo = b.boardNo
+            WHERE p.status = 1 
+			AND (b.isPublic = 1 OR bd.fk_departmentNo =  #{login_departmentNo})
 	    ) V
 	JOIN tbl_board b ON V.fk_boardNo = b.boardNo
 	JOIN tbl_employee e ON V.fk_employeeNo = e.employeeNo
     JOIN tbl_position p on e.FK_positionNo = p.positionNo
-	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})  and b.isPublic = 1
+	WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
 </select>
 
 <!-- === 총 게시물 건수(totalCount) 구하기 === --> 
@@ -484,6 +486,7 @@
 	JOIN tbl_employee E
 	on L.fk_employeeNo = E.employeeNo
 	where fk_postNo = #{postNo}
+	order by regDate desc
 	</select>
 
 <!-- 댓글등록 -->
@@ -694,6 +697,7 @@
 		    sender_emp.fk_positionno AS senderPostionNo,   <!-- 알림 보내는 사원번호 -->
 		    sender_emp.name as senderName,      
 		    sender_emp.profileimg, 
+		    sender_emp.fileName,
     		P.positionname AS senderPositionName,          
 		    N.message, 
 		    N.notificationType, 
@@ -725,6 +729,28 @@
 	where notificationNo = #{notificationNo}
 	</update>
 
+<!-- 댓글 상위 5개 글  -->
+	<resultMap type="HashMap" id="getTopCommentPosts_map">
+		<result property="postNo" 	 	 column="postNo"  			javaType="String" />
+		<result property="subject" 		 column="subject" 			javaType="String" />
+   		<result property="regDate" 		 column="regDate" 			javaType="String" />
+   </resultMap>
+	<select id="getTopCommentPosts" resultMap="getTopCommentPosts_map">
+	select postNo
+   	 	   ,case when length(subject) &lt; 11 then subject 
+			else substr(subject, 1, 11)||'..' end AS subject
+			,to_char(regDate,'yyyy-mm-dd') as regDate from (
+    select p.*, ROWNUM AS rn
+    from (select * FROM tbl_post where status = 1 order by commentCount DESC) p
+    where rownum &lt;= 5
+	)
+	</select>
+	
+<!-- 	알림의 전체읽기 클릭 시 알림을 모두 읽음 처리 -->
+	<update id="goNotificationReadAll" parameterType="String">
+	update tbl_notification set isRead = 1
+	where fk_employeeNo = #{login_userid}
+	</update>
 
 </mapper>
 

@@ -343,6 +343,7 @@ td {
 
 #commentCreate {
 	display: flex;
+	    margin-bottom: 20px;
 /* 	border-bottom: 1px solid #c8c8c8; */
 }
 #reCommentCreate{

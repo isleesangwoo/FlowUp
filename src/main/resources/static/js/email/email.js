@@ -84,12 +84,10 @@ $(document).ready(()=>{
    });
 
    // 정렬 버튼
-   $(document).ready(function() {
-	   $("#sortCnt_btn ul li").on("click", function() {
-	       let pageSize = $(this).text().trim();
-	       $("#sortCnt_btn > span:nth-child(1)").text(pageSize);
-	       location.href = ctxPath + "/mail?currentShowPageNo=1&sizePerPage=" + pageSize;
-	   });
+   $("#sortCnt_btn ul li").on("click", function() {
+       let pageSize = $(this).text().trim();
+       $("#sortCnt_btn > span:nth-child(1)").text(pageSize);
+       location.href = ctxPath + "/mail?currentShowPageNo=1&sizePerPage=" + pageSize;
    });
    
    

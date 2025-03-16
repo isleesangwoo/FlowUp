@@ -22,6 +22,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.spring.app.common.FileManager;
 import com.spring.app.employee.domain.AddressBookVO;
 import com.spring.app.employee.domain.EmployeeVO;
+import com.spring.app.employee.domain.GroupVO;
 import com.spring.app.employee.service.EmployeeService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -279,7 +280,10 @@ public class EmployeeController {
 	@GetMapping("addressBook")
 	public ModelAndView addressBook(ModelAndView mav, HttpServletRequest request) {
 		mav.setViewName("mycontent/employee/addressbook");	
-	
+		
+		//추가한 그룹옵션 집어넣기
+		List<Map<String,String>>mapList  = service.groupOptionSelect();
+		mav.addObject("mapList", mapList);
 		return mav;
 	}
 	
@@ -444,5 +448,53 @@ public class EmployeeController {
 		
 		return jsonObj.toString(); 
 	}
+	
+	
+	// 그룹 옵션 추가하기
+	@PostMapping("addGroupOptionEnd")
+	@ResponseBody
+	public String addGroupOptionEnd(GroupVO gvo, HttpServletRequest request, @RequestParam String g_fk_employee,
+																			 @RequestParam String groupname) {
+
+		int n = service.addGroupOptionEnd(gvo, g_fk_employee,groupname);
+		String view_page ="";
+		
+		System.out.println("n:"+n);
+		if(n==1) {
+			System.out.println("그룹옵션추가완료");
+		}
+		
+		else {
+			System.out.println("그룹옵션추가실패");
+		}
+		
+		return view_page;
+	}
+	
+	
+	@GetMapping("groupNo_and_groupName_select")
+	@ResponseBody
+	public List<Map<String,String>>groupNo_and_groupName_select(@RequestParam String g_fk_employee){
+		
+		List<Map<String,String>> listMap = new ArrayList<>();
+		listMap = service.groupNo_and_groupName_select(g_fk_employee);
+		System.out.println(listMap);
+		
+		return listMap;
+		
+	}
+	
+	// 그룹에 추가하기
+	@GetMapping("addGroup")
+	@ResponseBody
+	public List<Map<String, String>>addGroup(@RequestParam String fk_employeeno) {
+		
+		List<Map<String,String>> mapList = new ArrayList<>();
+		
+		mapList = service.addGroup(fk_employeeno);
+		
+		return mapList;
+	}
+	
 	
 }

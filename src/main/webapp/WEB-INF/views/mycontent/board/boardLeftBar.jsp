@@ -172,15 +172,12 @@ $(document).ready(function() {
                 dataType: "json",
                 success: function(json) {
                     if (json.n) {
-                    	location.reload();
-                        //listItem.remove(); // 삭제된 항목만 목록에서 제거 ==> 클릭된 아이콘의 li를 의미.
+                    	window.location.href = ctxPath + "/board/";
                     } else {
-                        alert("비활성화 실패: " + json.message);
+                        alert("게시판 삭제 실패: " + json.message);
                     }
                 },
-                error: function() {
-                    alert("오류가 발생했습니다.");
-                }
+                error: function() {alert("오류가 발생했습니다.");}
             });
         }
         
@@ -522,7 +519,7 @@ $(document).ready(function() {
 			return;
 		}
 		
-		if($("input[name='isPublic']").val() == 0 ){
+		if($(".isPublic:checked").val() == 0 ){
 			if($("#selectDeptList").text() == ""){ // 부서 목록이 없데이트 되는 요소에 아무 값이 없다면
 				alert("게시판을 공개할 대상 부서를 선택하세요.");
 				return;

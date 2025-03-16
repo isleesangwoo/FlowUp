@@ -14,7 +14,7 @@ $(document).ready(()=>{
 	});
 	
 	let deleteFileList = []; // 삭제할 파일을 저장할 배열
-//	<%-- === jQuery 를 사용하여 드래그앤드롭(DragAndDrop)을 통한 파일 업로드 시작 === --%>
+	//	=== jQuery 를 사용하여 드래그앤드롭(DragAndDrop)을 통한 파일 업로드 시작 === 
 	let file_arr = []; // 첨부된어진 파일 정보를 담아 둘 배열
 
     // == 파일 Drag & Drop 만들기 == //
@@ -329,11 +329,7 @@ $(document).ready(()=>{
 	              if(json.result == 1) {
 					//post 방식인 글 조회를 get 방식으로 바꿔주어서 이렇게 함.
 					location.href = location.href;
-					//history.go(-1);
-					
-					//location.href = location.href; 
-	        	    //window.location.href = ctxPath + "/board/goViewOnePost?postNo=" + $("input[name='postNo']").val()+"&goBackURL="+goBackURL;
-	              }
+				  }
 	              else {
 	            	  alert("게시글 수정에 실패했습니다.");
 	              }
@@ -342,8 +338,6 @@ $(document).ready(()=>{
 					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			      }
 	      });
-			
-			
 	 	}); // end of $(document).on("click", "#updatePostBtn", function(){}-----------
 		
 		
@@ -532,7 +526,7 @@ $(document).ready(()=>{
 						html +=`<i class="fa-solid fa-user"></i> `;
 					  }
 					  else{ // 프로필이미지 존재(경로설정 필요)
-						html +=`<img src='/flowUp/resources/files/${comment.fileName}' width='32' height='32'/>`;
+						html +=`<img src='/flowUp/resources/files/${comment.fileName}' width='32' height='32' style="border-radius: 50%;"/>`;
 					  }
 					   
 				html +=`</span>
@@ -568,7 +562,7 @@ $(document).ready(()=>{
 									}
 									else if(json.login_profileImg != null || json.login_profileImg != ""){	// 프로필이미지가 있는 경우 프로필이미지 존재(경로설정 필요)
 										
-										html +=`<img src='/flowUp/resources/files/${login_fileName}' width='32' height='32'/>`;
+										html +=`<img src='/flowUp/resources/files/${login_fileName}' width='32' height='32' style="border-radius: 50%;"/>`;
 									}
 									else{
 										html+=`<i class="fa-solid fa-user"></i>`;
@@ -615,6 +609,10 @@ $(document).ready(()=>{
 	
 	let commentElmt = $(`#commentListElmt`).find(`#comment_${commentNo}`); // 특정 댓글 요소 찾기
     let originalContent = commentElmt.find(".comment_content").text().trim(); // 원본 댓글 내용 저장
+
+    if ($(`#comment_update_${commentNo}`).length>0) { // 이미 input 태그가 존재하는 경우 
+        return; // 이미 수정 중이면 함수 종료 (더 이상 실행하지 않음)
+    }
 
     // 기존 내용 삭제하고 input 태그로 변경
     let editHtml = `

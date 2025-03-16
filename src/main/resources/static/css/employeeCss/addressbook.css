@@ -6,7 +6,7 @@
 
 #right-bar{
 	width: 100%;
-    height: auto;
+    height: auto;  
 }
 
 #right_title_box{
@@ -24,6 +24,9 @@
 	height: auto;
 	padding-top: 10px;
 	padding-left: 24px;
+	
+
+
 }
 
 
@@ -58,6 +61,10 @@
 	
 }
 
+.addressbooktable{
+	width:100%;
+}
+
 .img_class{
 	margin-right: 10px;
 }
@@ -68,6 +75,7 @@
 	padding-right: 2%;
 	padding-left: 0;
 	font-weight: normal;
+	font-size: 15px;
 }
 
 .tdcss{
@@ -77,9 +85,26 @@
 	padding-top: 20px;
 	padding-bottom: 20px;
 	padding-left: 0;
-	font-size: 13px;
+	font-size: 15px;
 	vertical-align: middle;
 }
+th:nth-child(2),td:nth-child(2)
+,th:nth-child(3),td:nth-child(3)
+,th:nth-child(6),td:nth-child(6)
+,th:nth-child(7),td:nth-child(7)
+,th:nth-child(8),td:nth-child(8){
+	width: 8%;
+}
+
+th:nth-child(4),td:nth-child(4){
+	width: 15%;
+}
+
+th:nth-child(9),td:nth-child(9){
+	text-align:center;
+	width: 8%;
+}
+
 
 tbody tr{
 	border-bottom: 1px solid #e8e8e8;
@@ -98,6 +123,13 @@ tbody tr{
 
 .thcss:nth-last-child(3) {
 	width: 50px;
+}
+th:last-child{
+	text-align: center;
+}
+
+td:last-child{
+	text-align: center;
 }
 
 
@@ -222,4 +254,127 @@ tbody tr{
 
 .trcss{
 	border:none;
+}
+
+
+.insertGroupBtn{
+	border:none;
+	background-color: transparent;
+	
+}
+
+
+/*----- 북마크 css  ---------*/
+
+
+
+#bookmark:hover{
+	cursor: pointer;
+}
+
+
+
+/* ------- 주소록 그룹 모달창  -------  */
+
+.addgroup_modal{
+	border: 1px gray solid;
+	position: relative;
+	top: -700px;
+	padding: 20px;
+	z-index: 99999999;
+	
+	background-color: #ffff;
+	width:700px;
+}
+.displayCenterCss{
+	display: flex;
+	justify-content: center;
+}
+.group_select,.group_option{
+	width: 150px;
+	padding: 2px 15px;
+	font-size: 18px;
+	border-radius: 3px;
+	
+}
+
+.group_select{
+	border:none;
+}
+
+.group_select > .group_option{
+	margin-top: 2px;
+	border-radius: 3px;
+	border: 1px solid black;
+}
+
+
+.groupList{
+	margin-bottom: 10px;
+}
+
+#inputlabel{
+	display:inline-block;
+	margin-right: 5px;
+	width : 170px;
+	border: 1px gray solid;
+}
+
+.addGroupBtn,.addGroup{
+	/* margin-left: 10px; */
+	width:150px;
+	border: 1px gray solid;
+	background-color: #ffff;
+}
+
+.addGroup{
+	margin-left: 10px;
+	border:none;
+}
+
+.addGroup:hover{
+	background-color: #0d6efd;
+	color:white;
+}
+
+.addGroupBtn{
+	border:none;
+}
+
+.addGroupBtn:hover{
+	background-color: #0d6efd;
+	color:white;
+}
+
+.groupname{
+	border: 1px gray solid;
+}
+
+#inputlabel{
+	border: none;
+	text-align: center;
+}
+
+#inputlabel, .addGroupBtn, .groupname,.addGroup{
+	display: inline-block;
+	padding: 3px 10px;
+	height: 35px;
+	border-radius: 3px;
+}
+
+.groupModalBackground{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background-color: rgba(0, 0, 0, 0.5);
+	display: flex;
+	justify-content: center;
+	align-items: center;	
+}
+
+.groupaddclose{
+	background: transparent;
+	border: none;
 }

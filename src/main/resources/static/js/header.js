@@ -1,5 +1,7 @@
 $(document).ready(()=>{
-	getLoadNotification();
+	
+	getLoadNotification(); // 알림 새로고침(조회)
+	
     $('#header_ikon_box li').eq(0).css({
         'background-color': '#2985DB',
     }); 
@@ -91,9 +93,9 @@ $(document).ready(()=>{
     });
 
 
-    $('.bell').css({
-        'display': 'none'
-    });
+//    $('.bell').css({
+//        'display': 'none'
+//    });
 
     $('#header_ikon_container').css({
         'height': '100%',
@@ -144,9 +146,9 @@ $(document).ready(()=>{
             });
 
 
-            $('.bell').css({
-                'display': 'none'
-            });
+//            $('.bell').css({
+//                'display': 'none'
+//            });
 
             $('#header_ikon_container').css({
                 'height': '100%',
@@ -236,7 +238,7 @@ function getLoadNotification(){ // 읽지 않은 알림 조회하기 ( 최신화
 								newAlarm +=`<i class="fa-solid fa-user"></i>`;
 							}
 							else{ // 프로필 등록을 했을 경우
-								newAlarm +=`사진있음경로설정하시오`;
+								newAlarm +=`<img src='/flowUp/resources/files/${item.fileName}' width='32' height='32' style="border-radius: 50%;"/>`;
 							}
 											
 												
@@ -275,9 +277,7 @@ function getLoadNotification(){ // 읽지 않은 알림 조회하기 ( 최신화
 				
 				updateAlarmCount(); // 알림 개수 새로고침
 		     },
-		     error: function(request, status, error) {
-		         alert("댓글을 불러오는 데 실패했습니다.");
-		     }
+		     error: function(request, status, error) {}
 		 });
 	
 	
@@ -337,6 +337,28 @@ function goPostView(postNo,boardNo,notificationNo,fk_employeeNo) { // 알림하�
 	     }
 	 });
 
+}
+
+
+function goNotificationReadAll(){ // 전체읽기 클릭 시 알림을 모두 읽음 처리
+	
+	$.ajax({
+	     type: "post",
+	     url: ctxPath + "/board/goNotificationReadAll", 
+	     dataType: "json",
+	     success: function(json) {
+			if(json){ // 모두 읽음처리가 된 경우 
+				
+				getLoadNotification(); // 알침 새로고침
+				$('.alarm ul').empty(); // 기존 알림 데이터들을 지움
+
+			}
+			else{ // 안된 경우
+				window.location.href = ctxPath + "/board/";
+			}
+	     },
+	     error: function(request, status, error) {}
+	 });
 }
 
 

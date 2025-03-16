@@ -195,6 +195,12 @@ public interface BoardDAO {
 
 	// 클릭 된 알림을 0(안읽음)에서 1(읽음)으로 상태 변경
 	int notificationIsRead(String notificationNo);
+
+	// 댓글 상위 5개 글 
+	List<Map<String, String>> getTopCommentPosts();
+
+	// 알림의 전체읽기 클릭 시 알림을 모두 읽음 처리
+	int goNotificationReadAll(String login_userid);
 	
 	
 	

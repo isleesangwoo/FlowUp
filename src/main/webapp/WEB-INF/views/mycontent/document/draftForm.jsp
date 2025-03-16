@@ -150,7 +150,7 @@
 		
 		$("div#jstree").on("click", "a.jstree-anchor", function(e){
 			
-			let id = $(e.target).attr("id"); // 선택한 태그의 id 값
+			let id = $(e.target).attr("id") + ""; // 선택한 태그의 id 값
 			
 			if(!isNaN(id.substr(0,1))) {
 				// id 의 첫글자가 숫자라면 (사원이라면)
@@ -198,12 +198,11 @@
 						success:function(json){
 							// ajax 로 사원 정보를 가져온 후 결재 라인으로 추가한다.
 							let v_html=`<tr>
-											<td>결재</td>
 											<td class='selected_employee_no' style='display: none'>\${json.employeeNo}</td>
 											<td class='selected_security_level' style='display: none'>\${json.securityLevel}</td>
+											<td class='selected_employee_teamName'>\${json.teamName}</td>
 											<td class='selected_employee_name'>\${json.name}</td>
-											<td class='selected_employee_departmentName'>\${json.departmentName}</td>
-											<td>예정</td>
+											<td class='selected_employee_positionName'>\${json.positionName}</td>
 											<td class='delete_approver'>삭제</td>
 										</tr>`;
 										
@@ -239,8 +238,9 @@
 	    		$("tbody#added_approval_line").children().each(function(item, index){
 	    			let approver = {selected_employee_no:$(this).find("td.selected_employee_no").html(),
 	    							selected_security_level:$(this).find("td.selected_security_level").html(),
+	    							selected_employee_teamName:$(this).find("td.selected_employee_teamName").html(),
 	    							selected_employee_name:$(this).find("td.selected_employee_name").html(),
-	    							selected_employee_departmentName:$(this).find("td.selected_employee_departmentName").html()}
+	    							selected_employee_positionName:$(this).find("td.selected_employee_positionName").html()}
 	    			
 	    			approval_line_arr.push(approver);
 	    		});
@@ -253,16 +253,23 @@
 	    		// 모달에서 추가된 결재 라인을 메인 페이지에 넣어주기
 	    		$.each(approval_line_arr, function(index, element){
 		    		v_html += `<table class="ml-2" style="display: inline-block;">
+		    						<thead>
+		    							<tr>
+		    								<th colspan='2'>결재자</th>
+		    							</tr>
+		    						</thead>
 									<tbody>
 										<tr>
-											<th rowspan="4" style="width: 50px;">승인</th>
-											<td>\${element.selected_employee_departmentName}</td>
+											<th>부서</th>
+											<td>\${element.selected_employee_teamName}</td>
 										</tr>
 										<tr>
+											<th>이름</th>
 											<td>\${element.selected_employee_name}</td>
 										</tr>
 										<tr>
-											<td> </td>
+											<th>직급</th>
+											<td>\${element.selected_employee_positionName}</td>
 										</tr>
 									</tbody>
 								</table>
@@ -449,8 +456,11 @@
 					alert("결재 요청이 완료되었습니다.");
 					location.href=`<%= ctxPath%>/document/documentView?documentNo=\${json.documentNo}&documentType=\${json.documentType}`;
 				}
-				else {
-					alert("결재 요청이 실패되었습니다.");
+				else if(json.n == "-1"){
+					alert("중복되는 휴가 일자입니다.");
+				}
+				else if(json.n == "-2"){
+					alert("중복되는 연장 근무 일자입니다.");
 				}
 			},
 			error: function(request, status, error){
@@ -639,18 +649,18 @@
 	<%-- 연장근무신청서 함수 --%>
 	
 	
-	<%-- 연장근무 신청하는 날이 주말인지 확인하는 함수 --%>
-	function check_weekend() {
+	<%-- 신청하는 날이 주말 또는 오늘 이전 날짜인지 확인하는 함수 --%>
+	function check_weekend(obj) {
 		
 		// 오늘 날짜를 'yyyy-mm-dd' 까지 자르기
 		let today = new Date().toISOString().substring(0,10);
 
 		// 연장근무 신청 날짜
-		let overtimeDate = $("input[name='overtimeDate']").val();
+		let checkDate = $(obj).val();
 		
-		if(overtimeDate < today) {
+		if(checkDate < today) {
 			// 오늘 날짜보다 이전 날짜를 선택하면
-			$("span#check_weekend").text("오늘보다 이전 날짜에는 연장 근무 신청이 불가능합니다.");
+			$("span#check_weekend").text("오늘보다 이전 날짜는 선택이 불가능합니다.");
 			return;
 		}
 		else {
@@ -658,11 +668,11 @@
 		}
 		
 		// 입력한 날짜의 요일 가져오기
-		let overtimeDay = new Date(overtimeDate).getDay();
+		let checkDay = new Date(checkDate).getDay();
 		
 		// 0이면 일요일, 6이면 토요일
-		if(overtimeDay == 0 || overtimeDay == 6) {
-			$("span#check_weekend").text("주말에는 연장 근무 신청이 불가능합니다.");
+		if(checkDay == 0 || checkDay == 6) {
+			$("span#check_weekend").text("주말은 선택이 불가능합니다.");
 			return;
 		}
 		else {
@@ -702,6 +712,33 @@
 	} // end of function overtimeDraft(){}---------------------------------------------
 	
 	
+	<%-- 업무기안 결재요청하는 함수 --%>
+	function businessDraft() {
+		
+		if($("input[name='subject']").val().trim() == "") {	// 제목을 입력하지 않았을 경우
+			alert("제목을 입력하세요!")
+			return;
+		}
+		if($("input[name='doDate']").val() == "") {			// 시행 일자를 입력하지 않았을 경우
+			alert("시행 일자를 입력하세요!");
+			return;
+		}
+		if($("textarea[name='businessContent']").val().trim() == "") {		// 내용을 입력하지 않았을 경우
+			alert("내용을 입력하세요!");
+			return;
+		}
+		if($("span#check_weekend").text() != "") {			// 시행 일자를 주말로 입력했을 경우
+			alert("올바르지 않은 날짜입니다!");
+			return;
+		}
+		if($("div#approval_line").children().length == 0) {	// 결재자를 한명도 추가하지 않았을 경우
+			alert("결재 라인을 추가해주세요!");
+			return;
+		}
+		
+		draft(); // 결재 요청하기
+		
+	}
 	
 	
 </script>
@@ -720,41 +757,30 @@
 			<div style="width: 40%;" >
 				<div id="approval_line_content" class="approval_line_modal_content">
 					<div>
-						<button type="button" id="btnShow" class="doc_btn">Show</button>
-						<button type="button" id="btnHide" class="doc_btn">Hide</button>
+						<button type="button" id="btnShow" class="doc_btn">열기</button>
+						<button type="button" id="btnHide" class="doc_btn">닫기</button>
 						<input type="text" name='member_name' placeholder="사원 검색" class="my-1"/>
 						<div id="jstree" style="overflow: scroll; max-height: 250px; border: solid 1px #333;"></div>
 					</div>
 				</div>
 			</div>
-			<div style="border: solid 1px gray; width: 55%; margin-left: auto;">
+			<div style="display: flex;" class="mx-1">
+				<button id="add_approval_btn" class="doc_btn" style="margin: auto; border: none;"><i class="fa-solid fa-forward" style="font-size: 30px;"></i></button>
+			</div>
+			<div style="border: solid 1px gray; width: 50%; margin-right: 0;">
 				<div>
 					<table class="table">
-						<thead>
+						<thead class="doc_box_thead">
 							<tr>
-								<th></th>
-								<th>타입</th>
-								<th>이름</th>
 								<th>부서</th>
+								<th>이름</th>
+								<th>직급</th>
 								<th>삭제</th>
 							</tr>
 						</thead>
+						<tbody id="added_approval_line">
+						</tbody>
 					</table>
-				</div>
-				<div>
-					승인
-				</div>
-				<div>
-					<div style="display: inline-block;">
-						<button id="add_approval_btn" class="doc_btn">>></button>
-					</div>
-					<div style="display: inline-block;">
-						<table class="table">
-							<tbody style="border: solid 1px gray" id="added_approval_line">
-								
-							</tbody>
-						</table>
-					</div>
 				</div>
 			</div>
 		</div>
@@ -768,12 +794,20 @@
     <%-- 결재 폼 공통 --%>
 	<div class="m-3">
 		<c:if test="${requestScope.documentType == '휴가신청서'}">
-			<h1 class="mb-3">휴가신청서</h1>
+			<h3 class="mb-3">휴가신청서</h3>
 			<button class="doc_btn mr-3" onclick="annualDraft()">결재요청</button>
 		</c:if>
 		<c:if test="${requestScope.documentType == '연장근무신청서'}">
-			<h1 class="mb-3">연장근무신청서</h1>
+			<h3 class="mb-3">연장근무신청서</h3>
 			<button class="doc_btn mr-3" onclick="overtimeDraft()">결재요청</button>
+		</c:if>
+		<c:if test="${requestScope.documentType == '지출품의서'}">
+			<h3 class="mb-3">지출품의서</h3>
+			<button class="doc_btn mr-3" onclick="expenseDraft()">결재요청</button>
+		</c:if>
+		<c:if test="${requestScope.documentType == '업무기안'}">
+			<h3 class="mb-3">업무기안</h3>
+			<button class="doc_btn mr-3" onclick="businessDraft()">결재요청</button>
 		</c:if>
 		<button class="doc_btn mr-3" onclick="saveTemp()">임시저장</button>
 		<button class="doc_btn mr-3">미리보기</button>
@@ -789,6 +823,12 @@
 			</c:if>
 			<c:if test="${requestScope.documentType == '연장근무신청서'}">
 				<h3 style="text-align: center">연장근무신청서</h3>
+			</c:if>
+			<c:if test="${requestScope.documentType == '지출품의서'}">
+				<h3 style="text-align: center">지출품의서</h3>
+			</c:if>
+			<c:if test="${requestScope.documentType == '업무기안'}">
+				<h3 style="text-align: center">업무기안</h3>
 			</c:if>
 			
 			<div style="display: flex">
@@ -810,7 +850,7 @@
 								<th>소속</th>
 								<td>
 									<c:if test="${empty requestScope.document}">
-										${sessionScope.loginuser.departmentName}
+										${sessionScope.loginuser.teamName}
 									</c:if>
 									<c:if test="${not empty requestScope.document}">
 										${requestScope.document.teamName}
@@ -847,16 +887,23 @@
 						<c:if test="${not empty requestScope.approvalList}">
 							<c:forEach var="approval" items="${requestScope.approvalList}" varStatus="status">
 								<table class="ml-2" style="display: inline-block;">
+									<thead>
+		    							<tr>
+		    								<th colspan='2'>결재자</th>
+		    							</tr>
+		    						</thead>
 									<tbody>
 										<tr>
-											<th rowspan="4" style="width: 50px;">승인</th>
-											<td>${approval.positionName}</td>
+											<th>부서</th>
+											<td>${approval.teamName}</td>
 										</tr>
 										<tr>
+											<th>이름</th>
 											<td>${approval.name}</td>
 										</tr>
 										<tr>
-											<td> </td>
+											<th>직급</th>
+											<td>${approval.positionName}</td>
 										</tr>
 									</tbody>
 								</table>
@@ -1052,6 +1099,80 @@
 								<th>연장 근무 일자</th>
 								<td>
 									<c:if test="${empty requestScope.document}">
+										<input type="date" name="overtimeDate" onchange="check_weekend(this)" onkeydown="return false" />
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										<c:if test="${requestScope.document.overtimeDate eq '-'}">
+											<input type="date" name="overtimeDate" onchange="check_weekend(this)" onkeydown="return false" />
+										</c:if>
+										<c:if test="${requestScope.document.overtimeDate ne '-'}">
+											<input type="date" name="overtimeDate" onchange="check_weekend(this)" value="${requestScope.document.overtimeDate}" onkeydown="return false" />
+										</c:if>
+									</c:if>
+									<span id="check_weekend" class="alert"></span>
+								</td>
+							</tr>
+							<tr>
+								<th>연장 근무 시간</th>
+								<td>
+									<input type="text" value="3시간" style="width: 100%;" readonly />
+								</td>
+							</tr>
+							<tr>
+								<th class="pl-4" colspan="2" style="text-align: left;">
+									1. 연장 근무는 3시간을 규정으로 한다.
+									<br>2. 연장 근무 신청은 반드시 퇴근 시간 이전에 이루어져야 한다. 
+								</th>
+							</tr>
+						</tbody>
+					</table>
+				</c:if>
+				<%-- 연장근무신청서 폼 --%>
+				
+				
+				<%-- 지출품의서 폼 --%>
+				<c:if test="${requestScope.documentType == '지출품의서'}">
+					<input type="hidden" name="documentType" value="지출품의서" />
+					<table class="mt-5" style="width: 100%">
+						<tbody>
+							<tr>
+								<th>긴급</th>
+								<td>
+									<c:if test="${empty requestScope.document || requestScope.document.urgent eq 0}">
+										<input class="ml-1" type="checkbox" name="check_urgent"/>
+									</c:if>
+									<c:if test="${requestScope.document.urgent eq 1}">
+										<input class="ml-1" type="checkbox" name="check_urgent" checked="checked"/>
+									</c:if>
+									<input type="hidden" name="urgent" value="0"/>
+								</td>
+							</tr>
+							<tr>
+								<th>제목</th>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										<input type="text" name="subject" value=" " style="width: 100%;"/>
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										<input type="text" name="subject" value="${requestScope.document.subject}" style="width: 100%;"/>
+									</c:if>
+								</td>
+							</tr>
+							<tr>
+								<th>사유</th>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										<input type="text" name="reason" value=" " style="width: 100%;"/>
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										<input type="text" name="reason" value="${requestScope.document.reason}" style="width: 100%;"/>
+									</c:if>
+								</td>
+							</tr>
+							<tr>
+								<th>연장 근무 일자</th>
+								<td>
+									<c:if test="${empty requestScope.document}">
 										<input type="date" name="overtimeDate" onchange="check_weekend()" onkeydown="return false" />
 									</c:if>
 									<c:if test="${not empty requestScope.document}">
@@ -1080,8 +1201,80 @@
 						</tbody>
 					</table>
 				</c:if>
-				<%-- 연장근무신청서 폼 --%>
+				<%-- 지출품의서 폼 --%>
 				
+				
+				<%-- 업무기안 폼 --%>
+				<c:if test="${requestScope.documentType eq '업무기안'}">
+					<input type="hidden" name="documentType" value="업무기안" />
+					<table class="mt-5" style="width: 100%">
+						<tbody>
+							<tr>
+								<th>긴급</th>
+								<td>
+									<c:if test="${empty requestScope.document || requestScope.document.urgent eq 0}">
+										<input class="ml-1" type="checkbox" name="check_urgent"/>
+									</c:if>
+									<c:if test="${requestScope.document.urgent eq 1}">
+										<input class="ml-1" type="checkbox" name="check_urgent" checked="checked"/>
+									</c:if>
+									<input type="hidden" name="urgent" value="0"/>
+								</td>
+							</tr>
+							<tr>
+								<th>제목</th>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										<input type="text" name="subject" value=" " style="width: 100%;"/>
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										<input type="text" name="subject" value="${requestScope.document.subject}" style="width: 100%;"/>
+									</c:if>
+								</td>
+							</tr>
+							<tr>
+								<th>협조부서</th>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										<input type="text" name="coDepartment" style="width: 100%;"/>
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										<input type="text" name="coDepartment" value="${requestScope.document.coDepartment}" style="width: 100%;"/>
+									</c:if>
+								</td>
+							</tr>
+							<tr>
+								<th>시행 일자</th>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										<input type="date" name="doDate" onchange="check_weekend(this)" onkeydown="return false" />
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										<c:if test="${requestScope.document.doDate eq '-'}">
+											<input type="date" name="doDate" onchange="check_weekend(this)" onkeydown="return false" />
+										</c:if>
+										<c:if test="${requestScope.document.doDate ne '-'}">
+											<input type="date" name="doDate" onchange="check_weekend(this)" value="${requestScope.document.doDate}" onkeydown="return false" />
+										</c:if>
+									</c:if>
+									<span id="check_weekend" class="alert"></span>
+								</td>
+							</tr>
+							<tr>
+								<th>내용</th>
+								<td>
+									<c:if test="${empty requestScope.document}">
+										<textarea name="businessContent" style="width: 100%; height: 150px; overflow: auto;"></textarea>
+									</c:if>
+									<c:if test="${not empty requestScope.document}">
+										<textarea name="businessContent" style="width: 100%; height: 150px; overflow: auto;">${requestScope.document.businessContent}</textarea>
+									</c:if>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</c:if>
+				<%-- 업무기안 폼 --%>
 				
 			</div>
 			
@@ -1091,6 +1284,12 @@
 				<div id="fileDrop" class="fileDrop border border-secondary"></div>
 			</div>
 			<div id="fileList" class="mt-1"></div>
+			
+			<div class="mt-5">
+				<a onclick="history.back()" style="color: black; cursor: pointer">
+					<i class="fa-solid fa-circle-arrow-left">&nbsp;뒤로가기</i>
+				</a>
+			</div>
 			
 		</form>
 		

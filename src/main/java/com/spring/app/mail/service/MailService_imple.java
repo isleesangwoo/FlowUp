@@ -1,17 +1,24 @@
 package com.spring.app.mail.service;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.FileCopyUtils;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.spring.app.mail.domain.MailFileVO;
 import com.spring.app.mail.domain.MailVO;
 import com.spring.app.mail.model.MailDAO;
+
+import jakarta.servlet.ServletContext;
 
 
 // === 서비스 선언 === //
@@ -21,7 +28,10 @@ public class MailService_imple implements MailService {
 	
 	@Autowired
 	private MailDAO mailDAO;
-
+	
+	@Autowired
+	private ServletContext servletContext;
+	
 	// 전체 메일
 	@Override
 	public List<MailVO> mailListAll() {
@@ -172,7 +182,8 @@ public class MailService_imple implements MailService {
     @Override
     public int deleteMailStatus(List<Integer> mailNoList) {
     	
-        // DAO 호출
+        Map<String, Object> map = new HashMap<>();
+        map.put("mailNoList", mailNoList);  // mailNoList를 Map에 담아 매퍼에 전달
         return mailDAO.updateCheckDeleteStatus(mailNoList);
     }
 
@@ -213,33 +224,27 @@ public class MailService_imple implements MailService {
     // 메일 작성 기능 구현
 	@Override
 	@Transactional
-	public void sendMail(MailVO mail, List<Map<String, Object>> referencedList, List<Map<String, Object>> fileList) {
-	    // 1. 메일 정보 저장
-	    mailDAO.insertMail(mail);
-	    String mailNo = mail.getMailNo(); // 생성된 메일 번호
-
-	    // 2. 참조자 정보 저장 (Map 사용)
-	    for (Map<String, Object> referencedMap : referencedList) {
-	        referencedMap.put("fk_mailNo", mailNo); // 메일 번호 추가
-	        referencedMap.put("fk_adrsBNo", 1); // 주소록 고유번호
-	        mailDAO.insertReferenced(referencedMap);
+	public void sendMail(int mailNo, List<Map<String, Object>> referencedList, List<Map<String, Object>> fileList) {
+	    // 참조자 저장
+	    if (referencedList != null) {
+	        for (Map<String, Object> refMap : referencedList) {
+	            mailDAO.insertReferenced(refMap);
+	        }
 	    }
 
-	    // 3. 첨부 파일 정보 저장
-	    for (Map<String, Object> fileMap : fileList) {
-	        fileMap.put("fk_mailNo", mail.getMailNo()); // 메일 번호 설정
-	        mailDAO.insertMailFile(fileMap);
+	    // 첨부파일 저장
+	    if (fileList != null) {
+	        for (Map<String, Object> fileMap : fileList) {
+	            mailDAO.insertMailFile(fileMap);
+	        }
 	    }
-	    
 	}
 
-
-    // 메일 작성
+    // 메일 저장
     @Override
     @Transactional
     public void insertMail(MailVO mail) {
-        // 메일 정보를 데이터베이스에 저장
-        mailDAO.insertMail(mail);
+        mailDAO.insertMail(mail); // 메일 정보 저장 (mailNo 자동 생성)
     }
 
     // 참조자 정보 저장
@@ -259,22 +264,33 @@ public class MailService_imple implements MailService {
     
     // 이름으로 employeeNo 조회
 	@Override
-	public String findEmployeeNoByName(String name) {
+	public Integer findEmployeeNoByName(String name) {
 		
-        return mailDAO.findEmployeeNoByName(name);
+	    Object result = mailDAO.findEmployeeNoByName(name);
+	    if (result instanceof Number) {
+	        return ((Number) result).intValue();
+	    } else if (result != null) {
+	        return Integer.parseInt(result.toString());
+	    }
+	    return null; // 또는 기본값
 	}
-
+	
 	// 보낸 메일함 조회
     @Override
     public List<MailVO> selectSentMail(Map<String, String> paraMap) {
         return mailDAO.selectSentMail(paraMap);
     }
 
-    // 보낸 메일함 개수 조회
+    // 보낸 메일 개수 조회
     @Override
     public int getSentMailCount(String senderNo) {
         return mailDAO.getSentMailCount(senderNo);
     }
+    
+    // 받은 메일 조회
+    @Override
+    public List<MailVO> getReceivedMailList(int loginEmployeeNo) {
+        return mailDAO.selectReceivedMailList(loginEmployeeNo);
+    }
 
-	
 }

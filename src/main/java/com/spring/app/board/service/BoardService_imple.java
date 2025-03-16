@@ -128,11 +128,11 @@ public class BoardService_imple implements BoardService {
 
 	// 게시판 메인 페이지에 뿌려줄 모든 게시글 조회
 	@Override
-	public List<PostVO> selectAllPost(Map<String, String> paraMap,String login_userid) {
+	public List<PostVO> selectAllPost(Map<String, String> paraMap) {
 		List<PostVO> postAllList = dao.selectAllPost(paraMap);
 		
-		if (login_userid != null) {
-	        List<Integer> likedPosts = dao.getLikedPosts(login_userid); // 로그인한 사원이 좋아요한 게시글 조회
+		if (paraMap.get("login_userid") != null) {
+	        List<Integer> likedPosts = dao.getLikedPosts(paraMap.get("login_userid") ); // 로그인한 사원이 좋아요한 게시글 조회
 	        
 	        // 좋아요한 게시글 목록을 Set으로 변환
 	        Set<Integer> likedPostSet = new HashSet<>(likedPosts);
@@ -628,6 +628,20 @@ public class BoardService_imple implements BoardService {
 	@Override
 	public int increase_readCount(String postNo) {
 		int n = dao.increase_readCount(postNo);
+		return n;
+	}
+
+	// 댓글 상위 5개 글 
+	@Override
+	public List<Map<String, String>> getTopCommentPosts() {
+		List<Map<String, String>> topCommentList = dao.getTopCommentPosts();
+		return topCommentList;
+	}
+
+	// 알림의 전체읽기 클릭 시 알림을 모두 읽음 처리
+	@Override
+	public int goNotificationReadAll(String login_userid) {
+		int n = dao.goNotificationReadAll(login_userid);
 		return n;
 	}
 

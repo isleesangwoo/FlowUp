@@ -30,6 +30,7 @@ public class EmployeeVO {
      //테이블 추가 x
      private String departmentName;     // 부서 이름
      private String teamName;			// 팀이름
+     private String positionName;		// 직급이름
 	
      private boolean requireLastChangePwd = false; 
      
@@ -255,6 +256,14 @@ public class EmployeeVO {
 
 	public void setTeamName(String teamName) {
 		this.teamName = teamName;
+	}
+
+	public String getPositionName() {
+		return positionName;
+	}
+
+	public void setPositionName(String positionName) {
+		this.positionName = positionName;
 	}
    
    

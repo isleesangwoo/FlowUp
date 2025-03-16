@@ -248,6 +248,43 @@
                             , fk_teamNo = #{teamNo}
       where employeeno = #{employeeNo}
  </update>
+ 
+ <insert id="addGroupOptionEnd" parameterType="GroupVO">
+ 	insert into tbl_group(groupno,fk_employeeno,GROUPNAME)
+	values(groupno.nextval,to_number(#{g_fk_employee}),#{groupname})
+ </insert>
+ 
+ 
+ 
+ <resultMap type="HashMap" id="groupOptionSelect_map">
+ 	
+ 	<result property="groupNo"   column="groupNo"   javaType="String"/>
+ 	<result property="groupName" column="groupName" javaType="String"/>
+ 	<!-- 그룹옵션 추가하기 -->
+ </resultMap>
+ <select id="groupOptionSelect" parameterType="String" resultMap="groupOptionSelect_map">
+	 select groupNo, groupName
+	 from tbl_group
+	 order by groupName desc
+ </select>
+ 
+ <resultMap type="HashMap" id="groupNo_and_groupName_select_map">
+ 	<result property="groupNo"   column="groupNo"   javaType="String"/>
+ 	<result property="groupName" column="groupName" javaType="String"/>
+ </resultMap>
+ <!-- 그룹번호와 그룹이름 가져오기  -->
+ <select id="groupNo_and_groupName_select" resultMap="groupNo_and_groupName_select_map">
+	 select groupNo, groupName
+	 from tbl_group 
+	 where fk_employeeno = to_number(#{g_fk_employee})
+	 order by groupno asc
+</select>
+
+<select id="addGroup">
+	select groupNo, groupName
+	from tbl_group
+	where fk_employeeno  = #{fk_employeeno} and groupNo=#{groupNo}
+</select>
 	
 </mapper>
 

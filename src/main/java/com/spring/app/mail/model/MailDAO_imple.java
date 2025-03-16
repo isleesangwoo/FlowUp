@@ -1,6 +1,7 @@
 package com.spring.app.mail.model;
 
 import java.util.List;
+import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +21,8 @@ public abstract class MailDAO_imple implements MailDAO {
     }
     
     @Override
-    public List<MailVO> selectDeletedMail() {
-        return sqlsession.selectList("com.spring.app.mail.model.MailDAO.selectDeletedMail");
+    public List<MailVO> selectSentMail(Map<String, String> paraMap) {
+        return sqlsession.selectList("com.spring.app.mail.model.MailDAO.selectSentMail", paraMap);
     }
 
     
