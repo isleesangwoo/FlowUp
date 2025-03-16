@@ -728,7 +728,7 @@ CREATE TABLE tbl_mail
 );
 
 create sequence mailSeq
-start with 1
+start with 100001
 increment by 1
 nomaxvalue
 nominvalue
@@ -800,31 +800,40 @@ WHERE rno BETWEEN 1 AND 5;
 
 
 
-CREATE TABLE tbl_referenced
-(refMailNo      NUMBER        NOT NULL -- 참조 이메일번호
-,refStatus      NUMBER(1)     NOT NULL -- 참조수신여부 / 0:수신자, 1:참조자
-,refName        VARCHAR2(20)  NOT NULL -- 참조/수신자이름
-,refMail        VARCHAR2(50)  NOT NULL -- 참조/수신자이메일
-,fk_mailNo      NUMBER        NOT NULL -- 메일번호
-,fk_adrsBNo     NUMBER        NOT NULL -- 주소록 고유번호
-
-,constraint pk_tbl_referenced_refMailNo primary key (refMailNo)
-,constraint fk_tbl_referenced_fk_mailNo foreign key(fk_mailNo) references tbl_mail(mailNo)
-,constraint fk_tbl_addressBook_fk_adrsBNo foreign key(fk_adrsBNo) references tbl_addressBook(adrsBNo)
-,constraint ck_tbl_referenced_refStatus check( refStatus in(1,0) )
+CREATE TABLE tbl_referenced (
+  refMailNo    NUMBER        NOT NULL, -- 참조 이메일번호 (PK)
+  refStatus    NUMBER(1)     NOT NULL, -- 참조수신여부 (0:수신자, 1:참조자)
+  refName      VARCHAR2(20)  NOT NULL, -- 참조/수신자 이름
+  refEmail     VARCHAR2(50)          , -- 참조/수신자 이메일 주소 (신규 추가)
+  refEmployeeNo NUMBER               , -- 참조/수신자 사원번호 (신규 추가)
+  fk_mailNo    NUMBER        NOT NULL, -- 메일번호 (FK)
+  
+  
+  CONSTRAINT pk_tbl_referenced_refMailNo PRIMARY KEY (refMailNo),
+  CONSTRAINT fk_tbl_referenced_fk_mailNo FOREIGN KEY (fk_mailNo) REFERENCES tbl_mail(mailNo),
+  
+  CONSTRAINT ck_tbl_referenced_refStatus CHECK (refStatus IN (1,0))
 );
 
-drop table tbl_reference;
+-- fk_adrsBNo   NUMBER        NOT NULL, -- 주소록 고유번호 (FK)
+-- CONSTRAINT fk_tbl_addressBook_fk_adrsBNo FOREIGN KEY (fk_adrsBNo) REFERENCES tbl_addressBook(adrsBNo),
+
+ALTER TABLE tbl_referenced MODIFY (refEmail VARCHAR2(50) NULL);
+ALTER TABLE tbl_referenced MODIFY (refEmployeeNo NUMBER NULL);
+
+drop table tbl_referenced;
 
 commit;
 
 create sequence referencedSeq
-start with 1
+start with 100001
 increment by 1
 nomaxvalue
 nominvalue
 nocycle
 nocache;
+
+drop sequence referencedSeq;
 
 select *
 from tbl_mailFile;
@@ -980,7 +989,7 @@ from tbl_mailFile;
         select M.mailNo, M.subject, M.content, M.sendDate, M.importantStatus, M.readStatus,
 	           f.fileSize, f.orgFileName, f.fileName,
 	           e.employeeNo, e.name, e.email,
-	           r.refStatus, r.refName, r.refMail
+	           r.refStatus, r.refName, r.refEmail
 	    from tbl_mail M
 	    left join tbl_mailFile f
 	      on M.mailNo = f.fk_mailNo
@@ -988,7 +997,7 @@ from tbl_mailFile;
 	      on M.mailNo = r.fk_mailNo
 	    join tbl_employee e
 	      on M.fk_employeeNo = e.employeeNo
-	    where M.mailNo = 100154
+	    where M.mailNo = 107857;
         
 
 	<select id="getMailFile" resultType="MailFileVO">
@@ -1004,4 +1013,107 @@ WHERE m.fk_employeeNo = 100020 -- 보낸 사람(나)
 AND r.refMail != 100014 -- 받는 사람(나와 다른 사람)
 AND r.refStatus = '0' -- 받는 사람만 조회 (참조자는 제외)
 
-    
+
+SELECT mailSeq.CURRVAL FROM DUAL;
+SELECT mailSeq.NEXTVAL FROM DUAL;
+
+select *
+from tbl_mail;
+
+DELETE FROM tbl_mail WHERE mailNo = '100050';
+commit;
+
+CREATE OR REPLACE TRIGGER trg_mail_no
+BEFORE INSERT ON tbl_mail
+FOR EACH ROW
+BEGIN
+  :NEW.mailNo := mailSeq.NEXTVAL;
+END;
+
+-- 현재 시퀀스 값 확인
+SELECT mailSeq.CURRVAL FROM DUAL;
+
+-- 테이블의 최대 mailNo 확인
+SELECT MAX(mailNo) FROM tbl_mail;
+
+-- 시퀀스가 테이블보다 작다면 수정
+ALTER SEQUENCE mailSeq INCREMENT BY 100;
+SELECT mailSeq.NEXTVAL FROM DUAL; -- 1회 실행
+ALTER SEQUENCE mailSeq INCREMENT BY 1;
+
+ALTER SEQUENCE mailSeq NOCACHE;
+
+
+SELECT mailSeq.NEXTVAL FROM DUAL; -- 한 번 실행
+ALTER SEQUENCE mailSeq INCREMENT BY 100;
+
+DROP TRIGGER trg_mail_no;
+
+DESC tbl_referenced;
+DESC tbl_mailFile;
+SELECT * FROM tbl_mailFile
+
+delete from tbl_mailFile where fileNo = 100002
+
+commit;
+
+SELECT * FROM tbl_addressbook WHERE fk_employeeNo = 100011;
+
+ALTER TABLE TBL_MAILFILE MODIFY FILENAME VARCHAR2(200);
+ALTER TABLE TBL_MAILFILE MODIFY ORGFILENAME VARCHAR2(200);
+
+CREATE TABLE tbl_receiver (
+  receiverNo    NUMBER         NOT NULL, -- 수신번호 (PK)
+  fk_mailNo     NUMBER         NOT NULL, -- 메일번호 (FK)
+  fk_employeeNo NUMBER         NOT NULL, -- 수신자 사번 (직원 테이블 참조)
+  readSt    NUMBER(1) DEFAULT 0 NOT NULL, -- 읽음 상태 (0: 미열람, 1: 열람)
+  deleteSt  NUMBER(1) DEFAULT 0 NOT NULL, -- 삭제 상태 (0: 정상, 1: 삭제)
+  importantSt NUMBER(1) DEFAULT 0 NOT NULL, -- 중요 표시 상태 (0: 기본, 1: 중요)
+
+  CONSTRAINT pk_tbl_receiver_receiverNo PRIMARY KEY (receiverNo),
+  CONSTRAINT fk_tbl_receiver_fk_mailNo FOREIGN KEY (fk_mailNo) REFERENCES tbl_mail(mailNo),
+  CONSTRAINT fk_tbl_receiver_fk_employeeNo FOREIGN KEY (fk_employeeNo) REFERENCES tbl_employee(employeeNo),
+  CONSTRAINT ck_tbl_receiver_readSt CHECK (readSt IN (1,0)),
+  CONSTRAINT ck_tbl_receiver_deleteSt CHECK (deleteSt IN (1,0)),
+  CONSTRAINT ck_tbl_receiver_importantSt CHECK (importantSt IN (1,0))
+);
+
+create sequence receiverSeq
+start with 100001
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+select *
+from tbl_receiver;
+
+commit;
+
+
+<select id="selectReceivedMailList" resultType="com.spring.app.mail.model.MailVO">
+    SELECT M.mailNo, M.subject, M.content, M.sendDate, 
+           R.readSt AS readStatus, R.deleteSt AS deleteStatus, R.importantSt AS importantStatus,
+           E.employeeNo, E.name AS senderName,
+           COALESCE(SUM(F.fileSize), 0) AS totalFileSize
+    FROM tbl_receiver R
+    JOIN tbl_mail M ON R.fk_mailNo = M.mailNo
+    JOIN tbl_employee E ON M.fk_employeeNo = E.employeeNo  -- 발신자 정보
+    LEFT JOIN tbl_mailFile F ON M.mailNo = F.fk_mailNo
+    WHERE R.fk_employeeNo = 100013 -- 로그인한 사용자가 수신자인 경우
+      AND R.deleteSt = 0  -- 삭제되지 않은 메일만 조회
+    GROUP BY M.mailNo, M.subject, M.content, M.sendDate, 
+             R.readSt, R.deleteSt, R.importantSt, 
+             E.employeeNo, E.name;
+</select>
+
+SELECT * FROM tbl_receiver WHERE fk_employeeNo = 100001;
+
+INSERT INTO tbl_receiver (receiverNo, fk_mailNo, fk_employeeNo, readSt, deleteSt, importantSt)
+VALUES (receiverSeq.nextval, 100001, 100020, 0, 0, 0);
+
+INSERT INTO tbl_receiver (receiverNo, fk_mailNo, fk_employeeNo, readSt, deleteSt, importantSt)
+SELECT receiverSeq.nextval, mailNo, fk_employeeNo, 0, 0, 0
+FROM tbl_mail;
+

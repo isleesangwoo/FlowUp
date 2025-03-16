@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     
+<%@ page isELIgnored="false" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
 
 <%
    String ctxPath = request.getContextPath();
-    //     /myspring
+    //     /flowUp
 %>
 
 <jsp:include page="../../header/header.jsp" />
@@ -18,7 +19,7 @@
 
 <script type="text/javascript">
 
-let goBackURL = '<%= (String)request.getAttribute("goBackURL") %>';
+let goBackURL = '<%=(String)request.getAttribute("goBackURL")%>';
 
 // 전역 상태 변수 추가
 let currentState = {
@@ -30,8 +31,8 @@ let currentState = {
   $(document).ready(function(){  
 	// 최초 접속 시 AJAX로 데이터 로드
     // URL 파라미터 파싱
-    const urlParams = new URLSearchParams(window.location.search);
-    const initialMailbox = urlParams.get('mailbox') || 'default';
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialMailbox = urlParams.get('mailbox') || 'default';
     
     // 초기 데이터 로드
     loadMailList(initialMailbox, 1, 20);
@@ -95,29 +96,30 @@ let currentState = {
 	        if(files != null && files != undefined){
 	            let html = "";
 	            const f = files[0]; // 어차피 files.length 의 값이 1 이므로 위의 for문을 사용하지 않고 files[0] 을 사용하여 1개만 가져오면 된다. 
-	        	let fileSize = f.size/1024/1024;   /* 파일의 크기는 MB로 나타내기 위하여 /1024/1024 하였음 */
+	        	let fileSize = f.size;   /* 파일의 크기는 MB로 나타내기 위하여 /1024/1024 하였음 */
 	        	
-	        	if(fileSize >= 10) {
-	        		alert("10MB 이상인 파일은 업로드할 수 없습니다.!!");
-	        		$(this).css("background-color", "#fff");
-	        		return;
-	        	}
+	            // 파일 크기 검증 (10MB = 10 * 1024 * 1024)
+	            if(fileSize >= 10 * 1024 * 1024) { 
+	                alert("10MB 이상인 파일은 업로드할 수 없습니다.!!");
+	                $(this).css("background-color", "#fff");
+	                return;
+	            }
 	        	
-	        	else {
-	        		file_arr.push(f); //  드롭대상인 박스 안에 첨부파일을 드롭하면 파일들을 담아둘 배열인 file_arr 에 파일들을 저장시키도록 한다. 
-		        	const fileName = f.name; // 파일명	
-	        	
-	        	    fileSize = fileSize < 1 ? fileSize.toFixed(3) : fileSize.toFixed(1);
+        		file_arr.push(f); //  드롭대상인 박스 안에 첨부파일을 드롭하면 파일들을 담아둘 배열인 file_arr 에 파일들을 저장시키도록 한다. 
+	        	const fileName = f.name; // 파일명	
+        	
+        	    // 파일 크기 포매팅 (화면 표시용)
+        	    let displaySize = (fileSize / 1024 / 1024).toFixed(2) + " MB";
 
-	        	    html += 
-	                    "<div class='fileList'>" +
-	                        "<span class='delete'>&times;</span>" +  // &times; 는 x 로 보여주는 것이다.  
-	                        "<span class='fileName'>"+fileName+"</span>" +
-	                        "<span class='fileSize'>"+fileSize+" MB</span>" +
-	                        "<span class='clear'></span>" +  // <span class='clear'></span> 의 용도는 CSS 에서 float:right; 를 clear: both; 하기 위한 용도이다. 
-	                    "</div>";
-		            $(this).append(html);
-	        	}
+        	    html += 
+                    `<div class='fileList'>
+                        <span class='delete'>&times;</span>  // &times; 는 x 로 보여주는 것이다.  
+                        <span class='fileName'>\${fileName}</span>
+                        <span class='fileSize'>\${displaySize}MB</span>
+                        <span class='clear'></span>  // <span class='clear'></span> 의 용도는 CSS 에서 float:right; 를 clear: both; 하기 위한 용도이다. 
+                     </div>`;
+	            $(this).append(html);
+	            
 	        }// end of if(files != null && files != undefined)--------------------------
 	        
 	        $(this).css("background-color", "#fff");
@@ -153,46 +155,42 @@ let currentState = {
 		
 	  <%-- ==== 메일함 통합 ajax 시작 ==== --%>
 	  function loadMailList(mailbox = 'default', currentShowPageNo = 1, sizePerPage = 20) {
-		  
-		  console.log("currentShowPageNo: ", currentShowPageNo);  // 디버깅용
-		  
-		    const url = `${ctxPath}/mail/mailList?mailbox=${mailbox}&currentShowPageNo=${currentShowPageNo}&sizePerPage=${sizePerPage}`;
-		    console.log("URL: " + url); // 콘솔 확인
+		    // 상태 업데이트
+		    currentState.mailbox = mailbox;
+		    currentState.page = currentShowPageNo;
+		    currentState.size = sizePerPage;
+		    
+		    let url = 
+		    console.log("loadMailList 호출 - mailbox: " + mailbox + ", currentShowPageNo: " + currentShowPageNo + ", sizePerPage: " + sizePerPage);
 		    
 		    $.ajax({
-		        url: "<%=ctxPath%>/mail/mailList", // 공통 메서드 매핑
+		        url: ctxPath + "/mail/mailList",
 		        type: "GET",
-		        data: {
+		        data: { 
 		            mailbox: mailbox,
 		            currentShowPageNo: currentShowPageNo,
 		            sizePerPage: sizePerPage
 		        },
 		        dataType: "json",
 		        success: function(response) {
-		            const data = response.mailList; // 메일 목록
-		            const totalPage = response.totalPage; // 전체 페이지 수
+		            const data = response.mailList;
+		            const totalPage = response.totalPage;
 
-		            // 테이블 내용 새로 채움
 		            let html = "";
-		            $.each(data, function(index, mail){
-		                // 별 아이콘
+		            $.each(data, function(index, mail) {
 		                let starIcon = (mail.importantStatus == 1)
 		                    ? `<i class="fa-solid fa-star toggle_star" style="color:yellow;cursor:pointer;" data-mailno="\${mail.mailNo}"></i>`
 		                    : `<i class="fa-regular fa-star toggle_star" style="cursor:pointer;" data-mailno="\${mail.mailNo}"></i>`;
-
-		                // 메일 아이콘
 		                let mailIcon = (mail.readStatus == 1)
 		                    ? `<i class="fa-regular fa-envelope-open toggle_mail" style="cursor:pointer;" data-mailno="\${mail.mailNo}"></i>`
 		                    : `<i class="fa-regular fa-envelope toggle_mail" style="cursor:pointer;color:black;" data-mailno="\${mail.mailNo}"></i>`;
-
 		                let name = mail.employeevo ? mail.employeevo.name : '발신자 없음';
 		                let size = mail.fileSize ? mail.fileSize + "KB" : "";
-		                const ctxPath = "<%= ctxPath %>";
 		                
 		                html += `
 		                <tr class="mailReadTitle">
 		                    <td>
-		                        <input type="checkbox" class="mailOneCheck" style="padding:4px"/>
+		                        <input type="checkbox" class="mailOneCheck" data-mailno="\${mail.mailNo}" style="padding:4px"/>
 		                    </td>
 		                    <td>
 		                        \${starIcon}
@@ -207,13 +205,15 @@ let currentState = {
 		                    </td>
 		                    <td id="right-content">
 		                        <span id="sendDate">\${mail.sendDate}</span>
-		                        <span id="fileSize">\${size}</span>
+		                        <span id="fileSize">
+		                        <c:if test="\${not empty mail.mailfilevo}">
+		                            \${(mail.mailfilevo[0].fileSize / 1024 / 1024).toFixed(2)} MB
+		                        </c:if>
+		                    </span>
 		                    </td>
 		                </tr>
 		                `;
 		            });
-		            
-		            // 테이블에 HTML 삽입
 		            $("#mailTable tbody").html(html);
 
 		            // 페이지바 생성
@@ -221,69 +221,103 @@ let currentState = {
 		            for (let i = 1; i <= totalPage; i++) {
 		                pageBar += `
 		                    <li style='display:inline-block; width:30px; font-size:12pt;'>
-		                        <a href="javascript:loadMailList('\${mailbox}', \${i}, \${sizePerPage})">${i}</a>
+		                        <a href="javascript:void(0);" data-page="\${i}" onclick="loadMailList('$\{mailbox}', \${i}, \${sizePerPage})">${i}</a>
 		                    </li>
 		                `;
 		            }
 		            pageBar += "</ul>";
-		            // 페이지바 삽입
 		            $("#pageBar").html(pageBar);
 
-		            // 새 목록에 별/메일 아이콘 이벤트 재바인딩
+		            // 이벤트 재바인딩
 		            bindStarToggle();
 		            bindMailToggle();
 		        },
-		        error: function(err){
+		        error: function(err) {
 		            console.log(err);
 		            alert("메일 조회 중 오류 발생");
 		        }
 		    });
 		}
-		//받은메일함 조회
-		$("#receivedMail").on("click", function(e){
-		    e.preventDefault(); // a 태그 이동 막기
-		    console.log("받은메일함 클릭됨"); // 디버깅용
-		    loadMailList("default", 1, 20); // 받은메일함 조회
-		});
-		
-		// 보낸메일함 조회
-		$("#sendMail").on("click", function(e){
-		    e.preventDefault(); // a 태그 이동 막기
-		    console.log("보낸메일함 클릭됨"); // 디버깅용
-		    loadMailList("send", 1, 20); // 보낸메일함 조회
-		});
-		
-		// 중요메일함 조회
-		$("#importantMail").on("click", function(e){
-		    e.preventDefault(); // a 태그 이동 막기
-		    console.log("중요메일함 클릭됨"); // 디버깅용
-		    loadMailList("important", 1, 20); // 중요메일함 조회
-		});
-		
-		// 휴지통 조회
-		$("#deleteMail").on("click", function(e){
-		    e.preventDefault(); // a 태그 이동 막기
-		    console.log("휴지통 클릭됨"); // 디버깅용
-		    loadMailList("trash", 1, 20); // 휴지통 조회
-		});
-		
-		// 임시보관함
-		$("#saveMail").on("click", function(e){
-		    e.preventDefault(); // a 태그 이동 막기
-		    loadMailList("save"); // 임시보관함 조회
-		});
+	  
+	    // 페이지 번호 클릭 이벤트
+	    $(document).on("click", "#pageBar a", function (e) {
+	        e.preventDefault(); // 기본 동작 차단
+	        const pageNo = parseInt($(this).data("page")); // data-page 값 추출
+	        loadMailList(currentState.mailbox, pageNo, currentState.size);
+	    });
+
+	  
+	// 각 메일함 전용 함수 정의
+	  function loadDefaultMailList(currentShowPageNo = 1, sizePerPage = 20) {
+	      loadMailList("default", currentShowPageNo, sizePerPage);
+	  }
+
+	  function loadSentMailList(currentShowPageNo = 1, sizePerPage = 20) {
+	      loadMailList("send", currentShowPageNo, sizePerPage);
+	  }
+
+	  function loadImportantMailList(currentShowPageNo = 1, sizePerPage = 20) {
+	      loadMailList("important", currentShowPageNo, sizePerPage);
+	  }
+
+	  function loadTrashMailList(currentShowPageNo = 1, sizePerPage = 20) {
+	      loadMailList("trash", currentShowPageNo, sizePerPage);
+	  }
+
+	  function loadSaveMailList(currentShowPageNo = 1, sizePerPage = 20) {
+	      loadMailList("save", currentShowPageNo, sizePerPage);
+	  }
+	  
+	  window.loadMailList = loadMailList;
+	  window.loadDefaultMailList = loadDefaultMailList;
+	  window.loadSentMailList = loadSentMailList;
+	  window.loadImportantMailList = loadImportantMailList;
+	  window.loadTrashMailList = loadTrashMailList;
+	  window.loadSaveMailList = loadSaveMailList;
+	  
+	    // 받은메일함 버튼
+	    $("#receivedMail").on("click", function(e) {
+	        e.preventDefault();
+	        loadDefaultMailList(1, currentState.size);
+	    });
+
+	    // 보낸메일함 버튼
+	    $("#sendMail").on("click", function(e) {
+	        e.preventDefault();
+	        loadSentMailList(1, currentState.size);
+	    });
+
+	    // 중요메일함 버튼
+	    $("#importantMail").on("click", function(e) {
+	        e.preventDefault();
+	        loadImportantMailList(1, currentState.size);
+	    });
+
+	    // 휴지통 버튼
+	    $("#deleteMail").on("click", function(e) {
+	        e.preventDefault();
+	        loadTrashMailList(1, currentState.size);
+	    });
+
+	    // 임시보관함 버튼
+	    $("#saveMail").on("click", function(e) {
+	        e.preventDefault();
+	        loadSaveMailList(1, currentState.size);
+	    });
+	  
+	 
 		<%-- ==== 메일함 통합 ajax 끝 ==== --%>
 	  
 
-	    <%-- 별(중요표시) 클릭시 변경 ajax 함수 시작 --%>
+	  <%-- 별(중요표시) 클릭시 변경 ajax 함수 시작 --%>
 	    function bindStarToggle() {
-	    	// 혹시 기존 이벤트가 있을 수 있으니 off() 후 on()
-	        $(".toggle_star").off("click").on("click", function(){
+            $(document).off("click", ".toggle_star") // 기존 이벤트 제거
+              			.on("click", ".toggle_star", function(){ // 새 이벤트 등록
 	            const $star = $(this);
 	            const mailNo = $star.data("mailno"); // data-mailno 값
 	           // const current = $star.data("important"); // 현재 상태
 	            $.ajax({
-	                url: "<%=ctxPath%>/mail/toggleImportant",
+	                url: ctxPath + "/mail/toggleImportant",
 	                type: "POST",
 	                data: { mailNo: mailNo },
 	                success: function(importantStatus) {
@@ -296,10 +330,6 @@ let currentState = {
 							// 중요 상태 해제 => 기본 아이콘/색상
 	                        $star.removeClass("fa-solid").addClass("fa-regular").css("color","");
 	                    }
-	                	
-			            // 새 목록에 별/메일 아이콘 이벤트 재바인딩
-			            bindStarToggle();
-			            bindMailToggle();
 	                },
 	                error: function() {
 	                    alert("서버와 통신 중 오류가 발생했습니다.(important)");
@@ -316,14 +346,9 @@ let currentState = {
 	          const $mail = $(this);
 	          const mailNo = $mail.data("mailno");    // data_mailno 값
 	          // const current = $star.data("important"); // 현재 상태
-	          
-              if (!mailNo) {
- 			  	  alert("메일 번호가 비어 있습니다.");
-			      return;
-	    	  }
-	          
+	
 	          $.ajax({
-	              url: "<%=ctxPath%>/mail/toggleReadMail",
+	              url: ctxPath + "/mail/toggleReadMail",
 	              type: "POST",
 	              data: { mailNo: mailNo },
 	              success: function(readStatus) {
@@ -340,7 +365,7 @@ let currentState = {
 	                  }
 	              },
 	              error: function() {
-	                  alert("서버와 통신 중 오류가 발생했습니다.(readStatus)");
+	                  alert("서버와 통신 중 오류가 발생했습니다.");
 	              }
 	          });
 	       });
@@ -358,7 +383,7 @@ let currentState = {
            const sortKey = $(this).data("sortkey"); // 예: 'subject', 'sendDate', 'fileSize'
 
            $.ajax({
-               url: "<%=ctxPath%>/mail/sortMail",
+               url: ctxPath + "/mail/sortMail",
                type: "GET",
                data: { sortKey: sortKey },  // 서버에 sortKey 전송
                dataType: "json",
@@ -370,20 +395,20 @@ let currentState = {
                        let starIcon = "";
                        if(mail.importantStatus == 1) {
                            starIcon = `<i class="fa-solid fa-star toggle_star" style="color: yellow; cursor: pointer;"
-                                         data-mailno="\${mail.mailNo}"></i>`;
+                                         data-mailno="${mail.mailNo}"></i>`;
                        } else {
                            starIcon = `<i class="fa-regular fa-star toggle_star" style="cursor: pointer;"
-                                         data-mailno="\${mail.mailNo}"></i>`;
+                                         data-mailno="${mail.mailNo}"></i>`;
                        }
 
                        // 메일 아이콘
                        let mailIcon = "";
                        if(mail.readStatus == 1) {
                            mailIcon = `<i class="fa-regular fa-envelope-open toggle_mail" style="cursor: pointer;"
-                                         data-mailno="\${mail.mailNo}"></i>`;
+                                         data-mailno="${mail.mailNo}"></i>`;
                        } else {
                            mailIcon = `<i class="fa-regular fa-envelope toggle_mail" style="cursor: pointer; color: black;"
-                                         data-mailno="\${mail.mailNo}"></i>`;
+                                         data-mailno="${mail.mailNo}"></i>`;
                        }
 
                        // 파일크기 표시 (있다면)
@@ -395,7 +420,7 @@ let currentState = {
                        html += `
                        <tr class="mailReadTitle">
                            <td>
-                               <input type="checkbox" class="mailOneCheck" style="padding: 4px"/>
+                               <input type="checkbox" class="mailOneCheck" data-mailno="\${mail.mailNo}" style="padding: 4px"/>
                            </td>
                            <td>
                                \${starIcon}
@@ -404,7 +429,7 @@ let currentState = {
                            </td>
                            <td id="mailName">\${name}</td>
                            <td id="mailTitle">
-                               <a href="${ctxPath}/mail/viewMail?mailNo=\${mail.mailNo}">
+                               <a href="${ctxPath}/mail/viewMail?mailNo=${mail.mailNo}">
                                    \${mail.subject}
                                </a>
                            </td>
@@ -435,40 +460,49 @@ let currentState = {
        
        <%-- 삭제 버튼 클릭 ajax 시작 --%>
        // 삭제 버튼 클릭
-       $(document).on("click", "#deleteMailBtn", function(e){
-           e.preventDefault(); // a 태그 이동 막기
-
-           // 1. 체크된 메일 번호 저장
-           let mailNoArray = [];
-           $("input.mailOneCheck:checked").each(function(){
-               let mailNo = $(this).data("mailno"); 
-               mailNoArray.push(mailNo);
-           });
-           
-           if(mailNoArray.length === 0) {
-               alert("삭제할 메일을 선택하세요.");
-               return;
-           }
-
-           // 2. Ajax로 deleteStatus = 1 로 업데이트
-           $.ajax({
-               url: "<%=ctxPath%>/mail/deleteMail",
-               type: "POST",
-               traditional: true,  
-               // jQuery가 mailNoArray를 mailNo=1&mailNo=2... 형태로 전송하도록
-               data: { mailNo: mailNoArray },
-               success: function(response){
-            	   
-                   // 성공 후, 목록 갱신 or 해당 행 제거 or 새로고침
-                   // 예) 새로고침
-                   location.reload();
-               },
-               error: function(err){
-                   console.log(err);
-                   alert("메일 삭제 중 오류 발생");
-               }
-           });
-       });
+		$("#deleteMailBtn").on("click", function(e) {
+			console.log("삭제 버튼 클릭 이벤트 발생"); // 이 로그가 찍히는지 확인
+		    e.preventDefault();
+		    
+		    let mailNoArray = [];
+		    
+		    $('input.mailOneCheck:checked').each(function() {
+		    	const mailNo = $(this).attr('data-mailno') // .data() 메서드 사용
+		        console.log('mailNo:', mailNo, 'type:', typeof mailNo); // 값&타입 확인
+		        if (mailNo) {
+		            mailNoArray.push(mailNo);
+		        }
+		    });
+		    
+		    console.log(this);  // 체크된 체크박스 요소 확인
+		    console.log('체크된 메일번호 배열:', mailNoArray); // 배열 확인
+		    console.log('체크된 체크박스 개수:', $('input.mailOneCheck:checked').length);
+		    console.log("전체 URL:", ctxPath + "/deleteCheckMail"); // "/flowUp/deleteCheckMail" 출력 확인
+		
+		    if(mailNoArray.length === 0) {
+		        alert("삭제할 메일을 선택하세요.");
+		        return;
+		    }
+		
+		    // AJAX 요청으로 mailNoArray를 서버로 보냄
+		    $.ajax({
+		        url: ctxPath + "/mail/deleteCheckMail",  // 삭제 요청 URL
+		        type: "POST",
+		        traditional: true,
+		        data: { mailNoList: mailNoArray },  // mailNoList를 서버에 전송
+		        success: function(response) {
+		            if (response.status === "success") {
+		                location.reload();  // 삭제 후 새로고침
+		            } else {
+		                alert("메일 삭제 실패");
+		            }
+		        },
+		        error: function(err) {
+		            console.log(err);
+		            alert("삭제 처리 중 오류 발생");
+		        }
+		    });
+		});
        <%-- 삭제 버튼 클릭 ajax 끝 --%>
        
        
@@ -585,7 +619,7 @@ let currentState = {
                        alert("메일이 성공적으로 전송되었습니다.");
                        location.href = "<%=ctxPath%>/mail"; // 메일 목록 페이지로 이동
                    } else {
-                       alert("메일 전송에 실패했습니다.");
+                       alert("없는 사용자 입니다.");
                    }
                },
                error: function(request, status, error) {
@@ -593,6 +627,7 @@ let currentState = {
                }
            });
        });
+    	
 	       <%-- 메일 작성 끝 --%>
 	       
    });
@@ -642,7 +677,7 @@ let currentState = {
 	            </div>
 	        </div>
 	        
-		<form name="addFrm" enctype="multipart/form-data">
+		<form name="addFrm" method="post" action="${ctxPath}/mail/send.do" enctype="multipart/form-data">
 		    <div id="writeArea">
 		        <table id="writeAreaTable">
 		            <!-- 받는 사람 -->
@@ -714,7 +749,6 @@ let currentState = {
 		                <td colspan="2">
 		                    <div class="file-upload-area">
 		                        <div class="file-btn-group">
-		                            <input type="file" id="fileInput" name="attach" multiple style="display: none;" />
 		                            <button type="button" id="btnFileSelect">파일선택</button>
 		                            <button type="button" id="btnFileArchive">자료실</button>
 		                            <button type="button" id="btnFileDeleteAll">모두삭제</button>
@@ -744,6 +778,7 @@ let currentState = {
 		        <!-- 버튼 -->
 		        <div style="margin: 20px;">
 		            <button type="button" id="btnReservationMail">예약메일</button>
+		            <button type="button" id="btnWrite">보내기</button>
 		        </div>
 		    </div>
 		</form>
@@ -924,7 +959,11 @@ let currentState = {
                    		</td>
 					    <td id="right-content">
 					        <span id="sendDate">${mail.sendDate}</span>
-					        <span id="fileSize">${MailFileVO.fileSize}</span>
+					        <span id="fileSize">
+							    <c:if test="${not empty mail.fileSize}">
+							        ${(mail.fileSize / 1024 / 1024).toFixed(2)} MB
+							    </c:if>
+							</span>
 					    </td>
 	               		</tr>
 	           </c:forEach>

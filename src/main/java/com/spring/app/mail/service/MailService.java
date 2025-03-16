@@ -60,7 +60,7 @@ public interface MailService {
 	List<MailVO> getUpdatedMailStatus(List<Integer> mailNoList);
 
     // 메일 작성 기능
-    void sendMail(MailVO mail, List<Map<String, Object>> referencedList, List<Map<String, Object>> fileList);
+    void sendMail(int mailNo, List<Map<String, Object>> referencedList, List<Map<String, Object>> fileList);
 
     // 메일 정보 저장 후 mailNo 반환
 	void insertMail(MailVO mail);
@@ -72,7 +72,7 @@ public interface MailService {
 	void insertMailFile(Map<String, Object> mailFileMap);
 
 	// 이름으로 employeeNo 조회
-    String findEmployeeNoByName(String name);
+	Integer findEmployeeNoByName(String name);
 
     // 보낸 메일 조회
 	List<MailVO> selectSentMail(Map<String, String> paraMap);
@@ -80,7 +80,10 @@ public interface MailService {
 	// 보낸 메일 개수 조회
 	int getSentMailCount(String senderNo);
 
-	
+
+
+    // 받은 메일 목록 조회
+    List<MailVO> getReceivedMailList(int loginEmployeeNo);
 
 	
 

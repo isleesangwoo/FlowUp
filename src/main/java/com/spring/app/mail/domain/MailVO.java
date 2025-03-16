@@ -6,7 +6,7 @@ import com.spring.app.employee.domain.EmployeeVO;
 
 public class MailVO {
 	
-	private String mailNo;           // 메일번호
+	private int  mailNo;           // 메일번호
 	private String subject;          // 메일제목
 	private String content;          // 메일내용
 	private String readStatus;       // 열람여부 / 0:미열람, 1:열람
@@ -17,14 +17,16 @@ public class MailVO {
 	
 	private String fk_employeeNo;    // 사번 (직원 테이블 참조)
 	
-	private EmployeeVO employeevo;   // employee 테이블 조인
+	private ReferencedVO referencedVO; // ReferencedVO 참조
+	private EmployeeVO employeevo;     // EmployeeVO 참조
+	private MailFileVO fileSize; 	   // MailFileVO 참조
 	
 	private List<MailFileVO> mailfilevo;   // mailfile 테이블 조인
 	
-	public String getMailNo() {
+	public int getMailNo() {
 		return mailNo;
 	}
-	public void setMailNo(String mailNo) {
+	public void setMailNo(int mailNo) {
 		this.mailNo = mailNo;
 	}
 	public String getSubject() {
@@ -81,11 +83,26 @@ public class MailVO {
 	public void setEmployeevo(EmployeeVO employeevo) {
 		this.employeevo = employeevo;
 	}
+	
 	public List<MailFileVO> getMailfilevo() {
 		return mailfilevo;
 	}
 	public void setMailfilevo(List<MailFileVO> mailfilevo) {
 		this.mailfilevo = mailfilevo;
+	}
+	
+	public ReferencedVO getReferencedVO() {
+		return referencedVO;
+	}
+	public void setReferencedVO(ReferencedVO referencedVO) {
+		this.referencedVO = referencedVO;
+	}
+	
+	public MailFileVO getFileSize() {
+		return fileSize;
+	}
+	public void setFileSize(MailFileVO fileSize) {
+		this.fileSize = fileSize;
 	}
 	
 	
