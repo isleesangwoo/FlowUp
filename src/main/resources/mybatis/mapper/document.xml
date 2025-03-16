@@ -596,11 +596,22 @@
 		select occurannual + overannual - addannual as totalAmount
 		from tbl_annual
 		where fk_employeeNo = #{employeeNo} and year = #{year}
+		
+		UNION ALL
+		
+		select 0 AS totalAmount
+		from dual
+		where not exists
+		(
+			select occurannual + overannual - addannual as totalAmount
+			from tbl_annual
+			where fk_employeeNo = #{employeeNo} and year = #{year}
+		)
 	</select>
 	
 	
 	<!-- 휴가신청서 승인 시 근태 테이블에 데이터 넣어주기 -->
-	<insert id="updateCommuteWithAnnual" parameterType="HashMap">
+	<insert id="insertCommuteWithAnnual" parameterType="HashMap">
 		insert into tbl_commute(commuteNo, FK_employeeNo, status, rest, overTimeYN, workdate, starttime, endtime)
 		values(commuteSeq.nextval, to_number(#{fk_employeeNo}), to_number('6'), to_number(#{annualType}), to_number('0'), #{startDate}, to_date(#{startDate}, 'yyyy-mm-dd'), to_date(#{startDate}, 'yyyy-mm-dd'))
 	</insert>
@@ -623,6 +634,56 @@
 	</select>
 	
 	
+	<!-- 연장근무신청서 승인 시 근태 테이블에 데이터 update -->
+	<update id="updateCommuteWithOvertime" parameterType="HashMap">
+		update tbl_commute set overTimeYN = 0
+		where fk_employeeNo = #{fk_employeeNo} and workdate = #{overtimeDate};
+	</update>
+	
+	
+	<!-- 연장근무신청서 승인 시 근태 테이블에 데이터 insert -->
+	<insert id="insertCommuteWithOvertime" parameterType="HashMap">
+		insert into tbl_commute(commuteNo, FK_employeeNo, status, rest, overTimeYN, workdate)
+		values(commuteSeq.nextval, to_number(#{fk_employeeNo}), to_number('6'), to_number('0'), to_number('1'), #{overtimeDate})
+	</insert>
+	
+	
+	<select id="checkVacationCalendar" parameterType="String" resultType="Integer">
+		select SMCATGONO
+		from TBL_CALENDAR_SMALL_CATEGORY
+		where FK_LGCATGONO = 1 and SMCATGONAME = '휴가' and fk_employeeNo = ${fk_employeeNo}
+		
+		UNION ALL
+		
+		select 0 as SMCATGONO
+		from dual
+		where not exists
+		(
+			select SMCATGONO
+			from TBL_CALENDAR_SMALL_CATEGORY
+			where FK_LGCATGONO = 1 and SMCATGONAME = '휴가' and fk_employeeNo = ${fk_employeeNo}
+		)
+	</select>
+	
+	
+	<!-- 캘린더 스몰 카테고리 채번하기 -->
+	<select id="getSeqSmcatgono">
+		select SEQ_SMCATGONO.nextval
+		from dual
+	</select>
+	
+	
+	<!-- 휴가 캘린더 생성하기 -->
+	<insert id="createVacationCalendar" parameterType="HashMap">
+		insert into TBL_CALENDAR_SMALL_CATEGORY(SMCATGONO, FK_LGCATGONO, SMCATGONAME, FK_EMPLOYEENO)
+		values(#{smcatgono}, 1, '휴가', #{fk_employeeNo})
+	</insert>
+	
+	
+	<insert id="createVacationSchedule" parameterType="HashMap">
+		insert into TBL_CALENDAR_SCHEDULE(SCHEDULENO, STARTDATE, ENDDATE, SUBJECT, COLOR, FK_SMCATGONO, FK_LGCATGONO, FK_EMPLOYEENO)
+		values(seq_scheduleno.nextval, to_date(#{startDate}, 'yyyy-mm-dd hh24:mi'), to_date(#{endDate}, 'yyyy-mm-dd hh24:mi'), '연차', '#009900', #{smcatgono}, 1, #{fk_employeeNo})
+	</insert>
 	
 </mapper>
 

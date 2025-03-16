@@ -855,7 +855,7 @@ public class DocumentController {
 	
 	
 	// 휴가신청서 잔여 연차 가져오기
-	@GetMapping("annual/getAnnual")
+	@GetMapping("annual/getAnnual") 
 	@ResponseBody
 	public String getAnnual(HttpServletRequest request) {
 		
