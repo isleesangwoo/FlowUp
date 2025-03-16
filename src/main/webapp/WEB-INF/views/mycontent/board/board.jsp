@@ -65,10 +65,10 @@
 							
 							<span id="profileImg"> <!-- 프로필 사진 -->
 								<c:if test="${post.fileName == null}">
-									<i class="fa-solid fa-user"></i>
+									<span class="profileImgElmt"><i class="fa-solid fa-user"></i></span>
 								</c:if>
 								<c:if test="${post.fileName != null}">
-									<span><img src='/flowUp/resources/files/${post.fileName}' width='32' height='32'/></span>
+									<span class="profileImgElmt"><img src='/flowUp/resources/files/${post.fileName}' width='32' height='32' style="border-radius:50%;"/></span>
 								</c:if>
 							</span>
 							<span class="postCreateBy">${post.name} ${post.positionName}</span>
@@ -109,6 +109,17 @@
 						<li>
 			                <div class="topLikepost" onclick="goView('${topReadpost.postNo}')">
 			                	<div class="topLikeSubject">${topReadpost.subject}</div><div>${topReadpost.regDate}</div>
+			                </div>
+		                </li> 
+					</c:forEach>
+	            </ul>
+	            
+	            <p id="postOfBoardGroup_name_3">댓글 상위 Top 5</p>
+				<ul>
+					<c:forEach var="topCommentpost" items="${topCommentList}">
+						<li>
+			                <div class="topLikepost" onclick="goView('${topCommentpost.postNo}')">
+			                	<div class="topLikeSubject">${topCommentpost.subject}</div><div>${topCommentpost.regDate}</div>
 			                </div>
 		                </li> 
 					</c:forEach>

@@ -72,16 +72,21 @@ label{
 	margin-bottom: 20px;
 }
 
-#addBoard{
-	margin: var(--size18) 0 ;
- 	text-decoration: none;
- 	cursor: pointer;
+#addBoardContainer {
+	border-top:solid 1px #c8c8c8;
+	margin-top: 10px;
+	padding-top : 10px;
+	text-align: center;
 }
-#addBoard:hover{
-	color:#c8c8c8;
+#addBoard {
+    display: inline-block;
+    font-size: 15px;
+    color: #333;
+    cursor: pointer;
 }
-
-
+#addBoard:hover {
+    color: black;
+}
 #addBoardGroup{
     font-size:var(--size18);
     font-weight:bold;
@@ -211,19 +216,6 @@ td {
 	margin-left: auto;
 }
 
-/* 게시판 추가하기 링크 */
-#addBoardContainer {
-    position: absolute;
-    bottom: 60px;
-    width: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-}
-
-#addBoard{
- 	text-decoration: none;
-}
 
 
 

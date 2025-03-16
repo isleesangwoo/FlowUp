@@ -81,22 +81,22 @@
 	
 	
 	<div style="display: none;">
-<c:forEach var="postList" items="${groupPostMapList}">
-<br>
-게시판 이름 : ${postList.boardvo.boardName}<br>
-게시판 운영자 : ${postList.boardvo.createdBy}<br>
-게시글번호 : ${postList.postNo}<br>
-게시판번호 : ${postList.fk_boardNo}<br>
-작성자 사번 : ${postList.fk_employeeNo}<br>
-작성자 명 : ${postList.name}<br>
-글제목 : ${postList.subject}<br>
-글내용 : ${postList.content}<br>
-조회수 : ${postList.readCount}<br>
-작성 날짜 : ${postList.regDate}<br>
-댓글 개수 : ${postList.commentCount}<br>
-댓글 허용 여부 : ${postList.allowComments}<br>
-공지사항 여부 : ${postList.isNotice}<br>
-공지사항 종료일 : ${postList.noticeEndDate}<br>
-</c:forEach>
+		<%--<c:forEach var="postList" items="${groupPostMapList}">
+		<br>
+		게시판 이름 : ${postList.boardvo.boardName}<br>
+		게시판 운영자 : ${postList.boardvo.createdBy}<br>
+		게시글번호 : ${postList.postNo}<br>
+		게시판번호 : ${postList.fk_boardNo}<br>
+		작성자 사번 : ${postList.fk_employeeNo}<br>
+		작성자 명 : ${postList.name}<br>
+		글제목 : ${postList.subject}<br>
+		글내용 : ${postList.content}<br>
+		조회수 : ${postList.readCount}<br>
+		작성 날짜 : ${postList.regDate}<br>
+		댓글 개수 : ${postList.commentCount}<br>
+		댓글 허용 여부 : ${postList.allowComments}<br>
+		공지사항 여부 : ${postList.isNotice}<br>
+		공지사항 종료일 : ${postList.noticeEndDate}<br>
+		</c:forEach> --%>
     </div>
 <jsp:include page="../../footer/footer.jsp" />     
