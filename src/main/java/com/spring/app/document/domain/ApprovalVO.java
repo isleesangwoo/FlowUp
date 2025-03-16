@@ -11,6 +11,7 @@ public class ApprovalVO {
 	
 	private String name;			// 승인자이름
 	private String positionName;	// 승인자직위
+	private String teamName;		// 승인자팀이름
 	
 	public String getApprovalNo() {
 		return approvalNo;
@@ -60,5 +61,12 @@ public class ApprovalVO {
 	public void setPositionName(String positionName) {
 		this.positionName = positionName;
 	}
+	public String getTeamName() {
+		return teamName;
+	}
+	public void setTeamName(String teamName) {
+		this.teamName = teamName;
+	}
+	
 	
 }

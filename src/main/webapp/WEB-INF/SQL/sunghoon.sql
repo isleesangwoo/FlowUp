@@ -321,6 +321,32 @@ from
 where rownum between 1 and 5;
 
 
+select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate
+     , documentType, documentNo, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate ,D.status, urgent
+from
+(
+    select approvalNo, fk_approver, fk_documentNo, approvalOrder
+    from tbl_approval
+    where APPROVALSTATUS != 0 and fk_approver = '100014'
+) A JOIN tbl_document D
+ON fk_documentNo = documentNo
+where temp = 0;
 
+insert into tbl_commute(commuteNo, FK_employeeNo, status, rest, overTimeYN, workdate, starttime, endtime)
+values(commuteSeq.nextval, to_number('100014'), 1, 1, 0, to_date('2025-03-24', 'yyyy-mm-dd'), to_date('2025-03-24', 'yyyy-mm-dd'), to_date('2025-03-25', 'yyyy-mm-dd'));
+commit;
 
+select employeeNo, teamname, name, securityLevel, positionname
+from tbl_employee JOIN tbl_team
+ON FK_teamno = teamno
+JOIN tbl_position
+ON FK_positionNo = positionno
+where employeeNo = '100014';
 
+insert into tbl_commute(commuteNo, FK_employeeNo, status, rest, overTimeYN, workdate, starttime, endtime)
+values(commuteSeq.nextval, 100014, to_number('6'), 2, to_number('0'), '2025-03-28', to_date('2025-03-28', 'yyyy-mm-dd'), to_date('2025-03-28', 'yyyy-mm-dd'));
+rollback;
+
+select *
+from tbl_commute
+where status in (1,2,3) and fk_employeeNo = 100014 and workdate between '2025-03-28' and '2025-03-31';
