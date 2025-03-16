@@ -122,14 +122,32 @@ public interface DocumentDAO {
 	// 휴가신청서 잔여 연차 가져오기
 	int getAnnual(Map<String, String> map);
 
-	// 휴가신청서 승인 시 근태 테이블에 데이터 넣어주기
-	int updateCommuteWithAnnual(Map<String, String> paramap);
+	// 휴가신청서 승인 시 근태 테이블에 데이터 insert
+	int insertCommuteWithAnnual(Map<String, String> paramap);
 
 	// 휴가신청서 신청 시 겹치는지 확인
 	int checkAnuualOverlap(Map<String, String> paraMap);
 
 	// 연장근무신청서 일자가 겹치는지 확인
 	int checkOvertimeOverlap(Map<String, String> paraMap);
+
+	// 연장근무신청서 승인 시 근태 테이블에 데이터 update
+	void updateCommuteWithOvertime(Map<String, String> document);
+
+	// 연장근무신청서 승인 시 근태 테이블에 데이터 insert
+	void insertCommuteWithOvertime(Map<String, String> document);
+
+	// 해당 사원이 휴가 캘린더가 있는지 확인
+	int checkVacationCalendar(String fk_employeeNo);
+
+	// 캘린더 스몰 카테고리 채번하기
+	int getSeqSmcatgono();
+
+	// 휴가 캘린더 생성하기
+	void createVacationCalendar(Map<String, String> document);
+
+	// 휴가 스케쥴 생성하기
+	void createVacationSchedule(Map<String, String> document);
 
 	
 

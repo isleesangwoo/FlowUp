@@ -26,7 +26,7 @@ public class Interceptor_Configuration implements WebMvcConfigurer {
 		registry.addInterceptor(loginCheckInterceptor)
 				.addPathPatterns("/**/*") //해당 경로에 접근하기 전에 인터셉터가 가로챈다.
 				.addPathPatterns("/**/**/") //해당 경로에 접근하기 전에 인터셉터가 가로챈다.
-				.excludePathPatterns("/employee/login", "/bootstrap-4.6.2-dist/**", "/js/**", "/jquery-ui-1.13.1.custom/**", "/css/**");
+				.excludePathPatterns("/employee/login", "/bootstrap-4.6.2-dist/**", "/js/**", "/jquery-ui-1.13.1.custom/**", "/css/**", "/images/**");
 		
 		registry.addInterceptor(adminLoginCheckInterceptor)
 				.addPathPatterns("/interceptor/special_member/special_member_a", "/interceptor/special_member/special_member_b"); //해당 경로에 접근하기 전에 인터셉터가 가로챈다.
