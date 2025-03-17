@@ -314,28 +314,33 @@
 			 , documentType, name, documentNo, approvalDate , status, urgent
 		from
 		(
-			select rownum as rno, approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate
-				 , documentType, name, documentNo, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate , D.status as status, urgent
+			select rownum as rno, approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, draftDate
+				 , documentType, name, documentNo, approvalDate , status, urgent
 			from
 			(
-			    select  approvalNo, fk_approver, fk_documentNo, approvalOrder
-			    from tbl_approval
-			    where APPROVALSTATUS != 0 and fk_approver = #{employeeNo}
-			) A JOIN tbl_document D
-			ON fk_documentNo = documentNo
-			JOIN tbl_employee
-			ON fk_employeeNo = employeeNo
-			where temp = 0
-			<choose>
-				<when test='searchWord != ""'> and lower(subject) like '%'||lower(#{searchWord})||'%' </when>
-			</choose>
-			<choose>
-				<when test='status != ""'> and D.status = #{status} </when>
-			</choose>
-			<choose>
-				<when test='documentType != ""'> and documentType = #{documentType} </when>
-			</choose>
-			order by documentNo desc
+				select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate
+					 , documentType, name, documentNo, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate , D.status as status, urgent
+				from
+				(
+				    select  approvalNo, fk_approver, fk_documentNo, approvalOrder
+				    from tbl_approval
+				    where APPROVALSTATUS != 0 and fk_approver = #{employeeNo}
+				) A JOIN tbl_document D
+				ON fk_documentNo = documentNo
+				JOIN tbl_employee
+				ON fk_employeeNo = employeeNo
+				where temp = 0
+				<choose>
+					<when test='searchWord != ""'> and lower(subject) like '%'||lower(#{searchWord})||'%' </when>
+				</choose>
+				<choose>
+					<when test='status != ""'> and D.status = #{status} </when>
+				</choose>
+				<choose>
+					<when test='documentType != ""'> and documentType = #{documentType} </when>
+				</choose>
+				order by D.documentNo desc
+			)
 		)
 		WHERE rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
 	</select>
@@ -657,8 +662,8 @@
 	
 	<!-- 연장근무신청서 승인 시 근태 테이블에 데이터 update -->
 	<update id="updateCommuteWithOvertime" parameterType="HashMap">
-		update tbl_commute set overTimeYN = 0
-		where fk_employeeNo = #{fk_employeeNo} and workdate = #{overtimeDate};
+		update tbl_commute set overTimeYN = 1
+		where fk_employeeNo = to_number(#{fk_employeeNo}) and workdate = #{overtimeDate}
 	</update>
 	
 	
@@ -712,7 +717,7 @@
 	<!-- 지출 품의 상세 insert -->
 	<insert id="insertExpenseDetail" parameterType="HashMap">
 		insert into TBL_EXPENSE_DETAIL(EXPENSEDETAILNO, FK_DOCUMENTNO, AMOUNT, USEDATE, TYPE, CONTENT, NOTE)
-		values(seq_expensedetail.nextval, '${documentNo}', ${amount}, to_date('${useDate}', 'yyyy-mm-dd'), ${type}, ${content}, ${note})
+		values(seq_expensedetail.nextval, '${documentNo}', ${amount}, to_date('${useDate}', 'yyyy-mm-dd'), '${type}', '${content}', '${note}')
 	</insert>
 	
 	

@@ -416,3 +416,9 @@ values(seq_scheduleno.nextval, #{starDate}, #{endDate}, '연차', '#009900', #{S
 			from tbl_annual
 			where fk_employeeNo = '100014' and year = '2025'
 		);
+
+
+update tbl_commute set overTimeYN = 1
+where fk_employeeNo = to_number('100010') and workdate = '2025-03-17';
+
+rollback;
