@@ -165,6 +165,8 @@
 								<li>전체</li>
 								<li>휴가신청서</li>
 								<li>연장근무신청서</li>
+								<li>지출품의서</li>
+								<li>업무기안</li>
 							</ul>
 						</span>
 					</th>
@@ -217,10 +219,12 @@
 			</tbody>
 		</table>
 		
-		<%-- 페이지바 보여주기 --%>
-		<div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
-			${requestScope.pageBar}
-		</div>
+		<c:if test="${not empty requestScope.tempList}">
+			<%-- 페이지바 보여주기 --%>
+			<div align="center" style="border: solid 0px gray; width: 80%; margin: 30px auto;">
+				${requestScope.pageBar}
+			</div>
+		</c:if>
 		
 	</div>
 </div>

@@ -258,13 +258,13 @@ public class DocumentService_imple implements DocumentService {
 			}
 			// 당일 6시 이후에는 연장근무 신청 못하게 막기
 			LocalDate localDate = LocalDate.now(); // 현재 날짜
-			LocalTime localTime = LocalTime.now();
+			LocalTime localTime = LocalTime.now(); // 현재 시간
 			DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+			
 			String today = localDate.format(dateTimeFormatter);
 			
-			System.out.println(localTime.getHour());
-			
 			if(today.equals(paraMap.get("overtimeDate")) && localTime.getHour() >= 18) {
+				// 연장 근무 신청일자가 오늘이고 6시를 넘은 경우
 				map.put("n", "-3");
 				return map;
 			}
@@ -294,13 +294,27 @@ public class DocumentService_imple implements DocumentService {
 			else if("업무기안".equals(paraMap.get("documentType"))) {
 				m = mapper_dao.insertBusinessDraft(paraMap);
 			}
+			else if("지출품의서".equals(paraMap.get("documentType"))) {
+				m = mapper_dao.insertExpenseDraft(paraMap);
+				System.out.println("m 은" + m);
+				int expense_detail_count = Integer.parseInt(paraMap.get("expense_detail_count"));
+				for(int i = 0; i < expense_detail_count; i++) {
+					paraMap.put("amount", paraMap.get("amount" + i));
+					paraMap.put("type", paraMap.get("type" + i));
+					paraMap.put("useDate", paraMap.get("useDate" + i));
+					paraMap.put("content", paraMap.get("content" + i));
+					paraMap.put("note", paraMap.get("note" + i));
+					
+					mapper_dao.insertExpenseDetail(paraMap);
+				}
+			}
 		}
 		
 		int approval_count = Integer.parseInt(paraMap.get("added_approval_count"));
 		
 		int a = 1;
 		
-		for(int i=0; i<approval_count; i++) {
+		for(int i = 0; i < approval_count; i++) {
 			paraMap.put("fk_approver", paraMap.get("added_employee_no" + i));
 			paraMap.put("approvalorder", String.valueOf(approval_count-i));
 			a *= mapper_dao.insertApprover(paraMap);
@@ -334,28 +348,79 @@ public class DocumentService_imple implements DocumentService {
 			// 문서의 결재 상태를 업데이트 하기
 			m = mapper_dao.updateDocumentApprovalStatus(map);
 			
+			Map<String, String> document = mapper_dao.documentView(map); // 승인 처리된 문서 정보 가져오기
+			
 			if(m == 1 && "휴가신청서".equals(map.get("documentType"))) {
+				// 휴가신청서가 승인 처리 된 경우
 				
 				// 휴가신청서가 승인이 되면 근태 테이블에 휴가 데이터 넣어주기
-				Map<String, String> document = mapper_dao.documentView(map); // 승인 처리된 문서 정보 가져오기
 				String start_str = document.get("startDate");
 				String end_str = document.get("endDate");
 				
-				LocalDate startDate = LocalDate.parse(start_str, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-				LocalDate endDate = LocalDate.parse(end_str, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+				LocalDate startDate = LocalDate.parse(start_str, DateTimeFormatter.ofPattern("yyyy-MM-dd")); // 휴가 시작 날짜
+				LocalDate endDate = LocalDate.parse(end_str, DateTimeFormatter.ofPattern("yyyy-MM-dd"));	 // 휴가 종료 날짜
 				
-				long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;
+				long daysBetween = ChronoUnit.DAYS.between(startDate, endDate) + 1;	// 휴가 일수 (종료 날짜와 시작 날짜의 차이)
 				
 				DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 				
 				for(int i = 0; i < daysBetween; i++) {
-					LocalDate Date = startDate.plusDays(i);
+					// 휴가 일 수 만큼 for 문
+					LocalDate Date = startDate.plusDays(i); // 휴가 시작 날짜부터 하루씩 더해가기
 					int day = Date.getDayOfWeek().getValue();
 					if(!(day == 6 || day == 7)) {
+						// 주말이 아니라면
 						document.put("startDate", Date.format(formatter));
 						System.out.println(Date.format(formatter));
-						mapper_dao.updateCommuteWithAnnual(document);
+						mapper_dao.insertCommuteWithAnnual(document); // 근태 테이블에 추가
 					}
+				}
+				
+				// 휴가신청서가 승인이 되면 캘린더 테이블에 휴가 데이터 넣어주기
+				document.put("startDate", start_str);
+				int smcatgono = mapper_dao.checkVacationCalendar(document.get("fk_employeeNo")); // 해당 사원이 휴가 캘린더가 있는지 확인
+				document.put("smcatgono", String.valueOf(smcatgono)); // 카테고리 번호 넣어주기
+				
+				if(smcatgono == 0) {
+					// 해당 사원이 휴가 캘린더가 없는 경우
+					smcatgono = mapper_dao.getSeqSmcatgono(); // 카테고리 번호 채번
+					document.put("smcatgono", String.valueOf(smcatgono)); // 카테고리 번호 채번한 번호로 변경
+					
+					mapper_dao.createVacationCalendar(document); // 휴가 카테고리 생성
+					
+					
+				}
+				
+				if("1".equals(document.get("annualType"))) {
+					document.put("startDate", document.get("startDate") + " 00:00" );
+					document.put("endDate", document.get("endDate") + " 23:30" );
+				}
+				else if("2".equals(document.get("annualType"))) {
+					document.put("startDate", document.get("startDate") + " 09:00" );
+					document.put("endDate", document.get("endDate") + " 13:00" );
+				}
+				else if("3".equals(document.get("annualType"))) {
+					document.put("startDate", document.get("startDate") + " 14:00" );
+					document.put("endDate", document.get("endDate") + " 18:00" );
+				}
+				
+				mapper_dao.createVacationSchedule(document);
+				
+			} // end of if(m == 1 && "휴가신청서".equals(map.get("documentType")))--------------------------
+			
+			
+			else if(m == 1 && "연장근무신청서".equals(map.get("documentType"))) {
+				LocalDate localDate = LocalDate.now(); // 현재 날짜
+				DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+				String today = localDate.format(dateTimeFormatter);
+				
+				if(today.equals(document.get("overtimeDate"))) {
+					// 연장 근무 신청 일자가 오늘이라면
+					mapper_dao.updateCommuteWithOvertime(document);
+				}
+				else {
+					// 연장 근무 신청 일자가 오늘이 아니라면
+					mapper_dao.insertCommuteWithOvertime(document);
 				}
 			}
 		}
@@ -449,6 +514,15 @@ public class DocumentService_imple implements DocumentService {
 		documentMap.put("tempDocCnt", tempDocCnt);
 		
 		return documentMap;
+	}
+
+
+	// 지출 품의 상세 가져오기
+	@Override
+	public List<Map<String, String>> expenseDetailList(Map<String, String> paraMap) {
+		
+		List<Map<String, String>> expenseDetailList = mapper_dao.expenseDetailList(paraMap);
+		return expenseDetailList;
 	}
 
 

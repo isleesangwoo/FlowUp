@@ -233,6 +233,8 @@ div.hoverDiv:hover {
 
 </style>
 
+<div style="font-size:24pt; width: 100%; text-align:center; margin: 20px 0;"><span style="color:#2985DB; font-weight: bold;">flow up</span>&nbsp;조직도</div>
+
 <div id="chart_container"></div>
 
 <script>
@@ -364,7 +366,7 @@ div.hoverDiv:hover {
 		        	    },
 
 		        	    title: {
-		        	        text: 'flow up 조직도'
+		        	        text: ''
 		        	    },
 
 		        	    accessibility: {

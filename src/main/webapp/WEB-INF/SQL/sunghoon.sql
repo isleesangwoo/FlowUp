@@ -108,6 +108,14 @@ CREATE table tbl_expense_detail
 );
 -- Table TBL_EXPENSE_DETAIL이(가) 생성되었습니다.
 
+create sequence seq_expensedetail
+start with 100001
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
 
 select * from tab;
 
@@ -350,3 +358,26 @@ rollback;
 select *
 from tbl_commute
 where status in (1,2,3) and fk_employeeNo = 100014 and workdate between '2025-03-28' and '2025-03-31';
+
+update tbl_commute set overTimeYN = 0
+where fk_employeeNo = '100014' and workdate = '2025-03-07';
+
+commit;
+
+select count(*)
+from TBL_CALENDAR_SMALL_CATEGORY
+where FK_LGCATGONO = 1 and SMCATGONAME = '휴가' and fk_employeeNo = '100020';
+
+select SEQ_SMCATGONO.nextval
+from dual;
+
+insert into TBL_CALENDAR_SMALL_CATEGORY(SMCATGONO, FK_LGCATGONO, SMCATGONAME, FK_EMPLOYEENO)
+values(seq_smcatgono.nextval, 1, '휴가', '100014');
+
+commit;
+
+select *
+from TBL_CALENDAR_SCHEDULE;
+
+insert into TBL_CALENDAR_SCHEDULE(SCHEDULENO, STARTDATE, ENDDATE, SUBJECT, COLOR, FK_SMCATGONO, FK_LGCATGONO, FK_EMPLOYEENO)
+values(seq_scheduleno.nextval, #{starDate}, #{endDate}, '연차', '#009900', #{SMCATGONO}, 1, #{fk_employeeNo});

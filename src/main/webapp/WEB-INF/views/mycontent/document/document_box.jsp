@@ -13,12 +13,14 @@
 
     <!-- 오른쪽 바 메뉴버튼들입니다! -->
 	<div id="right_menu_container">
+		<%--
 		<span>
 			<a href="#">
 				<span>목록 다운로드</span>
 				<i class="fa-solid fa-download"></i>
 			</a>
 		</span>
+		--%>
 		
 		<span class="doc_delete" style="display:none;">
 			<a href="#">
