@@ -116,7 +116,7 @@
 		        FK_EMPLOYEENO AS EMPLOYEENO,
 		        TRUNC(TO_DATE(WORKDATE, 'YYYY-MM-DD'), 'D') AS YEAR_MONTH,
 		        CASE 
-		            WHEN SUM((ENDTIME - STARTTIME) * 24) > 40 
+		            WHEN SUM((ENDTIME - STARTTIME) * 24) &gt; 40 
 		            THEN SUM((ENDTIME - STARTTIME) * 24) - 40 
 		            ELSE 0 
 		        END AS OVERTIME_HOURS
