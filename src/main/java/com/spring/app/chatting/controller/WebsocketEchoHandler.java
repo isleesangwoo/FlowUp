@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -18,12 +20,18 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import com.spring.app.chatting.domain.MessageVO;
 import com.spring.app.chatting.domain.Mongo_messageVO;
 import com.spring.app.chatting.service.ChattingMongoOperations;
+import com.spring.app.chatting.service.ChattingService;
 import com.spring.app.employee.domain.EmployeeVO;
 
 // === (#웹채팅관련6) ===
 
 @Component
 public class WebsocketEchoHandler extends TextWebSocketHandler {
+	
+    @Autowired
+    private ChattingService chattingService;
+	
+	private final Map<String, List<WebSocketSession>> roomSessions = new ConcurrentHashMap<>();
 	
 	// === 웹소켓서버에 연결한 클라이언트 사용자들을 저장하는 리스트 ===
 	private List<WebSocketSession> connectedUsers = new ArrayList<>();
@@ -54,56 +62,21 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	
 	@Override
 	public void afterConnectionEstablished(WebSocketSession wsession) throws Exception {
-		// >>> 파라미터 WebSocketSession wsession 은 웹소켓서버에 접속한 클라이언트임. <<<
 		
-		// 웹소켓서버에 접속한 클라이언트의 IP Address 얻어오기
-		/*
-			STS 메뉴의 
-			Run --> Run Configuration
-				--> Arguments 탭	
-				--> VM arguments 속에 맨 뒤에
-				--> 한칸 띄우고 -Djava.net.preferIPv4Stack=true 을 추가한다.
-		*/
-	//	System.out.println("===> 웹채팅확인용 : " + wsession.getId() + " 님이 접속했습니다.");
-		// ===> 웹채팅확인용 : 9ea2a899-e970-7071-83a6-63211843ea1c 님이 접속했습니다.
-		// ===> 웹채팅확인용 : e0ca68da-0649-14dc-6195-21d18186269b 님이 접속했습니다.
-		
-	//	System.out.println("====> 웹채팅확인용 : " + "연결 컴퓨터명 : " + wsession.getRemoteAddress().getHostName());
-	//  또는
-	//  System.out.println("====> 웹채팅확인용 : " + "연결 컴퓨터명 : " + wsession.getRemoteAddress().getAddress().getHostName());
-		// ====> 웹채팅확인용 : 연결 컴퓨터명 : DESKTOP-LQRPUCG
-		// ====> 웹채팅확인용 : 연결 컴퓨터명 : 192.168.0.217
-		
-	//	System.out.println("====> 웹채팅확인용 : " + "연결 IP : " + wsession.getRemoteAddress().getAddress().getHostAddress());
-		// ====> 웹채팅확인용 : 연결 IP : 192.168.0.204
-		// ====> 웹채팅확인용 : 연결 IP : 192.168.0.217
+		String roomId = wsession.getUri().getQuery().split("=")[1]; // URL에서 roomId 추출
+
+		roomId = getRoomIdFromSession(wsession);
+	    roomSessions.computeIfAbsent(roomId, k -> new CopyOnWriteArrayList<>()).add(wsession);
 		
 		connectedUsers.add(wsession);
-		
-		// === 웹소켓 서버에 접속시 접속자 명단을 알려주기 위한 것 시작 === //
-		// Spring에서 WebSocket 사용시 먼저 HttpSession에 저장된 값들을 읽어와서 사용하기
-		/*
-			com.spring.app.config.WebSocketConfiguration 클래스 파일에서
-			
-			@Override public void registerWebSocketHandlers(WebSocketHandlerRegistry
-			registry) 메소드내에 addInterceptors(new HttpSessionHandshakeInterceptor()); 를
-			추가해주면 WebsocketEchoHandler 클래스를 사용하기 전에 먼저 HttpSession에 저장되어진 값들을 읽어 들여,
-			WebsocketEchoHandler 클래스에서 사용할 수 있도록 처리해준다.
-		*/
-		
+
 		String connectingUserName = "「"; // 「 은 자음 ㄴ 을 하면 나온다. 
 		
 		for(WebSocketSession webSocketSession : connectedUsers) {
 			Map<String, Object> map = webSocketSession.getAttributes();
 			
-			/*
-				webSocketSession.getAttributes(); 은 
-				HttpSession에 setAttribute("키",오브젝트); 되어 저장되어진 값들을 읽어오는 것으로써,
-				리턴값은  "키",오브젝트로 이루어진 Map<String, Object> 으로 받아온다.
-			*/
 			
 			EmployeeVO loginuser = (EmployeeVO) map.get("loginuser");
-			// "loginuser" 은 HttpSession에 저장된 키 값으로 로그인 되어진 사용자이다.
 			
 			connectingUserName += loginuser.getName()+" ";
 			
@@ -446,5 +419,11 @@ public class WebsocketEchoHandler extends TextWebSocketHandler {
 	      
 		
 	}// end of public void afterConnectionClosed(WebSocketSession wsession, CloseStatus status) throws Exception ----------------------------
+
+	private String getRoomIdFromSession(WebSocketSession session) {
+	    String path = session.getUri().getPath();
+	    return path.substring(path.lastIndexOf('/') + 1);
+	}
+	
 	
 }
