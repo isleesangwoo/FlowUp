@@ -610,7 +610,7 @@
 	
 	<!-- 휴가신청서 잔여 연차 가져오기 -->
 	<select id="getAnnual" parameterType="HashMap" resultType="Integer">
-		select occurannual + overannual - addannual - (
+		select occurannual + overannual - addannual - nvl( (
         
 			select sum(useamount) as usedAnnual
 			from tbl_document D join tbl_draft_annual A
@@ -618,7 +618,7 @@
 			where fk_employeeno = to_number(#{employeeNo})
 			and to_char(startdate, 'yyyy') = #{year}
 			and D.status = 1
-			group by to_char(startdate, 'yyyy')	) as totalAmount
+			group by to_char(startdate, 'yyyy')	) ,0) as totalAmount
 	
 		from tbl_annual
 		where fk_employeeNo = #{employeeNo} and year = #{year}
