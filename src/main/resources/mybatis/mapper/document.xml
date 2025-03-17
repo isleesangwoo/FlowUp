@@ -730,6 +730,30 @@
 		where fk_documentno = '${documentNo}'
 	</select>
 	
+	
+	
+	<!-- 전자결재 통합검색 메인 -->
+	<select id="searchDocument" resultType="DocumentVO" parameterType="HashMap">
+		select approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, draftDate
+		     , documentType, name, documentNo, approvalDate , status, urgent
+		from
+		(
+		    select rownum as rno, approvalNo, fk_approver, fk_documentNo, approvalOrder, fk_employeeNo, subject, to_char(draftDate, 'yyyy-mm-dd') as draftDate
+		         , documentType, name, documentNo, to_char(approvalDate, 'yyyy-mm-dd') as approvalDate , D.status as status, urgent
+		    from
+		    (
+		        select  approvalNo, fk_approver, fk_documentNo, approvalOrder
+		        from tbl_approval
+		        where APPROVALSTATUS != 0 and fk_approver = #{employeeno}
+		    ) A JOIN tbl_document D
+		    ON fk_documentNo = documentNo
+		    JOIN tbl_employee
+		    ON fk_employeeNo = employeeNo
+		    where temp = 0 and lower(subject) like '%'||lower(#{searchWord})||'%' 
+		    order by documentNo desc
+		)
+	</select>
+	
 </mapper>
 
 
