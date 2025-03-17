@@ -693,6 +693,23 @@ select groupNo, groupName
 from tbl_group
 where fk_employeeno  = 111111 and groupNo=100002;
 
+select *
+from tbl_addressbook
+where fk_employeeno = 111111;
+
+
+SELECT B.groupNo, B.groupname
+FROM tbl_addressbook A
+JOIN tbl_group B
+  ON A.fk_employeeno = B.fk_employeeno
+WHERE A.fk_employeeno = 111111
+  AND A.adrsbno = 100039
+  AND B.groupNo = 100002;
+
+select *
+from tbl_employee;
 
 
 
+
+select * from tbl_group;

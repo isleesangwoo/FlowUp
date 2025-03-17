@@ -3,6 +3,7 @@
 <%
    String ctxpath = request.getContextPath();
 %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <style>
 #main_section {
     display: flex;
@@ -87,6 +88,8 @@
           <i class="fas fa-address-book"></i>
           <span id="goWrite">내정보수정</span>
       </a>
+   
+      
       <!-- === 글작성 버튼 === -->
 
       <div class="board_menu_container">
@@ -94,7 +97,23 @@
           	  <li>
           		  <a href="#">비밀번호 변경</a>
           	  </li>
-			  <li>
+           	  
+           	  <c:if test="${sessionScope.loginuser.securityLevel == 10}">
+			      <a href="<%= ctxpath%>/employee/admin" id="writePostBtn">
+			          <i class="fa-solid fa-user"></i>
+			          <span id="goWrite">관리자페이지</span>
+			      </a>
+	      
+	      		<li>
+          		  <a href="<%= ctxpath%>/employee/addEmployee">사원추가</a>
+          	  </li>
+          	  
+          	  	<li>
+          		  <a href="<%= ctxpath%>/employee/updateEmployee">사원수정</a>
+          	  </li>
+			 
+      </c:if>
+       <li>
            		  <a href="<%= ctxpath%>/employee/logout">로그아웃</a>
            	  </li>
           </ul>
