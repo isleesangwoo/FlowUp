@@ -6,7 +6,7 @@
 	
 	<update id="scheduler_endtime_update_noClick">
 		update tbl_commute set endtime = to_date( to_char(starttime, 'yyyy-mm-dd')||' 18:00:00' , 'yyyy-mm-dd hh24:mi:ss')
-		where starttime is not null and endtime is null  
+		where starttime is not null and endtime is null and not rest = 1 
 	</update>
 	
 	<resultMap type="HashMap" id="scheduler_getOverTimeYNMap">

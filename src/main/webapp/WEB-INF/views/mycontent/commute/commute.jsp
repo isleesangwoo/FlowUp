@@ -607,9 +607,6 @@ div.hoverDiv:hover {
 		frm.year_month.value = year_month;
 		frm.fk_employeeNo.value = '${sessionScope.loginuser.employeeNo}';
 		
-		
-		console.log(frm.fk_employeeNo.value);
-		
 		frm.method = "post";
 		frm.action = "<%=ctxPath%>/commute/downloadExcel";
 		frm.submit();
