@@ -28,7 +28,7 @@
    	</update>
    	
    	<update id="statusChange" parameterType="HashMap">
-   		update tbl_commute set status = #{status}
+   		update tbl_commute set status = to_number(#{status})
    		where fk_employeeNo = to_number(#{fk_employeeNo}) and (starttime BETWEEN trunc(sysdate) and trunc(sysdate)+0.9999)
    	</update>
    	
@@ -302,7 +302,7 @@
 			from
 			(
 			select employeeNo
-	             , case when sysdate - to_date( to_char(sysdate, 'yyyy') || to_char(registerDate,'mmdd'), 'yyyymmdd') >= 0
+	             , case when sysdate - to_date( to_char(sysdate, 'yyyy') || to_char(registerDate,'mmdd'), 'yyyymmdd') &gt;= 0
                     then extract(year from sysdate) - to_number( to_char(registerDate,'yyyy') ) + 1
                     else extract(year from sysdate) - to_number( to_char(registerDate,'yyyy') ) 
                     end AS workYear
@@ -417,7 +417,7 @@
 			        FK_EMPLOYEENO,
 			        MONTH,
 			        YEAR,
-			        CASE WHEN WEEKLY_SECONDS > 144000 THEN WEEKLY_SECONDS - 144000 ELSE 0 END AS OVERTIME_SECONDS
+			        CASE WHEN WEEKLY_SECONDS &gt; 144000 THEN WEEKLY_SECONDS - 144000 ELSE 0 END AS OVERTIME_SECONDS
 			    FROM WEEKLY_WORK
 			)
 			SELECT
@@ -433,7 +433,7 @@
 			)O
 			right join tbl_salary S
 			on (O.FK_EMPLOYEENO || O.MONTH) = (S.FK_EMPLOYEENO || substr(S.workrange,1,7))
-			WHERE S.FK_EMPLOYEENO = to_number(#{employeeNo}) AND O.YEAR = to_number(#{year})
+			WHERE S.FK_EMPLOYEENO = to_number(#{employeeNo}) AND O.YEAR = #{year}
 		)
 	    WHERE rno between to_number(#{startRno}) and to_number(#{endRno})
    	</select>
