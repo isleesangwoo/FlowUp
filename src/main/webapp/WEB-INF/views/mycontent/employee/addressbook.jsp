@@ -20,6 +20,8 @@ $(document).ready(function() {
 	$("button#openModal").click(function(){
 		
 		$("div.addFrmModal").show();
+		
+		//$("div.addFrmModal").();
 		$("input:text[name='firstName']").focus();
 		
 		// 이름 유효성
@@ -207,15 +209,7 @@ $(document).ready(function() {
 	
 	// 주소록 전체 목록
 	view_address(fk_employeeNo);
-	
-	
-	// 북마크 버튼을 누른다면 
-	// <i class="fa-solid fa-bookmark"></i> 색깔이 있는 아이콘
-	
-
-	
-	
-	
+		
 	
 const g_fk_employee = $("input:hidden[name='g_fk_employeeno']").val();
 	
@@ -336,7 +330,7 @@ function delete_address(){
 	
 	else{
 		
-		const addressno = $("input:checkbox[name='checkSelect']:checked").val()
+		const addressno = $("input:checkbox[name='checkSelect']:checked").val();
 		
 		 if (confirm("정말로 삭제하시겠습니까?")) {
 			// console.log(addressno);	// 체크박스로 선택한 값을 알아옴.	
@@ -367,70 +361,58 @@ function delete_address(){
 	
 };// end of function delete_address(){};--------------------
 
-
-function addGroupOption(){
+<%--
+function addgroup(){
 	
 	//alert("그룹옵션 추가할게요~~");
-	
-	//alert($("input#fk_employeeno").val());
-	
-	const g_fk_employee = $("input#fk_employeeno").val();
-	const groupname = $("input:text[name='groupname']").val();
-	
-	//alert(groupname)
-		
-	$.ajax({
-		
-		url:"<%= ctxpath%>/employee/addGroupOptionEnd",
-		type:"post",
-		data:{"g_fk_employee":g_fk_employee,"groupname":groupname},
-		dataType:"json",
-		success:function(json){
-			
-			if(json.n==1){
-				alert("옵션이 추가 되었습니다.");
-			}
-			else{
-				alert("옵션 추가가 실패되었습니다");
-			}
-			
-		},
-	 	 error: function(request, status, error){
-	 		 	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-	 	     }
-		
-	});// end of $.ajax({});--------------------------------------
 
 }
+--%>
 
 
+<%--
 
-
-<%-- 그룹 넣기 --%>
-function addGroup(){
+ function addGroupFinal(){
+	 	const fk_employeeno = $("input#fk_employeeno").val();
+		const groupNo = $("select.group_select").val();
+		//alert(fk_employeeno);
+		//alert(groupNo);
+		const addressno = $("tr").find("input:checkbox[name='checkSelect']").val();
+		//alert(addressno);
+		
+		//alert("addressno:"+addressno+", fk_employeeno:"+fk_employeeno+", groupNo:"+groupNo);
 	
-	
-	
-	//alert("그룹추가 깜박함ㅋㅋㅋ..");
-	const groupNo = $("select.groupno").val();
-	alert(groupNo); 
-	
-	$.ajax({
-		url:"<%= ctxpath%>/employee/addGroup",
-		type:"get",
-		data:{"fk_employeeno":fk_employeeno},
-		dataType:"json",
-		success:function(json){
-			
-			
-			
-		},
- 	 	 error: function(request, status, error){
-	 		 	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-	 	     }
-    });
-
- }//
+		
+		$.ajax({
+			url:"<%= ctxpath%>/employee/addGroup",
+			type:"post",
+			data:{"fk_employeeno":fk_employeeno,"groupNo":groupNo,"addressno":addressno},
+			dataType:"json",
+			success:function(json){
+				
+				//alert(JSON.stringify(json));
+				//[{"groupName":"우리회사","groupNo":"100002"}]
+				
+				let v_html = "";
+				
+				
+				for(let i = 0; i<json.length; i++){
+					
+					v_html +="<button class='insertGroupBtn' onclick='addgroup()'>+"+json[i].groupName+"</button>"
+					
+				}//end of for(let i = 0; i<json.length; i++){}-------------------------------
+				
+				$("td.tdcss").html(v_html);
+				
+			},
+	 	 	 error: function(request, status, error){
+		 		 	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		 	     }
+	    });
+	   
+ }// end of function addGroupFinal(){}-------------------------
+ 
+ 
 
 $("span#bookmark").click(function(e){
 	//alert("클릭");
@@ -454,6 +436,10 @@ $("span#bookmark").click(function(e){
 		 alert("북마크를 취소합니다")
 	 }
 }); // end of $("span#bookmark").click(function(e){});
+
+--%>
+
+
 
 </script>
 
@@ -572,8 +558,6 @@ $("span#bookmark").click(function(e){
 						<input type="hidden" name="fk_employeeNo" class="modal_input" value="${sessionScope.loginuser.employeeNo}"/>
 					</li>
 					
-					
-					
 					<li class="input_li">
 						<button type="button" class="add">주소록 등록</button>
 						<button type="reset" class="no_add">등록 취소</button>
@@ -610,7 +594,7 @@ $("span#bookmark").click(function(e){
 						
 					</li>	
 					<li>
-						<button type="button" class="addGroupBtn">추가하기</button>
+						<button type="button" class="addGroupBtn" onclick="addGroupFinal()">추가하기</button>
 					</li>
 				</ul>
 			</form>	
@@ -620,4 +604,3 @@ $("span#bookmark").click(function(e){
 	<!--  페이징 처리 하는 곳 -->
 	<div class="pagediv"></div>
 </div>
-

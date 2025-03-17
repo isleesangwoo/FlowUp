@@ -597,7 +597,7 @@ let current_val = $(e.target).val().replace(/[^0-9]/g,"");//숫자만 입력
 			
 		 <button type="button" id="addEmployee"> 사원등록 </button>	<!-- 누르면 사원이 추가됨 -->
 		 <!-- <button type="reset" id="noAddEmployee"> 사원등록취소 </button> -->	<!-- 누르면 사원 추가가 취소 되고 관리자 페이지로 돌아감.  -->
-		 <a href="<%= ctxPath%>/employee/admin"id="noAddEmployee">사원등록취소</a>
+		 <a href="<%= ctxPath%>/employee/mypage"id="noAddEmployee">사원등록취소</a>
 	
 		</form>
 		

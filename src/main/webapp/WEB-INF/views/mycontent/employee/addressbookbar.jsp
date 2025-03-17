@@ -96,10 +96,11 @@
           	  <li>
           		  <a href="<%= ctxpath%>/employee/external_addressbook">외부 주소록</a>
           	  </li>
-          	  
+          	  <!-- 
           	  <li>
           		  <a href="<%= ctxpath%>/employee/external_addressbook">주소록 즐겨찾기</a>
           	  </li>
+          	   -->
           </ul>
       </div>
   </div>
