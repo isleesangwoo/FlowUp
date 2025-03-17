@@ -422,3 +422,19 @@ update tbl_commute set overTimeYN = 1
 where fk_employeeNo = to_number('100010') and workdate = '2025-03-17';
 
 rollback;
+
+select documentNo, subject, documentType, to_char(draftDate, 'yyyy-mm-dd') as draftDate, status, name
+     , nvl(to_char(approvalDate, 'yyyy-mm-dd'), '-') as approvalDate, urgent
+from
+(
+    select employeeNo, name, E1.fk_departmentno
+    from
+        (
+            select fk_departmentno
+            from tbl_employee
+            where employeeNo = '111111'
+        ) E1 JOIN tbl_employee E2
+    ON E1.fk_departmentNo = E2.fk_departmentno
+) E JOIN tbl_document D
+ON E.employeeNO = D.fk_employeeNo
+where temp = 0
