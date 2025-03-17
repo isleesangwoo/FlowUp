@@ -1,6 +1,8 @@
 package com.spring.app.chatting.service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.domain.Sort;
@@ -9,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.stereotype.Service;
 
+import com.spring.app.chatting.domain.ChatRoomVO;
 import com.spring.app.chatting.domain.Mongo_messageVO;
 
 //=== (#웹채팅관련13) === //
@@ -70,5 +73,14 @@ public class ChattingMongoOperations {
 	   }// end of public List<Mongo_messageVO> listChatting() -----
 	
 	
+	public void createChatRoom(ChatRoomVO room) {
+	    room.setRoomId(UUID.randomUUID().toString());
+	    room.setCreatedDate(new Date());
+	    mongo.insert(room);
+	}
+
+	public List<ChatRoomVO> getChatRoomList() {
+	    return mongo.findAll(ChatRoomVO.class);
+	}
 	
 }

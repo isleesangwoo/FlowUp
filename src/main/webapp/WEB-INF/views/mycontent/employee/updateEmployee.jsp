@@ -165,7 +165,7 @@
 			<button class="search_employee">검색</button>
 			
 			<div class="table_content"></div>
-		 <a href="<%= ctxPath%>/employee/admin"id="noAddEmployee">사원등록취소</a>
+		 <a href="<%= ctxPath%>/employee/mypage"id="noAddEmployee">사원등록취소</a>
 		</form>
 	
 	</div>

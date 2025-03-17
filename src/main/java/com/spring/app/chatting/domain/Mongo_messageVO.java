@@ -20,6 +20,7 @@ public class Mongo_messageVO {
 
    @Id
    private String _id;     // "id" 또는 "_id" 라는 필드가 있으면 이 필드가 자동으로 도큐먼트의 "ObjectId" 인 "_id" 로 사용된다. 
+   private String roomId;
    
    private String message;
    private String type;    // all 이면 전체에게 채팅메시지를 보냄 
@@ -28,6 +29,8 @@ public class Mongo_messageVO {
    private String userid;      // 사용자ID
    private String name;        // 사용자명
    private String currentTime; // 채팅한 시간 (오후 5:05) 
+   
+   private String profileImage; // 프로필 이미지 URL 필드 추가
    
    /*
      Date 타입의 변수를 사용하기 위해서 
@@ -101,5 +104,24 @@ public class Mongo_messageVO {
    public void setCreated(Date created) {
       this.created = created;
    }
+
+	public String getRoomId() {
+		return roomId;
+	}
 	
+	public void setRoomId(String roomId) {
+		this.roomId = roomId;
+	}
+
+	public String getProfileImage() {
+		return profileImage;
+	}
+
+	public void setProfileImage(String profileImage) {
+		this.profileImage = profileImage;
+	}
+		
+	
+   
+   
 }
