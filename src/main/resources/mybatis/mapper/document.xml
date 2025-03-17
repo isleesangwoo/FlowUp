@@ -669,8 +669,8 @@
 	
 	<!-- 연장근무신청서 승인 시 근태 테이블에 데이터 insert -->
 	<insert id="insertCommuteWithOvertime" parameterType="HashMap">
-		insert into tbl_commute(commuteNo, FK_employeeNo, status, rest, overTimeYN, workdate)
-		values(commuteSeq.nextval, to_number(#{fk_employeeNo}), to_number('6'), to_number('0'), to_number('1'), #{overtimeDate})
+		insert into tbl_commute(commuteNo, FK_employeeNo, status, rest, overTimeYN, workdate, starttime)
+		values(commuteSeq.nextval, to_number(#{fk_employeeNo}), to_number('6'), to_number('0'), to_number('1'), #{overtimeDate}, to_date(#{overtimeDate},'yyyy-mm-dd'))
 	</insert>
 	
 	
