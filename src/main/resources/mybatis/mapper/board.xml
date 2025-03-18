@@ -15,7 +15,7 @@
 		<if test="login_departNo != null"><!-- 로그인을 한 경우  -->
 		  WHERE b.status = 1 				 				<!--  활성화된 게시판만 조회  -->
 		  AND (b.isPublic = 1  								<!-- 전체 공개된 게시판이거나  -->
-		       OR bd.fk_departmentNo = #{login_departNo})   <!-- 사용자의 부서가 접근 가능한 경우  -->
+		       OR bd.fk_departmentNo = to_number(#{login_departNo}))   <!-- 사용자의 부서가 접근 가능한 경우  -->
 		       ORDER BY createdAt DESC
 		</if>       
 		<if test="login_departNo == null">		    <!-- 로그인을 안한 경우  -->
@@ -29,7 +29,7 @@
 <!-- 게시판 생성하기 -->
 <insert id="addBoard" parameterType="BoardVO">
 	insert into tbl_board (boardNo,boardName,boardDesc,isPublic,createdBy) 
-	values(boardSeq.nextval,#{boardName},#{boardDesc},#{isPublic},#{createdBy})
+	values(boardSeq.nextval,#{boardName},#{boardDesc},to_number(#{isPublic}),#{createdBy})
 </insert>
 
 <!-- 게시판 생성의 공개여부 부서 설정 시 부서 워드 검색(부서 검색)  -->
@@ -48,8 +48,8 @@
 
 <!-- 게시판 수정하기 -->
 <update id="updateBoard" parameterType="HashMap">
-	update tbl_board set boardName = #{boardName}, boardDesc = #{boardDesc}, isPublic = #{isPublicUpdate}
-	where boardNo = #{boardNo}
+	update tbl_board set boardName = #{boardName}, boardDesc = #{boardDesc}, isPublic = to_number(#{isPublicUpdate})
+	where boardNo = to_number(#{boardNo})
 </update>
 
 
@@ -57,14 +57,14 @@
 <select id="getBoardDetailByNo" parameterType="String" resultType="BoardVO">
 	select boardno, boardname, boarddesc, ispublic, createdby
 	from tbl_board
-	where boardNo = #{boardNo}
+	where boardNo = to_number(#{boardNo})
 </select>
 
 
 <!-- 게시판삭제(비활성화)하기(status 값변경)-->
 <update id="disableBoard" parameterType="String">
 	update tbl_board set status=0
-	where boardNo = #{boardNo}
+	where boardNo = to_number(#{boardNo})
 </update>
 
 <!-- 글쓰기 시 글작성 할 (접근 권한있는)게시판 목록 <select> 태그에 보여주기 -->
@@ -74,7 +74,7 @@
 	LEFT JOIN tbl_board_department bd ON b.boardNo = bd.fk_boardNo
 	WHERE (b.isPublic = 1 and status = 1) 
    <if test="login_userid != null"><!-- 로그인을 한 경우  -->
-	   OR bd.fk_departmentNo = (SELECT fk_departmentNo FROM tbl_employee WHERE employeeNo = #{login_userid})  and status = 1
+	   OR bd.fk_departmentNo = (SELECT fk_departmentNo FROM tbl_employee WHERE employeeNo = to_number(#{login_userid}))  and status = 1
 	</if>
 </select>
 
@@ -85,13 +85,14 @@
             INSERT INTO tbl_post 
                 (postNo, fk_boardNo, fk_employeeNo, name, subject, content, allowComments, isNotice, noticeEndDate) 
             VALUES 
-                (postSeq.nextval, #{fk_boardNo}, #{login_userid}, #{login_userName}, #{subject}, #{content}, #{allowComments}, #{isNotice}, TO_DATE(#{noticeEndDate}, 'YYYY-MM-DD'))
+                (postSeq.nextval, to_number(#{fk_boardNo}), to_number(#{login_userid}), #{login_userName}, #{subject}, #{content}, to_number(#{allowComments}), 
+                to_number(#{isNotice}), TO_DATE(#{noticeEndDate}, 'YYYY-MM-DD'))
         </when>
         <otherwise>   <!-- 공지사항 글이 아닌 경우 -->
             INSERT INTO tbl_post 
                 (postNo, fk_boardNo, fk_employeeNo, name, subject, content, allowComments) 
             VALUES 
-                (postSeq.nextval, #{fk_boardNo}, #{login_userid}, #{login_userName}, #{subject}, #{content}, #{allowComments})
+                (postSeq.nextval, to_number(#{fk_boardNo}), to_number(#{login_userid}), #{login_userName}, #{subject}, #{content}, to_number(#{allowComments}))
         </otherwise>
     </choose>
 </insert>
@@ -125,11 +126,11 @@
 <select id="selectAllPost" resultMap="selectAllPost_Map" parameterType="HashMap">
 	SELECT 
 	    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, 
-	    case when length( V.subject) > 40 then substr(subject, 0, 40) || '...' else subject end as subject, 
+	    case when length( V.subject) &gt; 40 then substr(subject, 0, 40) || '...' else subject end as subject, 
 	    CASE 
-        WHEN LENGTH(REGEXP_REPLACE(V.content, '&lt;[^>]*>', '')) > 80 
-        THEN SUBSTR(REGEXP_REPLACE(V.content, '&lt;[^>]*>', ''), 1, 80) || '...' 
-        ELSE REGEXP_REPLACE(V.content,'&lt;[^>]*>', '') 
+        WHEN LENGTH(REGEXP_REPLACE(V.content, '&lt;[^&gt;]*&gt;', '')) &gt; 80 
+        THEN SUBSTR(REGEXP_REPLACE(V.content, '&lt;[^&gt;]*&gt;', ''), 1, 80) || '...' 
+        ELSE REGEXP_REPLACE(V.content,'&lt;[^&gt;]*&gt;', '') 
     END AS content,
 	    V.readCount, V.regDate, V.commentCount, V.allowComments, V.status, 
 	    V.isNotice, V.noticeEndDate,likeCount,
@@ -147,7 +148,7 @@
             LEFT JOIN tbl_board_department bd 
             ON bd.fk_boardNo = b.boardNo
             WHERE p.status = 1 
-			AND (b.isPublic = 1 OR bd.fk_departmentNo =  #{login_departmentNo})
+			AND (b.isPublic = 1 OR bd.fk_departmentNo =  to_number(#{login_departmentNo}))
 	    ) V
 	JOIN tbl_board b ON V.fk_boardNo = b.boardNo
 	JOIN tbl_employee e ON V.fk_employeeNo = e.employeeNo
@@ -166,7 +167,7 @@
    <select id="getBoardGroupPostTotalCount"  resultType="int" parameterType="String">
       select count(*)
       from tbl_post
-      where status = 1 and fk_boardNo= #{boardNo}
+      where status = 1 and fk_boardNo= to_number(#{boardNo})
    </select>
    
 <!--    게시글 하나 조회하기(조인함) -->
@@ -257,7 +258,7 @@
 		from tbl_post P
         join tbl_postFile F
         on p.postNo = f.fk_postNo
-		where postNo = #{postNo}
+		where postNo = to_number(#{postNo})
 	</select>
 	
 	<!-- ===  글조회수 1증가 하기 === -->
@@ -280,7 +281,7 @@
 	<insert id="addPostInsertFile" parameterType="map">
       <!-- 원글쓰기인 경우 -->
         insert into tbl_postFile(fileNo, fk_postNo, orgFilename, fileName, fileSize)  
-        values(postFileSeq.nextval,#{postNo},#{originalFilename}, #{newFileName}, #{fileSize})
+        values(postFileSeq.nextval,to_number(#{postNo}),#{originalFilename}, #{newFileName}, to_number(#{fileSize}))
    </insert>
    
 <!-- 실제 첨부파일을 삭제하기위해 첨부파일명을 알아오기. -->
@@ -294,19 +295,19 @@
 		from tbl_post p
 		full join tbl_postFile F
 		on p.postNo = F.fk_postNo
-		where postNo = #{postNo}
+		where postNo = to_number(#{postNo})
    </select>
    
    <!-- 1개글 삭제하기-->
    <update id="postDel" parameterType="String">
         update tbl_post set status = 0
-        where postNo = #{postNo}
+        where postNo = to_number(#{postNo})
    </update>
    
    <!-- 1개글 삭제하기 -->
    <update id="postFileDel" parameterType="String">
    		update tbl_postFile set status = 0
-        where fk_postNo = #{postNo}
+        where fk_postNo = to_number(#{postNo})
    </update>
    
 <!--    파일다운로드에 필요한 컬럼 추출하기(파일고유번호,새로운파일명,기존파일명) -->
@@ -315,38 +316,39 @@
 		from tbl_post p
 		full join tbl_postFile F
 		on p.postNo = F.fk_postNo
-		where postNo = #{postNo} and fileNo =#{fileNo}
+		where postNo = to_number(#{postNo}) and fileNo = to_number(#{fileNo})
    </select>
    
 <!--    게시글 수정 -->
 	<update id="updatePost">
 		<choose>
 	        <when test="isNotice == 1"> <!-- 공지사항 글로 수정할 경우 -->
-				update tbl_post set SUBJECT = #{subject}, CONTENT = #{content}, ALLOWCOMMENTS = #{allowComments},isNotice=#{isNotice},noticeEndDate=#{noticeEndDate}
-				where postNo = #{postNo}
+				update tbl_post set SUBJECT = #{subject}, CONTENT = #{content}, ALLOWCOMMENTS = to_number(#{allowComments}),
+				isNotice = to_number(#{isNotice}),noticeEndDate = #{noticeEndDate}
+				where postNo = to_number(#{postNo})
 			</when>
 			<otherwise>   <!-- 공지사항 글이 아닌 경우 -->
-	            update tbl_post set SUBJECT = #{subject}, CONTENT = #{content}, ALLOWCOMMENTS = #{allowComments},isNotice=0,noticeEndDate=null
-				where postNo = #{postNo}
+	            update tbl_post set SUBJECT = #{subject}, CONTENT = #{content}, ALLOWCOMMENTS = to_number(#{allowComments}),isNotice=0,noticeEndDate=null
+				where postNo = to_number(#{postNo})
 	        </otherwise>
         </choose>
 	</update>
 	
 <!-- 	첨부파일 테이블에 파일정보 수정 -->
 	<update id="updatePostInsertFile" parameterType="map">
-        update tbl_postFile set  orgFilename = #{originalFilename}, fileName = #{newFileName}, fileSize = #{fileSize}
-        where fk_postNo = #{postNo}
+        update tbl_postFile set  orgFilename = #{originalFilename}, fileName = #{newFileName}, fileSize = to_number(#{fileSize})
+        where fk_postNo = to_number(#{postNo})
    </update>
    
 <!--   updatePostInsertFile 실행 전 해당 행이 있는지 확인하기 위함.	 -->
 	<select id="selectTblPostFile" parameterType="String" resultType="int">
-		SELECT COUNT(*) FROM tbl_postFile WHERE fk_postNo = #{postNo}
+		SELECT COUNT(*) FROM tbl_postFile WHERE fk_postNo = to_number(#{postNo})
 	</select>
 	
 <!-- 	글 수정하기에서 postFile 테이블에서 행삭제하기 -->
 	<delete id="FileDelOfPostUpdate">
 		delete from tbl_postFile
-        where fk_postNo = #{postNo} and fileNo = #{fileNo}
+        where fk_postNo = to_number(#{postNo}) and fileNo = to_number(#{fileNo})
 	</delete>
 	
 <!-- 	수정 전 이미지 목록 가져오기 (DB에서 조회) -->
@@ -355,7 +357,7 @@
 		from tbl_post p
 		full join tbl_postFile F
 		on p.postNo = F.fk_postNo
-		where postNo = #{postNo}
+		where postNo = to_number(#{postNo})
    </select>
    
 <!--    수정 후 새로운 이미지 목록 추출 (db에서 조회) -->
@@ -364,7 +366,7 @@
 		from tbl_post p
 		full join tbl_postFile F
 		on p.postNo = F.fk_postNo
-		where postNo = #{postNo}
+		where postNo = to_number(#{postNo})
    </select>
    
 <!--    게시판 별 게시글 조회 :: 게시판/게시글 테이블 조인 -> 조건 boardNo 인 것만 조회 -->
@@ -413,7 +415,7 @@
 	               readCount, to_char(regDate, 'yyyy-mm-dd') AS regDate, 
 	               commentCount, allowComments,  isNotice, noticeEndDate,likeCount
 	        FROM tbl_post
-	        WHERE status = 1 and fk_boardNo =#{boardNo}
+	        WHERE status = 1 and fk_boardNo = to_number(#{boardNo})
 	    ) V
 	JOIN tbl_board b 
     ON V.fk_boardNo = b.boardNo
@@ -435,48 +437,48 @@
 <!--    좋아요 테이블에서 로그인된 사원이 해당 게시글에 좋아요를 했는지 조회 -->
    <select id="getLikeInfo" parameterType="String" resultType="LikeVO">
    select * from tbl_like
-   where fk_employeeno=#{login_userid} and fk_postNo=#{postNo}
+   where fk_employeeno = to_number(#{login_userid}) and fk_postNo = to_number(#{postNo})
    </select>
    
 <!--    좋아요 테이블에서 행 삭제(좋아요 삭제) -->
    <delete id="removeLike">
   	delete from tbl_like
-  	where fk_employeeno=#{login_userid} and fk_postNo=#{postNo}
+  	where fk_employeeno = to_number(#{login_userid}) and fk_postNo = to_number(#{postNo})
    </delete>
    
 <!--    좋아요 테이블에서 행 추가(좋아요 추가) -->
 	<insert id="addLike">
-	insert into tbl_like (likeno,fk_postno,fk_employeeno,regdate) values(likeSeq.nextval,#{postNo},#{login_userid},sysdate)
+	insert into tbl_like (likeno,fk_postno,fk_employeeno,regdate) values(likeSeq.nextval,to_number(#{postNo}),to_number(#{login_userid}),sysdate)
 	</insert>
 
 <!-- 	게시글테이블의 좋아요 수 누적 -->
 	<update id="updatePostLikeCnt">
 		update tbl_post set likeCount = likeCount + 1
-		where postNo = #{postNo}
+		where postNo = to_number(#{postNo})
 	</update>
 
 <!-- 	게시글테이블의 좋아요 수 차감 -->	
 	<update id="updatePostLikeMinusCnt">
 	update tbl_post set likeCount = likeCount - 1
-	where postNo = #{postNo}
+	where postNo = to_number(#{postNo})
 	</update>
 
 <!-- 로그인 된 사원이 해당 게시글에 좋아요 여부를 검사 -->
 	<select id="checkLike" parameterType="String" resultType="int">
 	select COUNT(*)  from tbl_like 
-	where fk_postNo = #{postNo} and fk_employeeno=#{login_userid}
+	where fk_postNo = to_number(#{postNo}) and fk_employeeno = to_number(#{login_userid})
 	</select>
 	
 <!-- 	차감된 게시글의 좋아요 수 -->
 	<select id="likeCnt" parameterType="String" resultType="int">
 	select likeCount  from tbl_post 
-	where postNo = #{postNo}
+	where postNo = to_number(#{postNo})
 	</select>
 
 <!-- 로그인한 사원이 좋아요한 게시글 조회 -->
 	<select id="getLikedPosts" parameterType="map" resultType="int">
     select fk_postNo from tbl_like
-    where fk_employeeNo = #{login_userid}
+    where fk_employeeNo = to_number(#{login_userid})
 	</select>
 	
 <!-- 	좋아요 누른 사람(사원) 조회 -->
@@ -485,14 +487,14 @@
 	FROM tbl_like L 
 	JOIN tbl_employee E
 	on L.fk_employeeNo = E.employeeNo
-	where fk_postNo = #{postNo}
+	where fk_postNo = to_number(#{postNo})
 	order by regDate desc
 	</select>
 
 <!-- 댓글등록 -->
 	<insert id="insertComment">
 	insert into tbl_comment (COMMENTNO,FK_POSTNO,FK_EMPLOYEENO,NAME,CONTENT,GROUPNO) 
-	values(commentSeq.nextval,#{postNo},#{login_userid},#{login_name},#{commentContent},commentSeq.currval)
+	values(commentSeq.nextval,to_number(#{postNo}),to_number(#{login_userid}),#{login_name},#{commentContent},commentSeq.currval)
 	</insert>
 	
 <!-- 	해당 게시글의 댓글 조회 -->
@@ -524,9 +526,9 @@
             WHERE C.fk_postNo = #{postNo} AND C.status = 1
             ORDER BY C.groupNo desc, C.commentNo ASC
         ) A
-        WHERE ROWNUM &lt;= #{end} 
+        WHERE ROWNUM &lt;= to_number(#{end}) 
     )
-    WHERE RNUM >= #{start}
+    WHERE RNUM &gt;= to_number(#{start})
 </select>
 
 	
@@ -534,44 +536,45 @@
 <!-- 	댓글 수정하기 -->
 	<update id="updateComment">
 	update tbl_comment set content=#{content},regdate = sysdate
-	where commentNo = #{commentNo}
+	where commentNo = to_number(#{commentNo})
 	</update>
 	
 <!-- 	대댓글 등록 -->
 	<insert id="insertReComment">
 	insert into tbl_comment (COMMENTNO,FK_POSTNO,FK_EMPLOYEENO,NAME,CONTENT,GROUPNO,fk_commentNo,depthNo) 
-	values(commentSeq.nextval,#{postNo},#{login_userid},#{login_name},#{replyContent},#{fk_commentNo},#{fk_commentNo},#{depthNo})
+	values(commentSeq.nextval,to_number(#{postNo}),to_number(#{login_userid}),#{login_name},#{replyContent},to_number(#{fk_commentNo}),
+	to_number(#{fk_commentNo}),to_number(#{depthNo}))
 	</insert>
 	
 <!-- 	댓글 삭제하기 -->
 	<update id="deleteComment" parameterType="String">
 	 update tbl_comment set status=0
-	 where groupNo = #{commentNo}
+	 where groupNo = to_number(#{commentNo})
 	</update>
 		
 <!-- 	대댓글 삭제의 경우 -->
 	<update id="deleteReComment">
 	update tbl_comment set status=0
-	where commentNo = #{commentNo}
+	where commentNo = to_number(#{commentNo})
 	</update>
 	
 <!-- 	댓글 개수  -->
 	<select id="getCommentCount" parameterType="String" resultType="int">
 	select count(fk_postNo)
 	from tbl_comment
-	where fk_postno = #{postNo} and status = 1
+	where fk_postno = to_number(#{postNo}) and status = 1
 	</select>
 	
 <!-- 	해당 게시글의 댓글 개수 증감하기 -->
 	<select id="addCommentCount" parameterType="String">
 	update tbl_post set commentCount = commentCount+1
-	where postNo = #{postNo}
+	where postNo = to_number(#{postNo})
 	</select>
 	
 <!-- 	부서별 공개일 경우 게시판 생성하기 -->
 	<insert id="addDepartmentBoard">
     insert into tbl_board_department (fk_boardNo, fk_departmentNo)
-	    select boardNo, #{deptNo} 
+	    select boardNo, to_number(#{deptNo}) 
 	    from tbl_board 
     where boardNo = (select MAX(boardNo) FROM tbl_board)
 	</insert>
@@ -579,7 +582,7 @@
 <!-- 	게시글 삭제 시 해당 게시글의 댓글 삭제(상태값 변경)하기 -->
 	<update id="delCommentOfPost">
 	update tbl_comment set status=0
-	where fk_postNo = #{postNo} and status=1
+	where fk_postNo = to_number(#{postNo}) and status=1
 	</update>
 	
 <!-- 	수정하는 게시판에 접근할 수 있는 부서를 알아옴 -->
@@ -593,25 +596,25 @@
 	from tbl_board_department bd
 	join tbl_department d
 	on d.departmentNo = bd.fk_departmentNo
-	where fk_boardNo = #{boardNo}
+	where fk_boardNo = to_number(#{boardNo})
 	</select>
 	
 <!-- 	부서별 공개일 경우 권한이 부여된 부서 모두 삭제 -->
 	<delete id="deleteDepartmentBoard">
 	delete from tbl_board_department
-	where fk_boardNo = #{boardNo}
+	where fk_boardNo = to_number(#{boardNo})
 	</delete>
 	
 <!-- 	부서별 공개일 경우 게시판 삭제후 insert하기 -->
 	<insert id="addDepartmentBoard_2">
-    insert into tbl_board_department (fk_boardNo, fk_departmentNo) values(#{boardNo},#{deptNo})
+    insert into tbl_board_department (fk_boardNo, fk_departmentNo) values(to_number(#{boardNo}),to_number(#{deptNo}))
 	</insert>
 	
 	<update id="delPostOfBoard">
 	<!-- 게시판 내 모든 게시글 상태값 변경 -->
     update tbl_post 
     set status = 0, commentCount = 0
-    where fk_boardNo = #{boardNo}
+    where fk_boardNo = to_number(#{boardNo})
 	</update>
 	
 	<update id="delCommentOfBoard">
@@ -619,7 +622,7 @@
     update tbl_comment 
     set status = 0 
     where fk_postNo IN (
-        select postNo from tbl_post where fk_boardNo = #{boardNo}
+        select postNo from tbl_post where fk_boardNo = to_number(#{boardNo})
     )
 	</update>
 	
@@ -660,13 +663,13 @@
 <!-- 	삭제된 행의 개수만큼 해당 게시글의 댓글개수를 차감 -->
 	<update id="updateMinusCommentCount">
 	update tbl_post set commentCount = commentCount - #{deleteCount}
-	where postNo = #{postNo}
+	where postNo = to_number(#{postNo})
 	</update>
 	
 <!-- 	알림을 받을 사원 번호를 추출 -->
 	<select id="getNotificationReceiverEmployeeNo" parameterType="String" resultType="String">
 	select fk_employeeNo from tbl_comment
-	where commentNo = #{fk_commentNo}
+	where commentNo = to_number(#{fk_commentNo})
 	</select>
 	
 <!-- 	알림 테이블에 데이터 삽입 -->
@@ -674,15 +677,16 @@
     <choose>
         <when test="notificationtype == 'reply'"> <!-- 대댓글 작성 -->
             insert into tbl_notification (notificationNo, fk_employeeNo, fk_postNo, fk_commentNo, senderEmployeeNo, message, notificationtype, isRead)
-            values(notificationSeq.nextval, #{fk_employeeNo}, #{postNo}, #{fk_commentNo}, #{login_userid}, #{commentContent}, #{notificationtype}, default)
+            values(notificationSeq.nextval, to_number(#{fk_employeeNo}), to_number(#{postNo}), to_number(#{fk_commentNo}), to_number(#{login_userid}), 
+            #{commentContent}, #{notificationtype}, default)
         </when>
         <when test="notificationtype == 'like'"> <!-- 좋아요 클릭 -->
             insert into tbl_notification (notificationNo, fk_employeeNo, fk_postNo, senderEmployeeNo, notificationtype, isRead)
-            values(notificationSeq.nextval, #{fk_employeeNo}, #{postNo}, #{login_userid}, #{notificationtype}, default)
+            values(notificationSeq.nextval, to_number(#{fk_employeeNo}), to_number(#{postNo}), to_number(#{login_userid}), #{notificationtype}, default)
         </when>
         <otherwise> <!-- 일반 댓글 작성 -->
             insert into tbl_notification (notificationNo, fk_employeeNo, fk_postNo, senderEmployeeNo, message, notificationtype, isRead)
-            values(notificationSeq.nextval, #{fk_employeeNo}, #{postNo}, #{login_userid}, #{commentContent}, #{notificationtype}, default)
+            values(notificationSeq.nextval, to_number(#{fk_employeeNo}), to_number(#{postNo}), to_number(#{login_userid}), #{commentContent}, #{notificationtype}, default)
         </otherwise>
     </choose>
 </insert>
@@ -719,14 +723,14 @@
     on N.fk_postNo = P.postNo
 	join tbl_board B
     on P.fk_boardNo = B.boardNo
-	where N.fk_employeeNo = #{login_userid} and N.isRead = 0
+	where N.fk_employeeNo = to_number(#{login_userid}) and N.isRead = 0
 	order by N.notificationNo DESC
 	</select>
 
 	<!-- 클릭 된 알림을 0(안읽음)에서 1(읽음)으로 상태 변경 -->
 	<update id="notificationIsRead" parameterType="String">
 	update tbl_notification set isread = 1
-	where notificationNo = #{notificationNo}
+	where notificationNo = to_number(#{notificationNo})
 	</update>
 
 <!-- 댓글 상위 5개 글  -->
@@ -749,7 +753,7 @@
 <!-- 	알림의 전체읽기 클릭 시 알림을 모두 읽음 처리 -->
 	<update id="goNotificationReadAll" parameterType="String">
 	update tbl_notification set isRead = 1
-	where fk_employeeNo = #{login_userid}
+	where fk_employeeNo = to_number(#{login_userid})
 	</update>
 
 
@@ -760,11 +764,11 @@
 	<select id="selectAllPostMain" resultMap="selectPostBoardGroup_Map" parameterType="map">
 		SELECT 
 		    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, 
-			case when length( V.subject) > 40 then substr(subject, 0, 40) || '...' else subject end as subject, 
+			case when length( V.subject) &gt; 40 then substr(subject, 0, 40) || '...' else subject end as subject, 
 			CASE 
-		        WHEN LENGTH(REGEXP_REPLACE(V.content, '&lt;[^>]*>', '')) > 80 
-		        THEN SUBSTR(REGEXP_REPLACE(V.content, '&lt;[^>]*>', ''), 1, 80) || '...' 
-		        ELSE REGEXP_REPLACE(V.content,'&lt;[^>]*>', '') 
+		        WHEN LENGTH(REGEXP_REPLACE(V.content, '&lt;[^&gt;]*&gt;', '')) &gt; 80 
+		        THEN SUBSTR(REGEXP_REPLACE(V.content, '&lt;[^&gt;]*&gt;', ''), 1, 80) || '...' 
+		        ELSE REGEXP_REPLACE(V.content,'&lt;[^&gt;]*&gt;', '') 
 		    END AS content, 
 		    V.readCount, V.regDate, V.commentCount, V.allowComments,
 		    V.isNotice, V.noticeEndDate, V.likeCount,
@@ -784,7 +788,7 @@
 		    JOIN tbl_employee E ON P.fk_employeeNo = E.employeeNo
 		    JOIN tbl_position PS ON E.FK_positionNo = PS.positionNo
 		) V
-		WHERE V.rno BETWEEN #{startRno} AND #{endRno}
+		WHERE V.rno BETWEEN to_number(#{startRno}) AND to_number(#{endRno})
 	</select>
 
 
@@ -792,11 +796,11 @@
 	<select id="searchBoard" parameterType="String" resultMap="selectPostBoardGroup_Map">
 		SELECT 
 		    V.postNo, V.fk_boardNo, V.fk_employeeNo, V.name, 
-			case when length( V.subject) > 40 then substr(subject, 0, 40) || '...' else subject end as subject, 
+			case when length( V.subject) &gt; 40 then substr(subject, 0, 40) || '...' else subject end as subject, 
 			CASE 
-		        WHEN LENGTH(REGEXP_REPLACE(V.content, '&lt;[^>]*>', '')) > 80 
-		        THEN SUBSTR(REGEXP_REPLACE(V.content, '&lt;[^>]*>', ''), 1, 80) || '...' 
-		        ELSE REGEXP_REPLACE(V.content,'&lt;[^>]*>', '') 
+		        WHEN LENGTH(REGEXP_REPLACE(V.content, '&lt;[^&gt;]*&gt;', '')) > 80 
+		        THEN SUBSTR(REGEXP_REPLACE(V.content, '&lt;[^&gt;]*&gt;', ''), 1, 80) || '...' 
+		        ELSE REGEXP_REPLACE(V.content,'&lt;[^&gt;]*&gt;', '') 
 		    END AS content, 
 		    V.readCount, V.regDate, V.commentCount, V.allowComments,
 		    V.isNotice, V.noticeEndDate, V.likeCount,
